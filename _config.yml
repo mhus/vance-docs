@@ -15,13 +15,16 @@ heading_anchors: true
 aux_links:
   "GitHub":
     - "https://github.com/mhus/vance"
+  "Impressum":
+    - "/impressum"
 
 aux_links_new_tab: true
 
 footer_content: >-
   &copy; 2025-2026 Mike Hummel · Documentation under
   <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-  Source on <a href="https://github.com/mhus/vance-docs">GitHub</a>.
+  Source on <a href="https://github.com/mhus/vance-docs">GitHub</a> ·
+  <a href="/impressum">Impressum</a>.
 
 plugins:
   - jekyll-remote-theme
