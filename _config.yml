@@ -1,0 +1,36 @@
+title: Vance
+description: >-
+  Collaborative Brain — ein System, das Aufträge annimmt, sie mit den richtigen
+  Werkzeugen und Engines umsetzt und belegbare Ergebnisse liefert. Für Teams.
+url: "https://vance.mhus.de"
+baseurl: ""
+lang: de
+
+remote_theme: just-the-docs/just-the-docs
+
+color_scheme: dark
+search_enabled: true
+heading_anchors: true
+
+aux_links:
+  "GitHub":
+    - "https://github.com/mhus/vance"
+
+aux_links_new_tab: true
+
+footer_content: >-
+  &copy; 2025-2026 Mike Hummel · Documentation under
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
+  Source on <a href="https://github.com/mhus/vance-docs">GitHub</a>.
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - node_modules/
+  - README.md
