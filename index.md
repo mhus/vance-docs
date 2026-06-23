@@ -2,44 +2,44 @@
 title: Vance
 layout: home
 nav_order: 1
-description: "Collaborative Brain — ein System, das Aufträge annimmt, mit den richtigen Werkzeugen und Engines umsetzt und belegbare Ergebnisse liefert. Für Teams."
+description: "Collaborative Brain — a system that takes assignments, executes them with the right tools and engines, and delivers verifiable results. For teams."
 permalink: /
 ---
 
 # Vance — Collaborative Brain
 {: .fs-9 }
 
-Vance ist ein System, das Aufträge annimmt, sie mit den richtigen Werkzeugen
-und Engines umsetzt und **belegbare Ergebnisse** liefert — für Teams, nicht
-nur für Einzelpersonen.
+Vance is a system that takes assignments, executes them with the right tools
+and engines, and delivers **verifiable results** — for teams, not just for
+individuals.
 {: .fs-6 .fw-300 }
 
-[Loslegen](getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Get started](getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [GitHub](https://github.com/mhus/vance){: .btn .fs-5 }
 
 ---
 
-## Worum es geht
+## What it's about
 
-Vance ist mehr als ein Chatbot oder Code-Assistent. Es ist ein Server, auf dem
-Aufträge über Stunden und Tage laufen, jeder Schritt sichtbar bleibt und jedes
-Ergebnis bis zu seiner Quelle rückverfolgbar ist.
+Vance is more than a chatbot or coding assistant. It's a server on which
+assignments run for hours and days, every step stays visible, and every
+result is traceable back to its source.
 
-- **Auftrag rein, Ergebnis raus** — persistente Think-Processes in MongoDB
-- **Belegbare Ergebnisse** — Document-Archives, Source-Blocks, Inbox-Trail
-- **Die richtige Engine für den Auftrag** — 12 Think-Engines plus Services
-- **Recipes statt Code-Änderungen** — Konfigurationsbündel statt Java
-- **Für Teams** — Tenants, Scopes, Service-Accounts, geteilte Projekte
+- **Assignment in, result out** — persistent think-processes in MongoDB
+- **Verifiable results** — document archives, source blocks, inbox trail
+- **The right engine for the job** — 12 think-engines plus services
+- **Recipes instead of code changes** — configuration bundles instead of Java
+- **For teams** — tenants, scopes, service accounts, shared projects
 
-## Wo geht's weiter
+## Where to go next
 
-- [Konzepte](concepts) — Engines, Recipes, Scopes, Think-Processes
-- [Loslegen](getting-started) — Brain starten, CLI verbinden, erster Auftrag
-- [Architektur](architecture) — Brain + Clients, Datenmodell, Lifecycle
+- [Concepts](concepts) — engines, recipes, scopes, think-processes
+- [Get started](getting-started) — start the brain, connect the CLI, first assignment
+- [Architecture](architecture) — brain + clients, data model, lifecycle
 
 ---
 
 ## Status
 
-In aktiver Entwicklung. Brain, CLI und Web-UI laufen lokal. Diese Doku-Site
-ist Teil des öffentlichen Repos `vance-docs` und gerade erst im Aufbau.
+In active development. Brain, CLI and Web-UI run locally. This documentation
+site is part of the public `vance-docs` repo and is just being built out.

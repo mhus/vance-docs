@@ -1,16 +1,16 @@
 ---
-title: Konzepte
+title: Concepts
 nav_order: 3
 permalink: /concepts
 ---
 
-# Konzepte
+# Concepts
 {: .no_toc }
 
-Die zentralen Begriffe in Vance. Jeder verlinkt später auf eine eigene Seite.
+The core terms in Vance. Each will later link to its own page.
 {: .fs-5 .fw-300 }
 
-## Inhaltsverzeichnis
+## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -18,37 +18,36 @@ Die zentralen Begriffe in Vance. Jeder verlinkt später auf eine eigene Seite.
 
 ---
 
-## Auftrag
+## Assignment
 
-Was der Nutzer (oder ein anderer Process) erledigt haben will. Hat Kontext,
-Werkzeuge und ein Ziel. Wird durch ein Recipe + eine Engine umgesetzt.
+What the user (or another process) wants done. Has context, tools and a goal.
+It's executed by a recipe + an engine.
 
 ## Engine
 
-Java-Algorithmus mit Lifecycle — der LLM steuert den Ablauf **nicht**, der
-Code tut es. Die Engine entscheidet, wann ein LLM-Call passiert, welches Tool
-gerufen wird und wann ein Auftrag beendet ist.
+A Java algorithm with a lifecycle — the LLM does **not** drive the flow, the
+code does. The engine decides when an LLM call happens, which tool is called,
+and when an assignment is finished.
 
 ## Recipe
 
-YAML-Konfiguration: Engine + Default-Params + Prompt-Prefix + Tool-Anpassungen.
-Wenige Engines (strukturelle Algorithmen), viele Recipes (benannte
-Konfigurationsbündel). Wer einen neuen Auftragstyp will, schreibt ein
-Recipe — kein Java.
+YAML configuration: engine + default params + prompt prefix + tool adjustments.
+Few engines (structural algorithms), many recipes (named configuration
+bundles). If you want a new type of assignment, you write a recipe — no Java.
 
 ## Think Process
 
-Laufende Auftragsinstanz, persistiert in MongoDB. Hat Status, Task-Tree,
-Inbox und Verlauf. Überlebt Disconnects und Neustarts.
+A running assignment instance, persisted in MongoDB. Has status, task tree,
+inbox and history. Survives disconnects and restarts.
 
 ## Scope
 
-Hierarchie: Tenant → Projekt-Gruppe → Projekt → Session → Think-Process.
-Memory kaskadiert nach unten, ist seitlich isoliert. Rechte, Quotas und
-Settings hängen am Scope.
+Hierarchy: tenant → project group → project → session → think-process.
+Memory cascades downward and is isolated laterally. Permissions, quotas and
+settings hang off the scope.
 
 ## Project Kit
 
-Git-Repo mit Skills, Recipes, Tools und Settings, das in ein Projekt
-importiert wird. Macht ein Projekt sofort produktiv und ermöglicht
-zentrale Pflege von Team-Standards.
+A Git repo with skills, recipes, tools and settings that gets imported into
+a project. Makes a project productive immediately and enables central
+maintenance of team standards.

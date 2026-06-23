@@ -1,16 +1,16 @@
 ---
-title: Loslegen
+title: Get started
 nav_order: 2
 permalink: /getting-started
 ---
 
-# Loslegen
+# Get started
 {: .no_toc }
 
-Diese Seite ist ein Platzhalter und wird bald mit Inhalt gefüllt.
+This page is a placeholder and will soon be filled in.
 {: .fs-5 .fw-300 }
 
-## Inhaltsverzeichnis
+## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -18,33 +18,33 @@ Diese Seite ist ein Platzhalter und wird bald mit Inhalt gefüllt.
 
 ---
 
-## Voraussetzungen
+## Prerequisites
 
 - Java 25
-- MongoDB (lokal oder via Docker)
-- Mindestens ein konfigurierter LLM-Provider (Anthropic, OpenAI, Gemini, …)
+- MongoDB (local or via Docker)
+- At least one configured LLM provider (Anthropic, OpenAI, Gemini, …)
 
-## Brain starten
+## Start the brain
 
 ```bash
 cd vance/vance-brain
 mvn spring-boot:run
 ```
 
-## Foot (CLI) verbinden
+## Connect Foot (CLI)
 
 ```bash
 cd vance/vance-foot
 java -jar target/vance-foot.jar chat
 ```
 
-## Web-UI starten
+## Start the Web-UI
 
 ```bash
 ./wb build face
 cd repos/vance/client && pnpm --filter @vance/vance-face dev
 ```
 
-## Erster Auftrag
+## First assignment
 
-_kommt._
+_coming soon._

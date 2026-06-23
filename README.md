@@ -1,43 +1,43 @@
 # vance-docs
 
-Quelle der öffentlichen Vance-Dokumentation. Wird via GitHub Pages auf
-**https://vance.mhus.de** ausgespielt.
+Source of the public Vance documentation. Served via GitHub Pages at
+**https://vance.mhus.de**.
 
 ## Stack
 
-- **Jekyll** (über GitHub Pages, kein eigener Build nötig)
+- **Jekyll** (via GitHub Pages, no separate build required)
 - Theme: [`just-the-docs`](https://just-the-docs.com) via `remote_theme`
-- Custom Domain: `vance.mhus.de` (siehe `CNAME`)
+- Custom domain: `vance.mhus.de` (see `CNAME`)
 
-## Lokale Vorschau
+## Local preview
 
 ```bash
 bundle install
 bundle exec jekyll serve --livereload
 ```
 
-Anschließend auf <http://localhost:4000> öffnen.
+Then open <http://localhost:4000>.
 
-## Struktur
+## Structure
 
 ```
 .
-├── CNAME              # Custom-Domain für GitHub Pages
-├── _config.yml        # Jekyll-Config (Theme, Plugins, Footer)
-├── Gemfile            # github-pages + Plugins
+├── CNAME              # Custom domain for GitHub Pages
+├── _config.yml        # Jekyll config (theme, plugins, footer)
+├── Gemfile            # github-pages + plugins
 ├── index.md           # Landing
 ├── getting-started.md # Quickstart
-├── concepts.md        # Begriffe
-├── architecture.md    # Brain + Clients
-├── LICENSE            # CC BY 4.0 für Prosa
-└── LICENSE-code.txt   # MIT für Code-Snippets
+├── concepts.md        # Terminology
+├── architecture.md    # Brain + clients
+├── LICENSE            # CC BY 4.0 for prose
+└── LICENSE-code.txt   # MIT for code snippets
 ```
 
-Neue Seiten als `*.md` mit Frontmatter (`title`, `nav_order`, `permalink`)
-anlegen — `just-the-docs` baut die Navigation automatisch aus der
+Add new pages as `*.md` files with frontmatter (`title`, `nav_order`,
+`permalink`) — `just-the-docs` builds the navigation automatically from the
 `nav_order`.
 
-## Lizenz
+## License
 
-- Prosa, Bilder, Diagramme: **CC BY 4.0** — siehe [`LICENSE`](LICENSE)
-- Code-Snippets: **MIT** — siehe [`LICENSE-code.txt`](LICENSE-code.txt)
+- Prose, images, diagrams: **CC BY 4.0** — see [`LICENSE`](LICENSE)
+- Code snippets: **MIT** — see [`LICENSE-code.txt`](LICENSE-code.txt)

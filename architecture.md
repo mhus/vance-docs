@@ -1,16 +1,16 @@
 ---
-title: Architektur
+title: Architecture
 nav_order: 4
 permalink: /architecture
 ---
 
-# Architektur
+# Architecture
 {: .no_toc }
 
-Brain + Clients, das Datenmodell, die Trigger-Pfade.
+Brain + clients, the data model, the trigger paths.
 {: .fs-5 .fw-300 }
 
-## Inhaltsverzeichnis
+## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -18,38 +18,37 @@ Brain + Clients, das Datenmodell, die Trigger-Pfade.
 
 ---
 
-## Brain + Clients
+## Brain + clients
 
-Der **Brain** (Server) hält den gesamten kognitiven Zustand: Think-Processes,
-Task-Bäume, Memory, Knowledge Graph. Er orchestriert LLM-Calls, plant,
-schreibt Documents, ruft Server-Tools, spawned Sub-Processes. Er kann
-autonom weiterarbeiten, auch wenn kein Client verbunden ist.
+The **Brain** (server) holds the entire cognitive state: think-processes,
+task trees, memory, knowledge graph. It orchestrates LLM calls, plans,
+writes documents, calls server tools, spawns sub-processes. It can keep
+working autonomously even when no client is connected.
 
-Die **Clients** sind die Zugänge zum Brain — keine Views auf dasselbe,
-sondern unterschiedliche Aspekte der Interaktion:
+The **clients** are the entry points to the brain — not views on the same
+thing, but distinct aspects of the interaction:
 
-| Client | Stack | Rolle |
+| Client | Stack | Role |
 |---|---|---|
-| `vance-foot` | Picocli + JLine 3 + Lanterna | Terminal-Client mit lokalen Tools |
-| `vance-face` | Vue 3 + Vite + Tailwind | Web-UI mit Live-Documents (Cortex) |
-| `facelift-bridge` | Capacitor + WKWebView | Mobile-Wrapper um die deployte Web-UI |
+| `vance-foot` | Picocli + JLine 3 + Lanterna | Terminal client with local tools |
+| `vance-face` | Vue 3 + Vite + Tailwind | Web-UI with live documents (Cortex) |
+| `facelift-bridge` | Capacitor + WKWebView | Mobile wrapper around the deployed Web-UI |
 
-## Tech-Stack
+## Tech stack
 
-- **Java 25 + Spring Boot 4** — Brain
-- **MongoDB** — Persistenz (Think-Processes, Documents, Settings, Memory)
-- **langchain4j / langgraph4j** — LLM-Integration und Orchestrierung
+- **Java 25 + Spring Boot 4** — brain
+- **MongoDB** — persistence (think-processes, documents, settings, memory)
+- **langchain4j / langgraph4j** — LLM integration and orchestration
 - **TypeScript + Vue 3 + Vite** — Web-UI
-- **Capacitor + WKWebView** — Mobile (iOS via `facelift-bridge`)
+- **Capacitor + WKWebView** — mobile (iOS via `facelift-bridge`)
 - **Picocli + JLine 3 + Lanterna** — CLI
 
-## Auslöser (Ursa)
+## Triggers (Ursa)
 
-Drei Pfade, die alle dieselbe Action-Hierarchie (Recipe / Script / Workflow)
-feuern:
+Three paths, all firing the same action hierarchy (recipe / script / workflow):
 
-- **Scheduler** — zeitbasiert
-- **Ursahooks** — interne Lifecycle-Events
-- **Events** — externe HTTP-Calls (Webhooks, IoT, CI)
+- **Scheduler** — time-based
+- **Ursahooks** — internal lifecycle events
+- **Events** — external HTTP calls (webhooks, IoT, CI)
 
-_Detailseiten folgen._
+_Detail pages to follow._

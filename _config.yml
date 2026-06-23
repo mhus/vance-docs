@@ -1,10 +1,10 @@
 title: Vance
 description: >-
-  Collaborative Brain — ein System, das Aufträge annimmt, sie mit den richtigen
-  Werkzeugen und Engines umsetzt und belegbare Ergebnisse liefert. Für Teams.
+  Collaborative Brain — a system that takes assignments, executes them with the
+  right tools and engines, and delivers verifiable results. For teams.
 url: "https://vance.mhus.de"
 baseurl: ""
-lang: de
+lang: en
 
 remote_theme: just-the-docs/just-the-docs
 
