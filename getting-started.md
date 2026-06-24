@@ -27,17 +27,37 @@ clean machine to an open Web UI: about five minutes.
 - Outbound HTTPS to Docker Hub (image pulls) and to your LLM provider
   (Anthropic, OpenAI, Gemini, …)
 
-## Three-command quick start
+## Quick start
 
 ```bash
 git clone https://github.com/mhus/vance-startup.git
 cd vance-startup
 cp .env.example .env
+
+# 1. Start the stack (MongoDB + Brain + Web UI).
 docker compose up -d
+
+# 2. First-time setup: create a tenant + user and configure an LLM provider.
+docker compose run --rm anus --setup
 ```
 
-Open <http://localhost:8080> in your browser. The Web UI is the landing page;
-configure your LLM provider there after first login.
+Step 2 launches an interactive one-shot wizard. Answer the prompts and the
+container exits when you save. Then open <http://localhost:8080> and log in
+with the user you just created.
+
+### What the setup wizard asks for
+
+Have these ready before running `--setup`:
+
+- **Tenant name + title** — e.g. `acme` / `Acme Inc.`
+- **First user** — login, display name, email, password
+- **LLM provider** — Gemini, OpenAI or Anthropic
+- **API key** for the chosen provider
+- **Optional: Serper API key** for web research
+
+The wizard writes everything to MongoDB and exits. Re-run it later to add
+another tenant or user; existing entries are not overwritten unless you
+explicitly change them.
 
 > **Before exposing the stack to anything beyond `localhost`:** edit `.env`
 > and change `VANCE_ENCRYPTION_PASSWORD`, `VANCE_INTERNAL_TOKEN` and
