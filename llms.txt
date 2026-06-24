@@ -11,6 +11,7 @@ The authoritative specs are written in German under `specification/public/*.md` 
 - [Get started](https://vance.mhus.de/getting-started): install and run Vance locally with Docker.
 - [Concepts](https://vance.mhus.de/concepts): engines, recipes, scopes, think-processes, kits.
 - [Architecture](https://vance.mhus.de/architecture): brain + clients, data model, triggers.
+- [How-tos](https://vance.mhus.de/howtos/): task-oriented guides for common workflows.
 - [Source repository](https://github.com/mhus/vance): Java/TypeScript implementation, BSL 1.1.
 - [Docker startup](https://github.com/mhus/vance-startup): docker-compose stack for local installs.
 
