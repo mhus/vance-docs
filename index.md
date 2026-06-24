@@ -17,6 +17,12 @@ individuals.
 [Get started](getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [GitHub](https://github.com/mhus/vance){: .btn .fs-5 }
 
+{: .warning }
+> **Beta.** Vance is in active development. APIs, data model, configuration
+> keys and engine behaviour can change between releases. Suitable for
+> hands-on experimentation and early adopters; not yet hardened for
+> unattended production use.
+
 ---
 
 ## What it's about
@@ -41,5 +47,8 @@ result is traceable back to its source.
 
 ## Status
 
-In active development. Brain, CLI and Web-UI run locally. This documentation
-site is part of the public `vance-docs` repo and is just being built out.
+Beta. Brain, CLI and Web-UI run locally and on small self-hosted
+deployments. Expect breaking changes between minor releases — read the
+release notes before upgrading a stack with data you care about. This
+documentation site is part of the public `vance-docs` repo and is still
+being built out.
