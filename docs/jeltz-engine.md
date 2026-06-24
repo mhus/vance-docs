@@ -6,7 +6,6 @@ permalink: /docs/jeltz-engine
 
 <!-- AUTO-GENERATED from specification/public/en/jeltz-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Jeltz Think Engine
 
@@ -90,7 +89,7 @@ A Lane turn does exactly this:
 1. `context.drainPending()` — discards everything except the first synthetic `UserChatInput` (any further inputs after spawn are programming errors → warning + discarded).
 2. Read `prompt` + `schema` from `context.params()`. Fail-fast if missing.
 3. Compile schema: `JsonSchemaLight.compile(schema)` (validator) and `Lc4jSchema.toObjectSchema(schema)` (langchain4j tree).
-4. Render system prompt from Recipe (Pebble template, with `{{ schema_json }}` available as a variable for inline examples if desired).
+4. Render system prompt from Recipe (Pebble template, with `&#123;{ schema_json }}` available as a variable for inline examples if desired).
 5. Validator loop, max `maxAttempts` iterations:
    1. LLM call with `ResponseFormat = JsonSchema(<langchain4j-tree>)` if the provider supports it; otherwise, fallback to prompt forcing (schema in system prompt + plain text mode).
    2. Parse response as JSON.
@@ -168,7 +167,7 @@ promptPrefix: |
 
   ## Schema
 
-  {{ schema_json | raw }}
+  &#123;{ schema_json | raw }}
 
   ## Rules
 
@@ -217,4 +216,3 @@ Override cascade works as usual (Project → `_tenant` Tenant → Bundled). Tena
 - [structured-engine-output](/docs/structured-engine-output) — `respond` tool is orthogonal: it governs the *end* of a chat turn. Jeltz has no `respond` (no chat).
 - [recipes](/docs/recipes) — Recipe mechanics, Pebble templating, cascade.
 - [think-engines](/docs/think-engines) — Engine registry, lifecycle, status model. Jeltz's terminal `done` transition is regular (unlike Ford/Arthur, which never reach `done`).
-{% endraw %}

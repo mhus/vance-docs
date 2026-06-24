@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-sheet
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-sheet.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `sheet`
 
@@ -265,4 +264,3 @@ Apache POI on the Java side can read XLSX; a `POST /brain/{tenant}/sheet/import`
 - **Formula Quoting in YAML**: Codec automatically quotes when writing (`data: "=A1*2"`). When reading, the value is coerced to a string even if it was written without quotes (`data: =A1*2` would be parsed as a string by YAML, provided the `=` is not a reserved indicator token at that position).
 - **Consistency of schema/rows with cells:** What happens if `schema: ['A', 'B']` is set, but `cells` contains an entry with `field: C5`? v1: The cell is preserved in the body (round-trip stable), but not displayed in the editor — the user only sees columns A and B. As soon as they add column C via "Add column", the cell appears. The codec warning is optional.
 - **Performance with Large Sheets:** Custom HTML table is okay up to ~1000 cells. Above 1000, virtualization becomes necessary — then switching to `revogrid` or similar is required. Until then, v1 is sufficient.
-{% endraw %}

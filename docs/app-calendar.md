@@ -6,7 +6,6 @@ permalink: /docs/app-calendar
 
 <!-- AUTO-GENERATED from specification/public/en/app-calendar.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Application `app: calendar`
 
@@ -306,4 +305,3 @@ Helper components (FolderReader, Expander, Detector, Renderer) are pure-function
 - **`calendar_export_ics` Export**: operates on a single Calendar file. Aggregate export across the entire App would be v2.
 - **Kits**: a "Sprint Planning Kit" can provide a ready-made Calendar App (manifest with default Lanes + empty `*.yaml` files). User installs Kit, fills in events, rebuilds.
 - **Marvin-Worker**: a Slart-generated Recipe can produce a complete Calendar App in one run — write manifest, create Lanes, insert events, rebuild. Use case: "Create a Q3 plan with standard sprint phases".
-{% endraw %}

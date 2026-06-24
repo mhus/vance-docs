@@ -6,7 +6,6 @@ permalink: /docs/fook-upstream
 
 <!-- AUTO-GENERATED from specification/public/en/fook-upstream.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Fook Upstream Transport
 
@@ -572,4 +571,3 @@ Audit trail via existing {@code AuditService} for
   transport itself communicates directly with the Provider.
 - {@code de.mhus.vance.brain.cluster.ClusterMasterService} — the
   Master lease to which the ticks are tied.
-{% endraw %}

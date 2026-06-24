@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-diagram
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-diagram.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `diagram`
 
@@ -345,4 +344,3 @@ A `kind: slides` or `kind: doc` references a `kind: diagram` Document via Vance 
 - **Multiple render performance:** if a user frequently clicks the `Diagram` tab open and closed, should Mermaid re-render it every time? Cache the last SVG output, invalidate on `source`/`diagram` change. Trivial memoization, belongs in `<DiagramView>` implementation.
 - **Server-side RAG-Indexing:** the `inlineText` body contains the raw Mermaid source. RAG finds "Sequence Diagram for Login Flow" because "sequenceDiagram" and "Login" appear as tokens — this is OK. Should additionally extracted labels (node names, edge descriptions) be indexed as a structured meta-field? v1 no, because this would require a server-side Mermaid parser, which we deliberately avoid. If searching by node name becomes relevant, full-text fallback is usually sufficient.
 - **Document Title vs. Mermaid Frontmatter Title:** Mermaid accepts a `title:` field in its own source frontmatter, which is rendered above the diagram. The Vance Document also has a `title`. Conflict behavior: both remain independent, the user decides. We do not interfere with the `source`.
-{% endraw %}

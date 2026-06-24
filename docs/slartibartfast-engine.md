@@ -6,7 +6,6 @@ permalink: /docs/slartibartfast-engine
 
 <!-- AUTO-GENERATED from specification/public/en/slartibartfast-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Slartibartfast Engine — Plan-Architect
 
@@ -751,4 +750,3 @@ Prerequisites — all met:
   matching Manuals), structured promptPrefix
 - Recovery-Loop works live (VALIDATING #1 → PROPOSING #2 → VALIDATING #2)
 - 0 hallucinations in the tested runs against the essay-slart Kit
-{% endraw %}

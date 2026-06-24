@@ -6,7 +6,6 @@ permalink: /docs/fook-service
 
 <!-- AUTO-GENERATED from specification/public/en/fook-service.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Fook Service
 
@@ -499,7 +498,7 @@ params:
   maxAttempts: 3
   temperature: 0.0
 promptPrefix: |
-  <Pebble-Template with {{ text }} and {{ candidates }}>
+  <Pebble-Template with &#123;{ text }} and &#123;{ candidates }}>
 tags: [internal, fook, triage]
 ```
 
@@ -567,4 +566,3 @@ logs with `targetTenant`. Ticket-Documents carry
 - [web-ui](/docs/web-ui) — `EditorShell`/`EditorTopbar`, User-Menu.
 - java-cli-modulstruktur — Foot
   Slash-Command-Pattern.
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-checklist
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-checklist.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `checklist`
 
@@ -344,4 +343,3 @@ v2 if the use case arises often enough that a dedicated tool saves prompt token 
 - **Aggregate across multiple Checklists** — Use case: "show me all blocked items in all Project Checklists". Requires either Mongo-side indexing of items (currently they are only in the `inlineText`-body) or a Brain-side aggregator tool that scans all Checklists. Both v2.
 - **Item-IDs for stable references** — If `checklist_set_status` comes, a stable ID per item is needed (currently identified by position in the array). Suggestion: `id` field optional, codec fills missing IDs on first save (like `calendar.events.id`). Will be specified with the tool.
 - **Multi-line item texts in MD round-trip** — Same open point as in `doc-kind-items.md` §7; continuation indent works, style decision pending.
-{% endraw %}

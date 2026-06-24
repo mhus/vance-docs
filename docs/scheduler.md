@@ -6,7 +6,6 @@ permalink: /docs/scheduler
 
 <!-- AUTO-GENERATED from specification/public/en/scheduler.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Scheduler
 
@@ -467,4 +466,3 @@ The following topics are **not yet** marked as binding in the spec — the respe
 ---
 
 *See also: [recipes](/docs/recipes) | [execution-modes-trigger](/docs/execution-modes-trigger) | [session-lifecycle](/docs/session-lifecycle) | [user-interaction](/docs/user-interaction) | [project-lifecycle](/docs/project-lifecycle) | [web-ui](/docs/web-ui)*
-{% endraw %}

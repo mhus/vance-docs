@@ -6,7 +6,6 @@ permalink: /docs/knowledge-graph
 
 <!-- AUTO-GENERATED from specification/public/en/knowledge-graph.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Knowledge Graph & Insights
 
@@ -473,4 +472,3 @@ In each phase: the data model does NOT change. Only more fields are populated an
 ---
 
 *See also: [memory-knowledge-management](/docs/memory-knowledge-management) | [vision](/docs/vision) | [architektur-scopes-clients](/docs/architektur-scopes-clients) | [workflows](/docs/workflows)*
-{% endraw %}

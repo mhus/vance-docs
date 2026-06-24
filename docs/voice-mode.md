@@ -6,7 +6,6 @@ permalink: /docs/voice-mode
 
 <!-- AUTO-GENERATED from specification/public/en/voice-mode.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Voice Mode
 
@@ -90,7 +89,7 @@ The Pebble render (`SystemPrompts.compose(...)`) is **re-executed with every LLM
 In the engine-default Prompt (arthur-prompt.md, eddie-prompt.md) at the **end** (see §7 for caching) a Pebble if-block:
 
 ```pebble
-{% if voiceMode %}
+&#123;% if voiceMode %}
 ## Voice Mode Active
 
 The user is speaking and/or listening. Output will be read aloud via TTS
@@ -129,12 +128,12 @@ truncated words (e.g., "Lisa bonn" → "Lisbon").
 Interpret generously; in case of genuine ambiguity `ASK_USER`.
 
 **Routing for Substantial Outputs:** Do not read worker responses
-in full. {% if engine == "eddie" %}Use `RELAY_INBOX` —
-a short hub sentence + pointer.{% else %}Save via
+in full. &#123;% if engine == "eddie" %}Use `RELAY_INBOX` —
+a short hub sentence + pointer.&#123;% else %}Save via
 `doc_create(kind="text", …)` and provide only a pointer sentence
 in `ANSWER` ("I've placed the full plan in your Inbox.").
-{% endif %}
-{% endif %}
+&#123;% endif %}
+&#123;% endif %}
 ```
 
 Engine-specific:
@@ -236,4 +235,3 @@ Spec is Draft as of 2026-05-26. Design decisions:
 - **Pebble Block at the end** of the prompt due to Anthropic cache.
 - **No new Action Type** in v1 — Eddie uses `RELAY_INBOX`, Arthur uses `doc_create(kind="text", …)` fallback.
 - **Workers** (Ford/Vogon/Marvin/…) ignore the flag in v1.
-{% endraw %}

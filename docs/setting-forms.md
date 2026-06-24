@@ -6,7 +6,6 @@ permalink: /docs/setting-forms
 
 <!-- AUTO-GENERATED from specification/public/en/setting-forms.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Setting Forms
 
@@ -134,7 +133,7 @@ Setting Forms add three fields per `FormField`:
 | `password` | `PASSWORD` | Encryption by `SettingService`. Empty input = "do not change" (see §6.4) |
 | `integer` | `INT` or `LONG` | Depending on the value range. For `bindsTo`, `bindsTo.settingType: "LONG"` can optionally force it. |
 | `boolean` | `BOOLEAN` | |
-| `multi_select`, `repeat` | not allowed for `bindsTo` | Only in `settings:` section via Pebble (e.g., `{{ tags | join(",") }}`) |
+| `multi_select`, `repeat` | not allowed for `bindsTo` | Only in `settings:` section via Pebble (e.g., `&#123;{ tags | join(",") }}`) |
 
 **Non-direct-mappable fields must be processed in `settings:` computed outputs** — `bindsTo` only applies to scalar, deterministically typable values. Validation during form load, for example, rejects a `multi_select` field with `bindsTo`.
 
@@ -265,18 +264,18 @@ settings:
     settingType: INT
     writeIf: "budgetEnabled"
     value: |
-      {% if budget == 'small' %}100000
-      {% elseif budget == 'medium' %}500000
-      {% else %}2000000{% endif %}
+      &#123;% if budget == 'small' %}100000
+      &#123;% elseif budget == 'medium' %}500000
+      &#123;% else %}2000000&#123;% endif %}
 
   - key: "quota.monthly_tokens"
     scope: "project"
     settingType: INT
     writeIf: "budgetEnabled"
     value: |
-      {% if budget == 'small' %}3000000
-      {% elseif budget == 'medium' %}15000000
-      {% else %}60000000{% endif %}
+      &#123;% if budget == 'small' %}3000000
+      &#123;% elseif budget == 'medium' %}15000000
+      &#123;% else %}60000000&#123;% endif %}
 ```
 
 ### 5.3 Render Context
@@ -289,9 +288,9 @@ All three Pebble locations see the same set of variables:
 | `lang` | Tenant default language | for multilingual texts in `description` |
 | `user` | Username | for User-scope forms |
 | `project` | Project name | for project-scope forms |
-| `current` | Map<String, ?>: current Setting values from the cascade | For `value` templates that need to "keep old value if nothing changed": `{{ current['ai.default.model'] | default('claude-sonnet-4-6') }}` |
+| `current` | Map<String, ?>: current Setting values from the cascade | For `value` templates that need to "keep old value if nothing changed": `&#123;{ current['ai.default.model'] | default('claude-sonnet-4-6') }}` |
 
-**Pebble Subset:** same as for [Recipes](/docs/recipes) and [Wizards](/docs/wizards) — `{{ var }}`, `{% if/elseif/else/endif %}`, `{% for x in xs %}`, `{% raw %}`. No Java reflection, no `{% include %}`, no external file access. Compile validation during form load (fail-fast: invalid forms do not appear in the listing).
+**Pebble Subset:** same as for [Recipes](/docs/recipes) and [Wizards](/docs/wizards) — `&#123;{ var }}`, `&#123;% if/elseif/else/endif %}`, `&#123;% for x in xs %}`, `&#123;% raw %}`. No Java reflection, no `&#123;% include %}`, no external file access. Compile validation during form load (fail-fast: invalid forms do not appear in the listing).
 
 ---
 
@@ -458,7 +457,7 @@ CLI Setting Forms are v1.x — not strictly necessary for v1, as the Web UI is t
 
 ## 11. Security & Contracts
 
-- **Pebble Sandbox:** Same as for Recipes and Wizards — only the declarative syntax subset. No reflection, no `{% include %}`.
+- **Pebble Sandbox:** Same as for Recipes and Wizards — only the declarative syntax subset. No reflection, no `&#123;% include %}`.
 - **Cascade Sources:** `_user_<userId>` layer is only visible to the respective user. Project and Tenant layers follow normal [workspace-access](/docs/workspace-access) rules.
 - **PASSWORD Values:** Are returned in `currentValue` exclusively as `"***"` (set) or `null` (not set) — never in plaintext, neither via `GET /{name}` nor via `/validate`. `/apply` writes them encrypted via `SettingService.setPassword(...)`.
 - **Scope Auth:** Checked separately per scope value (see §4.3). A form with mixed scopes (e.g., `bindsTo.scope: project` and `settings[*].scope: tenant`) requires **all** corresponding permissions — a user without Tenant Admin will not even see the form in the listing.
@@ -540,7 +539,7 @@ fields:
 settings:
   - key: "tracing.llm.enabled"
     settingType: BOOLEAN
-    value: "{{ tracing }}"
+    value: "&#123;{ tracing }}"
 
   - key: "tracing.llm.sample_rate"
     settingType: DOUBLE
@@ -554,4 +553,3 @@ The form cleanly covers four scenarios:
 - **Model Selection:** independent of the provider, direct mapped.
 - **Tracing Toggle:** a boolean field controls two setting writes (`enabled` always, `sample_rate` only when active).
 - **Reset Button:** deletes all six keys (`ai.default.provider`, `ai.default.model`, three provider API keys, `tracing.llm.enabled`, `tracing.llm.sample_rate`) at the project level — cascade cleanly falls back to `_tenant`.
-{% endraw %}

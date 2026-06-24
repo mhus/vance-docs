@@ -6,7 +6,6 @@ permalink: /docs/recipe-routing
 
 <!-- AUTO-GENERATED from specification/public/en/recipe-routing.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Recipe Routing
 
@@ -216,4 +215,3 @@ triggers:
 - **Trigger on Tool Result / Sibling Event**: currently, only the Selector scans the `goal` string from the `process_create` call. No scan on Tool Results or Sibling Events. Engine-to-Engine routing remains explicit (`process_create(recipe=…)`).
 - **Skill Layer over Triggers**: Skills (see `skills.md`) can later register their own trigger phrases as a convenience layer — the mechanism for this is not v1, because the Selector's trigger pre-check already provides the same functionality today.
 - **Recipe Visibility for Selector vs. Trigger**: Recipes with tag `engine-default` are currently filtered from the Selector's inventory list (see `RecipeSelectorService.INTERNAL_TAG`). With the new trigger logic, these Recipes must remain selectable via triggers — their own `triggers.keywords` will be considered, the filter only affects the LLM inventory list.
-{% endraw %}

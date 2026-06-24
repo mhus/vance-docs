@@ -6,7 +6,6 @@ permalink: /docs/mobile-ui
 
 <!-- AUTO-GENERATED from specification/public/en/mobile-ui.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance Mobile-UI — Specification
 
@@ -499,4 +498,3 @@ If two parallel REST calls both receive `401`, two refresh requests would run in
 - `specification/arthur-engine.md` — Chat Engine (Streaming, Inbox/ProcessEvent)
 - `specification/websocket-protokoll.md` — WS Frame contract, Token Auth via Query Param
 - `specification/recipes.md` §6a — Profile block selection on server side (`mobile` profile)
-{% endraw %}

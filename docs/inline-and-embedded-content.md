@@ -6,7 +6,6 @@ permalink: /docs/inline-and-embedded-content
 
 <!-- AUTO-GENERATED from specification/public/en/inline-and-embedded-content.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Inline & Embedded Content
 
@@ -696,9 +695,9 @@ New component `packages/vance-face/src/components/KindBox.vue` as a common frame
 <template>
   <div class="kind-box border rounded">
     <div class="kind-box-header flex items-center gap-2 px-3 py-2 bg-base-200">
-      <span class="kind-icon">{{ icon }}</span>
-      <span class="kind-label font-medium">{{ label }}</span>
-      <span v-if="title" class="text-base-content/60 truncate">— {{ title }}</span>
+      <span class="kind-icon">&#123;{ icon }}</span>
+      <span class="kind-label font-medium">&#123;{ label }}</span>
+      <span v-if="title" class="text-base-content/60 truncate">— &#123;{ title }}</span>
       <div class="ml-auto flex gap-1">
         <slot name="actions" />
       </div>
@@ -846,4 +845,3 @@ No plugin registration, no hot-reload discovery. Compile-time map with type-chec
 - **External URLs as Embedded:** ` ```embed\nkind: pdf\nurl: https://… ` or similar — explicitly not v1, external content must first be imported into the store via `document_import_url`-tool. Then it is a normal Document with a `vance:`-link.
 - **Inline Fence with Embedded Mix:** May a mindmap inline body reference a `vance:`-link (node links to Document)? Indirectly yes, via the `link:`-field in the node (see doc-kind-mindmap §2) — the linking semantics are a matter of the respective Kind, not this spec.
 - **Same-URI in Multiple Occurrences:** If the same resource is embedded twice in the same message (e.g., once reference, once preview), the resolver loads once and caches per `<project,path>`-key. Cache lifetime = session.
-{% endraw %}

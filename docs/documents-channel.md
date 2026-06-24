@@ -6,7 +6,6 @@ permalink: /docs/documents-channel
 
 <!-- AUTO-GENERATED from specification/public/en/documents-channel.md — do not edit here. -->
 
-{% raw %}
 ---
 # Documents Channel — Live Presence + Changed Events
 
@@ -414,4 +413,3 @@ Client-side (`console.debug`):
   receive the event). Old client bundles continue to function.
 - `If-None-Match` is optional — old browsers without ETag support simply
   always fetch the body.
-{% endraw %}

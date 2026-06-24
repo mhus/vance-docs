@@ -6,7 +6,6 @@ permalink: /docs/workflows
 
 <!-- AUTO-GENERATED from specification/public/en/workflows.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Workflows
 
@@ -727,4 +726,3 @@ Full implementation details: `planning/workflow-service.md`.
 Before the Magrathea Workflow subsystem, there was another "Workflow" concept: **Templates for Marvin Task Trees** with `fixed:` nodes that the LLM was not allowed to restructure. This idea was absorbed into the Marvin Engine itself — see [marvin-engine](/docs/marvin-engine). The term "Workflow" has since belonged to the Magrathea State Machine subsystem.
 
 `instructions/workflows.md` (design discussion from 2026-05-14) is the source of the Magrathea concept documented here.
-{% endraw %}

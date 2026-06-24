@@ -6,7 +6,6 @@ permalink: /docs/integrationen-externe-systeme
 
 <!-- AUTO-GENERATED from specification/public/en/integrationen-externe-systeme.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Integrations & External Systems
 
@@ -364,4 +363,3 @@ Vance Brain
 ---
 
 *See also: [vision](/docs/vision) | [multi-user-collaboration](/docs/multi-user-collaboration) | [memory-knowledge-management](/docs/memory-knowledge-management) | [knowledge-graph](/docs/knowledge-graph)*
-{% endraw %}

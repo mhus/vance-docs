@@ -6,7 +6,6 @@ permalink: /docs/project-lifecycle
 
 <!-- AUTO-GENERATED from specification/public/en/project-lifecycle.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Project Lifecycle
 
@@ -257,4 +256,3 @@ Sessions can live independently of the Project status (own lifecycle properties)
 - [session-lifecycle.md](/docs/session-lifecycle) — Session/Engine lifecycle. The Engine hook events (V2) interlock with the Session suspend cascade.
 - [architektur-scopes-clients.md](/docs/architektur-scopes-clients) — Scope hierarchy Tenant → Project Group → Project → Session.
 - [vision.md](/docs/vision) — what a Project is in the product sense.
-{% endraw %}

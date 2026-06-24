@@ -6,7 +6,6 @@ permalink: /docs/marvin-engine
 
 <!-- AUTO-GENERATED from specification/public/en/marvin-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Marvin Think Engine
 
@@ -297,7 +296,7 @@ engine-side postActions.
 ```json
 {"result":     "<complete Markdown response>",
  "postActions": [{"tool":"doc_create",
-                  "args":{"path":"...","kind":"text","content":"{{ node.result }}"}}],
+                  "args":{"path":"...","kind":"text","content":"&#123;{ node.result }}"}}],
  "reason":     "..."}
 ```
 
@@ -477,7 +476,7 @@ For SCOPE / REFLECT `NEEDS_USER_INPUT`:
 Unchanged from v1. Deterministic fanout from a
 `list`/`tree`/`records`-Document. `DocumentExpander` reads the
 Document, iterates items, spawns a child per item according to
-`childTemplate` with `{{ item.text }}` / `{{ record.<field> }}`-
+`childTemplate` with `&#123;{ item.text }}` / `&#123;{ record.<field> }}`-
 substitution. No LLM call.
 
 `taskSpec`:
@@ -486,7 +485,7 @@ substitution. No LLM call.
  "treeMode": "FLAT" | "RECURSIVE",
  "childTemplate": {
    "taskKind": "WORKER",
-   "goal": "Write chapter: {{ item.text }}",
+   "goal": "Write chapter: &#123;{ item.text }}",
    "taskSpec": {
      "postActions": [{"tool":"doc_create", "...": "..."}]
    }
@@ -510,11 +509,11 @@ no LLM-Tool-Call, no hallucination risks.
 - `title` (string, optional)
 
 **Pebble-Render-Context**:
-- `{{ node.result }}` — Worker's CONCLUDE-Result
-- `{{ node.goal }}`
-- `{{ node.summary }}` (fallback)
-- `{{ process.goal }}` — root process goal
-- `{{ process.id }}`
+- `&#123;{ node.result }}` — Worker's CONCLUDE-Result
+- `&#123;{ node.goal }}`
+- `&#123;{ node.summary }}` (fallback)
+- `&#123;{ process.goal }}` — root process goal
+- `&#123;{ process.id }}`
 - `| slug` filter — URL-safe slug
 
 **Reserved Path-Prefixes** (Engine-owned, must NEVER
@@ -707,7 +706,7 @@ Tick 4 (root WORKER, Phase CONCLUDE):
   LLM sees: Goal, Plan, 2 Recipe-Replies (in chat history).
   Output: result="# Nuclear Power Report\n...",
           postActions=[{doc_create, path="research/nuclear-power/report.md",
-                         kind="text", content="{{ node.result }}"}].
+                         kind="text", content="&#123;{ node.result }}"}].
 
 Tick 5 (root WORKER, Phase VALIDATE iter 1/2):
   LLM sees: Goal, Plan, Candidate.
@@ -738,4 +737,3 @@ saw no siblings in the Plan-Snapshot → knew it was solely responsible.
   `PhaseOutputParserTest`, `MarvinNodeStateMachineTest`;
   `qa/ai-test/.../ArthurMarvinRecipeTest`,
   `SlartibartfastMarvinRecipeLlmTest`.
-{% endraw %}

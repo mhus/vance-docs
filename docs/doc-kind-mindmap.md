@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-mindmap
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-mindmap.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `mindmap`
 
@@ -291,4 +290,3 @@ As with tree (§6.3 there): per-user setting or per-item field. Not now.
 - **Single-Root Requirement:** Should we restrict `kind: mindmap` to exactly **one** top-level item? markmap also renders forests, but UX-wise, a Mindmap user expects a single radial center. Suggestion: allow it, but warn in the editor if more than one top-level item is present.
 - **markmap vs. mind-elixir Default:** If the first real Mindmap creation shows that viewing without editing is insufficient, the default will switch directly to mind-elixir. Until then, Markmap, because of the leaner adapter.
 - **Tags Rendering:** markmap has no tag display. Either append as inline code spans (`` `tag` ``) to the topic or natively with mind-elixir migration. Decision pending until the first use case.
-{% endraw %}

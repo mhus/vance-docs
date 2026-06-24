@@ -6,7 +6,6 @@ permalink: /docs/image-manipulation
 
 <!-- AUTO-GENERATED from specification/public/en/image-manipulation.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Image Manipulation Tools
 
@@ -466,4 +465,3 @@ What is **not** in v1 (with a one-sentence justification to clarify if it's park
 - **EXIF preservation.** Scrimage does not guarantee EXIF preservation during roundtrip. Irrelevant for purely generated images, relevant for user uploads. A concrete decision will be made when the first user photo goes through the system.
 - **Animated GIFs.** Scrimage only processes the first frame. Output is static. If this becomes an issue: `scrimage-formats-extra` or custom loop logic later. Day 1: first frame, documented in the Manual.
 - **Color Space.** We assume sRGB. Adobe RGB or ProPhoto images are rendered without conversion (Scrimage default). No practical problem so far.
-{% endraw %}

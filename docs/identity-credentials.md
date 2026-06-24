@@ -6,7 +6,6 @@ permalink: /docs/identity-credentials
 
 <!-- AUTO-GENERATED from specification/public/en/identity-credentials.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Identity, Credentials & Tool-Auth
 
@@ -251,7 +250,7 @@ SaaS) plus quirk subclasses per provider with non-standard responses
 `access_type=offline`).
 
 **Auto-Refresh:** Tool-Configs reference the Access-Token via
-`{{secret:user:oauth.<providerId>.access_token}}`. The
+`&#123;{secret:user:oauth.<providerId>.access_token}}`. The
 `SettingsSecretResolver` routes this variant through the
 `OAuthTokenRefresher`, which reads `expires_at` and refreshes the token 60s before
 expiration. A per-`(tenant, user, providerId)`-lock prevents
@@ -343,4 +342,3 @@ One model. One code path. No special cases.
 ---
 
 *See also: [multi-user-collaboration](/docs/multi-user-collaboration) | [mcp-tool-routing](/docs/mcp-tool-routing) | [execution-modes-trigger](/docs/execution-modes-trigger) | [client-protokoll-erweiterbarkeit](/docs/client-protokoll-erweiterbarkeit)*
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/web-ui
 
 <!-- AUTO-GENERATED from specification/public/en/web-ui.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance Web-UI — Specification
 
@@ -657,4 +656,3 @@ These points are deliberately removed from v1. If a need arises, a v2 section wi
 - `specification/websocket-protokoll.md` — existing WS frames
 - `specification/architektur-scopes-clients.md` — Scope hierarchy and Client model
 - `CLAUDE.md` — will be supplemented with Web-UI module structure and dependency rules
-{% endraw %}

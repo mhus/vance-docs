@@ -6,7 +6,6 @@ permalink: /docs/agrajag-engine
 
 <!-- AUTO-GENERATED from specification/public/en/agrajag-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Agrajag (Tool Health Diagnosis Engine)
 
@@ -600,4 +599,3 @@ Implementation of these building blocks will occur during the Agrajag phase — 
 - [session-lifecycle §7](/docs/session-lifecycle) — Idle-Suspend for the System-Session per Project.
 - [mcp-tool-routing](/docs/mcp-tool-routing) — MCP-Connection-Lifecycle-Events trigger direct System-Path write.
 - [server-tools](/docs/server-tools) — `safety: SAFE_PROBE` marker in the Tool Manifest.
-{% endraw %}

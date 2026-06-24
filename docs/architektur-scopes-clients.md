@@ -6,7 +6,6 @@ permalink: /docs/architektur-scopes-clients
 
 <!-- AUTO-GENERATED from specification/public/en/architektur-scopes-clients.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Architecture: Scopes & Clients
 
@@ -309,4 +308,3 @@ If a client says `continue` and the Process Lane is currently busy (Brain is wor
 ---
 
 *See also: [vision](/docs/vision) | [workflows](/docs/workflows) | brainstorming think flow*
-{% endraw %}

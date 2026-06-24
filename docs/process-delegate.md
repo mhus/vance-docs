@@ -6,7 +6,6 @@ permalink: /docs/process-delegate
 
 <!-- AUTO-GENERATED from specification/public/en/process-delegate.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — `process_create_delegate`
 
@@ -257,4 +256,3 @@ The tool is automatically registered in `BuiltInToolSource` via Spring `@Compone
 | **Catalog Refresh** | `POST /brain/{tenant}/admin/catalog/engines/reload` triggers a re-reading of the bundled `vance-defaults/catalog/engines.yaml` without JVM restart. Idempotent + thread-safe (synchronized + atomic list-replace). In case of parse error, the old entry list remains active. Tenant-scoped by convention (each Tenant-Admin can trigger); refresh effect is global as Catalog is a Singleton. | ✅ done |
 | **Tenant Override for Catalog** | ~~Cascade pattern (Project / Tenant / Bundled) for engines.yaml analogous to Recipes.~~ Deliberately rejected: Engines are code-bound and fixed (currently 6, planned max 3-5 more) — a new Engine is always a hard software redeploy. Recipes, however, are 10-100+, dynamic, kit-installable — there, Cascade is worthwhile. Tenant-specific Engine descriptions would have low ROI; Engine-per-Tenant deactivation would be better via Settings/Tool-Allowlists. Existing admin-Reload-Endpoint covers the central update case. | not planned (architecturally unsuitable) |
 | **Multi-Match with Score** | ~~Selector returns Top-N Recipe suggestions with confidence scores instead of single-match-or-NONE.~~ Deliberately rejected: no concrete use cases that single-match-or-NONE doesn't already cover. UI picker (show user 3 options) is a Chat-UI feature, not intrinsic to the tool. Council pattern is solved via explicit `council-*`-Recipes. Fallback chain handles Slart-Fallback. If a concrete use case arises: address it specifically. | not planned (solution looking for a problem) |
-{% endraw %}

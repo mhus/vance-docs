@@ -6,7 +6,6 @@ permalink: /docs/zaphod-engine
 
 <!-- AUTO-GENERATED from specification/public/en/zaphod-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Zaphod Think Engine
 
@@ -493,4 +492,3 @@ Later extensions analogous to Vogon §11: `maxTotalCostUsd`, `maxWallclockSecond
 - **User-Steering during runtime.** "Add another head", "end synthesis now with what's available", "let the skeptic argue differently again". External commands, not implemented in V1.
 - **Persisted Round Histories.** With higher `maxRounds`, replies grow — separate Mongo collection `zaphod_replies` analogous to `marvin_nodes`, if state size exceeds engineParams embedding.
 - **Synthesis Validation.** Does the synthesizer reply explicitly include all heads? Later: Validator loop like Marvin Worker Output (1-2 correction re-prompts if a head is not referenced).
-{% endraw %}

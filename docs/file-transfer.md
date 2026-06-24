@@ -6,7 +6,6 @@ permalink: /docs/file-transfer
 
 <!-- AUTO-GENERATED from specification/public/en/file-transfer.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — File Transfer (Foot ↔ Brain)
 
@@ -436,4 +435,3 @@ Hash is **mandatory** in v1 — no "without hash" variant. This makes hash misma
 5. Brain tools `client_file_upload` and `client_file_download` (§6).
 6. Foot handler for inbound frames (`transfer_init`, `transfer_chunk`, ..., `client.file.upload.request`).
 7. Tests: Round-trip, hash mismatch, path sandbox violation, disk-full-mid-stream, timeout, empty file.
-{% endraw %}

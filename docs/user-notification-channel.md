@@ -6,7 +6,6 @@ permalink: /docs/user-notification-channel
 
 <!-- AUTO-GENERATED from specification/public/en/user-notification-channel.md — do not edit here. -->
 
-{% raw %}
 ---
 # User Notification Side-Channel
 
@@ -248,4 +247,3 @@ auto-dismiss.
 7. Facelift: no dedicated v1 wiring — WebView-internal Toast/Beep from
    §7.2 is sufficient.
 8. Unit-Test `NotificationServiceTest`.
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/lunkwill-engine
 
 <!-- AUTO-GENERATED from specification/public/en/lunkwill-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Lunkwill Think Engine
 
@@ -633,4 +632,3 @@ Recipes — not in this Engine-Spec.
 - `specification/recipes.md` — Recipe system
 - `specification/prompts-and-manuals.md` — Prompt discipline
 - `specification/skills.md` — Skill system (User retrofitting of behavior)
-{% endraw %}

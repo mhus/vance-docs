@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-calendar
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-calendar.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `calendar`
 
@@ -341,4 +340,3 @@ events:
     allDay: true
     tags: [private]
     color: orange
-{% endraw %}

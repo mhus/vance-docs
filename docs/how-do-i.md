@@ -6,11 +6,10 @@ permalink: /docs/how-do-i
 
 <!-- AUTO-GENERATED from specification/public/en/how-do-i.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — `how_do_i` Discovery Tool
 
-> A Discovery Tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full Source Catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `{{ sources }}`.
+> A Discovery Tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full Source Catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `&#123;{ sources }}`.
 >
 > Purpose: Prompt scaling. Instead of mentioning a Manual hook in the Engine Prompt for every new capability, the Prompt gets **a single** Discovery line — O(1) in the Prompt footprint, regardless of how many Manuals/Skills/Tools exist.
 >
@@ -22,7 +21,7 @@ permalink: /docs/how-do-i
 
 **Problem.** With every new capability, the Engine Prompt grows by a Manual hook. This works for 15 Manuals. With 50+, the pattern collapses in three areas: token cost per turn (linear), attention dilution in the LLM, and maintainability (drift between Prompt hooks and actual Manuals).
 
-**Solution.** A tool called by the Caller LLM when it is unsure how to do something. The tool internally calls a `DiscoveryService` that uses the `how-do-i` Recipe as a config layer (model, Pebble template) and calls the LLM **directly** (Jeltz-style single-shot call with schema validation loop — **no** Process spawn, **no** Lane lock). The Worker LLM sees the full Source Catalog in the Prompt (via `{{ sources }}`) and responds with the appropriate match in one of three JSON shapes. The Caller Prompt contains only **one** line about it (plus the negation trap from [prompts-and-manuals §4](/docs/prompts-and-manuals#regel-3-anti-pattern--negation-explizit-abfangen)).
+**Solution.** A tool called by the Caller LLM when it is unsure how to do something. The tool internally calls a `DiscoveryService` that uses the `how-do-i` Recipe as a config layer (model, Pebble template) and calls the LLM **directly** (Jeltz-style single-shot call with schema validation loop — **no** Process spawn, **no** Lane lock). The Worker LLM sees the full Source Catalog in the Prompt (via `&#123;{ sources }}`) and responds with the appropriate match in one of three JSON shapes. The Caller Prompt contains only **one** line about it (plus the negation trap from [prompts-and-manuals §4](/docs/prompts-and-manuals#regel-3-anti-pattern--negation-explizit-abfangen)).
 
 **What it is not:**
 - Not a replacement for `manual_read('name')` — these tools remain primitives for direct lookup when the Manual name is already known.
@@ -181,7 +180,7 @@ Build a Markdown link to a Document. Resolves path, kind, project. …
 …
 ```
 
-The Worker receives this block as `{{ sources }}` via Pebble in the Prompt — see §4.
+The Worker receives this block as `&#123;{ sources }}` via Pebble in the Prompt — see §4.
 
 ---
 
@@ -228,11 +227,11 @@ promptPrefix: |
 
   Available capabilities:
 
-  {{ sources }}
+  &#123;{ sources }}
 
   Caller's intent (verbatim):
 
-  > {{ intent }}
+  > &#123;{ intent }}
 
   Respond with **one** of these JSON shapes:
 
@@ -323,7 +322,7 @@ The LLM responds with **one of the three JSON shapes** (see Recipe Prompt). `Dis
 | `{ "loaded": { name, type:skill\|tool } }` | No auto-load (no on-disk body), pointer passed through | `{ loaded: { name, type, summary }, alternatives: [], hint: null }` |
 | `{ "alternatives": [ … ] }` | Unknown names discarded, rest passed through | `{ loaded: null, alternatives: […], hint: null }` |
 | `{ "hint": "…" }` | Passed through directly | `{ loaded: null, alternatives: [], hint: "…" }` |
-| `loaded.name` not in Catalog **or** Cascade lookup empty | **Retry** — new LLM call with Correction variable (`{{ correction }}`) up to `MAX_DISCOVERY_ATTEMPTS = 3` | After exhausted attempts: `{ hint: "Discovery couldn't resolve a usable manual after 3 attempts. Bad picks: …" }` |
+| `loaded.name` not in Catalog **or** Cascade lookup empty | **Retry** — new LLM call with Correction variable (`&#123;{ correction }}`) up to `MAX_DISCOVERY_ATTEMPTS = 3` | After exhausted attempts: `{ hint: "Discovery couldn't resolve a usable manual after 3 attempts. Bad picks: …" }` |
 
 Caller processes:
 - `loaded` with `content` (type:manual) → **use directly**, no further Tool call. Backend has already loaded the body.
@@ -415,7 +414,7 @@ Hooks for **Hot-Path Topics** with known failure modes (e.g., `embed-*`) **remai
 | Catalog snapshot not yet ready (boot in progress) | `CatalogUnavailable`, Tool Description advises retry-in-30s or `manual_list` as fallback |
 | LLM call fails (Provider 5xx, Timeout, Quota) | `LlmCallFailed` with Provider reason; standard resilient layer (fallback models from Recipe) intervenes beforehand |
 | LLM responds unparseable (no valid JSON) | Schema validator loop: Correction message appended, retry up to `maxAttempts`. On repeated failure: `SchemaValidationFailed` |
-| LLM invents capability names | `DiscoveryService` cross-checks the returned `name` against the Catalog. On mismatch, a new LLM iteration is performed with a `{{ correction }}` Pebble variable that lists previous failed attempts — up to `MAX_DISCOVERY_ATTEMPTS = 3`. Afterwards, `hint` with a list of failed attempts. |
+| LLM invents capability names | `DiscoveryService` cross-checks the returned `name` against the Catalog. On mismatch, a new LLM iteration is performed with a `&#123;{ correction }}` Pebble variable that lists previous failed attempts — up to `MAX_DISCOVERY_ATTEMPTS = 3`. Afterwards, `hint` with a list of failed attempts. |
 | `loaded.name` is in Catalog header, but `manuals/<name>.md` cannot be loaded (Catalog/Filesystem drift) | Same retry loop as for hallucination — the name ends up in the `badPicks` buffer, next iteration gets the correction. |
 | LLM still provides a `content` field | Ignored by `DiscoveryService`. `content` is exclusively populated server-side by `documentService.lookupCascade`. |
 
@@ -501,7 +500,7 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 | **D4** | `HowDoITool` as @Component, thin wrapper around `DiscoveryService.discover`. **Note:** Constructor uses `@Lazy DiscoveryService` — otherwise `DiscoveryService → SourceCatalogService → Builder → List<Tool> → HowDoITool → DiscoveryService` would create a Bean cycle during Spring startup. The Lazy proxy is only resolved on the first `invoke()`. | Completed — 9 tests green |
 | **D5** | Prompt hook in Arthur Prompt (parallel to existing hooks). E2E test `HowDoIDiscoveryAiTest` in `qa/ai-test/`: 4 realistic intents + Catalog sanity + garbage intent. | Completed — 6/6 green against Gemini-2.5-flash |
 | **D5.1** | **Summary-Card Refactor 2026-05-28:** `SourceCatalogBuilder` renders per Manual only Title + Frontmatter-`triggers` + Frontmatter-`summary` (Fallback: first paragraph). 22 Routing Manuals have Frontmatter convention. Caller Prompts (Arthur/Eddie/Ford) updated. Catalog ~150 KB → ~5 KB. | Completed — 46 tests green |
-| **D5.2** | **Server-Side Auto-Load + Retry-Loop 2026-05-28:** Despite Summary-Card Catalog, the tool delivers the body inline for `loaded` + `type: manual` — `DiscoveryService` directly calls `documentService.lookupCascade("manuals/<name>.md")` and populates `loaded.content`. In case of hallucination (name not in Catalog OR Cascade lookup empty), a retry occurs with `{{ correction }}` Pebble variable, up to 3 attempts. Caller gets 1-hop behavior as before, without the LLM trusting body generation. | Completed — 32 tests green |
+| **D5.2** | **Server-Side Auto-Load + Retry-Loop 2026-05-28:** Despite Summary-Card Catalog, the tool delivers the body inline for `loaded` + `type: manual` — `DiscoveryService` directly calls `documentService.lookupCascade("manuals/<name>.md")` and populates `loaded.content`. In case of hallucination (name not in Catalog OR Cascade lookup empty), a retry occurs with `&#123;{ correction }}` Pebble variable, up to 3 attempts. Caller gets 1-hop behavior as before, without the LLM trusting body generation. | Completed — 32 tests green |
 | **D6** *(v2)* | RAG Documents as source (selective snippet extraction, not full docs). | Open |
 | **D7** *(v2+)* | Mongo-persisted `DiscoveryCatalogDocument` with Document-Save-Hook (see §6). Settings namespace `discovery.*` (see §9). | Open, low priority (single-pod works) |
 | **D8** *(v2+)* | Migration: replace existing `manual_read` hooks in the Prompt with `how_do_i`, as long as no negation trap is needed. One PR per Engine. | Open |
@@ -525,8 +524,7 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 - v1 Sources: Engine Manuals + Skills + Tools (not Recipes, not RAG).
 - Parallel coexistence with `manual_read` hooks; no Prompt migration in v1.
 - **Backend is a `DiscoveryService`** that uses the central `LightLlmService` (Recipe `how-do-i` as config profile, `ChatModel` call with Jeltz-style schema loop) — **no** Process spawn.
-- **Source Catalog is injected into the System Prompt via Pebble variable `{{ sources }}`** — **Summary Cards** (Title + Triggers + Summary), no full texts. LLM picks only names. **Server loads** the Manual body on confident `loaded` match via `documentService.lookupCascade` and inlines it into `loaded.content` — 1-hop for the happy path. Anti-hallucination retry loop with `{{ correction }}` up to 3 attempts (as of 2026-05-28).
+- **Source Catalog is injected into the System Prompt via Pebble variable `&#123;{ sources }}`** — **Summary Cards** (Title + Triggers + Summary), no full texts. LLM picks only names. **Server loads** the Manual body on confident `loaded` match via `documentService.lookupCascade` and inlines it into `loaded.content` — 1-hop for the happy path. Anti-hallucination retry loop with `&#123;{ correction }}` up to 3 attempts (as of 2026-05-28).
 - Pure Recipe-Config path, no Embedding quickpath.
 - v1 Cache is in-memory (`ConcurrentHashMap`); Mongo persistence v2.
 - v1 Settings minimal (`lightllm.*` suffice); own `discovery.*` namespace v2.
-{% endraw %}

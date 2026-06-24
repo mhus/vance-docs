@@ -6,7 +6,6 @@ permalink: /docs/llm-resource-management
 
 <!-- AUTO-GENERATED from specification/public/en/llm-resource-management.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — LLM Resource Management
 
@@ -637,4 +636,3 @@ Per Call:
 ---
 
 *See also: [identity-credentials](/docs/identity-credentials) | [architektur-scopes-clients](/docs/architektur-scopes-clients) | [execution-modes-trigger](/docs/execution-modes-trigger)*
-{% endraw %}

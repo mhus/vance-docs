@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-map
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-map.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `map`
 
@@ -311,4 +310,3 @@ Schema validation with hard throw (instead of silent drop) for: empty marker nam
 - **Marker clusters** for many points (>50). Leaflet plugin `markercluster` is standard, but an additional dependency — only integrate when a real use case arises.
 - **Nominatim rate limit protection:** v1 has no server-side rate limiter per user. In case of abuse (LLM generating hundreds of `place` markers per second), Nominatim will block us before we notice. v2 should implement a simple `Semaphore(1)` over the service (sequentialization) plus a cap "max N upstream calls per minute per Tenant".
 - **`description` format:** v1 is plain text with HTML escape. Markdown support in the popup would be nice, but is XSS-relevant (even if dompurify could handle it) — remains text for now.
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/mcp-tool-routing
 
 <!-- AUTO-GENERATED from specification/public/en/mcp-tool-routing.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — MCP & Tool Routing
 
@@ -361,4 +360,3 @@ This prevents a Think Process from having unnecessary Tools (e.g., an analysis T
 ---
 
 *See also: [integrations-external-systems](/docs/integrationen-externe-systeme) | [architecture-scopes-clients](/docs/architektur-scopes-clients) | [vision](/docs/vision)*
-{% endraw %}

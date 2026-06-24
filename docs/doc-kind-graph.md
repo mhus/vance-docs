@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-graph
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-graph.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kind `graph`
 
@@ -318,4 +317,3 @@ Cycle detection, topological sorting, reachability queries. This would be a sepa
 - **ID validation in the UI:** On rename, uniqueness + non-empty must be checked, analogous to the Records schema editor. Default IDs for new nodes: `node_<N>` with smallest-free N.
 - **Position persistence granularity:** Each drag-end event saves the new position and triggers an `update:doc` emit, which activates the Save button. In collaborative editing, this would create a save point per drag operation — okay for v1, as there is no real-time sync.
 - **Bundle size:** vue-flow is ~80 KB minified (on top of the already ~1.2 MB documents bundle). Lazy-loading `<GraphView>` (and similarly `<MindmapView>`) would be a separate polish PR; v1 without.
-{% endraw %}

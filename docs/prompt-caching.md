@@ -6,7 +6,6 @@ permalink: /docs/prompt-caching
 
 <!-- AUTO-GENERATED from specification/public/en/prompt-caching.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Prompt Caching
 
@@ -350,4 +349,3 @@ Optional long-term: PR to `langchain4j-anthropic` that exposes the cache marker.
 - Anthropic Java SDK: https://github.com/anthropics/anthropic-sdk-java
 - Implementation: `vance-brain/src/main/java/de/mhus/vance/brain/ai/anthropic/`
 - Trace Schema: `vance-shared/src/main/java/de/mhus/vance/shared/llmtrace/LlmTraceDocument.java`
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/anus-setup-wizard
 
 <!-- AUTO-GENERATED from specification/public/en/anus-setup-wizard.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Anus Setup Wizard
 
@@ -247,4 +246,3 @@ java -jar target/vance-anus.jar --setup
 | Wizard Integration Tests (Service Wirings) | open, on demand |
 | Ollama / Cortecs / local Provider Presets | deliberately excluded — `init-settings-*.yaml` remains the path |
 | OAuth Provider step in Wizard | open, separate UI |
-{% endraw %}

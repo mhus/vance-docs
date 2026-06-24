@@ -6,7 +6,6 @@ permalink: /docs/server-tools
 
 <!-- AUTO-GENERATED from specification/public/en/server-tools.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Server Tools
 
@@ -308,4 +307,3 @@ For the transition:
 5. **Recipes YAML is not touched** — existing `allowedToolsAdd / allowedToolsRemove` lists function unchanged. Label selectors (`@<label>`) are added additively where appropriate.
 
 Timing for migrating individual Built-in Tools to `ServerToolDocument`: only if they actually need to become configurable. No mass migration "just because it's possible".
-{% endraw %}

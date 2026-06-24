@@ -6,7 +6,6 @@ permalink: /docs/skills
 
 <!-- AUTO-GENERATED from specification/public/en/skills.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Skills
 
@@ -376,7 +375,7 @@ You are in code review mode. Your task:
 
 The Markdown body **after** the frontmatter is the `promptExtension`. Reference doc files are separate because they can become large.
 
-**Pebble Templating:** The body is passed through the same `PromptTemplateRenderer` at compose time that renders recipe `promptPrefix` and Engine default prompts. The render context is identical (`tier`, `model`, `provider`, `mode`, `profile`, `recipe`, `engine`, `lang`, `params`) — see [recipes](/docs/recipes) §5. This allows a Skill to hold tier-, mode-, or provider-specific variants within its body (`{% if tier == "small" %}…{% endif %}`) instead of writing two Skills per variant. Reference doc content is **not** rendered — docs are author-controlled data, not templates, and literal `{% %}` text in a doc file must pass through unchanged. Skills with Pebble syntax errors are skipped with a `WARN` log; other active Skills compose normally.
+**Pebble Templating:** The body is passed through the same `PromptTemplateRenderer` at compose time that renders recipe `promptPrefix` and Engine default prompts. The render context is identical (`tier`, `model`, `provider`, `mode`, `profile`, `recipe`, `engine`, `lang`, `params`) — see [recipes](/docs/recipes) §5. This allows a Skill to hold tier-, mode-, or provider-specific variants within its body (`&#123;% if tier == "small" %}…&#123;% endif %}`) instead of writing two Skills per variant. Reference doc content is **not** rendered — docs are author-controlled data, not templates, and literal `&#123;% %}` text in a doc file must pass through unchanged. Skills with Pebble syntax errors are skipped with a `WARN` log; other active Skills compose normally.
 
 `BundledSkillRegistry` parses on boot:
 - Iterates `classpath:skills/*/SKILL.md`
@@ -557,4 +556,3 @@ Authorization comes from the Document ACL model — the Document Editor decides 
 - **Reference-Doc `ON_DEMAND`.** v1 is all `INLINE`. `ON_DEMAND` requires a new tool `skill_reference_doc(skill, title)` and dynamically changes the token balance — address separately.
 - **Recipe `skills` Lock Granularity.** Today, `recipe.locked=true` atomically locks *all* Recipe Skills. If finer granularity is needed (individual ones removable): `recipe.skillLocks: [name]` as a later extension.
 - **Skill Telemetry.** Which Skills were activated how often (implicitly/explicitly), with what success? Needed once the list grows — separate spec.
-{% endraw %}

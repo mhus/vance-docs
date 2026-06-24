@@ -6,7 +6,6 @@ permalink: /docs/help-system
 
 <!-- AUTO-GENERATED from specification/public/en/help-system.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Help System
 
@@ -124,7 +123,7 @@ help.error.value;     // string | null
 
 - **Not a CMS function** — no UI for editing help content at runtime. To change help, modify the resource and deploy.
 - **Not a Tenant/Project variant** — help is global. Behavior adjustments per Tenant belong in Settings/Recipes.
-- **Not a templating engine** — content is delivered 1:1. Variable substitution (e.g., `{{tenant}}`) is done by the client, if necessary.
+- **Not a templating engine** — content is delivered 1:1. Variable substitution (e.g., `&#123;{tenant}}`) is done by the client, if necessary.
 - **No search, no index** — this will come only when the need is real. For now: known path, known topic.
 
 ---
@@ -141,4 +140,3 @@ help.error.value;     // string | null
 | Bundled `help/en/recipe-field-docs.md` | implemented |
 | Translations (`de/`) | open |
 | Further Topics (Inbox, Scopes, Document-Editor, …) | open, on demand |
-{% endraw %}

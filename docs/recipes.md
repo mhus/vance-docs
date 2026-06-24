@@ -6,7 +6,6 @@ permalink: /docs/recipes
 
 <!-- AUTO-GENERATED from specification/public/en/recipes.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Recipes
 
@@ -135,23 +134,23 @@ This allows later tracing of which Workers ran with Recipe defaults and which wi
 | `recipe` | `String` | Recipe name |
 | `engine` | `String` | Engine name |
 | `lang` | `String` | Chat language from Memory Cascade (empty until language settings arrive) |
-| `params` | `Map<String, Object>` | Merged Recipe parameters, read access via `{{ params.maxIterations }}` |
-| `profileAppend` | `String` | Pre-rendered content of the active `profileBlock.promptPrefixAppend`. Recipe template can insert `{{ profileAppend }}` anywhere — e.g., **before** the hard rules instead of at the end. If the variable is **not** referenced AND the append is non-blank, the renderer appends it as a fallback (Backwards-Compat). See `planning/prompt-inlining.md` §3 |
+| `params` | `Map<String, Object>` | Merged Recipe parameters, read access via `&#123;{ params.maxIterations }}` |
+| `profileAppend` | `String` | Pre-rendered content of the active `profileBlock.promptPrefixAppend`. Recipe template can insert `&#123;{ profileAppend }}` anywhere — e.g., **before** the hard rules instead of at the end. If the variable is **not** referenced AND the append is non-blank, the renderer appends it as a fallback (Backwards-Compat). See `planning/prompt-inlining.md` §3 |
 
 The effective Tier value can be enforced per Recipe call via `params.modelSize` (`SMALL` / `LARGE` / `AUTO`, Default `AUTO`) — e.g., to deliberately run the Small variant on a Large model or to test unclassified models. `AUTO` ⇒ Catalog wins.
 
 ### 5.2 Pebble Syntax Subset
 
 Allowed:
-- `{{ var }}` — Insert variable
-- `{% if cond %}…{% elseif cond %}…{% else %}…{% endif %}` — Conditions (note: `elseif`, **not** `elif`)
-- `{% if model is matching("regex") %}` — Regex test (Jinja2-compatible layer; alternatively plain text comparison `==`/`!=`)
-- `{% raw %}…{% endraw %}` — Escape, if plain text `{{`/`{%` is desired in the output
+- `&#123;{ var }}` — Insert variable
+- `&#123;% if cond %}…&#123;% elseif cond %}…&#123;% else %}…&#123;% endif %}` — Conditions (note: `elseif`, **not** `elif`)
+- `&#123;% if model is matching("regex") %}` — Regex test (Jinja2-compatible layer; alternatively plain text comparison `==`/`!=`)
+- `&#123;% raw %}…&#123;% endraw %}` — Escape, if plain text `&#123;{`/`&#123;%` is desired in the output
 - Boolean operators: `and`, `or`, `not`
 
 Deliberately **not** part of the allowed subset (to avoid Recipe writing errors):
-- `{% for %}` loops — Recipe prompts should not be iterative
-- `{% include %}` / Template inheritance — prevents bundle composition across multiple files
+- `&#123;% for %}` loops — Recipe prompts should not be iterative
+- `&#123;% include %}` / Template inheritance — prevents bundle composition across multiple files
 - Custom filters — all filters are Pebble built-ins (`upper`, `lower`, `default`, …)
 
 ### 5.3 Composition
@@ -363,7 +362,7 @@ arthur:
 |---|---|---|
 | `allowedToolsAdd` | `List<String>` | In addition to `recipe.allowedToolsAdd` (same `@`-selector syntax) |
 | `allowedToolsRemove` | `List<String>` | In addition to `recipe.allowedToolsRemove` |
-| `promptPrefixAppend` | `String` (Pebble Template) | Is appended **after** `recipe.promptPrefix` — additive, not replacing. Pebble is also allowed here (e.g., `{% if profile == "foot" %}…{% endif %}` branches). For `OVERWRITE`-mode, the Recipe remains the master, the Profile append is still appended (Profile append is always additive) |
+| `promptPrefixAppend` | `String` (Pebble Template) | Is appended **after** `recipe.promptPrefix` — additive, not replacing. Pebble is also allowed here (e.g., `&#123;% if profile == "foot" %}…&#123;% endif %}` branches). For `OVERWRITE`-mode, the Recipe remains the master, the Profile append is still appended (Profile append is always additive) |
 | `params` | `Map<String, Object>` | Profile-specific parameter defaults — merged between Recipe defaults and Caller parameters. Commonly used: `manualPaths` (see §6b), `maxIterations`, `model` |
 
 ### Profile Block Lookup with Fallback
@@ -403,7 +402,7 @@ effectiveTools     = (engine.allowed
                         ∪ profile.allowedToolsRemove)
 
 effectivePrompt    = render(recipe.promptPrefix, ctx + {profileAppend: rendered(profile.promptPrefixAppend)})
-                     // If the template does not reference {{ profileAppend }} AND
+                     // If the template does not reference &#123;{ profileAppend }} AND
                      // profile.promptPrefixAppend is non-blank, the renderer
                      // automatically appends the rendered append at the end (Auto-Append-
                      // Fallback). See planning/prompt-inlining.md §3.
@@ -695,4 +694,3 @@ This means:
 - **Recipe Cost Model**. Recipes could carry a `costClass` (`cheap/normal/expensive`) that influences the quota system (`llm-resource-management.md`). A clean integration would be to query the quota system per Recipe call before allowing the spawn.
 - **Recipe Discovery from a Worker Engine**. Are Workers (Ford, Deep-Think) allowed to inspect Recipes themselves or spawn sub-Workers via Recipe? V1 no — only Arthur orchestrates; for multi-level orchestration (deep-think → sub-deep-think), this needs to be reconsidered.
 ---
-{% endraw %}

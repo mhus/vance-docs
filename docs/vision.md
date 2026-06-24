@@ -6,7 +6,6 @@ permalink: /docs/vision
 
 <!-- AUTO-GENERATED from specification/public/en/vision.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Vision & Goal
 
@@ -214,4 +213,3 @@ No system can do that today.
 ---
 
 *See also: [architektur-scopes-clients](/docs/architektur-scopes-clients) | [workflows](/docs/workflows) | [knowledge-graph](/docs/knowledge-graph) | [multi-user-collaboration](/docs/multi-user-collaboration) | [integrationen-externe-systeme](/docs/integrationen-externe-systeme) | brainstorming think flow | Other Agent Tools*
-{% endraw %}

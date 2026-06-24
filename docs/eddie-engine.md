@@ -6,7 +6,6 @@ permalink: /docs/eddie-engine
 
 <!-- AUTO-GENERATED from specification/public/en/eddie-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Eddie — Eddie Hub Engine
 
@@ -696,4 +695,3 @@ Pod discovery for outgoing connections (which Brain endpoint holds the Worker Pr
 - **Foot Client Slash Command `/hub`** — Client-local close + reopen + session-resume on the previously remembered `previousSessionId` (§8.5.4). No server roundtrip.
 - **Web Client UI** — Analogous UI trigger ("Back to Hub" button in the worker chat view, visible only during active switch), performs the same client-local close+reopen.
 - **`EddieActionSchema`** — Action type `MEDIATE` with fields `target`, `reason`, optional `voiceAnnouncement` (§8.5.2). Capability gate (`canMediate`) in the `EddieEngine.handleAction` dispatcher. Frame is `switch-to` with `SwitchToNotification` payload.
-{% endraw %}

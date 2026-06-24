@@ -6,7 +6,6 @@ permalink: /docs/follow-up
 
 <!-- AUTO-GENERATED from specification/public/en/follow-up.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Follow-Up Service
 
@@ -146,7 +145,7 @@ FollowUpService.suggest(text, cursor?, count, mode, tenantId, projectId)
    ▼
 LightLlmService.callForJson(LightLlmRequest{ recipeName="follow-up", ... })
    │  - Recipe "follow-up" is loaded from Cascade (project → tenant → bundled)
-   │  - Pebble renders promptPrefix with {% if precedingContext %} branch
+   │  - Pebble renders promptPrefix with &#123;% if precedingContext %} branch
    │  - ChatModel.chat() → JSON-Parse → Schema-Validate-Loop
    ▼
 parseSuggestions(rawJson, limit)
@@ -160,9 +159,9 @@ List<FollowUpSuggestionDto>
 FollowUpResponseDto { suggestions } → JSON → HTTP 200
 ```
 
-**Edit Mode** (`cursor != null`): `textBefore = text.substring(0, cursor)`, `textAfter = text.substring(cursor)`. Both are rendered as Pebble variables `{{ textBefore }}` and `{{ textAfter }}` into the system prompt. The LLM thus knows the user's current position and can produce follow-up suggestions at that exact location.
+**Edit Mode** (`cursor != null`): `textBefore = text.substring(0, cursor)`, `textAfter = text.substring(cursor)`. Both are rendered as Pebble variables `&#123;{ textBefore }}` and `&#123;{ textAfter }}` into the system prompt. The LLM thus knows the user's current position and can produce follow-up suggestions at that exact location.
 
-**Reply Mode** (`cursor == null`): The entire `text` is passed as `{{ precedingContext }}` to the prompt. The LLM responds with suggestions on how the user could react to this context (follow-up question, clarification, acknowledgment). The Pebble template branches with `{% if precedingContext %}reply-prompt{% else %}edit-prompt{% endif %}`.
+**Reply Mode** (`cursor == null`): The entire `text` is passed as `&#123;{ precedingContext }}` to the prompt. The LLM responds with suggestions on how the user could react to this context (follow-up question, clarification, acknowledgment). The Pebble template branches with `&#123;% if precedingContext %}reply-prompt&#123;% else %}edit-prompt&#123;% endif %}`.
 
 This branching is semantically necessary: the two tasks ("what comes after the cursor at this point" vs. "how to react to this text") are semantically different. `mode` remains as an additional free-form hint for UI surface specialization — orthogonal to the Edit/Reply branch.
 
@@ -206,26 +205,26 @@ params:
   temperature: 0.7
 promptPrefix: |
   You are Vance's follow-up suggestion component. Produce up to
-  {{ count }} short follow-up suggestions matching the context below.
+  &#123;{ count }} short follow-up suggestions matching the context below.
 
-  {% if precedingContext %}
+  &#123;% if precedingContext %}
   ## Preceding text (the user is responding to this)
-  {{ precedingContext }}
+  &#123;{ precedingContext }}
 
   ## Task
-  Suggest up to {{ count }} short ways the user could **react** —
+  Suggest up to &#123;{ count }} short ways the user could **react** —
   follow-up question, clarification, acknowledgement.
-  {% else %}
+  &#123;% else %}
   ## Text before cursor
-  {% if textBefore %}{{ textBefore }}{% else %}(empty){% endif %}
+  &#123;% if textBefore %}&#123;{ textBefore }}&#123;% else %}(empty)&#123;% endif %}
 
   ## Text after cursor
-  {% if textAfter %}{{ textAfter }}{% else %}(empty){% endif %}
+  &#123;% if textAfter %}&#123;{ textAfter }}&#123;% else %}(empty)&#123;% endif %}
 
   ## Task
-  Suggest up to {{ count }} short ways the user could **continue**
+  Suggest up to &#123;{ count }} short ways the user could **continue**
   typing at the cursor position.
-  {% endif %}
+  &#123;% endif %}
 
   ## Reply format
   Respond with exactly ONE JSON object — { "suggestions": [...] } — no
@@ -237,7 +236,7 @@ tags:
 
 **Engine Choice:** `jeltz` provides the schema validation loop "for free". If the LLM does not provide parseable JSON, the call is retried with a correction hint (up to `maxAttempts`). Error case: `SchemaValidationException` → `500`.
 
-**Pebble Branching:** `{% if precedingContext %}` switches between Reply and Edit prompts. This means the two-mode logic is **fully declarative in the Recipe**; the service only decides which Pebble vars to set.
+**Pebble Branching:** `&#123;% if precedingContext %}` switches between Reply and Edit prompts. This means the two-mode logic is **fully declarative in the Recipe**; the service only decides which Pebble vars to set.
 
 **Temperature 0.7** — deliberately higher than for Discovery (0.0), because creativity is required here, not deterministic selection from a catalog.
 
@@ -341,4 +340,3 @@ LightLlmService mocked — no real LLM calls in unit tests. End-to-end is tested
 - **MarkII-Engine** — If FollowUp becomes multi-stage (RAG → Generate → Re-Rank) or requires Tool-Use (e.g., code lookup in Project files), `mark-ii` will be implemented as a real Engine. The REST contract remains stable; the Recipe `follow-up.yaml` switches to `engine: mark-ii`.
 - **Per-Mode-Recipes** — If Chat Prompt and Text Editor require very different suggestions, the service can be extended to `follow-up-${mode}` Recipe lookup with fallback to `follow-up`.
 - **Manuals-Hook** — If the model needs to access predefined domain Manuals, this works like Discovery: `SourceCatalogBuilder` for FollowUp-specific Manuals, appended to the Pebble vars.
-{% endraw %}

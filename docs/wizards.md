@@ -6,7 +6,6 @@ permalink: /docs/wizards
 
 <!-- AUTO-GENERATED from specification/public/en/wizards.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Prompt Wizards
 
@@ -111,7 +110,7 @@ Form-Fields are **shared infrastructure** with [Kit Tool Templates](/docs/kits).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `name` | `String` | yes | Variable name, referenced as `{{ name }}` in the Pebble Template |
+| `name` | `String` | yes | Variable name, referenced as `&#123;{ name }}` in the Pebble Template |
 | `type` | `String` | yes | Field Type from the table above |
 | `label` | `LocalizableText` | yes | Display label |
 | `help` | `LocalizableText` | no | Help text below the field |
@@ -164,7 +163,7 @@ For **rendering** (`POST /wizards/{name}/render`), exactly one Wizard is resolve
 
 ## 5. Pebble Template & Render Context
 
-The `promptTemplate` (and `validatorPrompt` in v2) is a Pebble Template with the same syntax subset as [Recipe Prompts](/docs/recipes) — `{{ var }}`, `{% if/elseif/else/endif %}`, `{% for x in xs %}`, `{% raw %}`. Compile validation happens during Wizard load (fail-fast: invalid templates prevent the Wizard from appearing in the listing).
+The `promptTemplate` (and `validatorPrompt` in v2) is a Pebble Template with the same syntax subset as [Recipe Prompts](/docs/recipes) — `&#123;{ var }}`, `&#123;% if/elseif/else/endif %}`, `&#123;% for x in xs %}`, `&#123;% raw %}`. Compile validation happens during Wizard load (fail-fast: invalid templates prevent the Wizard from appearing in the listing).
 
 ### Render Variables
 
@@ -217,17 +216,17 @@ fields:
     label: { de: "Direkt erstellen", en: "Create now" }
 
 promptTemplate: |
-  Erstelle mit slart ein Gremium aus folgenden {{ members | length }} Personen,
+  Erstelle mit slart ein Gremium aus folgenden &#123;{ members | length }} Personen,
   das ich später zu strategischen Fragen befragen kann.
-  Zweck: {{ purpose }}.
+  Zweck: &#123;{ purpose }}.
 
   Mitglieder:
-  {% for m in members %}
-  - {{ m.name }}: {{ m.description }}
-  {% endfor %}
+  &#123;% for m in members %}
+  - &#123;{ m.name }}: &#123;{ m.description }}
+  &#123;% endfor %}
 
-  Speicher es unter '{{ outputName }}'.
-  {% if createNow %}Führe es direkt aus.{% else %}Führe jetzt keinen Test aus.{% endif %}
+  Speicher es unter '&#123;{ outputName }}'.
+  &#123;% if createNow %}Führe es direkt aus.&#123;% else %}Führe jetzt keinen Test aus.&#123;% endif %}
 ```
 
 ---
@@ -260,10 +259,10 @@ The LLM decides contextually whether/how to embed the link in its response. This
 suggestedFollowUps:
   - wizard: essay-mit-recipe
     label:
-      de: "Aufsatz mit '{{ recipeName }}' schreiben"
-      en: "Write an essay using '{{ recipeName }}'"
+      de: "Aufsatz mit '&#123;{ recipeName }}' schreiben"
+      en: "Write an essay using '&#123;{ recipeName }}'"
     prefill:
-      recipe: "{{ recipeName }}"
+      recipe: "&#123;{ recipeName }}"
     # condition: ausführen == "true"   # optional
 ```
 
@@ -383,7 +382,7 @@ CLI Wizards in v1.x — not mandatory for v1.
 
 ## 10. Security & Contracts
 
-- **Pebble Sandbox:** As with Recipes, only the declarative syntax subset. No Java reflection, no `{% include %}`, no external file access.
+- **Pebble Sandbox:** As with Recipes, only the declarative syntax subset. No Java reflection, no `&#123;% include %}`, no external file access.
 - **Cascade Sources:** User layer (`_user_<userId>`) is only visible to the respective user. Project and Tenant layers as usual via the [workspace-access](/docs/workspace-access) rules.
 - **Fail-Fast on Load:** Wizards with invalid YAML, missing required fields, or Pebble syntax errors are **not** included in the listing during boot/refresh. Brain logs them as WARN, the frontend simply does not see them.
 
@@ -397,4 +396,3 @@ CLI Wizards in v1.x — not mandatory for v1.
 | **v1.x** | Quick-Start-Cards for empty Sessions + CLI Integration (`/wizard <name>`) + Mobile Renderer (`vance-fingers`) |
 | **v2** | LLM-Validator (`validatorPrompt` + Button + `/validate` Endpoint) + Conditional Fields (`showIf`) + Multi-Step-Wizards (Pages) |
 | **v3** | User Editor for custom Wizards in the Web-UI (define form definition as a form — meta) |
-{% endraw %}

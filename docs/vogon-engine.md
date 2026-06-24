@@ -6,7 +6,6 @@ permalink: /docs/vogon-engine
 
 <!-- AUTO-GENERATED from specification/public/en/vogon-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Vogon Think Engine
 
@@ -729,4 +728,3 @@ On exceeding: `escalation: on=costThresholdExceeded` trigger fires (see §2.8). 
 - **Fork and State Snapshots**. For a `fork` with parallel branches: do they run in parallel, sequentially, or one and the rest discarded? V1: only sequential forks (`when/then/else`), no true parallel branches. Parallelism via loop or via multiple phase workers per phase if needed.
 - **Score Aggregation over Iterations**. Currently, only the last loop iteration saves its scorer output (each re-entry overwrites). If a Strategy wants to evaluate trends ("score increases monotonically, abort if plateau"), we need iteration history per phase. Outside v1.
 - **Implementation Status**. Phases A–E (DTOs, Loop, Scorer, Decider, Branch Actions, Plan Snapshot) are implemented with unit and AI test coverage. Open stub points: §2.8 Escalation block — loop exhaustion with `onMaxReached: escalate` and Scorer branch `escalateTo` currently terminate the process with STALE instead of spawning a sub-strategy; full wiring is a separate stage.
-{% endraw %}

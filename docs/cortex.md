@@ -6,7 +6,6 @@ permalink: /docs/cortex
 
 <!-- AUTO-GENERATED from specification/public/en/cortex.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance Cortex — Specification
 
@@ -210,4 +209,3 @@ Conversely: the Brain-side `DocumentService.mimeFromPath()` knows the same exten
 | JavaScript Sandbox (GraalJS) | [script-engine.md](/docs/script-engine) |
 | Knowledge Graph + Document Kinds | [knowledge-graph.md](/docs/knowledge-graph) |
 | Inbox + Notification Dispatcher | [user-interaction.md](/docs/user-interaction) |
-{% endraw %}

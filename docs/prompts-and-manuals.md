@@ -6,7 +6,6 @@ permalink: /docs/prompts-and-manuals
 
 <!-- AUTO-GENERATED from specification/public/en/prompts-and-manuals.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Prompts and Manuals
 
@@ -329,13 +328,13 @@ Example: `vance-addon-brain-calendar/.../prompts/arthur/calendar.md` injects the
 **Placement in the Engine Default Prompt** — The Engine default template explicitly references the variable:
 
 ```
-{% if addonSections %}
+&#123;% if addonSections %}
 
-{{ addonSections }}
-{% endif %}
+&#123;{ addonSections }}
+&#123;% endif %}
 ```
 
-If the template does **not** reference `{{ addonSections }}`, `SystemPrompts.compose` automatically appends the block at the end (analogous to `profileAppend`). Recipe overrides may also reference the variable — an OVERWRITE Recipe without reference deliberately drops the Addon content.
+If the template does **not** reference `&#123;{ addonSections }}`, `SystemPrompts.compose` automatically appends the block at the end (analogous to `profileAppend`). Recipe overrides may also reference the variable — an OVERWRITE Recipe without reference deliberately drops the Addon content.
 
 **Fragment vs. Manual — when to use what?**
 
@@ -405,7 +404,7 @@ This is the **self-documentation** of the tool — models that receive a tool in
 
 The `manual_read('name')`-pattern scales well up to ~20 Manuals. Beyond that, Prompt hooks grow linearly with the number of capabilities, and the original three problems (§1) return — this time per hook instead of per section.
 
-**Escalation Path:** From ~30 Engine Manuals plus Skill Manuals (i.e., when the discovery question is truly non-trivial), the Discovery tool `how_do_i(intent)` supplements the pattern. The Prompt gets **one** Discovery line instead of N Manual hooks; internally, the `DiscoveryService` uses the Recipe `how-do-i` as a config profile and calls `ChatModel` directly (Jeltz-style single-shot with schema loop — no Process spawn). The complete source catalog (Manuals + Skills + Tool Descriptions) is injected via Pebble variable `{{ sources }}`; Prompt caching makes this cost-effective. The LLM responds with `{ loaded }`, `{ alternatives }`, or `{ hint }`.
+**Escalation Path:** From ~30 Engine Manuals plus Skill Manuals (i.e., when the discovery question is truly non-trivial), the Discovery tool `how_do_i(intent)` supplements the pattern. The Prompt gets **one** Discovery line instead of N Manual hooks; internally, the `DiscoveryService` uses the Recipe `how-do-i` as a config profile and calls `ChatModel` directly (Jeltz-style single-shot with schema loop — no Process spawn). The complete source catalog (Manuals + Skills + Tool Descriptions) is injected via Pebble variable `&#123;{ sources }}`; Prompt caching makes this cost-effective. The LLM responds with `{ loaded }`, `{ alternatives }`, or `{ hint }`.
 
 Spec on this: [how-do-i](/docs/how-do-i). Spec decision 2026-05-26: in v1, `how_do_i` runs **in parallel** to the Manual hooks — no Prompt migration. Hot-path topics with negation traps (e.g., `embed-*`) remain explicitly hooked because the trap is topic-specific.
 
@@ -423,8 +422,7 @@ This spec is binding as of 2026-05-26 for **new** Capabilities. Planned migratio
 | L1–L4 | `LightLlmService` as central single-shot helper (see [light-llm-service](/docs/light-llm-service)) | completed 2026-05-26 — 18 tests green |
 | D1–D5 | Implement `how_do_i`-tool (see [how-do-i §12](/docs/how-do-i#12-phased-rollout)) | completed 2026-05-26 — Unit tests + E2E (Gemini-2.5-flash) green |
 | D8 | Replace Manual hooks in Prompt with `how_do_i`, unless a negation trap is needed | open (v2) |
-| F1 | Addon Prompt Fragment mechanism (`AddonPromptFragmentRegistry`, `{{ addonSections }}`, Arthur + Eddie wired) | completed 2026-06-05 |
+| F1 | Addon Prompt Fragment mechanism (`AddonPromptFragmentRegistry`, `&#123;{ addonSections }}`, Arthur + Eddie wired) | completed 2026-06-05 |
 | F2 | Calendar and Kanban trigger blocks extracted from `arthur-prompt.md` into `vance-addon-brain-{calendar,kanban}` | completed 2026-06-05 |
 | F3 | `SystemPromptComposer` introduced as Spring service — bundles Renderer + Registry, `StructuredActionEngine` passes it to subclasses | completed 2026-06-05 |
 | F4 | Composer wiring for all render-active Engines: Ford, Zaphod (Synthesis), Marvin (Worker + postAction), Hactar (Drafting + Framing), Slart/MarvinArchitect (compile-Validation) | completed 2026-06-05 |
-{% endraw %}

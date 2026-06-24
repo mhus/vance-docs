@@ -6,7 +6,6 @@ permalink: /docs/workspace-management
 
 <!-- AUTO-GENERATED from specification/public/en/workspace-management.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Workspace Management
 
@@ -521,4 +520,3 @@ The tool internally calls `WorkspaceService.createRootDir(type=git, …)` with G
 - [skills.md §10](/docs/skills) — Skill Runtime exposes `vance.workspace.*`; backend is the Service defined here. `dirName` parameter analogous to §12.5.
 - [kits.md](/docs/kits) — Kit import/export should be migrated to TempHandler in the medium term instead of its own Tmp logic. `KitRepoLoader` (JGit) remains parallel to the `git_checkout` tool — Kit imports are not workspace-bound.
 - [project-lifecycle.md](/docs/project-lifecycle) — Project Lifecycle Service (`bring`/`suspend`/`close`) calls `init` / `suspendAll` / `dispose`. Process see §11.
-{% endraw %}

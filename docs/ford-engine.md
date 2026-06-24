@@ -6,7 +6,6 @@ permalink: /docs/ford-engine
 
 <!-- AUTO-GENERATED from specification/public/en/ford-engine.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Ford Think Engine
 
@@ -121,4 +120,3 @@ As long as Arthur was not ready, **Ford was the default** for Interactive Sessio
 - **LLM Error Handling.** If the LLM call fails (quota, network, over-limit), Ford writes an Error-`ChatMessage.system` and returns to `ready`. Detailed semantics (retry vs. fail-fast, user communication) will be defined with the first implementation.
 - **Memory Compaction.** First implementation exists (`MemoryCompactionService` triggers via Token-Estimate). Path validation still needs to be part of the test plan.
 - **Validator Loop.** Currently pattern-based (intent-without-action, data-relay-gap). Structured JSON output validator like Marvin's `marvin-worker` is Recipe-specific, not an Engine concept.
-{% endraw %}

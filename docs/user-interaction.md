@@ -6,7 +6,6 @@ permalink: /docs/user-interaction
 
 <!-- AUTO-GENERATED from specification/public/en/user-interaction.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — User Interaction
 
@@ -461,4 +460,3 @@ All Engines use the same mechanism — Vogon is the primary consumer, but the pa
 - **Notification-Batching for Email**. `batchIntervalSec` is collected for `LOW`/`NORMAL`. Who flushes the batch? Spring `@Scheduled`-job — this is the second v1-`@Scheduled` with memory compaction (should be uncritical).
 - **Cross-Tenant-Delegation**. V1 no; an item can only be delegated to users in the same Tenant. Cross-Tenant requires a permission/confidentiality model.
 - **WebSocket-Reconnect with Item-Catch-up**. If an item is created while the user briefly loses WS: does it appear in the `inbox-pending-summary` on resume or do we see a race? `pending-summary` is the truth; WS-Push is additional acceleration. Race is acceptable — client merges.
-{% endraw %}

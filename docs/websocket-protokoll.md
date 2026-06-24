@@ -6,7 +6,6 @@ permalink: /docs/websocket-protokoll
 
 <!-- AUTO-GENERATED from specification/public/en/websocket-protokoll.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — WebSocket Protocol
 
@@ -381,4 +380,3 @@ The client checks in the `welcome` message whether `protocolVersion` matches its
 ---
 
 *See also: [architektur-scopes-clients](/docs/architektur-scopes-clients) | [client-protokoll-erweiterbarkeit](/docs/client-protokoll-erweiterbarkeit) | java-cli-modulstruktur | [identity-credentials](/docs/identity-credentials)*
-{% endraw %}

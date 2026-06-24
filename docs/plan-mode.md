@@ -6,7 +6,6 @@ permalink: /docs/plan-mode
 
 <!-- AUTO-GENERATED from specification/public/en/plan-mode.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Plan-Mode
 
@@ -725,4 +724,3 @@ Details: `planning/topic-recompaction.md`,
   `ArthurActionSchemaTest`,
   `vance-shared/.../thinkprocess/ThinkProcessServiceTest` (Plan-Mode
   section).
-{% endraw %}

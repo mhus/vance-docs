@@ -6,7 +6,6 @@ permalink: /docs/doc-kind-items
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-items.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Document Kinds with Items
 
@@ -239,4 +238,3 @@ A potential combination with nesting (`kind: tree-checklist`) is outlined in the
 - **Multi-line item texts in Markdown round-trip** — continuation indent works but is not everyone's stylistic preference. Alternative: enforce single-line, discard additional lines. Decision pending until the first real use case.
 - **Sort order when writing** — keys within an item: `text` first, then `extra` in insertion order. Sufficient for now; if LLM output round-trip quality suffers, this will be regulated separately in `recipes.md` § Tooling.
 - **DB index on `kind`** — already exists via `DocumentDocument.kind`. Items themselves do not land in separate Mongo columns; the item sequence remains exclusively in the `inlineText` body. If bulk queries ("all items with `done: false` across all list-Documents") are needed, that is a separate spec point.
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/audit-system
 
 <!-- AUTO-GENERATED from specification/public/en/audit-system.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Audit System
 
@@ -401,4 +400,3 @@ Available (as of 2026-05-28):
 - **Permission Audit.** `PermissionService.check` does not emit anything yet. If audit is added there, naming `permission.check` + outcome=denied/granted.
 - **Kit Lifecycle Audit.** `kit.install/update/apply/export` — analogous to Project.
 - **OAuth Audit.** Connect/disconnect/refresh paths in `OAuthController` / `OAuthTokenRefresher`.
-{% endraw %}

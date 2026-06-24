@@ -6,7 +6,6 @@ permalink: /docs/trigger-actions
 
 <!-- AUTO-GENERATED from specification/public/en/trigger-actions.md — do not edit here. -->
 
-{% raw %}
 ---
 # Trigger Actions — Unified Spawning Model
 
@@ -576,4 +575,3 @@ if they need Workflow `catch:` routing.
   Workspace layout
 - `planning/kit-scripts.md` — Predecessor plan for Skill Script Loop Kits
 - `planning/brain-hooks.md` — Separate hook system, remains untouched
-{% endraw %}

@@ -6,7 +6,6 @@ permalink: /docs/kits
 
 <!-- AUTO-GENERATED from specification/public/en/kits.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Project Kits
 
@@ -406,4 +405,3 @@ inheritArtefacts:
 During `export`, the rewritten repo would only contain the Top-Layer files (`documents`/`settings`) plus the unchanged `kit.yaml#inherits` list — Inherit artifacts reside in the Project Mongo (and in `inheritArtefacts:` tracking), but do not migrate to the Top-Layer repo.
 
 If `c-development` removes `skills/code-review/SKILL.md` in a later version: the next `kit_update --prune` sees the path in the old `inheritArtefacts.c-development.documents` list, but **no longer** in the new Build Tree → file is deleted from the Project.
-{% endraw %}

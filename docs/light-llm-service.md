@@ -6,7 +6,6 @@ permalink: /docs/light-llm-service
 
 <!-- AUTO-GENERATED from specification/public/en/light-llm-service.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Light LLM Service
 
@@ -116,11 +115,11 @@ Example (Discovery):
 promptPrefix: |
   You are the Discovery component. Catalog:
   
-  {{ sources }}
+  &#123;{ sources }}
   
   Caller's intent:
   
-  > {{ intent }}
+  > &#123;{ intent }}
   
   Respond with one of these JSON shapes: …
 ```
@@ -257,4 +256,3 @@ Spec is in Draft as of 2026-05-26. Design decisions:
 - **Schema loop identical to `JeltzEngine`** — no second validation implementation.
 - **Resilient Layer + Prompt Caching used for free** — no special path.
 - **Engines remain separate** — migration only when LightLlmService is stable.
-{% endraw %}

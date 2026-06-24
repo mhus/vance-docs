@@ -6,7 +6,6 @@ permalink: /docs/ursahooks
 
 <!-- AUTO-GENERATED from specification/public/en/ursahooks.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Ursahooks
 
@@ -388,4 +387,3 @@ The REST surface is ready; a UI consumer can build upon it once the web roadmap 
 ---
 
 *See also: [scheduler](/docs/scheduler) | [script-engine](/docs/script-engine) | [recipes](/docs/recipes) | [user-interaction](/docs/user-interaction) | [knowledge-graph](/docs/knowledge-graph) | [llm-resource-management](/docs/llm-resource-management) | [settings-system](/docs/settings-system) | [kits](/docs/kits) | [integrationen-externe-systeme](/docs/integrationen-externe-systeme)*
-{% endraw %}

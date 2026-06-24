@@ -6,7 +6,6 @@ permalink: /docs/client-protokoll-erweiterbarkeit
 
 <!-- AUTO-GENERATED from specification/public/en/client-protokoll-erweiterbarkeit.md — do not edit here. -->
 
-{% raw %}
 ---
 # Vance — Client Protocol & Extensibility
 
@@ -449,13 +448,13 @@ jobs:
       - name: Trigger Vance Architecture Review
         uses: vance-ai/github-action@v1
         with:
-          brain_url: ${{ secrets.VANCE_URL }}
-          api_key: ${{ secrets.VANCE_API_KEY }}
+          brain_url: $&#123;{ secrets.VANCE_URL }}
+          api_key: $&#123;{ secrets.VANCE_API_KEY }}
           project_id: proj_vance_dev
           workflow_id: wf_architecture_review
           input: |
-            commit_sha: ${{ github.sha }}
-            changed_files: ${{ steps.changed.outputs.files }}
+            commit_sha: $&#123;{ github.sha }}
+            changed_files: $&#123;{ steps.changed.outputs.files }}
           wait_for_result: true
           timeout: 600
 ```
@@ -489,4 +488,3 @@ jobs:
 ---
 
 *See also: [execution-modes-trigger](/docs/execution-modes-trigger) | [architektur-scopes-clients](/docs/architektur-scopes-clients) | [mcp-tool-routing](/docs/mcp-tool-routing) | [integrationen-externe-systeme](/docs/integrationen-externe-systeme)*
-{% endraw %}

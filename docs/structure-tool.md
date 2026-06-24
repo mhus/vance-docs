@@ -6,7 +6,6 @@ permalink: /docs/structure-tool
 
 <!-- AUTO-GENERATED from specification/public/en/structure-tool.md — do not edit here. -->
 
-{% raw %}
 ---
 # Structure Tool
 
@@ -430,4 +429,3 @@ Settings follow the standard cascade Tenant → Project → Session.
 -   [knowledge-graph.md](/docs/knowledge-graph) — Insight Records are a typical consumer; the caller writes the `data` into the KG itself.
 -   [user-interaction.md](/docs/user-interaction) — if the caller wants to place the `data` in the User Inbox, that is their decision; the Tool itself only provides the JSON.
 -   [mcp-tool-routing.md](/docs/mcp-tool-routing) — Delimitation from Client Tools; `structure` is server-side, no client routing.
-{% endraw %}
