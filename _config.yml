@@ -31,6 +31,21 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
 
+# GitHub Pages auto-loads jekyll-optional-front-matter, which adds empty
+# frontmatter to every .md file without one. We need llm/specification/*.md
+# to be served verbatim (no Jekyll processing) for LLM consumption.
+optional_front_matter:
+  enabled: false
+
+# Keep the LLM tree out of just-the-docs' main nav index; it's served as
+# raw markdown for tools, not for human browsing.
+defaults:
+  - scope:
+      path: "llm"
+    values:
+      sitemap: false
+      nav_exclude: true
+
 exclude:
   - Gemfile
   - Gemfile.lock
