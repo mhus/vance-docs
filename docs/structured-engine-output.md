@@ -2,11 +2,11 @@
 title: "Vance — Structured Engine Output"
 parent: Documentation
 permalink: /docs/structured-engine-output
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/structured-engine-output.md — do not edit here. -->
 
+{% raw %}
 # Vance — Structured Engine Output
 
 > An Engine ends each turn with a mandatory `respond` tool call. This tool call contains the user-facing message **plus** a boolean flag that explicitly states whether the Engine is waiting for user input. This eliminates language-dependent intent heuristics, and the Engine lifecycle (BLOCKED vs. READY) is structured rather than guessed from free text.
@@ -144,3 +144,4 @@ Step-by-step instead of big-bang:
 -   [ford-engine](/docs/ford-engine) — Validator section will be removed, tool pool extended with `respond`.
 -   [think-engines §3](/docs/think-engines) — Process status transitions: `respond.awaiting_user_input` becomes the explicit source for `BLOCKED` vs. `READY`.
 -   [recipes.md](/docs/recipes) — Tool pool convention, new system prompt convention.
+{% endraw %}

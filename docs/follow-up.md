@@ -2,11 +2,11 @@
 title: "Vance — Follow-Up Service"
 parent: Documentation
 permalink: /docs/follow-up
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/follow-up.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Follow-Up Service
 
@@ -341,3 +341,4 @@ LightLlmService mocked — no real LLM calls in unit tests. End-to-end is tested
 - **MarkII-Engine** — If FollowUp becomes multi-stage (RAG → Generate → Re-Rank) or requires Tool-Use (e.g., code lookup in Project files), `mark-ii` will be implemented as a real Engine. The REST contract remains stable; the Recipe `follow-up.yaml` switches to `engine: mark-ii`.
 - **Per-Mode-Recipes** — If Chat Prompt and Text Editor require very different suggestions, the service can be extended to `follow-up-${mode}` Recipe lookup with fallback to `follow-up`.
 - **Manuals-Hook** — If the model needs to access predefined domain Manuals, this works like Discovery: `SourceCatalogBuilder` for FollowUp-specific Manuals, appended to the Pebble vars.
+{% endraw %}

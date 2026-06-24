@@ -2,11 +2,11 @@
 title: "Vance — Execution Modes & Trigger"
 parent: Documentation
 permalink: /docs/execution-modes-trigger
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/execution-modes-trigger.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Execution Modes & Trigger
 
@@ -294,3 +294,4 @@ Visible in the Web UI Dashboard and queryable via CLI: `vance runs --engine tp_1
 ---
 
 *See also: [architektur-scopes-clients](/docs/architektur-scopes-clients) | [mcp-tool-routing](/docs/mcp-tool-routing) | [workflows](/docs/workflows) | [knowledge-graph](/docs/knowledge-graph)*
+{% endraw %}

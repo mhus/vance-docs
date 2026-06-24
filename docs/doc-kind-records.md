@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `records`"
 parent: Documentation
 permalink: /docs/doc-kind-records
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-records.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `records`
 
@@ -793,3 +793,4 @@ Toggle-based mode where the schema header row becomes the editable column bar. A
 **Operations** (all direct-apply, no separate commit step; each mutation immediately emits a fresh `RecordsDocument`):
 
 | Operation         | UI                                          | Effect on Records
+{% endraw %}

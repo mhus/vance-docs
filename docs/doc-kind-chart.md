@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `chart`"
 parent: Documentation
 permalink: /docs/doc-kind-chart
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-chart.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `chart`
 
@@ -335,3 +335,4 @@ A `chart_create(documentName, chartType, series)` tool for Workers that creates 
 - **Bundle size:** ECharts is tree-shakable with v5 modular import (~600 KB for our chart set) — vs. full build ~1.1 MB. We import modularly (`echarts/core` + specific charts and components). Lazy loading of `<ChartView>` analogous to `<MindmapView>`/`<GraphView>` is v1.
 - **Time format ambiguity:** `2024-01-02` (date-only) vs. `2024-01-02T15:30:00Z` (datetime). ECharts handles both; codec does not normalize. If LLMs mix, the tooltip format string can appear inconsistent — polish point.
 - **Incompatible ChartType change:** Current solution requires "Discard data or cancel". A "Transform data if possible" mode (e.g., line → pie aggregates over X-axis) would be smarter, but this opens up aggregation logic complexity that is not necessary in v1.
+{% endraw %}

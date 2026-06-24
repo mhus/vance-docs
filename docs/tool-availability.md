@@ -2,11 +2,11 @@
 title: "Vance — Tool Availability"
 parent: Documentation
 permalink: /docs/tool-availability
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/tool-availability.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Tool Availability
 
@@ -284,3 +284,4 @@ Cooldown entries do **not** flow into the manifest annotation — the LLM should
 - [mcp-tool-routing](/docs/mcp-tool-routing) — MCP connection close is a standard trigger for system path writing (§7).
 - [identity-credentials](/docs/identity-credentials) — User-specific credentials that Agrajag's `tool_probe_as_user` tool uses.
 - [session-lifecycle §8](/docs/session-lifecycle) — Foot disconnect is a standard trigger for `client_*` tools on SESSION scope to DOWN.
+{% endraw %}

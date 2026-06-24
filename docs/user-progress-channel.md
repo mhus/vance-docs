@@ -2,11 +2,11 @@
 title: "Vance — User Progress Channel"
 parent: Documentation
 permalink: /docs/user-progress-channel
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/user-progress-channel.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — User Progress Channel
 
@@ -365,3 +365,4 @@ Default: `normal`. User-global override later via Settings (`ux.progress.default
 6. Marvin & Vogon: `emitPlanSnapshot()` at mutation points, calls `ProgressEmitter.emitPlan(...)` with the current tree. On node entry, hold a snapshot of the Process totals; on node transition to `done`/`failed`, `closeOperation(NODE_DONE, …, usage)` (Marvin) or `PHASE_DONE` (Vogon).
 7. `params.progress` in `RecipeResolver` as a default parameter; `ProgressEmitter` filters before push (no constant check in every Engine).
 8. vance-foot: three renderers (HUD line with `\r`-overwrite, Plan panel via Lanterna, Toast stream as ANSI dim lines below the chat) — all subscribe to the same `PROCESS_PROGRESS` point, dispatch by `kind`. For each `operationId`, `Instant started` is held locally; on `_END`, wall-clock difference is rendered (spinner tick ~250 ms, runs only if the operation map is not empty).
+{% endraw %}

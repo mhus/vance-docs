@@ -2,11 +2,11 @@
 title: "Vance — Prompts and Manuals"
 parent: Documentation
 permalink: /docs/prompts-and-manuals
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/prompts-and-manuals.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Prompts and Manuals
 
@@ -427,3 +427,4 @@ This spec is binding as of 2026-05-26 for **new** Capabilities. Planned migratio
 | F2 | Calendar and Kanban trigger blocks extracted from `arthur-prompt.md` into `vance-addon-brain-{calendar,kanban}` | completed 2026-06-05 |
 | F3 | `SystemPromptComposer` introduced as Spring service — bundles Renderer + Registry, `StructuredActionEngine` passes it to subclasses | completed 2026-06-05 |
 | F4 | Composer wiring for all render-active Engines: Ford, Zaphod (Synthesis), Marvin (Worker + postAction), Hactar (Drafting + Framing), Slart/MarvinArchitect (compile-Validation) | completed 2026-06-05 |
+{% endraw %}

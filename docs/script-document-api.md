@@ -2,11 +2,11 @@
 title: "Script Document API — Specification"
 parent: Documentation
 permalink: /docs/script-document-api
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/script-document-api.md — do not edit here. -->
 
+{% raw %}
 ---
 # Script Document API — Specification
 
@@ -301,3 +301,4 @@ Delegates to `SettingService.getStringValueCascade(tenant, projectId, processId,
 - **Cross-Project-Read:** Read-only access to the Tenant default project for Manuals/Configs, possibly `vance.documents.tenantRead(path)`.
 - **Cortex Runs-Panel:** Phase 5 from the Planning Doc — consumes the label system for the Doc-bound Runs list.
 - **Long-Running-Pod-Migration:** Subprocess in its own worker Pod with PVC; Brain URL must then use Service Discovery instead of Loopback.
+{% endraw %}

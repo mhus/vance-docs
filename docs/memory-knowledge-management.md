@@ -2,11 +2,11 @@
 title: "Vance — Memory & Knowledge Management"
 parent: Documentation
 permalink: /docs/memory-knowledge-management
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/memory-knowledge-management.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Memory & Knowledge Management
 
@@ -448,3 +448,4 @@ They are **orthogonal and non-competing**:
 ---
 
 *See also: [vision](/docs/vision) | [architektur-scopes-clients](/docs/architektur-scopes-clients) | [workflows](/docs/workflows) | brainstorming think flow | [plan-mode](/docs/plan-mode)*
+{% endraw %}

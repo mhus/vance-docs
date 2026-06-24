@@ -2,11 +2,11 @@
 title: "Vance — Events"
 parent: Documentation
 permalink: /docs/events
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/events.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Events
 
@@ -373,3 +373,4 @@ curl https://brain.example.com/brain/acme/event/p1/healthcheck
 # _vance/events/healthcheck.yaml
 description: "Lightweight Health-Workflow"
 workflow: health-ping
+{% endraw %}

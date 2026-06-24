@@ -2,11 +2,11 @@
 title: "Vance Application — `app: kanban`"
 parent: Documentation
 permalink: /docs/app-kanban
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/app-kanban.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance Application — `app: kanban`
 
@@ -250,3 +250,4 @@ The controller is a **thin adapter** over `KanbanApplication.moveCard()` + `Kanb
 3. **Subtask promotion.** A card's GFM checkboxes could be promoted to sibling cards via `kanban_subtask_promote(card, subtask)`. Useful when a checklist item grows into its own workstream. Not in v1.
 4. **Linked cards (depends-on / blocks).** Out of scope for v1. Cross-card relationships likely become a `kind: graph` overlay rather than card-internal references.
 5. **Multi-face folders.** `config.kanban` + `config.calendar` coexisting in one `_app.yaml` would let a folder be both a board and a timeline of the same items. Possible because of the nested-config design but no concrete user yet.
+{% endraw %}

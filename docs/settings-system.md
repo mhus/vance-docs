@@ -2,11 +2,11 @@
 title: "Vance — Settings System"
 parent: Documentation
 permalink: /docs/settings-system
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/settings-system.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Settings System
 
@@ -440,3 +440,4 @@ One system, one code path, one API.
 ---
 
 *See also: [identity-credentials](/docs/identity-credentials) | [llm-resource-management](/docs/llm-resource-management) | [architektur-scopes-clients](/docs/architektur-scopes-clients)*
+{% endraw %}

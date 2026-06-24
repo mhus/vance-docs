@@ -2,11 +2,11 @@
 title: "Vance — Voice Mode"
 parent: Documentation
 permalink: /docs/voice-mode
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/voice-mode.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Voice Mode
 
@@ -236,3 +236,4 @@ Spec is Draft as of 2026-05-26. Design decisions:
 - **Pebble Block at the end** of the prompt due to Anthropic cache.
 - **No new Action Type** in v1 — Eddie uses `RELAY_INBOX`, Arthur uses `doc_create(kind="text", …)` fallback.
 - **Workers** (Ford/Vogon/Marvin/…) ignore the flag in v1.
+{% endraw %}

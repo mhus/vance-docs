@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `data`"
 parent: Documentation
 permalink: /docs/doc-kind-data
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-data.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `data`
 
@@ -232,3 +232,4 @@ Full-text search over keys and values with highlighting in the tree. Good UX, bu
 - **YAML Anchors / Aliases:** the library default expands them on read. Round-trip is therefore not truly lossless if the user uses anchors — anchors become inline values. Accepted trade-off because Vance tools rarely produce anchors.
 - **Very Large Bodies (> Inline-Threshold):** the Document becomes storage-backed (same mechanism as for other Kinds). The Preview tab must be able to stream content, or a "Body too large for preview, use a tool to access" fallback is shown. v1: Inline-Threshold is sufficient; storage-backed `kind: data` is a spec point for later.
 - **Default Format on Creation:** if the user selects "new `kind: data` Document", should the stub be `.json` or `.yaml`? Suggestion: YAML — more compact, human-readable, equally consumable by tools.
+{% endraw %}

@@ -2,11 +2,11 @@
 title: "Vance — Recipes"
 parent: Documentation
 permalink: /docs/recipes
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/recipes.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Recipes
 
@@ -695,3 +695,4 @@ This means:
 - **Recipe Cost Model**. Recipes could carry a `costClass` (`cheap/normal/expensive`) that influences the quota system (`llm-resource-management.md`). A clean integration would be to query the quota system per Recipe call before allowing the spawn.
 - **Recipe Discovery from a Worker Engine**. Are Workers (Ford, Deep-Think) allowed to inspect Recipes themselves or spawn sub-Workers via Recipe? V1 no — only Arthur orchestrates; for multi-level orchestration (deep-think → sub-deep-think), this needs to be reconsidered.
 ---
+{% endraw %}

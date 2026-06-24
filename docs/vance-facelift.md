@@ -2,11 +2,11 @@
 title: "Vance Facelift — Specification"
 parent: Documentation
 permalink: /docs/vance-facelift
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/vance-facelift.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance Facelift — Specification
 
@@ -485,3 +485,4 @@ build ad-hoc.
   hosts); §3 Editor Inventory, §7 Style Guide
 - `specification/user-interaction.md` — Inbox model that the
   Share Extension fills
+{% endraw %}

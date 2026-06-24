@@ -2,11 +2,11 @@
 title: "Vance — Fenchurch Image-Generation Service"
 parent: Documentation
 permalink: /docs/fenchurch-service
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/fenchurch-service.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Fenchurch Image-Generation Service
 
@@ -584,3 +584,4 @@ Recorded for future spec readers:
 - **`kind: chat | image` Discriminator in `ai-models.yaml`** — disjoint lookups, no pollution of the chat model picker by image entries.
 - **`ImageDestinationStream` as write target abstraction** — Providers know no Document model. On `close()`, everything commits in a single `DocumentService.createOrReplaceBinary` call.
 - **Engine Hook only in user-facing Engines (Arthur, Eddie, Ford)** — Worker Recipes link manuals themselves via `manualPaths`, no mandatory hook in the generic Marvin Worker system.
+{% endraw %}

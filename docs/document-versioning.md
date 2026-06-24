@@ -2,11 +2,11 @@
 title: "Vance — Document Versioning"
 parent: Documentation
 permalink: /docs/document-versioning
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/document-versioning.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Versioning
 
@@ -248,3 +248,4 @@ Newly introduced fields on `DocumentDocument`:
 **Lazy Backfill** for documents created before this feature: `DocumentService.update` populates an empty `lineageId` with a fresh UUID on the first save. There is no separate migrator — the version history begins with the first edit after rollout.
 
 **Note for tests / bootstrap**: If code works directly with `DocumentDocument` builders, it must set a `lineageId` — otherwise, the protection check in `archiveCurrent` will apply. `DocumentService.create` does this automatically (`UUID.randomUUID()`); the update path adds it lazily.
+{% endraw %}

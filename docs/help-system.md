@@ -2,11 +2,11 @@
 title: "Vance — Help System"
 parent: Documentation
 permalink: /docs/help-system
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/help-system.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Help System
 
@@ -141,3 +141,4 @@ help.error.value;     // string | null
 | Bundled `help/en/recipe-field-docs.md` | implemented |
 | Translations (`de/`) | open |
 | Further Topics (Inbox, Scopes, Document-Editor, …) | open, on demand |
+{% endraw %}

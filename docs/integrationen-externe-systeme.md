@@ -2,11 +2,11 @@
 title: "Vance — Integrations & External Systems"
 parent: Documentation
 permalink: /docs/integrationen-externe-systeme
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/integrationen-externe-systeme.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Integrations & External Systems
 
@@ -364,3 +364,4 @@ Vance Brain
 ---
 
 *See also: [vision](/docs/vision) | [multi-user-collaboration](/docs/multi-user-collaboration) | [memory-knowledge-management](/docs/memory-knowledge-management) | [knowledge-graph](/docs/knowledge-graph)*
+{% endraw %}

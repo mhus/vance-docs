@@ -2,11 +2,11 @@
 title: "Vance — Arthur Think Engine"
 parent: Documentation
 permalink: /docs/arthur-engine
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/arthur-engine.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Arthur Think Engine
 
@@ -442,3 +442,4 @@ T+15min DeepThink finished, emits ProcessEvent(type=done, summary="3 contradicti
 - **Rolling Summary (v2).** When to trigger, how to store, how to reconstruct after resume — detailed spec during implementation.
 - **Parallel Tool Calls.** In v1, Arthur serializes tool calls within an LLM turn. Whether provider-side parallel tool use features are activated remains a later performance decision.
 - **User Focus Switch in the Middle of a Worker Turn.** If the user foregrounds a worker while Arthur is `running` — what happens to unfinished Assistant Messages in Arthur's chat? In v1: finish writing, user sees the result later when switching back to Arthur. Finer UX (abort-and-resume) v2.
+{% endraw %}

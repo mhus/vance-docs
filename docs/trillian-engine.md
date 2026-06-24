@@ -2,11 +2,11 @@
 title: "Vance — Trillian Engine"
 parent: Documentation
 permalink: /docs/trillian-engine
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/trillian-engine.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Trillian Engine
 
@@ -519,3 +519,4 @@ Bootstrapped Trillian pair: control id='…' session='…' / user id='…' sessi
   Scope hierarchy.
 - `CLAUDE.md` section "Think-Process / Scope Peculiarities" —
   ProcessEvent, drainPending, Auto-Wakeup.
+{% endraw %}

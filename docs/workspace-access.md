@@ -2,11 +2,11 @@
 title: "Vance — Workspace Access (Web-UI ↔ Brain)"
 parent: Documentation
 permalink: /docs/workspace-access
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/workspace-access.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Workspace Access (Web-UI ↔ Brain)
 
@@ -304,3 +304,4 @@ JDK `HttpClient` (`java.net.http`) is sufficient. No WebClient stack needed — 
 8. Remote Search (Layer 2 + Layer 1) + UI search field
 
 Pod discovery relies on `ProjectDocument.homeNode` + `ClusterService.resolveEndpoint(node)` (`ProjectService.claim` / `ProjectManagerService` / `brain_pods` registry) — no separate step needed. Search is optional and can be postponed if the tree view is sufficient for initial use cases.
+{% endraw %}

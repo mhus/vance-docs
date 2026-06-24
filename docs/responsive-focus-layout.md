@@ -2,11 +2,11 @@
 title: "Responsive Focus Layout"
 parent: Documentation
 permalink: /docs/responsive-focus-layout
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/responsive-focus-layout.md — do not edit here. -->
 
+{% raw %}
 ---
 # Responsive Focus Layout
 
@@ -216,3 +216,4 @@ Other editors (Documents, Insights, Tools, Users etc.) do not yet use the model 
 - `planning/web-ui-focus-pilot.md` — Pilot plan, test drive notes, tweak history
 - `repos/vance/client/packages/vance-face/src/components/EditorShell.vue` — Implementation
 - `repos/vance/client/packages/vance-face/src/components/EditorTopbar.vue` — Topbar with clickable Title and Breadcrumb-Forwarding
+{% endraw %}

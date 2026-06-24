@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `slides`"
 parent: Documentation
 permalink: /docs/doc-kind-slides
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-slides.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `slides`
 
@@ -344,3 +344,4 @@ User registers a new theme inline in the document (`slides.themeCss: |\n  ...`).
 - **Image Hosting:** external URLs (`https://…`) work immediately. Document-internal images (`vance:document/<id>` for a `kind: image`-document) first require the `vance:` URI spec item from §6.3. Until then, anyone who wants images will use external URLs.
 - **CSS Scoping Strategy:** Marpit's `container` option (class prefix) **or** Shadow DOM mount. Class prefix is easier to debug; Shadow DOM is more isolation-secure. Decision upon the first real theme conflict with DaisyUI — likely class prefix will suffice because Marpit itself does not emit utility CSS (Tailwind-like).
 - **Single-Source vs. Slides-Array in Storage:** Markdown stores linearly (slides as sections in the file), JSON/YAML stores as an array. This is transparent during Markdown→JSON round-trip via codec; for external tooling that only sees JSON, it must be clear that `items[i]` is a Markdown string and not a pre-structured slide representation. A documentation note is sufficient.
+{% endraw %}

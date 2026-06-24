@@ -2,11 +2,11 @@
 title: "Vance — Skills"
 parent: Documentation
 permalink: /docs/skills
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/skills.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Skills
 
@@ -557,3 +557,4 @@ Authorization comes from the Document ACL model — the Document Editor decides 
 - **Reference-Doc `ON_DEMAND`.** v1 is all `INLINE`. `ON_DEMAND` requires a new tool `skill_reference_doc(skill, title)` and dynamically changes the token balance — address separately.
 - **Recipe `skills` Lock Granularity.** Today, `recipe.locked=true` atomically locks *all* Recipe Skills. If finer granularity is needed (individual ones removable): `recipe.skillLocks: [name]` as a later extension.
 - **Skill Telemetry.** Which Skills were activated how often (implicitly/explicitly), with what success? Needed once the list grows — separate spec.
+{% endraw %}

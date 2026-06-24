@@ -2,11 +2,11 @@
 title: "Vance — Identity, Credentials & Tool-Auth"
 parent: Documentation
 permalink: /docs/identity-credentials
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/identity-credentials.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Identity, Credentials & Tool-Auth
 
@@ -343,3 +343,4 @@ One model. One code path. No special cases.
 ---
 
 *See also: [multi-user-collaboration](/docs/multi-user-collaboration) | [mcp-tool-routing](/docs/mcp-tool-routing) | [execution-modes-trigger](/docs/execution-modes-trigger) | [client-protokoll-erweiterbarkeit](/docs/client-protokoll-erweiterbarkeit)*
+{% endraw %}

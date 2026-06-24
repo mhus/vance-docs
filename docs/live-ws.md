@@ -2,11 +2,11 @@
 title: "Vance — Live-WS (Multi-Channel WebSocket)"
 parent: Documentation
 permalink: /docs/live-ws
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/live-ws.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Live-WS (Multi-Channel WebSocket)
 
@@ -317,3 +317,4 @@ protocol to learn through practice before channels are hardened:
 | Reconnect-Overlay | `@vance/vance-face/src/ws/ReconnectOverlay.vue` |
 | Web-Wire-Wrapper | `@vance/shared/src/ws/brainWebSocket.ts` |
 | Foot-Wire-Wrapper | `vance-api/.../ws/client/VanceWebSocketClient.java` |
+{% endraw %}

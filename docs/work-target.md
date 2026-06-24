@@ -2,11 +2,11 @@
 title: "Vance — WorkTarget & Generic File/Exec Tool-Layer"
 parent: Documentation
 permalink: /docs/work-target
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/work-target.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — WorkTarget & Generic File/Exec Tool-Layer
 
@@ -248,3 +248,4 @@ Recipes must remove the backends from the manifest via `allowedToolsDefer`
 - `planning/work-target-and-tool-rename.md` — Migration Plan (4 Milestones)
 - `specification/lunkwill-engine.md` — Engine that uses this layer productively
 - `specification/workspace-management.md` — RootDir Concept
+{% endraw %}

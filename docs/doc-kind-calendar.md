@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `calendar`"
 parent: Documentation
 permalink: /docs/doc-kind-calendar
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-calendar.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `calendar`
 
@@ -341,3 +341,4 @@ events:
     allDay: true
     tags: [private]
     color: orange
+{% endraw %}

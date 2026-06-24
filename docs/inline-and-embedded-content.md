@@ -2,11 +2,11 @@
 title: "Vance — Inline & Embedded Content"
 parent: Documentation
 permalink: /docs/inline-and-embedded-content
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/inline-and-embedded-content.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Inline & Embedded Content
 
@@ -846,3 +846,4 @@ No plugin registration, no hot-reload discovery. Compile-time map with type-chec
 - **External URLs as Embedded:** ` ```embed\nkind: pdf\nurl: https://… ` or similar — explicitly not v1, external content must first be imported into the store via `document_import_url`-tool. Then it is a normal Document with a `vance:`-link.
 - **Inline Fence with Embedded Mix:** May a mindmap inline body reference a `vance:`-link (node links to Document)? Indirectly yes, via the `link:`-field in the node (see doc-kind-mindmap §2) — the linking semantics are a matter of the respective Kind, not this spec.
 - **Same-URI in Multiple Occurrences:** If the same resource is embedded twice in the same message (e.g., once reference, once preview), the resolver loads once and caches per `<project,path>`-key. Cache lifetime = session.
+{% endraw %}

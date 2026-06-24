@@ -2,11 +2,11 @@
 title: "Vance — Light LLM Service"
 parent: Documentation
 permalink: /docs/light-llm-service
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/light-llm-service.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Light LLM Service
 
@@ -257,3 +257,4 @@ Spec is in Draft as of 2026-05-26. Design decisions:
 - **Schema loop identical to `JeltzEngine`** — no second validation implementation.
 - **Resilient Layer + Prompt Caching used for free** — no special path.
 - **Engines remain separate** — migration only when LightLlmService is stable.
+{% endraw %}

@@ -2,11 +2,11 @@
 title: "Vance — Session Lifecycle"
 parent: Documentation
 permalink: /docs/session-lifecycle
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/session-lifecycle.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Session Lifecycle
 
@@ -715,3 +715,4 @@ Details of the Web-UI in [web-ui.md](/docs/web-ui).
 - [think-engines §6](/docs/think-engines) — Disconnect behavior. Refers to §8 here.
 - [memory-knowledge-management.md](/docs/memory-knowledge-management) — RAG infrastructure that Stage-3 Search (§15) may use.
 - [web-ui.md](/docs/web-ui) — UI conventions for Session list, metadata editor, search.
+{% endraw %}

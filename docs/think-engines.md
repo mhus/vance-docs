@@ -2,11 +2,11 @@
 title: "Vance — Think Engines and Think Processes"
 parent: Documentation
 permalink: /docs/think-engines
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/think-engines.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Think Engines and Think Processes
 
@@ -359,3 +359,4 @@ In v1, every template start is executed with `deep-think`. Later, templates can 
 - **Session End Policy for Processes:** are Processes set to `stopped` or deleted with Session close? Details per policy (timeout cleanup, user close, admin force) will be specified when cleanup is built.
 - **Process Reassignment (v2):** Reassigning a Think Process to another Session, including Autonomous Session for remote control of a thought process without a local client. Not today, architecture does not block it.
 - **Finer Fingerprint Invalidation:** per-file hash or Git-HEAD as an additional fingerprint component. v2, if `machineId + workingDir` proves insufficient.
+{% endraw %}

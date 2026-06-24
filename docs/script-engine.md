@@ -2,11 +2,11 @@
 title: "Vance — Script Engine"
 parent: Documentation
 permalink: /docs/script-engine
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/script-engine.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Script Engine
 
@@ -562,3 +562,4 @@ In addition to §7.1–§7.7:
 - [llm-resource-management](/docs/llm-resource-management) — Quota buckets that the Brain-script call is tied to
 - [settings-system](/docs/settings-system) — Defaults for statement limit / timeout
 - GraalJS Polyglot-API: `org.graalvm.polyglot.Context`, `Engine`, `HostAccess`, `ResourceLimits`, `IOAccess`
+{% endraw %}

@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `tree`"
 parent: Documentation
 permalink: /docs/doc-kind-tree
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-tree.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `tree`
 
@@ -221,3 +221,4 @@ Retain state per node on reload — either as a per-user setting (`webui.tree.<d
 - **Markdown Indent Size:** 2 spaces is the common default, but 4 is also widespread. Codec reads **both** (each indent level is normalized on read), writes canonically **2**.
 - **Empty Items in the Hierarchy:** an empty `text` with `children` is allowed — the node acts as a pure grouping element. In md format, it is written as `- ` without text. Stable on round-trip.
 - **Order of Item Keys** when writing: `text` first, then `children`, then passthrough-`extra`. Sufficient for now; Recipe tooling and LLM output quality can refine the convention later if needed.
+{% endraw %}

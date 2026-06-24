@@ -2,11 +2,11 @@
 title: "Vance — Document Kind `application`"
 parent: Documentation
 permalink: /docs/doc-kind-application
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-application.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Document Kind `application`
 
@@ -282,3 +282,4 @@ Each of these apps would be a new `@Service implements VanceApplication` plus th
 - **RAG**: each source file in an app folder is indexed normally (default behavior). Generated Artifacts are also indexed — they are useful search results ("where is the Q3 Gantt?").
 - **Settings**: Apps could potentially have app-specific Tenant Settings in the future (e.g., "Standard Gantt Colors"). v1: Settings are at the system level; App Config lives in the manifest.
 - **Marvin/Slart**: a Worker Recipe can completely build an app (Manifest + Sources + Rebuild) — this is precisely the use case for `slartibartfast`-style Recipes with `doc_create` + Domain Tools + `app_rebuild`.
+{% endraw %}

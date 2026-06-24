@@ -2,11 +2,11 @@
 title: "Vance — Setting Forms"
 parent: Documentation
 permalink: /docs/setting-forms
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/setting-forms.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Setting Forms
 
@@ -554,3 +554,4 @@ The form cleanly covers four scenarios:
 - **Model Selection:** independent of the provider, direct mapped.
 - **Tracing Toggle:** a boolean field controls two setting writes (`enabled` always, `sample_rate` only when active).
 - **Reset Button:** deletes all six keys (`ai.default.provider`, `ai.default.model`, three provider API keys, `tracing.llm.enabled`, `tracing.llm.sample_rate`) at the project level — cascade cleanly falls back to `_tenant`.
+{% endraw %}

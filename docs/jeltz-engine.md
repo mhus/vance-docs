@@ -2,11 +2,11 @@
 title: "Vance — Jeltz Think Engine"
 parent: Documentation
 permalink: /docs/jeltz-engine
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/jeltz-engine.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Jeltz Think Engine
 
@@ -217,3 +217,4 @@ Override cascade works as usual (Project → `_tenant` Tenant → Bundled). Tena
 - [structured-engine-output](/docs/structured-engine-output) — `respond` tool is orthogonal: it governs the *end* of a chat turn. Jeltz has no `respond` (no chat).
 - [recipes](/docs/recipes) — Recipe mechanics, Pebble templating, cascade.
 - [think-engines](/docs/think-engines) — Engine registry, lifecycle, status model. Jeltz's terminal `done` transition is regular (unlike Ford/Arthur, which never reach `done`).
+{% endraw %}

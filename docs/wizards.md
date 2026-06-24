@@ -2,11 +2,11 @@
 title: "Vance — Prompt Wizards"
 parent: Documentation
 permalink: /docs/wizards
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/wizards.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Prompt Wizards
 
@@ -397,3 +397,4 @@ CLI Wizards in v1.x — not mandatory for v1.
 | **v1.x** | Quick-Start-Cards for empty Sessions + CLI Integration (`/wizard <name>`) + Mobile Renderer (`vance-fingers`) |
 | **v2** | LLM-Validator (`validatorPrompt` + Button + `/validate` Endpoint) + Conditional Fields (`showIf`) + Multi-Step-Wizards (Pages) |
 | **v3** | User Editor for custom Wizards in the Web-UI (define form definition as a form — meta) |
+{% endraw %}

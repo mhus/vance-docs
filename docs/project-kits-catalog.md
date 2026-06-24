@@ -2,11 +2,11 @@
 title: "Vance — Project Kits Catalog"
 parent: Documentation
 permalink: /docs/project-kits-catalog
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/project-kits-catalog.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Project Kits Catalog
 
@@ -336,3 +336,4 @@ new Tenants upon creation (§5).
   status set, Pod ownership.
 - [architektur-scopes-clients](/docs/architektur-scopes-clients) — Tenant /
   Project-Group / Project / Session / Think-Process.
+{% endraw %}

@@ -2,11 +2,11 @@
 title: "Vance — `how_do_i` Discovery Tool"
 parent: Documentation
 permalink: /docs/how-do-i
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/how-do-i.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — `how_do_i` Discovery Tool
 
@@ -529,3 +529,4 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 - Pure Recipe-Config path, no Embedding quickpath.
 - v1 Cache is in-memory (`ConcurrentHashMap`); Mongo persistence v2.
 - v1 Settings minimal (`lightllm.*` suffice); own `discovery.*` namespace v2.
+{% endraw %}

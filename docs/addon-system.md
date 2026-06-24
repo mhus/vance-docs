@@ -2,11 +2,11 @@
 title: "Addon System"
 parent: Documentation
 permalink: /docs/addon-system
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/addon-system.md — do not edit here. -->
 
+{% raw %}
 ---
 # Addon System
 
@@ -642,3 +642,4 @@ Step-by-step guide using the Slideshow pattern:
 - `vance/vance-shared/src/main/java/de/mhus/vance/shared/addon/` — `AddonDocument` + `AddonService`
 - `vance/vance-anus/src/main/java/de/mhus/vance/anus/shell/AddonCommands.java` — CRUD
 - `repos/vance/client/packages/shared/src/platform/index.ts` — `globalThis` bridge
+{% endraw %}

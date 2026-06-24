@@ -2,11 +2,11 @@
 title: "Vance — RAG (Retrieval-Augmented Generation)"
 parent: Documentation
 permalink: /docs/rag
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/rag.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — RAG (Retrieval-Augmented Generation)
 
@@ -329,3 +329,4 @@ User-Tools may **read** the `_documents`-RAG (`rag_query`, `rag_list`), but **no
 - [knowledge-graph.md](/docs/knowledge-graph) — standalone system (Relations + Insights), not RAG. Both can exist in parallel per Project.
 - [recipes.md](/docs/recipes) — `params.rag.*` as Recipe-Surface for AutoInject (Phase 5).
 - planning/project-rag.md — Implementation plan + phases + trade-offs.
+{% endraw %}

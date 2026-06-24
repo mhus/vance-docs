@@ -2,11 +2,11 @@
 title: "Vance — Fook Service"
 parent: Documentation
 permalink: /docs/fook-service
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/fook-service.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Fook Service
 
@@ -567,3 +567,4 @@ logs with `targetTenant`. Ticket-Documents carry
 - [web-ui](/docs/web-ui) — `EditorShell`/`EditorTopbar`, User-Menu.
 - java-cli-modulstruktur — Foot
   Slash-Command-Pattern.
+{% endraw %}

@@ -2,11 +2,11 @@
 title: "Vance — Multi-User, Teams & Collaboration"
 parent: Documentation
 permalink: /docs/multi-user-collaboration
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/multi-user-collaboration.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Multi-User, Teams & Collaboration
 
@@ -363,3 +363,4 @@ The Multi-User concept will be introduced incrementally:
 ---
 
 *See also: [architektur-scopes-clients](/docs/architektur-scopes-clients) | [vision](/docs/vision) | [knowledge-graph](/docs/knowledge-graph)*
+{% endraw %}

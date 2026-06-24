@@ -2,11 +2,11 @@
 title: "Vance — Client Protocol & Extensibility"
 parent: Documentation
 permalink: /docs/client-protokoll-erweiterbarkeit
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/client-protokoll-erweiterbarkeit.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Client Protocol & Extensibility
 
@@ -489,3 +489,4 @@ jobs:
 ---
 
 *See also: [execution-modes-trigger](/docs/execution-modes-trigger) | [architektur-scopes-clients](/docs/architektur-scopes-clients) | [mcp-tool-routing](/docs/mcp-tool-routing) | [integrationen-externe-systeme](/docs/integrationen-externe-systeme)*
+{% endraw %}

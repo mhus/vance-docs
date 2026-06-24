@@ -2,11 +2,11 @@
 title: "Vance — Marvin Think Engine"
 parent: Documentation
 permalink: /docs/marvin-engine
-render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/marvin-engine.md — do not edit here. -->
 
+{% raw %}
 ---
 # Vance — Marvin Think Engine
 
@@ -738,3 +738,4 @@ saw no siblings in the Plan-Snapshot → knew it was solely responsible.
   `PhaseOutputParserTest`, `MarvinNodeStateMachineTest`;
   `qa/ai-test/.../ArthurMarvinRecipeTest`,
   `SlartibartfastMarvinRecipeLlmTest`.
+{% endraw %}
