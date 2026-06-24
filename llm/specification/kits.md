@@ -1,4 +1,3 @@
----
 # Vance — Project Kits
 
 > A **Kit** is a bundle of Skills, Recipes, Documents, Settings, and Server Tools, imported into a Project from a Git repo. Kits are the clean answer to "my colleague has a good setup, give it to me" and to reusable setups like `kernel-security`, `python-data-science`, `c-development`. Kit contents land in Vance persistence via the respective services — not in the Project's filesystem. The Kit source tree is merely a transport format.

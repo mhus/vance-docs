@@ -1,4 +1,3 @@
----
 # Vance — Prompt Caching
 
 > Anthropic prompt caching for the `vance-brain` LLM layer. Goal: 60–85% token cost reduction for medium to long Sessions, without Engines (Eddie, Arthur, Ford, Marvin, …) having to modify their code.

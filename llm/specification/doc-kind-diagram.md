@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `diagram`
 
 > Specifies the **`diagram` payload** for documents that carry a single, text-defined diagram (flowchart, sequence, state, ER, gantt, gitGraph, …) rendered to SVG. The renderer is **Mermaid** (`mermaid`, MIT) — a text-DSL → SVG library. The diagram source is an opaque string in Mermaid syntax; the renderer parses it at display time, the codec does not.

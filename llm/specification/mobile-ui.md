@@ -1,4 +1,3 @@
----
 # Vance Mobile-UI — Specification
 
 > Status: v1 Initial Draft. Binding for the development of the mobile app under `repos/vance/client/packages/vance-fingers/`.

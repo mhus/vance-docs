@@ -1,4 +1,3 @@
----
 # Vance — Marvin Think Engine
 
 > **Marvin** is the **deep-think** Engine. It builds a

@@ -1,4 +1,3 @@
----
 # Vance — Agrajag (Tool Health Diagnosis Engine)
 
 > Agrajag checks tools, classifies their errors, and writes their health state. In the Adams universe, Agrajag is one half of the diagnostic duo "Agrajag & Lunkwill"; in Vance, it is the first **Service Engine** (see [think-engines §7b](think-engines.md)) — an Engine that does not live in the user chat but works asynchronously as a system-driven specialist.

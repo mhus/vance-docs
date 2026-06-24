@@ -1,4 +1,3 @@
----
 # Eddie — Eddie Hub Engine
 
 > **Eddie** is the **Hub Engine** — the personal Jarvis-like conversational partner from which the user creates, observes, and controls Projects. Eddie is a regular Engine that runs in the **User Project** (`_user_<username>`) and directly handles user-related tasks there (notes, research, ad-hoc calculations, client file operations). Content-related work in **domain-specific** Projects (code refactoring, domain workflows, …) happens in Worker Engines (`arthur`, `marvin`, `ford`, …) within the target Projects — Eddie delegates to them via Working WS and consolidates the outputs. Eddie also uses the *organizational-tools* category (detailed spec pending) for its hub function.

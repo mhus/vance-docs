@@ -1,4 +1,3 @@
----
 # Vance — Skills
 
 > A **Skill** is a reusable capability bundle focused on a single LLM turn: description + auto-trigger + prompt extension + tool whitelist + reference docs. Skills activate either **implicitly** (Arthur recognizes a suitable Skill based on user intent) or **explicitly** (user types `/skill <name>`). Both paths lead to the same Ford loading code. Skills are orthogonal to Recipes: Recipes configure *how* an Engine runs (Engine choice, defaults, lock), Skills are attached capabilities that define *what* it does.

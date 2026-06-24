@@ -1,4 +1,3 @@
----
 # Vance — Document Kinds with Items
 
 > Specifies the **`items` payload** for documents that carry an ordered list of small records — currently the privileged `kind: list`. Defines a single canonical model that maps to three on-disk formats (markdown, JSON, YAML) and round-trips losslessly.

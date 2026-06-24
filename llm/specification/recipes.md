@@ -1,4 +1,3 @@
----
 # Vance — Recipes
 
 > A **Recipe** is a named, reusable blueprint for a worker process: Engine + Default-Params + Prompt-Prefix + Tool-Adjustments. When spawned (e.g., by Arthur via `process_create`), the Recipe is resolved into a concrete `ThinkProcessDocument`. The separation of Engine ↔ Recipe is the clean two-layer architecture that allows Vance to scale without engine proliferation.

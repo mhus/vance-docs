@@ -1,4 +1,3 @@
----
 # Addon System
 
 > Status: v1 in production since 2026-06-03 (slideshow as reference Addon).

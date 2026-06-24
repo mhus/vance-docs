@@ -1,4 +1,3 @@
----
 # Vance — Workspace Management
 
 > Defines the Workspace of a Project: a container for temporary working files (Git checkouts, temp files, later persistent data) that are *not* persisted as Project Documents. Describes the on-disk layout, descriptor format, handler types, and service API. Suspend/Recover enables Pod migration and quota reclaim.

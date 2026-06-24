@@ -1,4 +1,3 @@
----
 # Vance — Voice Mode
 
 > Dynamic per-turn toggle that signals Engines (Arthur, Eddie, later Foot-with-TTS): *"User is listening to this response and/or speaking the next input."* Output becomes shorter, long/structured parts are wrapped in Markdown constructs that the existing `MarkdownToSpeech` stripper skips. Input is interpreted tolerantly for STT artifacts. The toggle is a single boolean — UI may have multiple switches, the Brain receives **one** signal.

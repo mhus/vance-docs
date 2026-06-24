@@ -1,4 +1,3 @@
----
 # Vance — Project Kits Catalog
 
 > A tenant-wide catalog of pre-configured Kits, serving as a selection list

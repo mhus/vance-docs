@@ -1,4 +1,3 @@
----
 # Vance — Application `app: calendar`
 
 > Specifies the **calendar-suite application** — the first reference implementation of the `kind: application` pattern. A folder with `_app.yaml` (`$meta.app: calendar`) becomes a project planning app with one Calendar file per Lane, auto-generated Gantt, and conflict overview.

@@ -1,4 +1,3 @@
----
 # Vance — Zaphod Think Engine
 
 > **Zaphod** is the **Multi-Head** engine: several independent agents ("heads") work on the same question, and Zaphod synthesizes their views into one answer. While Marvin decomposes **vertically** (sub-tasks deeper) and Vogon structures **temporally** (phases with gates), Zaphod works **horizontally**: parallel perspectives on the same matter. Two heads, three brains, one answer.

@@ -1,4 +1,3 @@
----
 # Responsive Focus Layout
 
 > Layout pattern for multi-zone editors with fluid resizing based on user attention. Implemented in `<EditorShell>` (`specification/web-ui.md` §7.2.1) and validated in the pilot in `chat.html` (`planning/web-ui-focus-pilot.md`).

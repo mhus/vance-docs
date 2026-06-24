@@ -1,4 +1,3 @@
----
 # Vance — Fenchurch Image-Generation Service
 
 > Vance's sole path for **newly generated images**. Persona: Fenchurch (Arthur Dent's great love, *So Long, and Thanks for All the Fish*) — intuition, creative images. Implemented as a **service + tool-set**, not a worker engine: synchronous, single provider call per image, no dedicated `ThinkProcess` lifecycle.

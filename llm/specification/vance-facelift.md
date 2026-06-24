@@ -1,4 +1,3 @@
----
 # Vance Facelift — Specification
 
 > Status: v1. This spec is binding for the Capacitor shell

@@ -1,4 +1,3 @@
----
 # Vance — Knowledge Graph & Insights
 
 > How Vance not only stores knowledge but maps relationships and actively finds connections from a perspective.

@@ -1,4 +1,3 @@
----
 # Slartibartfast Engine — Plan-Architect
 
 > **Status: Implemented (M0–M6).** This spec describes the

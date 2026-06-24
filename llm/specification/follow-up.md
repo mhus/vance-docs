@@ -1,4 +1,3 @@
----
 # Vance — Follow-Up Service
 
 > REST endpoint that generates context-aware follow-up suggestions from a text fragment plus cursor position. Single-shot, no Process-Spawn — built on the [LightLlmService](light-llm-service.md) with Recipe `follow-up` as the configuration profile.

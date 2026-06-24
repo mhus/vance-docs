@@ -1,4 +1,3 @@
----
 # Vance — Help System
 
 > A **generic help subsystem** delivers Markdown/text help content from the Brain to the Web UI (and potentially other clients). Content resides as static resources in the Brain, delivered via a single REST endpoint with **language fallback to English**. The Web UI (e.g., the Recipes editor) loads individual help files on demand and renders them in the right panel.

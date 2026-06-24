@@ -1,4 +1,3 @@
----
 # Vance — Workspace Access (Web-UI ↔ Brain)
 
 > Defines how the Web-UI accesses a Project's Workspace. Workspaces are **pod-sticky** (Folder + Snapshots live on a specific Brain process — the Project's Home Pod), but the Web-UI hits any Brain replica. This spec describes the two-layer routing architecture, pod discovery, routing cache, REST endpoints, and failure behavior.

@@ -1,4 +1,3 @@
----
 # Vance Web-UI — Specification
 
 > Status: v1 Initial Draft. This spec is binding for the development of the Web-UI under `repos/vance/client/` (symlink `client_web/`).

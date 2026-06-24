@@ -1,4 +1,3 @@
----
 # Hactar Engine — Script Executor
 
 > **Status: production (v2.0).** Hactar is the pure script-execution

@@ -1,4 +1,3 @@
----
 # Vance — Think Engines and Think Processes
 
 > A **Think Engine** is a replaceable algorithm. A **Think Process** is a running instance that operates according to the algorithm of a Think Engine. Vance starts with **`arthur`** (reactive Session-Chat) and **`ford`** (Generalist-Worker); `vogon` (deterministic multi-phase runner) and `marvin` (deep-think — dynamic task-tree) will follow. The architecture is designed for multiple, named Think Engines.

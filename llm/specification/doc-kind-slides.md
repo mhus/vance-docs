@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `slides`
 
 > Specifies the **`slides` payload** for documents that carry a sequence of presentation slides, written as Markdown sections separated by CommonMark thematic breaks (`---`). Renderer is **Marpit** (`@marp-team/marpit`) — a pure markdown→HTML+CSS library, no runtime framework.

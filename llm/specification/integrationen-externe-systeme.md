@@ -1,4 +1,3 @@
----
 # Vance — Integrations & External Systems
 
 > Defines what Vance itself does, what external tools do, and how the connection looks.

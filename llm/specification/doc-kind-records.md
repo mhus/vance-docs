@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `records`
 
 > Specifies the **`records` payload** for documents that carry a flat, ordered table — a fixed schema in the metadata plus one record per item, with each record holding values for the schema's fields. Direct extension of [`kind: list`](doc-kind-items.md): same flat structure, same bullet-per-item form in Markdown, but per item a map of schema fields instead of a single `text` string.

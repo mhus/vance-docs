@@ -1,4 +1,3 @@
----
 # Vance — Fook Service
 
 > Built-in bug/feature triage system: a reporter (LLM or User) sends

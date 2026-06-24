@@ -1,4 +1,3 @@
----
 # Vance — Scheduler
 
 > A **Scheduler** is a time-based trigger definition that spawns a Think Process via a Recipe. Schedulers are YAML documents located under `_vance/scheduler/<name>.yaml` in the Document Layer, loaded during project bootstrap, and re-read via a `scheduler_refresh` trigger. Each run operates in a dedicated system Session of the Scheduler, with a configured `runAs` identity.

@@ -1,4 +1,3 @@
----
 # Vance — Document Versioning
 
 > Every overwritten document leaves an archived version. Versions reside in their own Mongo collection, are linked to the active document by a stable `lineageId`, and can be viewed, restored, or deleted individually. The feature can be disabled per Project via a setting cascade.

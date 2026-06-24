@@ -1,4 +1,3 @@
----
 # Vance — Prompts and Manuals
 
 > How Engine and Recipe Prompts stay compact: Capabilities, How-Tos, and domain knowledge reside in **Manuals**, which the LLM loads on demand via `manual_read('name')`. The Prompt only specifies **what exists** and **when to load it**, not the content itself.

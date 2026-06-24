@@ -1,4 +1,3 @@
----
 # Vance — Image Manipulation Tools
 
 > Pure-Java image processing on existing Document assets. Complements [Fenchurch](fenchurch-service.md): where Fenchurch creates a **new** image, these tools manipulate an **existing** one. Implemented as `ImageManipulationService` + tool-set in `vance-brain`, parallel to Fenchurch's structure, but without an LLM/provider layer — all processing runs locally in the Pod using the [Scrimage](https://sksamuel.github.io/scrimage/)-Library.

@@ -1,4 +1,3 @@
----
 # Vance — Architecture: Scopes & Clients
 
 > Defines the hierarchy of Scopes, the Client model, and the Session concept.

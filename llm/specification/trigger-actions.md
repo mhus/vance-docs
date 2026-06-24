@@ -1,4 +1,3 @@
----
 # Trigger Actions — Unified Spawning Model
 
 > Binding schema for all spawn actions triggered from outside the

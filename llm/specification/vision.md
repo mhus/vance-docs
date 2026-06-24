@@ -1,4 +1,3 @@
----
 # Vance — Vision & Goal
 
 > This document defines what Vance is, for whom it is built, and the architectural decisions that follow.

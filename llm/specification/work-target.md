@@ -1,4 +1,3 @@
----
 # Vance — WorkTarget & Generic File/Exec Tool-Layer
 
 > A **WorkTarget** describes, per `ThinkProcess`, which backend the

@@ -1,4 +1,3 @@
----
 # Vance — Inline & Embedded Content
 
 > Defines how structured content (tables, mindmaps, graphs, code, images, PDFs, ...) is displayed in chat messages and document bodies. Two delivery channels, one common render path in the frontend.

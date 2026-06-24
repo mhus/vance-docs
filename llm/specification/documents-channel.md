@@ -1,4 +1,3 @@
----
 # Documents Channel — Live Presence + Changed Events
 
 > Live WS channel `documents`: subscribe/unsubscribe per path, viewer roster

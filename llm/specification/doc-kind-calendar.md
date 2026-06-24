@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `calendar`
 
 > Specifies the **`calendar` payload** for documents that carry a flat list of events — meetings, deadlines, holidays, recurring activities. The renderer is a Vance-internal Vue component (`CalendarView.vue`) with **agenda** (chronological list) and **month** (grid) views. Read-only in v1; edits go through the `Raw` tab.

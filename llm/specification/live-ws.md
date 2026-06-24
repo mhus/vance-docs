@@ -1,4 +1,3 @@
----
 # Vance — Live-WS (Multi-Channel WebSocket)
 
 > Multi-channel envelope protocol for external Vance clients (Web, Foot, Mobile)

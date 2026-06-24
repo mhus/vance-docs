@@ -1,4 +1,3 @@
----
 # Vance — WebSocket Protocol
 
 > Chat-Frame Wire-Format (`WebSocketEnvelope`) between local clients (CLI, Desktop, Mobile) and the Vance Brain. **This document describes only the inner frame** — the outer multi-channel envelope, endpoint topology, and cross-pod routing reside in [live-ws](live-ws.md). Frames, as described here, are the `payload` field of the `LiveEnvelope` with `channel="session"`.

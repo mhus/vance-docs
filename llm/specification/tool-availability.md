@@ -1,4 +1,3 @@
----
 # Vance — Tool Availability
 
 > Model for the **health status of tools** at runtime: when a tool is usable, when it is not, for how long, and why. This is the state layer on which the Agrajag service engine (see [agrajag-engine](agrajag-engine.md)) operates. This spec exclusively defines the **data model** and the **read/write paths** — diagnostic logic belongs in agrajag-engine.md.

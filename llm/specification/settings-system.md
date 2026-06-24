@@ -1,4 +1,3 @@
----
 # Vance — Settings System
 
 > Unified, typed settings system for all configurations.

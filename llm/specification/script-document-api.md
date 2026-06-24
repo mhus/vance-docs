@@ -1,4 +1,3 @@
----
 # Script Document API — Specification
 
 > Status: v1. Binding product specification for running Cortex scripts

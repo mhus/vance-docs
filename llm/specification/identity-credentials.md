@@ -1,4 +1,3 @@
----
 # Vance — Identity, Credentials & Tool-Auth
 
 > Defines the unified account model, how credentials work, and why everything is tied to an account.

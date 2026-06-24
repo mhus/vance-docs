@@ -1,4 +1,3 @@
----
 # Vance — Arthur Think Engine
 
 > **Arthur** is the reactive **Session Chat Think Engine** — the default engine of the Chat Think Process, which is automatically created when an Interactive Session is established. Arthur is also the **reference implementation example** that fully demonstrates the general Think Engine framework. Anyone building a new Think Engine will find the concrete API that Arthur uses here — other engines (e.g., `deep-think`) implement the same framework.

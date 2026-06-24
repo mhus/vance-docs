@@ -1,4 +1,3 @@
----
 # Vance — Lunkwill Think Engine
 
 > **Lunkwill** is the **generic Pi-style Executor Engine**. It

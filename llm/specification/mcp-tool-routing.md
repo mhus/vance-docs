@@ -1,4 +1,3 @@
----
 # Vance — MCP & Tool Routing
 
 > Defines where MCP tools reside (server vs. client), how routing works, and what happens when no client is present.

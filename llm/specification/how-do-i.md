@@ -1,4 +1,3 @@
----
 # Vance — `how_do_i` Discovery Tool
 
 > A Discovery Tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full Source Catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `{{ sources }}`.

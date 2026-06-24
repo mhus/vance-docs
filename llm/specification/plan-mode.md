@@ -1,4 +1,3 @@
----
 # Vance — Plan-Mode
 
 > **Plan-Mode** is Vance's mechanism for *exploration-before-execution* for

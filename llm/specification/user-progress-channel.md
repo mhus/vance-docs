@@ -1,4 +1,3 @@
----
 # Vance — User Progress Channel
 
 > Live status for the user while Engines are working. **One** message class `PROCESS_PROGRESS` with three payload variants, separate from the authoritative chat stream. Ephemeral, not in Conversation History.

@@ -1,4 +1,3 @@
----
 # Vance — Trillian Engine
 
 > **Trillian** is Vance's **Agentic User Loop** — a layer above

@@ -1,4 +1,3 @@
----
 # Vance — Project Lifecycle
 
 > Defines the status set of a Project, Pod ownership, the `bring` / `suspend` / `close` transitions, and the relationship to the Workspace. Complements [workspace-management.md](workspace-management.md) (what happens *within* a Project on disk) and [session-lifecycle.md](session-lifecycle.md) (what runs *within* a Session) — this spec is the overarching framework. Cluster-wide distribution of Projects to Pods (who calls `bring` when on which Pod) is covered in [cluster-project-management.md](../cluster-project-management.md), which sits one layer above.

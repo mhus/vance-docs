@@ -1,4 +1,3 @@
----
 # Vance — Client Protocol & Extensibility
 
 > Defines the WebSocket protocol, how external systems connect as clients, and how Vance thereby becomes an open platform.

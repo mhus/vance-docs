@@ -1,4 +1,3 @@
----
 # Vance — Ursahooks
 
 > **Ursahooks** are project-specific, lifecycle-event-driven triggers.

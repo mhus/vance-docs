@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `data`
 
 > Specifies the **`data` payload** for documents that carry an arbitrary, free-form data tree — objects, arrays, and primitive types. Designed as a **container that other tools or processes consume**, not as a thing humans hand-edit through a structured editor. The Web-UI offers a Preview-only viewer; raw editing is the only write path.

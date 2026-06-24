@@ -1,4 +1,3 @@
----
 # Vance — Multi-User, Teams & Collaboration
 
 > Defines how Tenants, Teams, Users, and Project Sharing work.

@@ -1,4 +1,3 @@
----
 # Vance — Memory & Knowledge Management
 
 > Defines how knowledge in Vance is structured, stored, tagged, and made searchable.

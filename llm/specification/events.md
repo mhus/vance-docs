@@ -1,4 +1,3 @@
----
 # Vance — Events
 
 > An **Event** is an externally triggerable, REST-accessible trigger that starts a workflow run. Events are stored as YAML documents under `_vance/events/<name>.yaml` in the Document Layer, are resolved via the usual cascade (`Project → _tenant`), and are addressable via a JWT-free endpoint: `GET|POST /brain/{tenant}/event/{project}/{event}`.

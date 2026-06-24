@@ -1,4 +1,3 @@
----
 # User Notification Side-Channel
 
 > Short, attention-grabbing user pings — "BEEP, finished XXX". Separate

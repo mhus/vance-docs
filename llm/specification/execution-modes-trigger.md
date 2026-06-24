@@ -1,4 +1,3 @@
----
 # Vance — Execution Modes & Trigger
 
 > Defines how Think Processes are triggered and how the unified client session model works.

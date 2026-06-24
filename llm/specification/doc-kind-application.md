@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `application`
 
 > Specifies the **`application` payload** for documents named `_app.yaml` — the manifest at the root of a Vance "application folder". The folder + manifest convention turns an otherwise-flat tree of documents into a self-contained domain workspace (calendar suite, kanban board, wiki, …) with its own derived artifacts and per-app Java service.

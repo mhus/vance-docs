@@ -1,4 +1,3 @@
----
 # Vance — Document Kind `checklist`
 
 > Specifies the **`checklist` payload** for documents that carry a flat list of actionable items with per-item status — todos, action items from meetings, review checklists, Recipes, pre-flight checks. Extends the `kind: list` family with a `status` field. Markdown round-trip uses extended GFM checkbox syntax (`- [<char>] text`).

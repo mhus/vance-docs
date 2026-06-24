@@ -1,4 +1,3 @@
----
 # Vance — Fook Upstream Transport
 
 > Locally triaged Fook tickets are forwarded to an external ticket system

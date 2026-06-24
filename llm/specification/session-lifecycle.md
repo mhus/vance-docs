@@ -1,4 +1,3 @@
----
 # Vance — Session Lifecycle
 
 > Defines the status set for Sessions and Engines (Think Processes), the typed lifecycle properties of a Session, the suspend/archive/close behavior depending on the trigger, auto-restart and manual resume after forced suspends, as well as the user-facing metadata (Title/Icon/Color/Tags/Pin) and the search infrastructure that makes Sessions portable as long-lived knowledge containers.
