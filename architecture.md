@@ -32,7 +32,7 @@ thing, but distinct aspects of the interaction:
 |---|---|---|
 | `vance-foot` | Picocli + JLine 3 + Lanterna | Terminal client with local tools |
 | `vance-face` | Vue 3 + Vite + Tailwind | Web-UI with live documents (Cortex) |
-| `facelift-bridge` | Capacitor + WKWebView | Mobile wrapper around the deployed Web-UI |
+| `vance-facelift` | Capacitor + WKWebView | Mobile wrapper around the deployed Web-UI |
 
 ## Tech stack
 
@@ -40,7 +40,7 @@ thing, but distinct aspects of the interaction:
 - **MongoDB** — persistence (think-processes, documents, settings, memory)
 - **langchain4j / langgraph4j** — LLM integration and orchestration
 - **TypeScript + Vue 3 + Vite** — Web-UI
-- **Capacitor + WKWebView** — mobile (iOS via `facelift-bridge`)
+- **Capacitor + WKWebView** — mobile (iOS via `vance-facelift`)
 - **Picocli + JLine 3 + Lanterna** — CLI
 
 ## Triggers (Ursa)
