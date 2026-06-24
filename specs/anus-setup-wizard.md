@@ -1,6 +1,6 @@
 ---
 title: "Vance — Anus Setup Wizard"
-parent: Specifications
+parent: Documentation
 permalink: /specs/anus-setup-wizard
 ---
 

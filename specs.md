@@ -1,15 +1,14 @@
 ---
-title: Specifications
+title: Documentation
 nav_order: 5
 permalink: /specs/
 has_children: true
 ---
 
-# Specifications
+# Documentation
 
-Authoritative specifications for Vance internals — engines, services,
-data model, protocols. Each page is the source of truth for one
-subsystem.
+In-depth documentation for Vance internals — engines, services, data
+model, protocols. Each page is the source of truth for one subsystem.
 
 Browse the sidebar to the left, or use the search box (top right) to
 jump to a term. Cross-references between specs are linked inline.
