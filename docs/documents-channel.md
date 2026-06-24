@@ -2,6 +2,7 @@
 title: "Documents Channel — Live Presence + Changed Events"
 parent: Documentation
 permalink: /docs/documents-channel
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/documents-channel.md — do not edit here. -->

@@ -2,6 +2,7 @@
 title: "Slartibartfast Engine — Plan-Architect"
 parent: Documentation
 permalink: /docs/slartibartfast-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/slartibartfast-engine.md — do not edit here. -->

@@ -2,6 +2,7 @@
 title: "Vance — Live-WS (Multi-Channel WebSocket)"
 parent: Documentation
 permalink: /docs/live-ws
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/live-ws.md — do not edit here. -->

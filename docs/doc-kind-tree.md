@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `tree`"
 parent: Documentation
 permalink: /docs/doc-kind-tree
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-tree.md — do not edit here. -->

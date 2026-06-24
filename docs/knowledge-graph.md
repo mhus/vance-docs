@@ -2,6 +2,7 @@
 title: "Vance — Knowledge Graph & Insights"
 parent: Documentation
 permalink: /docs/knowledge-graph
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/knowledge-graph.md — do not edit here. -->

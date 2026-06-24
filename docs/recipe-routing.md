@@ -2,6 +2,7 @@
 title: "Vance — Recipe Routing"
 parent: Documentation
 permalink: /docs/recipe-routing
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/recipe-routing.md — do not edit here. -->

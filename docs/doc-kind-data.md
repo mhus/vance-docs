@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `data`"
 parent: Documentation
 permalink: /docs/doc-kind-data
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-data.md — do not edit here. -->

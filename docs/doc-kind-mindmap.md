@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `mindmap`"
 parent: Documentation
 permalink: /docs/doc-kind-mindmap
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-mindmap.md — do not edit here. -->

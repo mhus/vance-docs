@@ -2,6 +2,7 @@
 title: "Vance — WebSocket Protocol"
 parent: Documentation
 permalink: /docs/websocket-protokoll
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/websocket-protokoll.md — do not edit here. -->

@@ -2,6 +2,7 @@
 title: "Vance — Image Manipulation Tools"
 parent: Documentation
 permalink: /docs/image-manipulation
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/image-manipulation.md — do not edit here. -->

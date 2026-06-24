@@ -2,6 +2,7 @@
 title: "Vance — Application `app: calendar`"
 parent: Documentation
 permalink: /docs/app-calendar
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/app-calendar.md — do not edit here. -->

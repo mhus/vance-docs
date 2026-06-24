@@ -2,6 +2,7 @@
 title: "Vance — Project Kits Catalog"
 parent: Documentation
 permalink: /docs/project-kits-catalog
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/project-kits-catalog.md — do not edit here. -->

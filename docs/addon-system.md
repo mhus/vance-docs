@@ -2,6 +2,7 @@
 title: "Addon System"
 parent: Documentation
 permalink: /docs/addon-system
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/addon-system.md — do not edit here. -->

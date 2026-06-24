@@ -2,6 +2,7 @@
 title: "Vance — Prompts and Manuals"
 parent: Documentation
 permalink: /docs/prompts-and-manuals
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/prompts-and-manuals.md — do not edit here. -->

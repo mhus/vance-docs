@@ -2,6 +2,7 @@
 title: "Trigger Actions — Unified Spawning Model"
 parent: Documentation
 permalink: /docs/trigger-actions
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/trigger-actions.md — do not edit here. -->

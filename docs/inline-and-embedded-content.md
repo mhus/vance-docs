@@ -2,6 +2,7 @@
 title: "Vance — Inline & Embedded Content"
 parent: Documentation
 permalink: /docs/inline-and-embedded-content
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/inline-and-embedded-content.md — do not edit here. -->

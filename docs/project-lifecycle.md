@@ -2,6 +2,7 @@
 title: "Vance — Project Lifecycle"
 parent: Documentation
 permalink: /docs/project-lifecycle
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/project-lifecycle.md — do not edit here. -->

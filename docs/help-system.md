@@ -2,6 +2,7 @@
 title: "Vance — Help System"
 parent: Documentation
 permalink: /docs/help-system
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/help-system.md — do not edit here. -->

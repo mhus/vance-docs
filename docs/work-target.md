@@ -2,6 +2,7 @@
 title: "Vance — WorkTarget & Generic File/Exec Tool-Layer"
 parent: Documentation
 permalink: /docs/work-target
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/work-target.md — do not edit here. -->

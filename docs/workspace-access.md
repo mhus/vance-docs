@@ -2,6 +2,7 @@
 title: "Vance — Workspace Access (Web-UI ↔ Brain)"
 parent: Documentation
 permalink: /docs/workspace-access
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/workspace-access.md — do not edit here. -->

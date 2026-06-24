@@ -2,6 +2,7 @@
 title: "Vance — Events"
 parent: Documentation
 permalink: /docs/events
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/events.md — do not edit here. -->

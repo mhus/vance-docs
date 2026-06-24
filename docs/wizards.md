@@ -2,6 +2,7 @@
 title: "Vance — Prompt Wizards"
 parent: Documentation
 permalink: /docs/wizards
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/wizards.md — do not edit here. -->

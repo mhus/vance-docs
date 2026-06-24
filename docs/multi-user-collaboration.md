@@ -2,6 +2,7 @@
 title: "Vance — Multi-User, Teams & Collaboration"
 parent: Documentation
 permalink: /docs/multi-user-collaboration
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/multi-user-collaboration.md — do not edit here. -->

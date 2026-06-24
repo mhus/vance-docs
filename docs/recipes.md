@@ -2,6 +2,7 @@
 title: "Vance — Recipes"
 parent: Documentation
 permalink: /docs/recipes
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/recipes.md — do not edit here. -->

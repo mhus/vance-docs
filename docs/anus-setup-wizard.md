@@ -2,6 +2,7 @@
 title: "Vance — Anus Setup Wizard"
 parent: Documentation
 permalink: /docs/anus-setup-wizard
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/anus-setup-wizard.md — do not edit here. -->

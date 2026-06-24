@@ -2,6 +2,7 @@
 title: "Vance — Zaphod Think Engine"
 parent: Documentation
 permalink: /docs/zaphod-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/zaphod-engine.md — do not edit here. -->

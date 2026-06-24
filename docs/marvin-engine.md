@@ -2,6 +2,7 @@
 title: "Vance — Marvin Think Engine"
 parent: Documentation
 permalink: /docs/marvin-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/marvin-engine.md — do not edit here. -->

@@ -2,6 +2,7 @@
 title: "Vance — Identity, Credentials & Tool-Auth"
 parent: Documentation
 permalink: /docs/identity-credentials
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/identity-credentials.md — do not edit here. -->

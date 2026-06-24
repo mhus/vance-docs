@@ -2,6 +2,7 @@
 title: "Vance — User Progress Channel"
 parent: Documentation
 permalink: /docs/user-progress-channel
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/user-progress-channel.md — do not edit here. -->

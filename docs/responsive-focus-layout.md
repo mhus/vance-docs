@@ -2,6 +2,7 @@
 title: "Responsive Focus Layout"
 parent: Documentation
 permalink: /docs/responsive-focus-layout
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/responsive-focus-layout.md — do not edit here. -->

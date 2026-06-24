@@ -2,6 +2,7 @@
 title: "Vance — Fook Upstream Transport"
 parent: Documentation
 permalink: /docs/fook-upstream
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/fook-upstream.md — do not edit here. -->

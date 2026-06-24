@@ -2,6 +2,7 @@
 title: "Vance — Prompt Caching"
 parent: Documentation
 permalink: /docs/prompt-caching
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/prompt-caching.md — do not edit here. -->

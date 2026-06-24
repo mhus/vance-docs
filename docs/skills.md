@@ -2,6 +2,7 @@
 title: "Vance — Skills"
 parent: Documentation
 permalink: /docs/skills
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/skills.md — do not edit here. -->

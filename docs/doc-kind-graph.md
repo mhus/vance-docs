@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `graph`"
 parent: Documentation
 permalink: /docs/doc-kind-graph
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-graph.md — do not edit here. -->

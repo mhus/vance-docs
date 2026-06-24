@@ -2,6 +2,7 @@
 title: "Vance — Plan-Mode"
 parent: Documentation
 permalink: /docs/plan-mode
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/plan-mode.md — do not edit here. -->

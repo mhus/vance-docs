@@ -2,6 +2,7 @@
 title: "Vance Mobile-UI — Specification"
 parent: Documentation
 permalink: /docs/mobile-ui
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/mobile-ui.md — do not edit here. -->

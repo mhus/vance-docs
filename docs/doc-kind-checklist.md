@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `checklist`"
 parent: Documentation
 permalink: /docs/doc-kind-checklist
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-checklist.md — do not edit here. -->

@@ -2,6 +2,7 @@
 title: "Vance — LLM Resource Management"
 parent: Documentation
 permalink: /docs/llm-resource-management
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/llm-resource-management.md — do not edit here. -->

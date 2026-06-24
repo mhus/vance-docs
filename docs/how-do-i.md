@@ -2,6 +2,7 @@
 title: "Vance — `how_do_i` Discovery Tool"
 parent: Documentation
 permalink: /docs/how-do-i
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/how-do-i.md — do not edit here. -->

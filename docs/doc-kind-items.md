@@ -2,6 +2,7 @@
 title: "Vance — Document Kinds with Items"
 parent: Documentation
 permalink: /docs/doc-kind-items
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-items.md — do not edit here. -->

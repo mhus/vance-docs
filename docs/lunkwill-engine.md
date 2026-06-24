@@ -2,6 +2,7 @@
 title: "Vance — Lunkwill Think Engine"
 parent: Documentation
 permalink: /docs/lunkwill-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/lunkwill-engine.md — do not edit here. -->

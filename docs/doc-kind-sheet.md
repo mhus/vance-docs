@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `sheet`"
 parent: Documentation
 permalink: /docs/doc-kind-sheet
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-sheet.md — do not edit here. -->

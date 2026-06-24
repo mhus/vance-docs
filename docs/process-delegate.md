@@ -2,6 +2,7 @@
 title: "Vance — `process_create_delegate`"
 parent: Documentation
 permalink: /docs/process-delegate
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/process-delegate.md — do not edit here. -->

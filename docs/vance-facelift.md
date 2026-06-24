@@ -2,6 +2,7 @@
 title: "Vance Facelift — Specification"
 parent: Documentation
 permalink: /docs/vance-facelift
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/vance-facelift.md — do not edit here. -->

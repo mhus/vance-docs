@@ -2,6 +2,7 @@
 title: "Vance — Document Versioning"
 parent: Documentation
 permalink: /docs/document-versioning
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/document-versioning.md — do not edit here. -->

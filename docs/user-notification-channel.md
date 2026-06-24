@@ -2,6 +2,7 @@
 title: "User Notification Side-Channel"
 parent: Documentation
 permalink: /docs/user-notification-channel
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/user-notification-channel.md — do not edit here. -->

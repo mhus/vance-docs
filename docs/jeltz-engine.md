@@ -2,6 +2,7 @@
 title: "Vance — Jeltz Think Engine"
 parent: Documentation
 permalink: /docs/jeltz-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/jeltz-engine.md — do not edit here. -->

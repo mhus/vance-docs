@@ -2,6 +2,7 @@
 title: "Vance — Arthur Think Engine"
 parent: Documentation
 permalink: /docs/arthur-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/arthur-engine.md — do not edit here. -->

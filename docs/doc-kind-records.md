@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `records`"
 parent: Documentation
 permalink: /docs/doc-kind-records
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-records.md — do not edit here. -->

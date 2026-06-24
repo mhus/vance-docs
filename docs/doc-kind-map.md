@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `map`"
 parent: Documentation
 permalink: /docs/doc-kind-map
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-map.md — do not edit here. -->

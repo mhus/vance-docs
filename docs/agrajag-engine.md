@@ -2,6 +2,7 @@
 title: "Vance — Agrajag (Tool Health Diagnosis Engine)"
 parent: Documentation
 permalink: /docs/agrajag-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/agrajag-engine.md — do not edit here. -->

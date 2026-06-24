@@ -2,6 +2,7 @@
 title: "Vance — Architecture: Scopes & Clients"
 parent: Documentation
 permalink: /docs/architektur-scopes-clients
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/architektur-scopes-clients.md — do not edit here. -->

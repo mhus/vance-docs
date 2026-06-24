@@ -2,6 +2,7 @@
 title: "Script Document API — Specification"
 parent: Documentation
 permalink: /docs/script-document-api
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/script-document-api.md — do not edit here. -->

@@ -2,6 +2,7 @@
 title: "Vance — MCP & Tool Routing"
 parent: Documentation
 permalink: /docs/mcp-tool-routing
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/mcp-tool-routing.md — do not edit here. -->

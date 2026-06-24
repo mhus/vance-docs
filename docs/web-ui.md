@@ -2,6 +2,7 @@
 title: "Vance Web-UI — Specification"
 parent: Documentation
 permalink: /docs/web-ui
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/web-ui.md — do not edit here. -->

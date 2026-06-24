@@ -2,6 +2,7 @@
 title: "Vance — Fook Service"
 parent: Documentation
 permalink: /docs/fook-service
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/fook-service.md — do not edit here. -->

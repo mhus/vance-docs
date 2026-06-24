@@ -2,6 +2,7 @@
 title: "Vance Application — `app: kanban`"
 parent: Documentation
 permalink: /docs/app-kanban
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/app-kanban.md — do not edit here. -->

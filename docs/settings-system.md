@@ -2,6 +2,7 @@
 title: "Vance — Settings System"
 parent: Documentation
 permalink: /docs/settings-system
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/settings-system.md — do not edit here. -->

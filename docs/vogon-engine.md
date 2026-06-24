@@ -2,6 +2,7 @@
 title: "Vance — Vogon Think Engine"
 parent: Documentation
 permalink: /docs/vogon-engine
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/vogon-engine.md — do not edit here. -->

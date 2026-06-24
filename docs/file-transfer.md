@@ -2,6 +2,7 @@
 title: "Vance — File Transfer (Foot ↔ Brain)"
 parent: Documentation
 permalink: /docs/file-transfer
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/file-transfer.md — do not edit here. -->

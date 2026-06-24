@@ -2,6 +2,7 @@
 title: "Vance Cortex — Specification"
 parent: Documentation
 permalink: /docs/cortex
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/cortex.md — do not edit here. -->

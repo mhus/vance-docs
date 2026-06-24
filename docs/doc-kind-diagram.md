@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `diagram`"
 parent: Documentation
 permalink: /docs/doc-kind-diagram
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-diagram.md — do not edit here. -->

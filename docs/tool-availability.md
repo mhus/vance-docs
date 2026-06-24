@@ -2,6 +2,7 @@
 title: "Vance — Tool Availability"
 parent: Documentation
 permalink: /docs/tool-availability
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/tool-availability.md — do not edit here. -->

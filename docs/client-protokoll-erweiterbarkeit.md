@@ -2,6 +2,7 @@
 title: "Vance — Client Protocol & Extensibility"
 parent: Documentation
 permalink: /docs/client-protokoll-erweiterbarkeit
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/client-protokoll-erweiterbarkeit.md — do not edit here. -->

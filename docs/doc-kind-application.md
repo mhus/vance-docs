@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `application`"
 parent: Documentation
 permalink: /docs/doc-kind-application
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-application.md — do not edit here. -->

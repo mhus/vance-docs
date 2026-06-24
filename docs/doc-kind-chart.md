@@ -2,6 +2,7 @@
 title: "Vance — Document Kind `chart`"
 parent: Documentation
 permalink: /docs/doc-kind-chart
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-chart.md — do not edit here. -->

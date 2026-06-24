@@ -2,6 +2,7 @@
 title: "Vance — Setting Forms"
 parent: Documentation
 permalink: /docs/setting-forms
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/setting-forms.md — do not edit here. -->

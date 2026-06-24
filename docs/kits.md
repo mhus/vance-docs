@@ -2,6 +2,7 @@
 title: "Vance — Project Kits"
 parent: Documentation
 permalink: /docs/kits
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/kits.md — do not edit here. -->

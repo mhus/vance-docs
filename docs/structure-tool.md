@@ -2,6 +2,7 @@
 title: "Structure Tool"
 parent: Documentation
 permalink: /docs/structure-tool
+render_with_liquid: false
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/structure-tool.md — do not edit here. -->
