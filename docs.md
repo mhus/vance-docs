@@ -1,7 +1,7 @@
 ---
 title: Documentation
 nav_order: 5
-permalink: /specs/
+permalink: /docs/
 has_children: true
 ---
 

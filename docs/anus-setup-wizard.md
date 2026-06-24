@@ -1,7 +1,7 @@
 ---
 title: "Vance — Anus Setup Wizard"
 parent: Documentation
-permalink: /specs/anus-setup-wizard
+permalink: /docs/anus-setup-wizard
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/anus-setup-wizard.md — do not edit here. -->
