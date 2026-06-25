@@ -27,18 +27,33 @@ clean machine to an open Web UI: about five minutes.
 - Outbound HTTPS to Docker Hub (image pulls) and to your LLM provider
   (Anthropic, OpenAI, Gemini, …)
 
+## Pick a variant
+
+The [`vance-startup`](https://github.com/mhus/vance-startup) repo ships
+two self-contained Docker Compose stacks under separate subdirectories:
+
+| Variant | What's in it | When to pick |
+|---|---|---|
+| [`minimal/`](https://github.com/mhus/vance-startup/tree/main/minimal) | MongoDB + Brain + Web UI. Setup wizard runs as a one-shot via `./setup.sh`. | **Default for local installs.** Smallest possible footprint. Live-WS cross-pod features are off — single-pod doesn't need them. |
+| [`live/`](https://github.com/mhus/vance-startup/tree/main/live) | The above + Redis + mongo-express (profile) + Anus REPL (profile). | Pick this if you want to exercise the live features (multi-tab presence, `documents.changed` push, cross-pod fan-out) or want debug / admin tooling on tap. |
+
+The instructions below use `minimal/`; for `live/` just `cd
+vance-startup/live` instead and replace step 2 with
+`docker compose run --rm anus --setup` (anus ships as a service there).
+
 ## Quick start
 
 ```bash
 git clone https://github.com/mhus/vance-startup.git
-cd vance-startup
+cd vance-startup/minimal
 cp .env.example .env
 
 # 1. Start the stack (MongoDB + Brain + Web UI).
 docker compose up -d
 
 # 2. First-time setup: create a tenant + user and configure an LLM provider.
-docker compose run --rm anus --setup
+#    Spawns vance-anus as a one-shot against the existing compose network.
+./setup.sh
 ```
 
 Step 2 launches an interactive one-shot wizard. Answer the prompts and the
@@ -88,23 +103,28 @@ the Web UI under Settings → AI, or pre-seed it with
 
 ## What you get
 
-| Service | Port | Role |
-|---|---|---|
-| MongoDB | 27017 | Persistence — think-processes, documents, settings |
-| Brain | 9990 | Vance Brain server (REST + WebSocket) |
-| Web UI | 8080 | The user-facing app |
+| Service | Port | `minimal/` | `live/` |
+|---|---|---|---|
+| MongoDB | 27017 | ✓ | ✓ |
+| Brain | 9990 | ✓ | ✓ |
+| Web UI | 8080 | ✓ | ✓ |
+| Redis (live-WS) | 6379 | — | ✓ |
+| mongo-express (profile: `admin`) | 9081 | — | opt-in |
+| Anus REPL (profile: `tools`) | — | — | opt-in |
 
 All data is kept in named Docker volumes. `docker compose down` keeps it;
 `docker compose down -v` resets the stack.
 
-## Optional add-ons
+Both variants reuse the same Compose project name (`vance`), so switching
+between them preserves the MongoDB volume — start with `minimal/`, move to
+`live/` later without re-running the setup wizard.
 
-The startup repo ships three additional services, gated by Compose
+## Optional add-ons (live/ only)
+
+In the `live/` variant, two services are gated by Compose
 [profiles](https://docs.docker.com/compose/profiles/) so they don't run
 unless you ask:
 
-- **Redis** (`--profile live`) — for multi-pod deployments with cross-pod
-  live-WS fan-out. Not needed for a single-pod local stack.
 - **mongo-express** (`--profile admin`) — MongoDB browser at
   <http://localhost:9081>.
 - **Anus admin shell** (`--profile tools`) — interactive Vance admin CLI.
