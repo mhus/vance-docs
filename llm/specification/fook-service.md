@@ -4,7 +4,7 @@
 > free text, Fook asynchronously decides whether to create a new
 > ticket, merge it into an existing one, or discard it. The subsequent
 > processing of tickets (status transitions, fixes, PR sync) is handled
-> by **Lunkwill** — not in scope here.
+> by **Frankie** — not in scope here.
 >
 > Architecture: `LightLlmService` with Recipe `fook` as a
 > configuration profile, plus a thin service with an in-memory queue
@@ -45,12 +45,12 @@ created for the reporter.
 **What Fook is not:**
 
 - Not a ticket editor — tickets are stored as YAML-Documents in the
-  `_vance`-Tenant; UI for this comes with Lunkwill.
+  `_vance`-Tenant; UI for this comes with Frankie.
 - No status lifecycle after `new` — transitions to
   `triaged`/`accepted`/`in_progress`/`resolved`/`closed` are set
-  by Lunkwill.
+  by Frankie.
 - No GitHub/Jira sync, no fix suggestion, no PR generation — all
-  Lunkwill.
+  Frankie.
 - No cross-tenant visibility model — tickets are globally readable
   in the `_vance`-Tenant (reporter identity as Document metadata),
   not isolated per-Tenant.
@@ -276,7 +276,7 @@ logic.
 
 **Race-Conditions:** Two Pods triage without Cross-Pod-Sync.
 Simultaneous reports of the same problem can create two separate
-tickets. Consciously accepted — Lunkwill cleans up duplicates later.
+tickets. Consciously accepted — Frankie cleans up duplicates later.
 
 ---
 
@@ -386,7 +386,7 @@ $meta:
   title: "Brain crash on boot"
   type: bug                  # bug | feature | question | other
   severity: high             # low | medium | high
-  status: new                # Lunkwill manages later lifecycle
+  status: new                # Frankie manages later lifecycle
   duplicateOf: null          # only relation as scalar in $meta
   reporterKind: engine       # engine | user_direct | service_account
   reporterUserId: alice
@@ -419,7 +419,7 @@ relations:
 **Field Distribution — Rule:**
 
 - `$meta` — all scalars suitable for `searchSimilar` or for
-  Lunkwill as a filter. The *one* scalar relation
+  Frankie as a filter. The *one* scalar relation
   `duplicateOf` remains here for quick lookups.
 - Body-Keys — prose (`description`, `triageNote`) and nested
   structures (`context`, `relations`).
@@ -502,7 +502,7 @@ The `promptPrefix`-Template is compile-validated during Recipe-Load
 
 ---
 
-## 11. Lifecycle after `new` — Out of Scope (Lunkwill)
+## 11. Lifecycle after `new` — Out of Scope (Frankie)
 
 The following is explicitly not in this spec — Vance only prepares
 tickets locally:
@@ -519,7 +519,7 @@ tickets locally:
 
 **Outbound transport** (local triage → external system) is covered
 by [`fook-upstream.md`](fook-upstream.md). **Lifecycle after transfer**
-is Lunkwill's responsibility and happens in the external system.
+is Frankie's responsibility and happens in the external system.
 
 ---
 

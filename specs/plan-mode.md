@@ -56,7 +56,7 @@ Eddie (Voice Hub) support Plan-Mode; they consume the same
 - Not a universal Engine feature — Worker Engines (Ford, Marvin,
   Vogon) do not use it. Plan-Mode requires an LLM-driven
   Action loop, which only the Chat/Hub Engines have.
-- **Lunkwill uses a reduced variant** ([lunkwill-engine §9](/specs/lunkwill-engine#9-plan-tracking-reduzierte-plan-mode-variante)):
+- **Frankie uses a reduced variant** ([frankie-engine §9](/specs/frankie-engine#9-plan-tracking-reduzierte-plan-mode-variante)):
   TodoList persistence + per-turn prompt block + two
   tools (`todo_write`, `todo_update`), but **no** mode switch,
   **no** approval, **no** read-only filter. Same `todos`-

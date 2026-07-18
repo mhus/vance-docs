@@ -326,7 +326,7 @@ Service Engines live in a System Session per `(tenantId, projectId, serviceName)
 
 Agrajag is the first concrete Service Engine. Already named in the Adams universe and foreseeable as the same Engine type:
 
-- **Lunkwill** — generic Pi-style Executor Engine, active (see [lunkwill-engine](/specs/lunkwill-engine)). Currently with user-spawnable `coding`-Recipe; planned Service Recipes: `lunkwill-repair` (MCP reconnect, token refresh trigger; roles: `tool-health-writer`, `repair-actor`), `lunkwill-fook-upstream` (GitHub ticket worker).
+- **Frankie** — generic Pi-style Executor Engine, active (see [frankie-engine](/specs/frankie-engine)). Currently with user-spawnable `coding`-Recipe; planned Service Recipes: `frankie-repair` (MCP reconnect, token refresh trigger; roles: `tool-health-writer`, `repair-actor`), `frankie-fook-upstream` (GitHub ticket worker).
 - **Prak** — Audit Engine (read scan via tool calls + anomaly detection). Roles: `audit-reader`, `audit-writer`.
 - **Agrajag** — Failure Tracking (categorizes recurring Engine failures). Roles: `audit-reader`, `failure-tracker`.
 

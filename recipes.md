@@ -99,7 +99,7 @@ summarises structure and call sites.
 ### `coding`
 {: .d-inline-block }
 
-engine: `lunkwill`
+engine: `frankie`
 {: .label .label-blue }
 
 Coding worker. Reads and edits files at the active work target,
@@ -158,23 +158,23 @@ top of this — pick the most specific one when applicable.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/ford.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
-### `lunkwill`
+### `frankie`
 {: .d-inline-block }
 
-engine: `lunkwill`
+engine: `frankie`
 {: .label .label-blue }
 
-**Lunkwill — Focused Worker**
+**Frankie — Focused Worker**
 
-Generic Lunkwill worker — Pi-style loop, drains inbox, calls the LLM,
+Generic Frankie worker — Pi-style loop, drains inbox, calls the LLM,
 executes tools, repeats until natural stop or tool-driven terminate.
-Specialise via coding / lunkwill-repair / lunkwill-fook-upstream.
+Specialise via coding / frankie-repair / frankie-fook-upstream.
 
 **Model:** `default:fast`
 
 **Tags:** `worker`, `engine-default`
 
-[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/lunkwill.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/frankie.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `marvin`
 {: .d-inline-block }
@@ -643,13 +643,13 @@ Runs as _trillian-0XXXX in its own headless session.
 ### `trillian-worker-0`
 {: .d-inline-block }
 
-engine: `lunkwill`
+engine: `frankie`
 {: .label .label-blue }
 
-Trillian-User worker. Lunkwill loop with a hard termination contract:
+Trillian-User worker. Frankie loop with a hard termination contract:
 call trillian_done(summary=…) when the task is finished so the
 parent gets a clean DONE event. Otherwise behaves like a coding-
-style worker (file_*/exec_*/doc_* via Lunkwill defaults).
+style worker (file_*/exec_*/doc_* via Frankie defaults).
 
 **Model:** `default:fast` (fallbacks: `default:analyze`)
 

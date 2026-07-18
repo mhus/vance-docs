@@ -19,10 +19,10 @@ permalink: /specs/work-target
 >
 > Effect for Engines: a unified tool manifest entry per operation
 > (`file_read`, `exec_run`, …), regardless of where the worker lands.
-> Lunkwill uses this productively; other Engines can adopt the layer
+> Frankie uses this productively; other Engines can adopt the layer
 > on-demand.
 >
-> See also: [lunkwill-engine](/specs/lunkwill-engine) | [workspace-management](/specs/workspace-management) | [prompts-and-manuals](/specs/prompts-and-manuals)
+> See also: [frankie-engine](/specs/frankie-engine) | [workspace-management](/specs/workspace-management) | [prompts-and-manuals](/specs/prompts-and-manuals)
 
 ---
 
@@ -36,7 +36,7 @@ Vance currently has three parallel storage/execution surfaces:
 | Workspace RootDir | Brain-Server | `work_file_*` / `work_exec_*` | ephemeral (per-Process Sandbox) |
 | Persistent Documents | MongoDB | `doc_*` | persistent, indexed |
 
-Engines (especially Lunkwill + `coding`-Recipe) want to use the first
+Engines (especially Frankie + `coding`-Recipe) want to use the first
 two **seamlessly** — depending on whether a Foot-Client is connected
 or not. Directly hardcoding a set breaks on profile switch and
 overloads the LLM manifest with two quasi-identical operations per
@@ -205,7 +205,7 @@ them), but:
 ## 6. Engine Integration
 
 ```java
-public class LunkwillEngine implements ThinkEngine {
+public class FrankieEngine implements ThinkEngine {
     private static final Set<String> ENGINE_DEFAULT_TOOLS;
     static {
         Set<String> base = new LinkedHashSet<>();
@@ -245,5 +245,5 @@ Recipes must remove the backends from the manifest via `allowedToolsDefer`
 - `vance-brain/.../tools/exec/` — Brain-side Exec-Backends (`work_exec_*`)
 - `vance-foot/.../tools/file/` — Foot-side Backends (`client_file_*`)
 - `planning/work-target-and-tool-rename.md` — Migration Plan (4 Milestones)
-- `specification/lunkwill-engine.md` — Engine that uses this layer productively
+- `specification/frankie-engine.md` — Engine that uses this layer productively
 - `specification/workspace-management.md` — RootDir Concept

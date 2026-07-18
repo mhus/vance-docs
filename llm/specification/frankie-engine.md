@@ -1,15 +1,15 @@
-# Vance — Lunkwill Think Engine
+# Vance — Frankie Think Engine
 
-> **Lunkwill** is the **generic Pi-style Executor Engine**. It
+> **Frankie** is the **generic Pi-style Executor Engine**. It
 > processes a task in multiple turns — LLM-Call → Tool-Calls →
-> next turn — until one of four stop conditions fires. Lunkwill
+> next turn — until one of four stop conditions fires. Frankie
 > knows **no `maxIterations` cap**: it is endless-by-design. Stop
 > comes from *natural conversation*, *explicit Tool-Terminate*,
 > *external Interrupt*, or *Safety-Net*.
 >
-> Lunkwill is the Vance adaptation of the Pi-Coding-Agent-Loop-Pattern
+> Frankie is the Vance adaptation of the Pi-Coding-Agent-Loop-Pattern
 > (see `instructions/pi-analyse.md`). Where Arthur is the **Hub/Host**
-> and Marvin builds a **dynamic Task-Tree**, Lunkwill is the
+> and Marvin builds a **dynamic Task-Tree**, Frankie is the
 > **focused Leaf-Worker**: drainPending → LLM → Tools →
 > repeat, until finished.
 >
@@ -24,17 +24,17 @@
 | `arthur` | Reactive Session Chat Hub | never DONE — only STOPPED/SUSPENDED |
 | `ford` | Single-purpose Worker, one question → one answer | DONE per Turn |
 | `marvin` | Plan-Tree with 5-phase nodes | DONE when Root-WORKER completes |
-| **`lunkwill`** | **Multi-Turn-Worker, terminate-driven** | **natural / `_terminate` / external / safety-net** |
+| **`frankie`** | **Multi-Turn-Worker, terminate-driven** | **natural / `_terminate` / external / safety-net** |
 
 **Use Cases:**
 
 - **Coding-Worker** (`coding`-Recipe) — Read/edit files, run tests,
   check build output. The actual validator of the Engine.
-- **Service-Recipes** (later) — `lunkwill-repair` (MCP-Reconnect /
-  Token-Refresh), `lunkwill-fook-upstream` (GitHub-Ticket-Worker),
+- **Service-Recipes** (later) — `frankie-repair` (MCP-Reconnect /
+  Token-Refresh), `frankie-fook-upstream` (GitHub-Ticket-Worker),
   further ones as needs become concrete.
 
-What Lunkwill is **not**:
+What Frankie is **not**:
 
 - Not a Hub (that's Arthur)
 - Not a Plan-Tree (that's Marvin)
@@ -43,10 +43,10 @@ What Lunkwill is **not**:
 
 ## 2. Two Operating Modes
 
-Lunkwill runs either as a **Worker** under a Parent (classic,
+Frankie runs either as a **Worker** under a Parent (classic,
 spawned via `process_create`) or as a **Session-Primary** (directly
 at a Session's chat endpoint — Bootstrap with
-`engine=lunkwill, recipe=<name>, parentProcessId=null`).
+`engine=frankie, recipe=<name>, parentProcessId=null`).
 
 ```
 isWorker = process.getParentProcessId() != null
@@ -58,7 +58,7 @@ Prompt-Assembly: identical.
 
 ## 3. Data Model
 
-Lunkwill lives **entirely** within the `ThinkProcessDocument`. No
+Frankie lives **entirely** within the `ThinkProcessDocument`. No
 external state, no own Collection-Footprint.
 
 | Field | Source | Meaning |
@@ -67,12 +67,12 @@ external state, no own Collection-Footprint.
 | `chatMessageService.activeHistory(...)` | Standard | Conversation history, persistent |
 | `engineMessageService.drainInbox(processId)` | Standard | Inbox: USER_CHAT_INPUT, PROCESS_EVENT, TOOL_RESULT, EXTERNAL_COMMAND |
 
-Lunkwill uses **no** own MongoDB collections. Everything via
+Frankie uses **no** own MongoDB collections. Everything via
 existing Shared-Services.
 
 ## 4. Stop Paths
 
-Lunkwill has **four hardcoded stop paths**. There is **no
+Frankie has **four hardcoded stop paths**. There is **no
 Recipe field for stop configuration** — no `maxIterations`, no
 `stopConditions`. Stop comes from the loop itself.
 
@@ -85,7 +85,7 @@ without state loss). Worker and Session-Primary modes are identical.
 ### 4.2 Tool-Driven Terminate
 
 Tool-Result contains key `_terminate: true` (constant
-`LunkwillTermination.RESULT_TERMINATE_KEY`). If at least one Tool
+`FrankieTermination.RESULT_TERMINATE_KEY`). If at least one Tool
 in the batch terminates: loop exit after this batch.
 
 Behavior is **mode-dependent**:
@@ -97,14 +97,14 @@ Behavior is **mode-dependent**:
 
 Tool conventions per Recipe:
 - **coding** — `task_complete(summary=...)`
-- **lunkwill-repair** (planned) — `repair_complete(component=..., status=...)`
-- **lunkwill-fook-upstream** (planned) — `ticket_handed_off(ticketId=..., action=...)`
+- **frankie-repair** (planned) — `repair_complete(component=..., status=...)`
+- **frankie-fook-upstream** (planned) — `ticket_handed_off(ticketId=..., action=...)`
 
 ### 4.3 External Interrupt
 
 Process status is set externally to `SUSPENDED` or `CLOSED`
 (via [Process-Control-Tools](#62-control-tools), UI Stop button,
-Session-Suspend-Cascade, Lane-Kill). Lunkwill reads the status at the
+Session-Suspend-Cascade, Lane-Kill). Frankie reads the status at the
 beginning of **each** loop iteration from Mongo (`thinkProcessService.
 findById(id).getStatus()`) and exits gracefully between turns.
 
@@ -115,12 +115,12 @@ an indexed `_id`-lookup (<1 ms), negligible compared to LLM latency.
 
 Both hardcoded, both set status `BLOCKED` (no auto-close):
 
-**Wallclock-Timeout** (`vance.lunkwill.maxWallclockMinutes`, Default 60):
+**Wallclock-Timeout** (`vance.frankie.maxWallclockMinutes`, Default 60):
 Per loop iteration, `System.currentTimeMillis() - process.startedAt`
 is checked against the deadline. Counts wall-time including suspends —
 prevents suspend-resume gaming.
 
-**Idle-Stuck-Detection** (`vance.lunkwill.idleStuckThreshold`, Default 5):
+**Idle-Stuck-Detection** (`vance.frankie.idleStuckThreshold`, Default 5):
 Sliding-window of the last N Tool-Call-Batch-Hashes (Tool-Name +
 JSON-Hash of Args). If all N hashes are identical → loop is spinning
 on the wrong track, BLOCKED with diagnostic hint.
@@ -133,7 +133,7 @@ would otherwise interpret "natural stop with 0 chars" — silent drop,
 user sees nothing.
 
 Instead: persist a visible error message
-(`LunkwillEngine.MODEL_COLLAPSE_MESSAGE`) as Assistant-Reply, status
+(`FrankieEngine.MODEL_COLLAPSE_MESSAGE`) as Assistant-Reply, status
 `BLOCKED`. This makes the Worker visible in the Inbox and not IDLE-still.
 
 ## 5. Loop Sketch
@@ -217,12 +217,12 @@ auditable.
 
 ### 6.1 Mandatory Reuse
 
-Lunkwill shares the following services with Arthur (and all LLM-driven Engines) — drift-free:
+Frankie shares the following services with Arthur (and all LLM-driven Engines) — drift-free:
 
 | Service | Purpose |
 |---|---|
 | `EngineMessageService` | Inbox-Drain + markDrained |
-| `CompactionTriggerService` + `MemoryCompactionService` | 3-tier Compaction (planned for Lunkwill, not yet active) |
+| `CompactionTriggerService` + `MemoryCompactionService` | 3-tier Compaction (planned for Frankie, not yet active) |
 | `EngineChatFactory` | Prompt-Render + Model-Bind + Tool-Allowed-Set |
 | `ToolPermissionService` | Recipe-Check per Tool-Call |
 | `ToolResultStorage` | Output-Truncation (32 KB Threshold) |
@@ -232,9 +232,9 @@ Lunkwill shares the following services with Arthur (and all LLM-driven Engines) 
 
 ### 6.2 Control Tools
 
-Lunkwill is controlled externally via the existing `vance-brain/.../tools/process/`-Tool family:
+Frankie is controlled externally via the existing `vance-brain/.../tools/process/`-Tool family:
 
-| Tool | Effect on Lunkwill |
+| Tool | Effect on Frankie |
 |---|---|
 | `ProcessStopTool` | `status = STOPPED` → exit at next iter |
 | `ProcessPauseTool` | `status = SUSPENDED` → graceful pause |
@@ -250,7 +250,7 @@ Trigger sources:
 
 ### 6.3 Engine-Default-Tools (`allowedTools()`)
 
-Lunkwill overrides `ThinkEngine.allowedTools()` with the
+Frankie overrides `ThinkEngine.allowedTools()` with the
 engine-intrinsic baseline set:
 
 | Category | Tools |
@@ -271,9 +271,9 @@ Effective Tool-Set =
 
 ## 7. Prompt-Assembly
 
-Lunkwill uses the standard Prompt-Pipeline-Pattern:
+Frankie uses the standard Prompt-Pipeline-Pattern:
 
-1. **Engine-Default-Prompt** — `_vance/prompts/lunkwill-prompt.md`
+1. **Engine-Default-Prompt** — `_vance/prompts/frankie-prompt.md`
    via Document-Cascade. Describes both modes (Worker /
    Session-Primary) neutrally, loop discipline, anti-patterns.
 2. **Recipe-Overlay** — `params.promptPrefix` from the Recipe is
@@ -285,19 +285,19 @@ Lunkwill uses the standard Prompt-Pipeline-Pattern:
    ExternalCommand) as `<process-event>` / `<tool-result>` /
    `<external-command>` XML-User-Messages
 
-Last-Resort-Fallback (`LunkwillEngine.ENGINE_FALLBACK_PROMPT`) is
+Last-Resort-Fallback (`FrankieEngine.ENGINE_FALLBACK_PROMPT`) is
 exactly one line long — prevents a misconfigured Spawn
 from producing an unprompted LLM.
 
 ### 7.1 Manual-Pool
 
-Lunkwill has its own Manual-Pool:
+Frankie has its own Manual-Pool:
 
 ```
-_vance/lunkwill/manuals/
-  lunkwill-loop.md          # engine-intrinsic
-  lunkwill-task-complete.md # engine-intrinsic
-  lunkwill-spawn.md         # engine-intrinsic
+_vance/frankie/manuals/
+  frankie-loop.md          # engine-intrinsic
+  frankie-task-complete.md # engine-intrinsic
+  frankie-spawn.md         # engine-intrinsic
   coding-*.md               # coding-recipe-specific
   repair-*.md               # (planned)
   fook-upstream-*.md        # (planned)
@@ -307,7 +307,7 @@ Recipes reference via `params.manualPaths`:
 
 ```yaml
 manualPaths:
-  - lunkwill/manuals/   # engine-intrinsic first
+  - frankie/manuals/   # engine-intrinsic first
   - manuals/            # global Vance as fallback
 ```
 
@@ -318,7 +318,7 @@ which Recipe the Manual belongs to.
 
 ### 7.2 Skills
 
-Lunkwill supports the engine-agnostic Skill system from
+Frankie supports the engine-agnostic Skill system from
 `specification/skills.md`. Skills are YAML bundles in the Kit
 (Prompt-Fragment + Tool-List + optional Scripts) and are activated
 in two ways:
@@ -328,7 +328,7 @@ in two ways:
 ```yaml
 # e.g. recipes.yaml or Project-Recipe-Override
 coding:
-  engine: lunkwill
+  engine: frankie
   defaultActiveSkills:
     - coding-style
     - project-glossary
@@ -344,7 +344,7 @@ that are thematically related to the Recipe and should always be included
 
 Foot-CLI (`/skill add <name>`, `/skill clear`, `/skill list`) and
 Web-UI connect via `ProcessSkillCommand` to `process.activeSkills`
-or remove entries. Engine-agnostic — Lunkwill-Workers
+or remove entries. Engine-agnostic — Frankie-Workers
 behave identically to Ford-Processes here.
 
 **How Skill activation flows into the Turn:**
@@ -360,8 +360,8 @@ behave identically to Ford-Processes here.
 4. In the `finally`-block: `dropOneShotSkills(process)` removes
    `oneShot`-Skills after the turn (analogous to Ford).
 
-**No Auto-Trigger.** Unlike Ford / Arthur, Lunkwill
-**does not** call a `SkillTriggerMatcher`. Reason: Lunkwill is
+**No Auto-Trigger.** Unlike Ford / Arthur, Frankie
+**does not** call a `SkillTriggerMatcher`. Reason: Frankie is
 endless-by-design and often drains empty or
 tool-induced Inboxes without new user input per turn — per-turn triggers
 would be spam. If a Skill should automatically dock without explicit
@@ -382,21 +382,21 @@ SUSPENDED → RUNNING (resume)
 
 No mode transitions (no EXPLORING/PLANNING/EXECUTING — this is
 the complete Plan-Mode concept from [plan-mode.md](plan-mode.md),
-which only Hub-Engines like Arthur and Eddie manage). Lunkwill uses the
+which only Hub-Engines like Arthur and Eddie manage). Frankie uses the
 **reduced Plan-Tracking variant** from §9 — a TodoList without
 a mode machine. Status values come from the shared
 `ThinkProcessStatus`-Enum.
 
 ## 9. Plan-Tracking (Reduced Plan-Mode Variant)
 
-Lunkwill gets **TodoList-Tracking** for large tasks (multi-file refactor, architectural
+Frankie gets **TodoList-Tracking** for large tasks (multi-file refactor, architectural
 intervention, longer coding stretches) — visible
 structure for the user, self-anchor for the LLM against plan drift.
 
 **Intentionally not the full Plan-Mode mechanism from [plan-mode.md](plan-mode.md):**
 
 - No modes (no EXPLORING/PLANNING/EXECUTING)
-- No Action-Schema (Lunkwill `implements ThinkEngine`, not
+- No Action-Schema (Frankie `implements ThinkEngine`, not
   `StructuredActionEngine` — see §5)
 - No User-Approval step (the Parent has authorized the Worker,
   a second approval would be a duplication)
@@ -428,7 +428,7 @@ TodoList-State in the Process document.
 
 ### 9.2 Per-Turn Prompt-Block
 
-If `process.getTodos()` is non-empty, Lunkwill injects a `SystemMessage`
+If `process.getTodos()` is non-empty, Frankie injects a `SystemMessage`
 with the current list before each LLM-Call:
 
 ```
@@ -451,7 +451,7 @@ Hard rules:
 - Never edit todos through any tool other than `todo_write` / `todo_update`.
 ```
 
-Build-Site: `LunkwillEngine.buildTodoListBlock(process)`. If no
+Build-Site: `FrankieEngine.buildTodoListBlock(process)`. If no
 Todos are persisted → empty string → no block (Plan-Tracking
 is opt-in, no block spam for short tasks). Status markers
 identical to Plan-Mode §7.1 (`[ ]` / `[~]` / `[✓]`) — Foot/Web-UI
@@ -469,14 +469,14 @@ Recipe-specific in `promptPrefix`. `coding` contains a
 Soft convention — no technical enforcement, no mode lock.
 Violations lead to unstructuredness, not build failure.
 
-**Manual `lunkwill-plan`** (`_vance/lunkwill/manuals/lunkwill-plan.md`)
+**Manual `frankie-plan`** (`_vance/frankie/manuals/frankie-plan.md`)
 provides the LLM with details: When to plan / granularity / tool shapes /
 hard rules / distinction from Marvin and Arthur-Plan-Mode. Triggers
 cover `plan`, `make plan`, `todolist`, `multi step`, `large
 task` and German/English synonyms, so that both
 substring search (`manual_list`) and semantic search (`how_do_i`)
 can find it. The Engine-Prompt hooks directly to it: "Before planning a
-non-trivial task, call `manual_read('lunkwill-plan')`."
+non-trivial task, call `manual_read('frankie-plan')`."
 
 ### 9.4 WS-Notifications
 
@@ -491,7 +491,7 @@ Reuse of Plan-Mode notification types from
 No new channel type. Foot and Web-UI renderers from Plan-Mode
 handle notifications engine-agnostically.
 
-### 9.5 What Lunkwill-Plan-Tracking does not do
+### 9.5 What Frankie-Plan-Tracking does not do
 
 - **No `plan-proposed → User-Approval` pipeline**. The plan is
   written and immediately executed — no PLANNING-State, no
@@ -500,19 +500,19 @@ handle notifications engine-agnostically.
 - **No Mode-aware Tool-Filter**. All Tools allowed in the Recipe
   remain allowed in all phases — even if `todo_write`
   has not yet been called, even if the list is empty.
-- **No `MODE:plan`/`MODE:execute`-History-Tagging**. Lunkwill has
+- **No `MODE:plan`/`MODE:execute`-History-Tagging**. Frankie has
   no modes; the Recompaction-Hook from [plan-mode.md §15](plan-mode.md#15-topic-recompaction-hook-am-plan-completion)
-  does not apply to Lunkwill. This is OK — Worker-Sessions
+  does not apply to Frankie. This is OK — Worker-Sessions
   compact via other mechanisms.
 - **No Auto-Mode-Reset**. If all Todos are `COMPLETED`,
   the list remains visible — the next `todo_write`-Call replaces
   it. The `task_complete`-Tool-Call is the clean end trigger.
 
-## 10. Configuration (`vance.lunkwill.*`)
+## 10. Configuration (`vance.frankie.*`)
 
 ```yaml
 vance:
-  lunkwill:
+  frankie:
     maxWallclockMinutes: 60       # Safety-Net §4.4
     idleStuckThreshold: 5         # Safety-Net §4.4
 ```
@@ -520,12 +520,12 @@ vance:
 Both are Tenant-Setting-overridable via Cascade. Recipe fields for
 Stop-Conditions do **not** exist — Stop is hardcoded (see §4).
 
-## 11. Recipes on Lunkwill
+## 11. Recipes on Frankie
 
-### 11.1 Default-Recipe (`lunkwill`)
+### 11.1 Default-Recipe (`frankie`)
 
-`_vance/recipes/lunkwill.yaml` — minimal fallback if a Process
-is spawned with `engine=lunkwill` without a more specific Recipe. No
+`_vance/recipes/frankie.yaml` — minimal fallback if a Process
+is spawned with `engine=frankie` without a more specific Recipe. No
 domain tools, only engine defaults.
 
 ### 11.2 First Productive Recipe (`coding`)
@@ -538,13 +538,13 @@ and Anti-Patterns, its own Coding-Manuals. Details in
 
 ### 11.3 Planned Service-Recipes
 
-`lunkwill-repair` (MCP-Reconnect / Token-Refresh, system-spawned),
-`lunkwill-fook-upstream` (GitHub-Ticket-Worker). No engine code
+`frankie-repair` (MCP-Reconnect / Token-Refresh, system-spawned),
+`frankie-fook-upstream` (GitHub-Ticket-Worker). No engine code
 needed — pure Recipe + Manuals + possibly service trigger wiring.
 
 ## 12. Reply-Channel and Parent-Notification
 
-Lunkwill emits its responses via standard mechanisms:
+Frankie emits its responses via standard mechanisms:
 
 - **`ctx.emitReply(text, inResponseToAt, payload)`** — per Natural-Stop.
   Push to UI (`PROCESS_PROGRESS`/`REPLY`) always, Parent-Inbox-Append
@@ -553,7 +553,7 @@ Lunkwill emits its responses via standard mechanisms:
   `ParentNotificationListener` queues a DONE-`ProcessEvent`,
   `enrichWithLastReply` appends the last Assistant-Message.
 
-**Per-Source-Collapse in Arthur**: with Lunkwill, typically two events
+**Per-Source-Collapse in Arthur**: with Frankie, typically two events
 land in Arthur's Inbox (Reply + DONE,
 both from the same `sourceProcessId`). Arthur's
 `resolveRelayEvent`-Tier-2 collapses per `sourceProcessId` to
@@ -563,15 +563,15 @@ See `arthur-engine.md` §RELAY-Resolution.
 
 ## 13. `producesUserFacingOutput()`
 
-Lunkwill returns `true` (Default). Its ASSISTANT-Messages are
+Frankie returns `true` (Default). Its ASSISTANT-Messages are
 natural language responses — not technical plumbing like with
 Hactar/Slart, which would need to be passed through an `engine-output-translator`.
 
-## 14. What Lunkwill CANNOT do
+## 14. What Frankie CANNOT do
 
 - **No full Plan-Mode** with Modes / Approval / Read-Only-
   Filter — that remains Arthur/Eddie (see [plan-mode.md](plan-mode.md)).
-  Lunkwill only has the reduced TodoList variant (§9). To
+  Frankie only has the reduced TodoList variant (§9). To
   plan strategically (architectural decision, multi-aspect
   tradeoff), spawn Marvin via `process_create(recipe='marvin')` and
   wait for the Reply.
@@ -588,16 +588,16 @@ Hactar/Slart, which would need to be passed through an `engine-output-translator
 
 ## 15. Tests
 
-In `vance-brain/src/test/java/.../lunkwill/`:
+In `vance-brain/src/test/java/.../frankie/`:
 
-- `LunkwillEngineSkeletonTest` — Metadata, Lifecycle-Status-Writes,
+- `FrankieEngineSkeletonTest` — Metadata, Lifecycle-Status-Writes,
   four Stop-Paths (natural / tool-terminate worker+session /
   external-interrupt / wallclock / idle-stuck), Empty-Response,
   `allowedTools()`-Baseline
-- `LunkwillTodoToolTest` — `todo_write` full-replace + WS-Emit;
+- `FrankieTodoToolTest` — `todo_write` full-replace + WS-Emit;
   `todo_update` per-Item-Update + WS-Emit; missing-id / malformed-
   input handling
-- `LunkwillTodoBlockTest` — Prompt-Block-Renderer: empty Todos → no
+- `FrankieTodoBlockTest` — Prompt-Block-Renderer: empty Todos → no
   block; populated Todos → block with current-step and Tool hints
 
 In `vance-brain/src/test/java/.../arthur/`:
@@ -612,7 +612,7 @@ Recipes — not in this Engine-Spec.
 
 - `instructions/pi-analyse.md` — Pi comparison notes
 - `packages/agent/src/agent-loop.ts` — Pi-Loop reference
-- `planning/lunkwill-engine.md` — Design notes before implementation
+- `planning/frankie-engine.md` — Design notes before implementation
 - `planning/coding-recipe.md` — Coding-Recipe design
 - `planning/agent-stop-conditions.md` — Stop path catalog
 - `planning/work-target-and-tool-rename.md` — planned work-target /

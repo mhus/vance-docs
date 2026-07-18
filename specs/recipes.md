@@ -533,7 +533,7 @@ GET /brain/{tenant}/projects/{project}/recipes/listed
 - The bundled `default.yaml` is therefore **not** marked with `listed: true`; otherwise, there would be duplicate "Default" entries.
 - Foot ignores the flag and continues to accept all Recipes via `--recipe` — there, the user types the name, discovery is not the purpose.
 
-**Bundled Defaults with `listed: true` (v1 status):** `arthur`, `eddie`, `ford`, `analyze`, `coding`, `web-research`, `code-read`, `marvin`, `lunkwill`, `quick-lookup`. Tenant and Project layers can opt-in mark any additional Recipes or remove bundled entries from the picker with an override file without `listed: true`.
+**Bundled Defaults with `listed: true` (v1 status):** `arthur`, `eddie`, `ford`, `analyze`, `coding`, `web-research`, `code-read`, `marvin`, `frankie`, `quick-lookup`. Tenant and Project layers can opt-in mark any additional Recipes or remove bundled entries from the picker with an override file without `listed: true`.
 
 ---
 

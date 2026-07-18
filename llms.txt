@@ -65,7 +65,7 @@ The authoritative specs are written in German under `specification/public/*.md` 
 - [light-llm-service](https://vance.mhus.de/llm/specification/light-llm-service.md): A central helper service for single-shot LLM calls using Recipes as configuration profiles. No Process spawn, no Lane lock, no dedicated chat audit trail.…
 - [live-ws](https://vance.mhus.de/llm/specification/live-ws.md): Multi-channel envelope protocol for external Vance clients (Web, Foot, Mobile)
 - [llm-resource-management](https://vance.mhus.de/llm/specification/llm-resource-management.md): Defines how LLM access is managed: providers, keys, quotas, routing.
-- [lunkwill-engine](https://vance.mhus.de/llm/specification/lunkwill-engine.md): Lunkwill is the generic Pi-style Executor Engine. It
+- [frankie-engine](https://vance.mhus.de/llm/specification/frankie-engine.md): Frankie is the generic Pi-style Executor Engine. It
 - [marvin-engine](https://vance.mhus.de/llm/specification/marvin-engine.md): Marvin is the deep-think Engine. It builds a
 - [mcp-tool-routing](https://vance.mhus.de/llm/specification/mcp-tool-routing.md): Defines where MCP tools reside (server vs. client), how routing works, and what happens when no client is present.
 - [memory-knowledge-management](https://vance.mhus.de/llm/specification/memory-knowledge-management.md): Defines how knowledge in Vance is structured, stored, tagged, and made searchable.

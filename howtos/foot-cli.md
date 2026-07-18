@@ -237,7 +237,7 @@ These need the IntelliJ Vance plugin running; see
 ## Patterns
 
 **Daemon mode for headless workers.** A service account that runs a
-Lunkwill or Trillian worker loop doesn't need a REPL:
+Frankie or Trillian worker loop doesn't need a REPL:
 
 ```bash
 java -jar vance-foot.jar \

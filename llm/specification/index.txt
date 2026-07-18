@@ -46,7 +46,7 @@ https://vance.mhus.de/llm/specification/knowledge-graph.md
 https://vance.mhus.de/llm/specification/light-llm-service.md
 https://vance.mhus.de/llm/specification/live-ws.md
 https://vance.mhus.de/llm/specification/llm-resource-management.md
-https://vance.mhus.de/llm/specification/lunkwill-engine.md
+https://vance.mhus.de/llm/specification/frankie-engine.md
 https://vance.mhus.de/llm/specification/marvin-engine.md
 https://vance.mhus.de/llm/specification/mcp-tool-routing.md
 https://vance.mhus.de/llm/specification/memory-knowledge-management.md

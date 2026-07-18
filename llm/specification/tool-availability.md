@@ -230,7 +230,7 @@ The Manifest Builder filters tools with `requiresEngineRoles` — only engines w
 
 Plus: Agrajag has a strict engine-internal rule — in a probe turn, **only** `SAFE_PROBE` tools may be called. `tool_probe_as_user` and `tool_probe_as_system` (see [agrajag-engine §6](agrajag-engine.md)) in turn check whether the target tool is `SAFE_PROBE` or at least read-only configurable.
 
-The role concept is generic — Lunkwill (Repair) will later have `roles: [tool-health-writer, repair-actor]`, Prak (Audit) `roles: [audit-reader]`, etc.
+The role concept is generic — Frankie (Repair) will later have `roles: [tool-health-writer, repair-actor]`, Prak (Audit) `roles: [audit-reader]`, etc.
 
 ---
 

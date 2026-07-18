@@ -1,8 +1,8 @@
 # Vance — Agrajag (Tool Health Diagnosis Engine)
 
-> Agrajag checks tools, classifies their errors, and writes their health state. In the Adams universe, Agrajag is one half of the diagnostic duo "Agrajag & Lunkwill"; in Vance, it is the first **Service Engine** (see [think-engines §7b](think-engines.md)) — an Engine that does not live in the user chat but works asynchronously as a system-driven specialist.
+> Agrajag checks tools, classifies their errors, and writes their health state. In the Adams universe, Agrajag is one half of the diagnostic duo "Agrajag & Frankie"; in Vance, it is the first **Service Engine** (see [think-engines §7b](think-engines.md)) — an Engine that does not live in the user chat but works asynchronously as a system-driven specialist.
 >
-> This spec defines the **diagnosis logic**. The state model that Agrajag writes to is in [tool-availability](tool-availability.md). The Service Engine pattern, which Agrajag concretizes as a representative for future relatives (Lunkwill, Prak, Agrajag), is in [think-engines §7b](think-engines.md).
+> This spec defines the **diagnosis logic**. The state model that Agrajag writes to is in [tool-availability](tool-availability.md). The Service Engine pattern, which Agrajag concretizes as a representative for future relatives (Frankie, Prak, Agrajag), is in [think-engines §7b](think-engines.md).
 
 ---
 
@@ -32,7 +32,7 @@ Agrajag writes its answers into the Tool-Health-Document (see [tool-availability
 
 ## 2. What Agrajag is Not
 
-- **Not a Repair Tool.** Agrajag diagnoses but does not repair (no MCP-Reconnect-Trigger, no Token-Refresh). Repair is Lunkwill's job in a later iteration.
+- **Not a Repair Tool.** Agrajag diagnoses but does not repair (no MCP-Reconnect-Trigger, no Token-Refresh). Repair is Frankie's job in a later iteration.
 - **Not a Health Cron.** Agrajag does not check periodically on its own. Diagnosis is triggered by specific tool errors or explicit user requests.
 - **Not a Tool Inventory Tracker.** The Tool Registry knows which tools are available in the Project. Agrajag works *on* this list.
 - **Not a Permission Diagnosis in the classical sense.** Permissions are configuration issues, not a Health-Issue — Agrajag recognizes them (`USER_PERMISSION` classification), sets a Cooldown, but **does not** write a Health-Doc status.
@@ -277,7 +277,7 @@ Probe-Tools (§6.1) verify **before invocation** that the Target-Tool is `safety
 
 `AgrajagEngine.allowedTools()` contains **only** `tool_probe_as_user`, `tool_probe_as_system`, `tool_health_read`. The write tools (`tool_health_set_*`, `tool_health_clear_cooldown`) are active in the Tool Manifest but enabled for the Engine itself via Engine Role (`tool-health-writer`) — the LLM does not get to see them. Rationale: cleanly separates responsibilities. LLM diagnoses (output schema), Engine acts deterministically. This prevents "half-diagnosis" where the LLM calls multiple `set_*` tools and then fails to provide a final output.
 
-The write tools remain in the Registry for (a) future Service Engines (Lunkwill, Prak) that need other write paths, (b) Admin-/REST-driven manual Health updates.
+The write tools remain in the Registry for (a) future Service Engines (Frankie, Prak) that need other write paths, (b) Admin-/REST-driven manual Health updates.
 
 ### 5.3 Diagnosis Output Schema
 
@@ -349,7 +349,7 @@ Agrajag has access to a small set of special Tools, which are shielded from othe
 
 ### 6.2 Health-Write-Tools
 
-> **Note:** The write tools are present in the Registry and shielded by the Engine Role `tool-health-writer`, but are **not** exposed by `AgrajagEngine` in the LLM Manifest (see §5.2a). They are reserved for (a) future Service Engines (Lunkwill, Prak), (b) Admin- and REST-driven paths.
+> **Note:** The write tools are present in the Registry and shielded by the Engine Role `tool-health-writer`, but are **not** exposed by `AgrajagEngine` in the LLM Manifest (see §5.2a). They are reserved for (a) future Service Engines (Frankie, Prak), (b) Admin- and REST-driven paths.
 
 ```yaml
 - name: tool_health_set_unavailable
@@ -551,7 +551,7 @@ The pattern introduced here is explicitly not Agrajag-specific. Three further Se
 
 | Engine | Adams | Purpose | Roles |
 |---|---|---|---|
-| **Lunkwill** | Lunkwill | Repair — e.g., MCP-Reconnect, Token-Refresh-Trigger, Cache-Invalidation | `tool-health-writer`, `repair-actor` |
+| **Frankie** | Frankie | Repair — e.g., MCP-Reconnect, Token-Refresh-Trigger, Cache-Invalidation | `tool-health-writer`, `repair-actor` |
 | **Prak** | Prak | Audit — periodic read scan over Tool-Calls + Tool-Results, Anomaly-Detection | `audit-reader`, `audit-writer` |
 | **Agrajag** | Agrajag | Failure-Tracking — categorizes recurring Engine-Failures, provides diagnosis trends | `audit-reader`, `failure-tracker` |
 
@@ -564,7 +564,7 @@ Common infrastructure that all share (and which Agrajag concretizes):
 5. **Structured Output Schema** instead of free chat response.
 6. **`category: service`-Recipe-Marker** for UI-/listing filters.
 
-Implementation of these building blocks will occur during the Agrajag phase — Lunkwill etc. can reuse them once they arrive.
+Implementation of these building blocks will occur during the Agrajag phase — Frankie etc. can reuse them once they arrive.
 
 ---
 
@@ -573,7 +573,7 @@ Implementation of these building blocks will occur during the Agrajag phase — 
 - **Probe-Tool Implementation:** how `tool_probe_as_user` internally assumes a user identity — see [identity-credentials](identity-credentials.md) (User-Credentials-Vault, Probe-Identity-Switch).
 - **History-Retention-Policy:** Default ring buffer size and Tenant override — see [tool-availability §10](tool-availability.md).
 - **Cron-driven Recheck:** deliberately not. Reactivation happens organically via `expectedRecoveryAt` + naive retry by the next actual Tool-Call.
-- **Lunkwill / Prak / Agrajag Detail Specs.** Separate specs when the Engines are actually built — do not anticipate.
+- **Frankie / Prak / Agrajag Detail Specs.** Separate specs when the Engines are actually built — do not anticipate.
 - **Auto-Learning of Pattern Rules:** §4.2 provides for a `locked` flag that a future learning system will respect. The learning mechanism itself (when a new rule can be automatically suggested, who confirms it, how it is versioned) is the scope of a separate later spec — today, pattern rules are maintained exclusively manually.
 - **Editor-UI for the Pattern File:** a web UI for editing `_vance/agrajag/error-patterns.yaml` is not v1. Tenant-Admins edit the YAML file directly (via the existing Document-Editor in the Web-UI or via CLI).
 - **Cross-Pod-State-Sync:** not necessary. Tool-Health lives in Mongo, is readable across Pods.

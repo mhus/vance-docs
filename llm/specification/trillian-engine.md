@@ -1,13 +1,13 @@
 # Vance — Trillian Engine
 
 > **Trillian** is Vance's **Agentic User Loop** — a layer above
-> Arthur/Eddie/Marvin/Lunkwill. From Trillian's perspective, these are the
+> Arthur/Eddie/Marvin/Frankie. From Trillian's perspective, these are the
 > tools a human user works with in Vance —
 > Trillian *uses* them in the same way, just without a human in front.
 > Observe-Think-Act-Reflect as an endless loop that sleeps when there's nothing
 > to do.
 >
-> Trillian is **not** a Worker (Lunkwill is a Worker), **not** a
+> Trillian is **not** a Worker (Frankie is a Worker), **not** a
 > Plan-Engine (Marvin / Vogon), **not** a Chat-Host (Arthur / Eddie).
 > Trillian is the **human's counterpart** — a user
 > proxy with its own identity, session, and permissions.
@@ -16,7 +16,7 @@
 > observant voice of the Heart-of-Gold crew — the only one who doesn't lose sight of the
 > overarching goal while Zaphod & Ford cause chaos.
 >
-> See also: [think-engines](think-engines.md) | [lunkwill-engine](lunkwill-engine.md) | [arthur-engine](arthur-engine.md) | [eddie-engine](eddie-engine.md) | [recipes](recipes.md)
+> See also: [think-engines](think-engines.md) | [frankie-engine](frankie-engine.md) | [arthur-engine](arthur-engine.md) | [eddie-engine](eddie-engine.md) | [recipes](recipes.md)
 
 ---
 
@@ -26,7 +26,7 @@
 |---|---|---|---|
 | `arthur` | Reactive Session-Chat-Hub | Human | never DONE — STOPPED/SUSPENDED |
 | `eddie` | Tenant-Hub, Cross-Project-Coordinator | Human | never DONE |
-| `lunkwill` | Multi-Turn-Worker, terminate-driven | spawning user | DONE per Task |
+| `frankie` | Multi-Turn-Worker, terminate-driven | spawning user | DONE per Task |
 | **`trillian-control`** | **Reply-style Chat-Host, without Action-Schema** | **Human** | **never DONE** |
 | **`trillian-user`** | **Endless-but-sleepy Orchestrator, cross-project** | **`_trillian-*` Service-Account** | **never DONE** |
 
@@ -130,7 +130,7 @@ Tenant: acme  /  Project: <Human's current project>
   Worker-Process — per Task, in the Trillian-User-Session but with
   process.projectId = <Target-Project>
     Owner: _trillian-0XXXX
-    Engine: lunkwill (via trillian-worker-0 recipe)
+    Engine: frankie (via trillian-worker-0 recipe)
     Tools: full Worker-Toolset (doc_*, file_*, exec_*) +
            trillian_done for Termination
 ```
@@ -165,7 +165,7 @@ Tenant: acme  /  Project: <Human's current project>
 
 ### 4.2 TrillianUserEngine
 
-- **Loop:** endless-but-sleepy, Lunkwill-like pattern. drainPending →
+- **Loop:** endless-but-sleepy, Frankie-like pattern. drainPending →
   LLM → Tools → repeat → natural-stop = IDLE. No `_terminate`,
   no wallclock/idle-stuck safety nets (Orchestrator, not Worker).
 - **`allowsCrossProjectSpawn=true`** — Trillian-User can spawn
@@ -175,9 +175,9 @@ Tenant: acme  /  Project: <Human's current project>
 - **Engine-Role:** `trillian-user`.
 - **Model-Default:** `default:analyze,default:fast`.
 
-### 4.3 Worker-Engine: Lunkwill with trillian-worker-Recipe
+### 4.3 Worker-Engine: Frankie with trillian-worker-Recipe
 
-- Lunkwill as engine. **Own Recipe** `trillian-worker-<n>` with:
+- Frankie as engine. **Own Recipe** `trillian-worker-<n>` with:
   - Full doc/file/exec Tool-Surface
   - **`trillian_done(summary, data?)`-Tool** as mandatory termination
     (see §6)
@@ -406,7 +406,7 @@ routes ProcessEvents between the Pods.
 
 ## 11. Worker Termination and `enrichWithLastReply`
 
-Lunkwill in worker-mode skips its normal `persistAssistantReply`-path
+Frankie in worker-mode skips its normal `persistAssistantReply`-path
 during tool-terminate — therefore, Workers that
 terminate via `trillian_done` must write the Summary **themselves** to
 `chatLog`. `TrillianDoneTool` does this before returning
@@ -499,7 +499,7 @@ Bootstrapped Trillian pair: control id='…' session='…' / user id='…' sessi
   concept (letter/digit prefix, evolution path).
 - `specification/think-engines.md` — Engine-Registry,
   `allowsCrossProjectSpawn`, Lifecycle contract.
-- `specification/lunkwill-engine.md` — Worker-Loop-Pattern,
+- `specification/frankie-engine.md` — Worker-Loop-Pattern,
   `_terminate`-convention, ParentNotificationListener.enrichWithLastReply.
 - `specification/eddie-engine.md` — Cross-Project-Pattern via
   structured-action-schema; Trillian deliberately chooses a different path.

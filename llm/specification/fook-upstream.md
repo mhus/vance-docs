@@ -3,7 +3,7 @@
 > Locally triaged Fook tickets are forwarded to an external ticket system
 > (Default: GitHub Issues). Vance thus acts as the
 > **collector/preparation pipeline**, while the target system is the
-> **single source of truth** — Lunkwill and the Maintainers work there,
+> **single source of truth** — Frankie and the Maintainers work there,
 > not in Vance. Reporters receive a link in their Inbox and
 > track the ticket in the external tracker; status updates and
 > Maintainer comments are polled back and also appear
@@ -22,7 +22,7 @@
 ## 1. Purpose & Scope
 
 **Problem.** Fook produces locally triaged tickets. For Maintainers to
-see them and Lunkwill to process them, they must go to a central
+see them and Frankie to process them, they must go to a central
 ticket system — specifically:
 
 - **anonymized** (no user/Tenant leak),
@@ -45,7 +45,7 @@ ticket system — specifically:
 **What it is not:**
 
 - Not its own Vance-HQ-Brain — the goal is a real ticket system
-  (GitHub Issues); Vance remains a collector. Lunkwill operates
+  (GitHub Issues); Vance remains a collector. Frankie operates
   exclusively against the target system, not against Vance-internal
   storage.
 - No federation, no multi-hop, no custom webhook — Vance
@@ -191,7 +191,7 @@ reporterHash = sha256(tenantId + "|" + userId + "|" + instanceSecret)[:16]
 ```
 
 - **Deterministic** across Brain restarts (even for the
-  same Reporter → same hash). Lunkwill can recognize "same Reporter, three
+  same Reporter → same hash). Frankie can recognize "same Reporter, three
   reports" without ever seeing the real name.
 - **Salted** (Brain-Instance-Secret) — other Vance instances
   produce different hashes for the same Reporter. Cross-instance
