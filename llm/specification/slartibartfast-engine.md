@@ -181,7 +181,7 @@ runId                      "3a4f7c91"  — 8-hex UUIDv4-prefix, assigned once
                                         at spawn, Storage-
                                         Bucket key
 userDescription            verbatim user text
-outputSchemaType           VOGON_STRATEGY | MARVIN_RECIPE | ZAPHOD_RECIPE | SCRIPT_JS
+outputSchemaType           VOGON_STRATEGY | MARVIN_RECIPE | ZAPHOD_RECIPE | SCRIPT_JS | MAGRATHEA_WORKFLOW
 mode                       CREATE | EDIT | UPDATE — drives the
                                         invent vs. patch branch, the
                                         LOADING_EXISTING phase, and the
@@ -265,6 +265,7 @@ EXECUTING, EXECUTION_VALIDATING) is schema-agnostic.
 | `marvin-recipe` | **production** | `MarvinArchitect` — promptPrefix non-blank + Pebble-Template-Compile + `params`-Map + `allowedSubTaskRecipes`/`recipesOnlyViaExpand` resolve via `RecipeLoader` | Marvin |
 | `zaphod-recipe` | **production** | `ZaphodArchitect` — `ZaphodHeadsParser.parseRecipe` (mirrors `ZaphodEngine.buildInitialState` validation) | Zaphod |
 | `script-js` | **production** | `JsScriptArchitect` — delegates to `HactarService.validate(...)` (parse + JSDoc-Header + Tool-Allowlist) | Hactar (via `DirectExecutionSpawn`) |
+| `magrathea-workflow` | **production** | `MagratheaArchitect` — delegates to `MagratheaWorkflowLoader.validateYaml(...)` (state-machine parse) + `agent_task.recipe` existence check | none (author-only, `planOnly`) |
 
 Schema-specific knowledge lives in `SchemaArchitect`-Beans under
 `de.mhus.vance.brain.slartibartfast.architect.*`. The lifecycle
@@ -283,6 +284,22 @@ Hactar directly via `architect.directExecutionSpawn(...)` — see
 `SchemaArchitect.DirectExecutionSpawn`). VALIDATING skips
 the recipe-specific YAML-Parse + `engine:`-
 Field-Checks for `script-js` (controlled by `architect.isRecipeOutput()`).
+
+`magrathea-workflow` produces a workflow document (state machine,
+NOT a recipe — no `engine:` field). Magrathea is a workflow-
+orchestration subsystem, not a `ThinkEngine` that Slart could spawn
+as a child and await a terminal `ProcessEvent` from. The
+`MagratheaArchitect` is therefore **author-only**:
+`isRecipeOutput()=false` (VALIDATING skips the recipe-specific
+checks), `persistsAtFlatPath()=true` (PERSISTING writes **directly**
+to `_vance/workflows/<name>.yaml` — the path the
+`MagratheaWorkflowLoader` resolves, so it is immediately startable
+via `workflow_start`, instead of the `_slart` sandbox bucket). The
+bundled `magrathea-architect` recipe sets `params.planOnly: true` —
+the run ends after PERSISTING with DONE, no EXECUTING/
+EXECUTION_VALIDATING. Running the workflow is a separate step
+(`workflow_start` tool, scheduler, or REST). The architect is only
+a bean when `vance.services.magrathea=true` (like the loader).
 
 **MARVIN_RECIPE Output Form:**
 ```yaml
@@ -395,12 +412,60 @@ Allowlist-Intersect (single owner from
   Bucket — no in-place edit of the original file (analogous to the
   EDIT guarantee in §8 for Recipes).
 
+**MAGRATHEA_WORKFLOW Output Form** (workflow state machine, NOT
+Recipe YAML — no `engine:` field):
+```yaml
+description: |
+  <description>
+version: "1"                  # optional
+parameters:                   # optional — validated at workflow_start
+  <key>: { type: string, required: true, default: <value> }
+bounds:                       # optional — HARD stop
+  maxTotalCostUsd: <number>
+  maxWallclockSeconds: <number>
+  maxTaskSpawns: <number>
+start: <state-name>           # MANDATORY — must exist in states
+states:                       # MANDATORY — at least one state
+  <state-name>:
+    type: agent_task          # agent_task | tool_task | shell_task |
+                              # script_task | gate_task | timer_task |
+                              # condition_task | workflow_task | terminal
+    recipe: <recipe-name>     # agent_task: must be a known recipe
+    params: { prompt: "...", schema: { ... } }
+    on: { success: <state> }  # outcome → next state (exact match)
+    catch: { technical_error: <state> }
+    retry: { maxAttempts: 3, on: [technical_error, timeout], backoffSeconds: 30 }
+```
+
+`MagratheaArchitect` differs from the recipe architects:
+
+1. `isRecipeOutput()` returns `false` — VALIDATING skips the
+   YAML `engine:` field check, justifications-resolve and
+   path-persistence check; `validateDraftShape` is the single
+   shape-validation entry point.
+2. `persistsAtFlatPath()` returns `true` — PERSISTING writes to
+   `_vance/workflows/<draft-name>.yaml` (flat, directly startable),
+   not the `_slart` sandbox. An existing document there is
+   overwritten (the document version layer keeps history).
+3. `wantsExecutionValidation()` returns `false` and the recipe sets
+   `planOnly: true` — no EXECUTING/EXECUTION_VALIDATING.
+
+Validation: `MagratheaArchitect.validateDraftShape` delegates to
+`MagratheaWorkflowLoader.validateYaml(...)` (the same parser the
+runtime freezes into `StartRecord` at start — checks
+`start`/`states`, transition targets, task types) and then checks
+that every `agent_task.recipe` resolves via the project
+`RecipeLoader` (analogous to Vogon's worker check). The
+`appendProposingContext` supplies the Slart-LLM with the project
+recipe list so `agent_task` recipes are not hallucinated. Workflow
+data model details: `specification/public/workflows.md`.
+
 **Output Form is additively extensible.** A new
 `SchemaArchitect`-Bean ⇒ new Enum value in `OutputSchemaType` ⇒
 new Output Form section here. `ProposingPhase`,
 `ValidatingPhase`, and `PersistingPhase` are NOT changed
-(the latter reads `outputPathSegment` + `outputExtension` from
-the Architect).
+(the latter reads `outputPathSegment`, `outputExtension`,
+`persistsAtFlatPath` + `artefactNoun` from the Architect).
 
 ## 5. Lifecycle and Recovery
 
@@ -722,6 +787,7 @@ Parameters controllable, Inbox dialog functional.
 | AR | Schema-Architects-Refactor — `SchemaArchitect`-Interface + `VogonArchitect` / `MarvinArchitect` / `ZaphodArchitect`-Beans; `ProposingPhase` + `ValidatingPhase` schema-agnostic. Plus ZAPHOD_RECIPE as third Output-Schema production-ready. | unit (`ZaphodHeadsParserTest`) + ai-test (`ZaphodArchitectRecipeShapeLlmTest`) |
 | M6.1 | confirmationMode + escalationMode (DROP/KEEP/FAIL) | unit |
 | M6.2 | ASK_LOW_CONF + ASK_USER (Inbox-Dialog) | (Test gap; see §11) |
+| MW | MAGRATHEA_WORKFLOW Output — author-only `MagratheaArchitect` (`MagratheaWorkflowLoader.validateYaml` + `agent_task.recipe` check, `persistsAtFlatPath` to `_vance/workflows/<name>.yaml`, `planOnly`). SPI extended with `persistsAtFlatPath()` + `artefactNoun()`. | unit (`MagratheaArchitectTest`) |
 
 Prerequisites — all met:
 - Phase F (Vogon-Inline-strategyPlanYaml) — Slartibartfast emits
