@@ -8,13 +8,22 @@
 
 Vance is a personal project. I built it to develop LLM agents and shape them in
 a way that allows me to work productively with them. Over time, everything I
-found exciting — and what I believe others can benefit from — has found its way
-into it.
+found interesting — and what I believe others can benefit from — has found its
+way into it.
 
 It is **not a product**. Nothing is sold, there is no support contract, and no
 roadmap promises. The code is open because it can benefit others, not because
 it is intended to become a business. If you want to play around with it,
 contribute, or steal ideas: feel free.
+
+---
+
+## Written by agents. On purpose.
+
+Every line of Vance is AI-written — directed, reviewed, and shaped by a human.
+This is not a confession, but the whole point: Vance is what emerges when you
+work *with* agents for months, instead of just chatting with them. A large,
+coherent system that can be run, read, and modified — tool and proof are the same.
 
 ---
 
@@ -29,61 +38,61 @@ stored as documents in the database.**
 
 ## Core Principles
 
-### Everything is a document
+### Everything is a Document
 
 Templates, Recipes, Prompts, Schedulers, Hooks, Settings, Manuals — everything
 is stored as a document in the database. This allows the system to be shaped
-without touching code: a new Recipe is a new document, a new automation is a new
-Hook document, a new prompt behavior is an edited text. The system largely
+without touching code: a new Recipe is a new document, a new automation is a
+new Hook document, a new Prompt behavior is an edited text. The system largely
 configures itself — and agents can do the same.
 
-### Agents control (almost) everything
+### Agents Control (Almost) Everything
 
-As many capabilities as possible are available as tools for agents. An agent can
-write documents, create Recipes, spawn processes, set up triggers, research, and
-commission other agents. Humans provide direction, observe, and intervene if they
-wish — the process remains visible and controllable.
+As many capabilities as possible are available as Tools for agents. An agent
+can write documents, create Recipes, spawn processes, set up triggers, research,
+and commission other agents. The human provides direction, observes, and
+intervenes when desired — the process remains visible and controllable.
 
-### Projects define boundaries
+### Projects Delimit
 
-A Project is a delimited area: its own documents, its own configuration, its own
-agents. This allows different setups to coexist without interfering with each
-other. Memory, rights, and settings are tied to a Scope cascade
+A Project is a delimited area: its own documents, its own configuration, its
+own agents. This allows different setups to coexist without interfering with
+each other. Memory, rights, and settings are tied to a Scope cascade
 (Tenant → Project → Session → Think Process) and are inherited downwards.
 
 ### Extensible
 
-Vance is deliberately open to additional mechanisms. New Engines, new Apps, new
-Connectors, new Tools are added as Addons. What I find useful, I build in; what
-someone else finds useful, they can add.
+Vance is deliberately open to further mechanisms. New Engines, new Apps, new
+Connectors, new Tools are added as Addons. What I find useful, I build in;
+what someone else finds useful, they can add.
 
 ### Collaborative
 
 Multiple people work simultaneously in the same Project — including jointly
-live-edited documents (Presence, 3-Way-Merge, Versioning). Agents are
-participants like humans: they sit in the same Session, read the same documents,
-and converse.
+live-edited documents (Presence, 3-Way-Merge, versioning). Agents are
+participants like humans: they sit in the same Session, read the same
+documents, and converse.
 
 ---
 
 ## Brain + Clients
 
 ```
-Brain thinks, acts, and maintains state.
-Clients are the various access points to it.
+Brain thinks and acts and maintains state.
+Clients are the different access points to it.
 Connectors communicate with the outside world.
 ```
 
-The **Brain** (server) holds the entire state: Think Processes, Task trees,
+The **Brain** (server) holds the entire state: Think Processes, task trees,
 Memory, documents, Knowledge Graph. It orchestrates LLM calls, plans, executes
-actions, and can continue autonomously even when no client is connected.
+actions, and can continue working autonomously even when no client is connected.
 
 One Brain, multiple access points:
 
 | Client | What it is |
 |--------|-----------|
 | **CLI** (`vance-foot`) | Work directly at the terminal level — but always in the Project context with all stored information. For everything that should happen locally on the machine (Shell, Files, Git). |
-| **Web** (`vance-face`) | The working environment in the browser: Chat, documents, Apps. |
+| **Web** (`vance-face`) | The work environment in the browser: Chat, documents, Apps. |
 | **Mobile** (`vance-facelift`) | On the go — Capacitor wrapper around the deployed Web UI, an isolated WebView per account. |
 
 The Clients are not interchangeable views, but different access points to the
@@ -91,14 +100,14 @@ same Project.
 
 ---
 
-## Working Environment
+## Work Environment
 
-Work is done in the **Cortex** — chat, document, and execution on one surface.
+Work is done in the **Cortex** — Chat, document, and execution in one area.
 Documents come in many Kinds (Markdown, Workpage, Mindmap, Sheet, Kanban,
 Slides, Graph, Diagram, Canvas, Checklist, …), and on top of that sit **Apps**
 that bundle multiple documents into a whole — Workbook, Wiki, GTD, Kanban,
 Journal, Calendar, Canvasbook. Everything is live-shared: Presence, Merge,
-Versions included.
+versions included.
 
 This is the difference from a pure chatbot: the work lives in documents that
 persist, are versioned, and are collaboratively edited by humans and agents.
@@ -107,17 +116,17 @@ persist, are versioned, and are collaboratively edited by humans and agents.
 
 ## Connectors
 
-Vance communicates with external systems — Mail, Jira, Google services, MCP
-tools. Inputs come in and results go out via these Connectors. Finished
-artifacts that live on elsewhere are moved there: a spec in Google Docs, an
-issue in Jira, an email in the inbox.
+Vance communicates with external systems — Mail, Jira, Google services, MCP tools.
+Inputs come in and results go out via these Connectors. Finished artifacts that
+continue to live externally are moved there: a spec in Google Docs, an issue in
+Jira, an email in the inbox.
 
 ---
 
 ## Engines & Recipes
 
 The actual thinking is done by **Engines** — Java algorithms with a lifecycle,
-where the code controls the process, not the LLM. There are few of them,
+where the code controls the flow, not the LLM. There are few of them,
 structurally different (Session-Layer, Worker, Deep-Think, Strategy-Runner,
 Script-Executor …). They are configured via **Recipes**: YAML documents with
 Engine + Default-Params + Prompt-Prefix + Tool adaptations. Few Engines, many
@@ -142,10 +151,10 @@ Binding Stack Reference: [java-cli-modulstruktur](../java-cli-modulstruktur.md) 
 
 ## Limitations
 
-Vance is a working environment and Brain — not the final storage for finished
-products. What ultimately lives elsewhere goes out via a Connector instead of
-languishing in its own administration UI. And, again: no product, no sales, no
-SLA. A project I'm building because I enjoy it and it helps me with my work.
+Vance is a work environment and Brain — not the final storage for finished
+products. What ultimately lives elsewhere is sent out via a Connector instead
+of languishing in its own administration UI. And, again: no product, no sales,
+no SLA. A project I'm building because I enjoy it and it helps me with my work.
 
 ---
 

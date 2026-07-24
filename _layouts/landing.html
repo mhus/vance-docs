@@ -203,6 +203,12 @@
   .sec-head h2 { font-size: clamp(27px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 14px; }
   .sec-head p { color: var(--muted); font-size: 17px; margin: 0; max-width: 36em; }
 
+  /* ---- statement (AI-coded) ---- */
+  .statement h2 { font-size: clamp(30px, 4.6vw, 52px); line-height: 1.05; letter-spacing: -.015em; margin: 0 0 20px; }
+  .statement h2 em { color: var(--amber); font-style: italic; }
+  .statement p { color: var(--muted); font-size: clamp(17px, 1.7vw, 19px); max-width: 42em; margin: 0; }
+  .statement p em { color: var(--fg); font-style: italic; }
+
   /* ---- pillars ---- */
   .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 16px; overflow: hidden; }
   @media (max-width: 900px) { .pillars { grid-template-columns: repeat(2, 1fr); } }
@@ -411,6 +417,16 @@
           <p>On the go — a wrapper around the deployed Web UI, with an isolated WebView per account.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow">The proof is the product</p>
+      <h2>Written by agents. <em>On purpose.</em></h2>
+      <p>Every line of Vance is AI-written — directed, reviewed and shaped by one human. That’s not a confession, it’s the whole point: Vance is what working <em>with</em> agents over months actually builds — a large, coherent system you can run, read and change. The tool and the demo are the same thing.</p>
     </div>
   </section>
 
