@@ -11,11 +11,11 @@ permalink: /specs/live-ws
 
 > Multi-channel envelope protocol for external Vance clients (Web, Foot, Mobile)
 > and the associated cross-pod chat streaming architecture.
-> See also: [websocket-protokoll](/specs/websocket-protokoll) (Inner Chat-Frame
-> Format), [architektur-scopes-clients](/specs/architektur-scopes-clients)
+> See also: [websocket-protocol](/specs/websocket-protokoll) (Inner Chat-Frame
+> Format), [architecture-scopes-clients](/specs/architektur-scopes-clients)
 > (Sessions, Scopes), [identity-credentials](/specs/identity-credentials) (JWT-
-> Auth), [client-protokoll-erweiterbarkeit](/specs/client-protokoll-erweiterbarkeit)
-> (external Clients).
+> Auth), [client-protocol-extensibility](/specs/client-protokoll-erweiterbarkeit)
+> (external clients).
 > Status: v1 production.
 
 > History + Refactor Rationale: [planning/live-ws.md](/specs/live-ws).
@@ -30,7 +30,7 @@ the Brain via **a single** WebSocket endpoint. The wire format is a
 **multi-channel-capable envelope** (`LiveEnvelope`), which wraps the existing
 chat frames (`WebSocketEnvelope`) on the `session` channel variant.
 Other channels (`documents`, `notify`, `progress`, `control`) are reserved in the
-protocol but are **not** active in v1.
+protocol but are **not** implemented in v1.
 
 Cross-pod streaming (user WS lands on one pod via Loadbalancer, the
 Project-Home-Pod is another) runs over a separate **pod-to-pod
@@ -56,7 +56,7 @@ not directly accessible from outside.
 
 ### 2.1 Handshake on `/brain/{tenant}/ws`
 
-Identical to [websocket-protokoll](/specs/websocket-protokoll) §2: JWT in the
+Identical to [websocket-protocol](/specs/websocket-protokoll) §2: JWT in the
 `Authorization: Bearer …` header (or `?token=…` as query fallback for
 browsers), `X-Vance-Profile`, `X-Vance-Client-Version`, optional
 `X-Vance-Client-Name`. JWT is validated by `BrainAccessFilter`,
@@ -70,15 +70,15 @@ Face-Pod carries the tunneled identity in dedicated headers:
 | Header | Required | Description |
 |---|---|---|
 | `X-Vance-Internal-Token` | ✓ | Cluster-internal Shared-Secret (constant-time comparison) |
-| `X-Vance-Forwarded-User-Id` | ✓ | UserId of the original caller (Face-Pod validated it via JWT) |
+| `X-Vance-Forwarded-User-Id` | ✓ | UserId of the original caller (Face-Pod has JWT-validated it) |
 | `X-Vance-Forwarded-Tenant-Id` | ✓ | Must match `{tenant}` in the URL path — defense-in-depth |
 | `X-Vance-Forwarded-Display-Name` | no | Fallback to `forwarded-user-id` if empty |
 | `X-Vance-Forwarded-Client-Ip` | no | Original client IP, for audit; fallback to Face-Pod IP |
 | `X-Vance-Profile`, `X-Vance-Client-Version`, `X-Vance-Client-Name` | as external | Passed through 1:1 |
 
-The Home-Pod-Handler is identical to the external user WS handler — it sees
+The Home-Pod-Handler is identical to the external User-WS-Handler — it sees
 a regular user connection, except that the identity comes from the
-forwarded headers instead of JWT.
+Forwarded-Headers instead of JWT.
 
 ## 3. Envelope Format
 
@@ -95,7 +95,7 @@ Each frame on `/brain/{tenant}/ws` is a `LiveEnvelope`:
 | Field | Required | Description |
 |---|---|---|
 | `channel` | ✓ | Channel router. v1 only `"session"` active |
-| `sessionId` | for `channel="session"`: after first bind | Bound Session-ID (also Face-Pod routing). For `session-create`/`session-resume`/`session-bootstrap` it may be empty on the first outgoing frame |
+| `sessionId` | for `channel="session"`: after first bind | Bound Session-ID (also Face-Pod-Routing). For `session-create`/`session-resume`/`session-bootstrap` it may be empty on the first outgoing frame |
 | `payload` | ✓ | Channel-specific. For `session`: a [WebSocketEnvelope](/specs/websocket-protokoll) (`{id, type, data, replyTo}`) |
 
 Frame routing at the Face-Pod depends on `payload.type` (see §5).
@@ -106,8 +106,10 @@ Frame routing at the Face-Pod depends on `payload.type` (see §5).
 |---|---|---|
 | `session` | v1 production | Chat stream, Session lifecycle, Process lifecycle |
 | `documents` | v1 production | Presence + Live-Push for document writes. Detailed spec: [`documents-channel.md`](/specs/documents-channel) |
+| `pointers` | v1 production | Ephemeral live cursors per document path (pure fan-out, no state). Detailed spec: [`pointers-channel.md`](/specs/pointers-channel) |
+| `signals` | v1 production | Generic ephemeral per-doc signal channel (fan-out, no state/persistence); a `SignalFrame{path,signal,data}` frame with `signal` discriminator. First consumer: `compose-run` status. Detailed spec: [`signals-channel.md`](/specs/signals-channel) |
 | `notify` | reserved | User-bound notification push, cross-session |
-| `progress` | reserved | `PROCESS_PROGRESS` side-channel per Process |
+| `progress` | reserved | `PROCESS_PROGRESS`-Side-Channel per Process |
 | `control` | reserved | Keepalive, Auth-Refresh, Capability-Handshake, Editor-Registration |
 
 Reserved channels are rejected by the server with `400 Channel not supported`
@@ -125,7 +127,7 @@ userId         — JWT identity (sub-Claim)
 | Concept | Where maintained | Lifecycle |
 |---|---|---|
 | `userId` | JWT-Claim | Constant for the lifetime of the connection |
-| `editorId` | Client-Connection or Brain-Thread, server-assigned (UUID) | Implicitly on WS-Open for user connections, explicitly `editor_register` for Brain-internal (`engine`/`script`/`autonomous`/`system`) — see [planning/live-ws.md] for the planned v2 form. **In v1, `editorId` effectively aligns with the WS lifecycle.** |
+| `editorId` | Client connection or Brain thread, server-assigned (UUID) | Implicitly on WS-Open for user connections, explicitly `editor_register` for Brain-internal (`engine`/`script`/`autonomous`/`system`) — see [planning/live-ws.md] for the planned v2 form. **In v1, `editorId` effectively aligns with the WS lifecycle.** |
 | `sessionId` | Server-persistent (`SessionDocument`), Mongo | Lives independently of connections, survives disconnect/reconnect. Exactly **one** attached client at a time (exclusive lock via `SessionService.bind`) |
 
 ## 5. Session Channel Behavior
@@ -133,7 +135,7 @@ userId         — JWT identity (sub-Claim)
 ### 5.1 Frame Format
 
 `payload` is a regular `WebSocketEnvelope` with all message types from
-[websocket-protokoll §6](/specs/websocket-protokoll) — `session-create`,
+[websocket-protocol §6](/specs/websocket-protokoll) — `session-create`,
 `session-resume`, `session-unbind`, `session-bootstrap`, `process-steer`,
 `chat-message-appended`, `assistant-token`, `process-progress`, etc.
 
@@ -142,22 +144,22 @@ userId         — JWT identity (sub-Claim)
 1. **Open WS** → no session bound, `sessionId` empty.
 2. **Client sends `session-resume` / `session-bootstrap` / `session-create`** →
    Server binds the Session in `SessionService` + `SessionConnectionRegistry`.
-3. **Reply carries `sessionId`** → Client remembers it and sets it in
+3. **Reply carries `sessionId`** → Client stores it and sets it in
    subsequent Live-Envelope-Frames as a routing hint.
 4. **Frame with `payload.type=session-unbind`** → Server unbinds, Client
    resets its cached `sessionId`. WS remains open.
 5. **Disconnect** → Server unbinds automatically after heartbeat miss; a
    new connection can reattach via `session-resume`.
 
-### 5.3 Client Session Switching
+### 5.3 Client Session Change
 
-Switching from Session A → B on the same connection occurs by
+Changing from Session A → B on the same connection occurs by
 `session-unbind` (for A) followed by `session-resume` (for B). Same-session
 is a no-op. Web-UI implements this in `wsConnectionStore` with a
 10-second grace timer (user pause between editor changes within
 a page does **not** immediately lead to unbind).
 
-## 6. Cross-Pod-Routing
+## 6. Cross-Pod Routing
 
 If the Project-Home-Pod (`ProjectDocument.homeCluster`) is a different pod
 than the one where the user WS lands, the **Face-Pod** tunnels the
@@ -174,7 +176,7 @@ For each session-channel frame, the `HomePodLookupService` decides the routing:
 | otherwise | `sessionId` from Envelope (or bound Session in `ConnectionContext`) → analogous to `session-resume` |
 
 If the endpoint cannot be resolved (project unknown, podless,
-never claimed) → fallback to **local** processing; local handler
+never claimed) → Fallback to **local** processing; local handler
 then returns the natural error.
 
 ### 6.2 Tunnel Mechanism
@@ -182,7 +184,7 @@ then returns the natural error.
 - Face-Pod maintains **one** upstream WS per external connection (pooled).
 - Frame pipe is bidirectional and 1:1: `LiveEnvelope.payload` in,
   raw `WebSocketEnvelope` through `/internal/{tenant}/ws/chat`. Responses
-  from the Home-Pod are re-wrapped into `LiveEnvelope { channel:"session", sessionId, payload }`.
+  from the Home-Pod are re-wrapped in `LiveEnvelope { channel:"session", sessionId, payload }`.
 - `WELCOME` frames from the Home-Pod are filtered (Face-Pod has already
   sent its own Welcome to the user).
 
@@ -210,8 +212,8 @@ used for user chat streaming.
   Documents) bind / unbind sessions, but **do not open / close
   the socket**.
 - Reconnect loop: Exponential Backoff (1s → 2s → 4s → … cap 30s), max 8
-  attempts → manual Retry button in `<ReconnectOverlay>`.
-- Browser Resume (iPad wake, tab switch back, network `online`) →
+  attempts → manual retry button in `<ReconnectOverlay>`.
+- Browser resume (iPad wake, tab switch back, network `online`) →
   immediate reconnect attempt, backoff reset.
 - After successful reconnect: Auto-`session-resume` of the last desired
   session, so the ongoing chat continues without UI reset.
@@ -244,7 +246,7 @@ Server → Client:
 }}
 ```
 
-Client remembers `sess_abc123` as the active sessionId.
+Client notes `sess_abc123` as active sessionId.
 
 ### 8.2 Subsequent User Input
 
@@ -256,7 +258,7 @@ Client remembers `sess_abc123` as the active sessionId.
 }}
 ```
 
-Face-Pod routes, if necessary, via tunnel to the Home-Pod of `sess_abc123`'s project.
+Face-Pod routes via tunnel to the Home-Pod of `sess_abc123`'s project, if necessary.
 
 ### 8.3 Server-initiated Notification (Token Stream)
 
@@ -284,7 +286,7 @@ Client may then set the cached sessionId to `null`.
 ## 9. What is NOT in v1
 
 Deliberately omitted to keep the foundation refactor small and allow the
-protocol to learn through practice before channels are hardened:
+protocol to learn from practice before channels are hardened:
 
 - **`notify`-Channel** as user-bound push. Currently, NOTIFY is still
   session-scoped; cross-session Notify would require this channel.
@@ -292,10 +294,12 @@ protocol to learn through practice before channels are hardened:
   as a push frame in the `session`-Channel.
 - **`control`-Channel** for Keepalive/Auth-Refresh/Capabilities.
 - **CRDT for simultaneous multi-user editing** on `documents` —
-  deliberately not implemented. The `documents`-Channel provides since v1
+  deliberately not implemented. The `documents`-Channel has provided since v1
   Presence + Live-Push + 3-way-Merge of the Cortex-Editor-Buffers (see
   [`documents-channel.md`](/specs/documents-channel)), but Vance remains a
-  Think-Tool and not Google-Docs.
+  Think-Tool and not Google-Docs. The `pointers`-Channel has supplemented since v1
+  ephemeral live cursors for spatial areas (Canvas) — this is pure
+  awareness (who is pointing where), **not** edit sync and no CRDT.
 - **SharedWorker / Multi-Tab-Connection-Sharing** in the browser. Currently one
   WS per tab.
 

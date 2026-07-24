@@ -32,11 +32,11 @@ which evidence, which subgoals, which LLM calls).
 the Engine spawns the generated Recipe itself as a Child-Process,
 waits for its `ProcessEvent`, checks the produced artifacts
 against the Acceptance-Criteria (EXECUTION_VALIDATING +
-ContentValidatingPhase), and only then concludes with DONE. If
+ContentValidatingPhase) and only then concludes with DONE. If
 artifacts are missing or too small, a Recovery-Loop is triggered
 back to PROPOSING. With `planOnly=true` (Engine parameter, see
-§6), Slartibartfast stops after PERSISTING and leaves execution
-to the caller.
+§6), Slartibartfast stops after PERSISTING and leaves the
+Execution to the Caller.
 
 **Identity Feature — the only LLM-driven write path into the
 Project configuration.** Other Engines write outputs *within*
@@ -74,8 +74,8 @@ lifecycle phases (10 plan phases + 2 execute phases when
 `planOnly=false`). Each phase is a Spring `@Component` under
 `vance-brain/src/main/java/de/mhus/vance/brain/slartibartfast/phases/`,
 operates on the common `ArchitectState` structure, and explicitly
-records its audit trail (PhaseIteration, Rationale, LlmCallRecord).
-**Each LLM phase has a hard re-prompt loop** with specific
+logs its audit trail (PhaseIteration, Rationale, LlmCallRecord).
+**Each LLM phase has a hard re-prompt loop** with concrete
 validation hints.
 
 ```
@@ -89,7 +89,7 @@ FRAMING            LLM: User-Text → FramedGoal with
 CONFIRMING         Pure logic: stated + high-conf assumed →
                    acceptanceCriteria. Low-conf assumed according to
                    confirmationMode (DROP_LOW_CONF | KEEP_ALL |
-                   ASK_LOW_CONF). For ASK_LOW_CONF: Inbox dialog,
+                   ASK_LOW_CONF). For ASK_LOW_CONF: Inbox dialogue,
                    Engine parks.
   ↓
 GATHERING          Tool calls via DocumentService:
@@ -126,7 +126,7 @@ PROPOSING          ◄─────────┐  Recovery-Loop on VALIDATIN
                      engine: vogon + inline strategyPlanYaml
                    - MARVIN_RECIPE: generates Recipe-YAML with
                      engine: marvin + params + promptPrefix
-                   Delivers RecipeDraft with yaml + justifications-
+                   Provides RecipeDraft with yaml + justifications-
                    Map (constraint-key → sg-id) + shapeRationale.
   ↓                          │
 VALIDATING         Hard validator-gate (6 rules):              │
@@ -171,8 +171,8 @@ DONE
 
 Recovery branches at BINDING, VALIDATING, and EXECUTION_VALIDATING
 collectively count against `maxRecoveries`. Upon exhaustion: according
-to `escalationMode`, either directly `ESCALATED` or via `ESCALATING`
-→ Inbox dialog → User decides.
+to `escalationMode`, either direct `ESCALATED` or via `ESCALATING`
+→ Inbox dialogue → User decides.
 
 **LLM Hardening per Phase (Pattern):** SystemPrompt with "EXACTLY one
 JSON object", "no Markdown wrapper". Output schema strictly
@@ -190,7 +190,7 @@ runId                      "3a4f7c91"  — 8-hex UUIDv4-prefix, assigned once
                                         at spawn, Storage-
                                         Bucket key
 userDescription            verbatim user text
-outputSchemaType           VOGON_STRATEGY | MARVIN_RECIPE | ZAPHOD_RECIPE | SCRIPT_JS
+outputSchemaType           VOGON_STRATEGY | MARVIN_RECIPE | ZAPHOD_RECIPE | SCRIPT_JS | MAGRATHEA_WORKFLOW
 mode                       CREATE | EDIT | UPDATE — drives the
                                         invent vs. patch branch, the
                                         LOADING_EXISTING phase, and the
@@ -204,14 +204,14 @@ priorFailureReason         String — UPDATE-mode optional context from
 status                     ArchitectStatus enum
 goal                       FramedGoal { framed, sourceUserText,
                                         statedCriteria[], assumedCriteria[] }
-acceptanceCriteria         Criterion[] — Output of CONFIRMING
-evidenceSources            EvidenceSource[] — Output of GATHERING
-evidenceClaims             Claim[] — Output of CLASSIFYING
-subgoals                   Subgoal[] — Output of DECOMPOSING
+acceptanceCriteria         Criterion[] — Output from CONFIRMING
+evidenceSources            EvidenceSource[] — Output from GATHERING
+evidenceClaims             Claim[] — Output from CLASSIFYING
+subgoals                   Subgoal[] — Output from DECOMPOSING
 decompositionRationaleId   Rationale-Ref for the plan form
-proposedRecipe             RecipeDraft — Output of PROPOSING
+proposedRecipe             RecipeDraft — Output from PROPOSING
 rationales                 Rationale[] — append-only Pool, each
-                                        phase appends its justifications
+                                        phase adds its justifications
 iterations                 PhaseIteration[] — one entry per phase run,
                                         audit history
 llmCallRecords             LlmCallRecord[] — one entry per LLM call
@@ -274,6 +274,7 @@ EXECUTING, EXECUTION_VALIDATING) is schema-agnostic.
 | `marvin-recipe` | **production** | `MarvinArchitect` — promptPrefix non-blank + Pebble-Template-Compile + `params`-Map + `allowedSubTaskRecipes`/`recipesOnlyViaExpand` resolve via `RecipeLoader` | Marvin |
 | `zaphod-recipe` | **production** | `ZaphodArchitect` — `ZaphodHeadsParser.parseRecipe` (mirrors `ZaphodEngine.buildInitialState` validation) | Zaphod |
 | `script-js` | **production** | `JsScriptArchitect` — delegates to `HactarService.validate(...)` (parse + JSDoc-Header + Tool-Allowlist) | Hactar (via `DirectExecutionSpawn`) |
+| `magrathea-workflow` | **production** | `MagratheaArchitect` — delegates to `MagratheaWorkflowLoader.validateYaml(...)` (State-Machine-Parse) + `agent_task.recipe`-existence-Check | none (author-only, `planOnly`) |
 
 Schema-specific knowledge lives in `SchemaArchitect`-Beans under
 `de.mhus.vance.brain.slartibartfast.architect.*`. The lifecycle
@@ -292,6 +293,23 @@ Hactar directly via `architect.directExecutionSpawn(...)` — see
 `SchemaArchitect.DirectExecutionSpawn`). VALIDATING skips
 the recipe-specific YAML-Parse + `engine:`-
 Field-Checks for `script-js` (controlled by `architect.isRecipeOutput()`).
+
+`magrathea-workflow` produces a Workflow document (State-
+Machine, NOT a Recipe — no `engine:` field). Magrathea is a
+workflow orchestration subsystem, not a `ThinkEngine` that
+Slart could spawn as a Child and wait for a terminal `ProcessEvent`.
+The `MagratheaArchitect` is therefore **author-only**:
+`isRecipeOutput()=false` (VALIDATING skips the recipe-
+specific checks), `persistsAtFlatPath()=true` (PERSISTING
+writes **directly** to `_vance/workflows/<name>.yaml` — the path
+that the `MagratheaWorkflowLoader` resolves, thus immediately
+startable via `workflow_start`, instead of in the `_slart`-sandbox bucket).
+The bundled `magrathea-architect`-Recipe sets
+`params.planOnly: true` — the run ends after PERSISTING with DONE,
+without EXECUTING/EXECUTION_VALIDATING. Executing the workflow
+is a separate step (`workflow_start`-Tool, Scheduler or
+REST). The Architect is only a Bean when
+`vance.services.magrathea=true` (like the Loader).
 
 **MARVIN_RECIPE Output Form:**
 ```yaml
@@ -314,9 +332,9 @@ promptPrefix: |
   Generate EXACTLY N Children: ...
 ```
 
-Slartibartfast matches Shape **plus** Sub-Recipe existence: each
+Slartibartfast checks Shape **plus** Sub-Recipe existence: each
 name in `allowedSubTaskRecipes` / `recipesOnlyViaExpand` must
-resolve via the Project-`RecipeLoader`, otherwise
+resolve via the Project `RecipeLoader`, otherwise
 `MarvinArchitect`-VALIDATING rejects the Recipe and drives Re-PROPOSE.
 
 **VOGON_STRATEGY Output Form:**
@@ -357,7 +375,7 @@ Council-Shape rules (validated by `ZaphodHeadsParser`):
 2-5 Heads sweet-spot, hard cap at
 `ZaphodEngine.MAX_HEADS`, unique Head names, each Head
 references a Project Recipe. The Architect's `appendProposingContext`
-provides the Slart-LLM with the Project Recipe list,
+provides the Slart LLM with the Project Recipe list,
 so Head-Recipes are not hallucinated.
 
 **SCRIPT_JS Output Form** (JavaScript Orchestrator Script, NOT
@@ -375,13 +393,13 @@ Recipe YAML):
 })();
 ```
 
-`JsScriptArchitect` is a Schema-Architect-Bean like the
+`JsScriptArchitect` is a Schema Architect Bean like the
 others, but with three key differences:
 
 1. `isRecipeOutput()` returns `false` — VALIDATING skips
    YAML-Parse, `engine:`-Field-Check and path-persistence-Check.
 2. `outputPathSegment()` / `outputExtension()` return `"scripts"`
-   / `".js"` — PERSISTING writes under
+   / `".js"` — PERSISTING writes to
    `_vance/scripts/_slart/<runId>/<name>.js`.
 3. `directExecutionSpawn(state)` returns a
    `DirectExecutionSpawn(engineName="hactar", engineParams={scriptRef,
@@ -395,21 +413,69 @@ Allowlist-Intersect (single owner from
 
 **Mode CREATE/UPDATE for SCRIPT_JS** (Engine-Param
 `mode`, default `CREATE`):
-- `CREATE` — Generate script from scratch from Goal + Manuals.
+- `CREATE` — Create script from scratch from Goal + Manuals.
 - `UPDATE` — Caller provides `existingScriptRef` (+ optional
-  `failureReason`). `LoadingExistingPhase` loads the body into
+  `failureReason`). `LoadingExistingPhase` loads the Body into
   `state.existingScriptCode`; `JsScriptArchitect.appendProposingContext`
   injects it as an "EXISTING SCRIPT" block into the User-Prompt.
   PERSISTING writes a new version in the `_slart/<newRunId>/`-
-  Bucket — no in-place edit of the original file (analogous to the
-  EDIT guarantee in §8 for Recipes).
+  Bucket — no in-place edit of the original file (analogous to
+  the EDIT guarantee in §8 for Recipes).
 
-**Output Form is additively extensible.** A new
+**MAGRATHEA_WORKFLOW Output Form** (Workflow State-Machine, NOT
+Recipe YAML — no `engine:` field):
+```yaml
+description: |
+  <description>
+version: "1"                  # optional
+parameters:                   # optional — validated on workflow_start
+  <key>: { type: string, required: true, default: <value> }
+bounds:                       # optional — HARD Stop
+  maxTotalCostUsd: <number>
+  maxWallclockSeconds: <number>
+  maxTaskSpawns: <number>
+start: <state-name>           # MANDATORY — must exist in states
+states:                       # MANDATORY — at least one State
+  <state-name>:
+    type: agent_task          # agent_task | tool_task | shell_task |
+                              # script_task | gate_task | timer_task |
+                              # condition_task | workflow_task | terminal
+    recipe: <recipe-name>     # agent_task: must be a known Recipe
+    params: { prompt: "...", schema: { ... } }
+    on: { success: <state> }  # Outcome → Next State (Exact-Match)
+    catch: { technical_error: <state> }
+    retry: { maxAttempts: 3, on: [technical_error, timeout], backoffSeconds: 30 }
+```
+
+`MagratheaArchitect` differs from the Recipe Architects:
+
+1. `isRecipeOutput()` returns `false` — VALIDATING skips
+   YAML-`engine:`-Field-Check, justifications-resolve and
+   path-persistence-Check; `validateDraftShape` is the only
+   shape validation entry point.
+2. `persistsAtFlatPath()` returns `true` — PERSISTING writes to
+   `_vance/workflows/<draft-name>.yaml` (flat, directly startable),
+   not in the `_slart`-sandbox. An existing document there
+   is overwritten (the Document version layer maintains history).
+3. `wantsExecutionValidation()` returns `false` and the Recipe
+   sets `planOnly: true` — no EXECUTING/EXECUTION_VALIDATING.
+
+Validation: `MagratheaArchitect.validateDraftShape` delegates to
+`MagratheaWorkflowLoader.validateYaml(...)` (the same parser that
+the Runtime freezes into `StartRecord` at startup — checks
+`start`/`states`, transition targets, task types) and
+then checks that each `agent_task.recipe` resolves via the Project
+`RecipeLoader` (analogous to Vogon's Worker check). The
+`appendProposingContext` provides the Slart LLM with the Project
+Recipe list, so `agent_task`-Recipes are not hallucinated.
+Details on the workflow data model: `specification/public/workflows.md`.
+
+**Output Form additively extensible.** A new
 `SchemaArchitect`-Bean ⇒ new Enum value in `OutputSchemaType` ⇒
 new Output Form section here. `ProposingPhase`,
-`ValidatingPhase`, and `PersistingPhase` are NOT changed
-(the latter reads `outputPathSegment` + `outputExtension` from
-the Architect).
+`ValidatingPhase` and `PersistingPhase` are NOT changed
+(the latter reads `outputPathSegment`, `outputExtension`,
+`persistsAtFlatPath` + `artefactNoun` from the Architect).
 
 ## 5. Lifecycle and Recovery
 
@@ -436,7 +502,7 @@ runTurnInner:
   advanceOnePhase(state)
   persistState(state)
 
-  // Park check: Inbox dialog running?
+  // Park check: Inbox dialogue ongoing?
   if state.pendingInboxItemId != null:
     process.status := BLOCKED
     return
@@ -464,7 +530,7 @@ advanceOnePhase:
       return
     state.status := pendingRecovery.toPhase
     // pendingRecovery remains set for now — the target phase
-    // reads the hint, resets it after Acting.
+    // reads the hint, resets it to Acting.
 
   // 2. Phase dispatch.
   switch state.status:
@@ -508,29 +574,29 @@ Engine's safety-net clear is only relevant for stub/no-op phases.
 
 ## 6. Engine Parameters (Control)
 
-Recipe-Author or Spawn-Caller sets these on `engineParams`:
+Recipe Author or Spawn Caller sets these on `engineParams`:
 
 | Param | Values | Default | Effect |
 |---|---|---|---|
 | `userDescription` | string | (fallback to `process.goal`) | Free-text User task |
 | `outputSchemaType` | see §4 | `vogon-strategy` | Which Recipe form is generated |
 | `planOnly` | boolean | `false` | `true` ⇒ Engine stops after PERSISTING with DONE; `false` ⇒ Engine spawns the generated Recipe as a Child and validates its outputs (EXECUTING + EXECUTION_VALIDATING, see §2) |
-| `proposingHints` | string | (empty) | Free-text-Append to the PROPOSING-System-Prompt — used by Kits/Wrapper-Recipes to inject Recipe-Shape conventions without changing the Engine-Prompts |
+| `proposingHints` | string | (empty) | Free-text-Append to the PROPOSING-System-Prompt — used by Kits/Wrapper-Recipes to inject Recipe-Shape conventions without changing the Engine prompts |
 | `confirmationMode` | `DROP_LOW_CONF` \| `KEEP_ALL` \| `ASK_LOW_CONF` | `DROP_LOW_CONF` | How low-conf assumed criteria are handled — see §7 |
-| `escalationMode` | `FAIL` \| `ASK_USER` | `FAIL` | What happens when the Recovery budget is exhausted — see §7 |
+| `escalationMode` | `FAIL` \| `ASK_USER` | `FAIL` | What happens when Recovery budget is exhausted — see §7 |
 | `confirmationThreshold` | double 0..1 | 0.85 | Confidence threshold for "high-conf assumed" |
 | `maxSpeculativeRatio` | double 0..1 | 0.30 | Max proportion of speculative Subgoals |
 | `maxRecoveries` | int | 5 | Total budget for BINDING+VALIDATING-Recoveries |
 | `auditLlmCalls` | boolean | true | Append LlmCallRecord per LLM-Call |
 | `mode` | `CREATE` \| `EDIT` \| `UPDATE` | inferred | Explicit mode selection. Default derivation: `existingScriptRef` set → UPDATE; `targetRecipeName` set → EDIT; otherwise CREATE. EDIT is recipe-only (in-place overwrite in `_user/`); UPDATE writes to a new `_slart/<runId>/`-Bucket |
-| `existingScriptRef` | string | (empty) | UPDATE-mode for SCRIPT_JS: Document path to the existing Script. Mandatory for UPDATE; LOADING_EXISTING reads the body and stashes it on `state.existingScriptCode` |
+| `existingScriptRef` | string | (empty) | UPDATE-mode for SCRIPT_JS: Document path to the existing Script. Mandatory for UPDATE; LOADING_EXISTING reads the Body and stashes it on `state.existingScriptCode` |
 | `failureReason` | string | (empty) | UPDATE-mode optional: Hactar-`TerminationRationale.failureReason` from a prior FAILED run. Surface in the PROPOSING-Prompt as "what went wrong last time" context. Internally mapped to `state.priorFailureReason` |
 | `targetRecipeName` | string | (empty) | EDIT-mode: existing recipe to patch in `_vance/recipes/_user/<name>.yaml`. FRAMING-LLM can also extract from User description |
 
 Values are case-insensitive and tolerant of Dash↔Underscore.
 Unknown values → Default with WARN-Log.
 
-## 7. Inbox Dialog (M6.2)
+## 7. Inbox Dialogue (M6.2)
 
 Two places can make the Engine wait for a User response:
 
@@ -557,7 +623,7 @@ Two places can make the Engine wait for a User response:
      originals remain low-conf INFERRED_* and are dropped in the
      next ConfirmingPhase round).
 6. ConfirmingPhase runs again, sees pendingInboxItemId=null,
-   no more low-conf (either USER_CONFIRMED or already)
+   no more low-conf (either USER_CONFIRMED or same)
    → normal partition → status → GATHERING.
 
 ### ESCALATION (mode=ASK_USER)
@@ -590,7 +656,7 @@ Criterion decisions would be possible via `InboxItemType.STRUCTURE_EDIT`
 Slartibartfast persists Recipes as Documents under the
 standard path `recipes/<name>.yaml`. To prevent generated Recipes from
 colliding with hand-authored or Kit-installed Recipes, each
-Slartibartfast-Spawn runs in its own **Run-Bucket**:
+Slartibartfast spawn runs in its own **Run-Bucket**:
 
 ```
 recipes/_slart/<runId>/<recipe-name>.yaml
@@ -604,7 +670,7 @@ recipes/_slart/<runId>/audit.json
 | `<recipe-name>` | Name from `RecipeDraft.name` (LLM-generated, kebab-case) |
 | `audit.json` | Pretty-printed Jackson-Dump of the complete ArchitectState — Audit + Reproducibility |
 
-The Recipe can be spawned directly with `process_create(engine="vogon"|"marvin",
+The Recipe is directly spawnable with `process_create(engine="vogon"|"marvin",
 recipe="_slart/<runId>/<recipe-name>")` —
 `RecipeLoader` reads subdirectories under `recipes/` transparently.
 
@@ -613,17 +679,18 @@ non-fatal — if the Recipe is written, the run is considered
 successful.
 
 **Guarantee of Bucket Separation.** As long as Slartibartfast
-writes exclusively to `recipes/_slart/<runId>/`, its outputs and
-Kit-installed Recipes (`recipes/<name>.yaml` at the same level)
-**cannot physically overwrite each other**. This guarantee is the
-basis for the two write paths into the Project configuration
-(deterministic Kit import, LLM-driven Slart run) to coexist
-conflict-free today. Any future extension that would allow
-Slartibartfast to patch existing Recipes outside the `_slart/`-Bucket
-(Edit mode) must explicitly renegotiate this guarantee — otherwise,
-a `kit update` would silently overwrite a Slart patch or vice versa.
+writes exclusively to `recipes/_slart/<runId>/`, its outputs
+and Kit-installed Recipes (`recipes/<name>.yaml`
+at the same level) **cannot physically overwrite each other**. This
+guarantee is the basis for the two write paths into the
+Project configuration (deterministic Kit import, LLM-driven
+Slart run) to coexist without conflict today. Any
+future extension that would allow Slartibartfast to patch existing
+Recipes outside the `_slart/`-Bucket (Edit mode)
+must explicitly renegotiate this guarantee — otherwise
+a `kit update` silently overwrites a Slart patch or vice versa.
 
-## 9. DONE Payload (Contract)
+## 9. DONE-Payload (Contract)
 
 When the run reaches DONE, the Engine emits a ProcessEvent
 with the ArchitectState as Payload. Key fields for the
@@ -649,12 +716,12 @@ Caller:
 If `planOnly=true`, the Caller (typically Arthur) reads the
 Payload and either:
 - direct spawn: `process_create(recipe="_slart/<runId>/<name>")`
-- User Approval: shows Recipe + TerminationRationale in chat,
+- User-Approval: shows Recipe + TerminationRationale in chat,
   asks for confirmation, then spawns.
 
 If `planOnly=false`, the Recipe has already been executed — the Caller
 shows the result (`childExecutionOutcome` plus the output documents
-checked in EXECUTION_VALIDATING) and typically has nothing more to spawn.
+checked in EXECUTION_VALIDATING) and generally has nothing more to spawn.
 
 ## 10. Relationship to Trillian
 
@@ -668,7 +735,7 @@ reflection. When to use which?
 | Setup | Phased Workflow (10 Stages) | Goal Internalization |
 | Output | Persisted Recipe YAML | Live Run with Skeleton+Detail |
 | Adaptive | No (finished after DONE) | Yes (skeleton can mutate mid-run) |
-| Latency | Low (~30-90s typical, 6-8 LLM calls) | High (Reflection per step) |
+| Latency | Low (~30-90s typical, 6-8 LLM-Calls) | High (Reflection per Step) |
 | Determinism | High | Medium |
 | When | Task fits into Recipe form | Truly open, long-running task |
 
@@ -688,32 +755,33 @@ generate freely.
   `recipesOnlyViaExpand` is an existing Project Recipe;
   missing names cause VALIDATING to fail and drive Re-PROPOSE
   with a concrete Recipe inventory hint. What remains open: if the
-  LLM needs a truly new Sub-Recipe, today the User must
-  install an extended Kit — a recursive
-  Slartibartfast-Spawn per missing Sub-Recipe could
+  LLM truly needs a new Sub-Recipe, today the User
+  must deploy an extended Kit — a recursive
+  Slartibartfast spawn per missing Sub-Recipe could
   automate this.
-- **Per-Criterion Decisions in the Inbox dialog** (extension of M6.2):
+- **Per-Criterion Decisions in the Inbox dialogue** (extension of M6.2):
   Instead of binary for the batch — `InboxItemType.STRUCTURE_EDIT` with
-  a boolean per Criterion. Awaiting concrete UX feedback.
+  a Bool per Criterion. Awaiting concrete UX feedback.
 - **Cost-Caps** (`maxLlmCallsPerSpawn`): Currently unlimited. With
-  6-15 calls per run (FRAMING + N×CLASSIFYING + DECOMPOSING +
+  6-15 Calls per run (FRAMING + N×CLASSIFYING + DECOMPOSING +
   PROPOSING + Recoveries) ~$0.005-0.02 per Run — acceptable, but
-  a hard cap for runaway Recovery loops would be useful.
+  a Hard-Cap for runaway Recovery-Loops would be useful.
 - **Constraint-Recursion** (informational): If Slartibartfast
   itself spawns a Marvin-Recipe via `marvin-recipe`-output, its
-  own controlling Recipe is also a Marvin-Recipe. This is
-  Level-3 recursion from `instructions/engines.md` §"Level
+  own controlling Recipe is also a Marvin-Recipe. This
+  is the Level-3 recursion from `instructions/engines.md` §"Level
   three". Mechanism unchanged — each layer is a normal run.
-- **Edit mode for existing Recipes (Future):** "Replace Persona-Head Y with Z in Recipe X" — today architecturally
+- **Edit mode for existing Recipes (Future):** "Replace Persona-Head Y with Z
+  in Recipe X" — today architecturally
   excluded because PERSISTING writes exclusively to
   `recipes/_slart/<runId>/` (see §8 Guarantee). If
-  implemented, bucket separation against `kit update` must be
+  implemented, the bucket separation against `kit update` must be
   renegotiated.
 
 ## 12. Implementation Status
 
-**Status: Implemented (M0–M6).** All phases are real, all Engine-
-Parameters controllable, Inbox dialog functional.
+**Status: Implemented (M0–M6).** All phases real, all Engine
+parameters controllable, Inbox dialogue functional.
 
 | Milestone | What | Tests |
 |---|---|---|
@@ -728,15 +796,16 @@ Parameters controllable, Inbox dialog functional.
 | M4.3 | PERSISTING + TerminationRationale | unit + ai-test (full pipeline) |
 | M5 | MARVIN_RECIPE Output — production via `MarvinArchitect` (System-Prompt + 4 Shape-Validators incl. `allowedSubTaskRecipes`-Resolve). | unit + ai-test (`SlartibartfastMarvinRecipeLlmTest`) |
 | EX | EXECUTING + EXECUTION_VALIDATING + ContentValidatingPhase | unit + ai-test (FullPipeline) |
-| AR | Schema-Architects-Refactor — `SchemaArchitect`-Interface + `VogonArchitect` / `MarvinArchitect` / `ZaphodArchitect`-Beans; `ProposingPhase` + `ValidatingPhase` schema-agnostic. Plus ZAPHOD_RECIPE as third Output-Schema production-ready. | unit (`ZaphodHeadsParserTest`) + ai-test (`ZaphodArchitectRecipeShapeLlmTest`) |
+| AR | Schema-Architects-Refactor — `SchemaArchitect`-Interface + `VogonArchitect` / `MarvinArchitect` / `ZaphodArchitect`-Beans; `ProposingPhase` + `ValidatingPhase` schema-agnostic. Plus ZAPHOD_RECIPE as third output schema production-ready. | unit (`ZaphodHeadsParserTest`) + ai-test (`ZaphodArchitectRecipeShapeLlmTest`) |
 | M6.1 | confirmationMode + escalationMode (DROP/KEEP/FAIL) | unit |
-| M6.2 | ASK_LOW_CONF + ASK_USER (Inbox-Dialog) | (Test gap; see §11) |
+| M6.2 | ASK_LOW_CONF + ASK_USER (Inbox Dialogue) | (Test gap; see §11) |
+| MW | MAGRATHEA_WORKFLOW Output — author-only `MagratheaArchitect` (`MagratheaWorkflowLoader.validateYaml` + `agent_task.recipe`-Check, `persistsAtFlatPath` to `_vance/workflows/<name>.yaml`, `planOnly`). SPI extended by `persistsAtFlatPath()` + `artefactNoun()`. | unit (`MagratheaArchitectTest`) |
 
 Prerequisites — all met:
 - Phase F (Vogon-Inline-strategyPlanYaml) — Slartibartfast emits
   inline `params.strategyPlanYaml` for VOGON_STRATEGY.
 - §2.5/§2.6 Vogon-Branch-Actions — internal Decider/JSON-Output-
-  Patterns as templates for the Phase-System-Prompts.
+  Patterns as template for the Phase-System-Prompts.
 - Phase M/L/O/Q (Marvin-Constraint-Params) — the configuration
   buttons that Slartibartfast sets for MARVIN_RECIPE.
 - Phase N (Marvin-Sequencing) + Phase P (idempotent postActions) —
@@ -748,5 +817,5 @@ Prerequisites — all met:
 - MARVIN_RECIPE-Output with engine: marvin, params (auto.
   defaultExecutionMode + disallowedTaskKinds + allowedExpandDocumentRefPaths
   matching Manuals), structured promptPrefix
-- Recovery-Loop works live (VALIDATING #1 → PROPOSING #2 → VALIDATING #2)
+- Recovery-Loop engages live (VALIDATING #1 → PROPOSING #2 → VALIDATING #2)
 - 0 hallucinations in the tested runs against the essay-slart Kit

@@ -8,7 +8,7 @@
 
 ## 1. Design Principle
 
-No separate config system and secret system. Everything consists of **typed settings** at different Scope levels. A `password` type is stored encrypted and never returned in plaintext. Everything else is transparently readable.
+No separate config system and secret system. Everything consists of **typed settings** at different Scope levels. A `password` type is stored encrypted and never returned in plain text. Everything else is transparently readable.
 
 Like GitHub Repository Settings or K8s ConfigMaps + Secrets — but in one system.
 
@@ -26,8 +26,8 @@ Like GitHub Repository Settings or K8s ConfigMaps + Secrets — but in one syste
 
 ### Password Type Rules
 
-- Encrypted when written (AES-256, master key from Environment)
-- **Never** returned in plaintext when read via API, only `"***"` or `"[set]"`
+- Encrypted upon writing (AES-256, master key from environment)
+- **Never** returned in plain text when read via API, only `"***"` or `"[set]"`
 - Decrypted **only internally** in the Brain, at the moment of the Tool-Call or LLM-Call
 - **Never** appears in logs, chat output, Think Process results, or exports
 - Can be overwritten and deleted, but not read
@@ -64,20 +64,20 @@ Reads translate the Storage reference back into the Wire form. This is also why 
 
 ### Resolution — Two Separate Cascades
 
-`SettingService` exposes **two** lookup APIs, with different Scopes. They are intentionally separated so that per-User preferences do not accidentally overwrite Tenant/Project defaults for security-relevant keys (LLM Provider, API Keys).
+`SettingService` exposes **two** lookup APIs, with different Scopes. They are intentionally separated so that per-user preferences do not accidentally overwrite Tenant/Project defaults for security-relevant keys (LLM provider, API keys).
 
 #### a) Project Cascade — `getStringValueCascade(tenantId, projectId, processId, key)`
 
-Inner-to-outer, first-hit-wins. **No User Layer**:
+Inner-to-outer, first-match-wins. **No User Layer**:
 
 ```
-1. Think-Process tp:                  storage think-process/tp
+1. Think Process tp:                  storage think-process/tp
 2. <projectId>-Project (e.g., "p"):    storage project/p
 3. _tenant-Project:                    storage project/_tenant
 4. → null
 ```
 
-For everything related to the worker context: `ai.*` (Provider, Model, Aliases, API Keys), `web.*` (Search Keys), `memory.*` hints. A cascade variant for Passwords exists as `getDecryptedPasswordCascade(...)` — same order.
+For everything related to the worker context: `ai.*` (provider, model, aliases, API keys), `web.*` (search keys), `memory.*` hints. A cascade variant for passwords exists as `getDecryptedPasswordCascade(...)` — same order.
 
 #### b) User API — `getUserStringValue(tenantId, userId, key)` and `getUserStringValueWithDefault(...)`
 
@@ -94,7 +94,7 @@ getUserStringValueWithDefault(tenantId, userId, key) :=
   3. → null
 ```
 
-For purely per-user preferences that should **not** be mixed with the Project context: `webui.language`, `telegram.conversation_id`, `notification.channel`, Terminal theme, ... The `<projectId>` layer is intentionally skipped — otherwise, switching to another Project would unexpectedly "change" the UI language.
+For purely per-user preferences that should **not** be mixed with the project context: `webui.language`, `display.timezone`, `telegram.conversation_id`, `notification.channel`, Terminal theme, ... The `<projectId>` layer is intentionally skipped — otherwise, switching to another project would unexpectedly change the UI language or the displayed time.
 
 #### Language: Three Settings, Three Cascades
 
@@ -102,13 +102,23 @@ Language breaks down into three concepts with different cascades. Resolved via [
 
 | Setting | Meaning | Cascade |
 |---|---|---|
-| `webui.language` | UI Chrome (buttons, labels). | User-only (no cascade). |
-| `chat.language` | Language in which the assistant responds/listens. | `think-process → _user_<userId> → <projectId> → _tenant` — User default can be overridden by a Project (e.g., an English code review Project for a German-speaking User). |
-| `content.language` | Language in which Documents/Insights/Memory entries are written. | `think-process → <projectId> → _tenant` — deliberately **without** User layer, because content belongs to the Project (otherwise Project with Documents in three languages depending on author). |
+| `webui.language` | UI chrome (buttons, labels). | User-only (no cascade). |
+| `chat.language` | Language in which the assistant responds/listens. | `think-process → _user_<userId> → <projectId> → _tenant` — User default can be overridden by a project (e.g., an English code review project for a German-speaking user). |
+| `content.language` | Language in which Documents/Insights/Memory entries are written. | `think-process → <projectId> → _tenant` — deliberately **without** User Layer, because content belongs to the project (otherwise, project with documents in three languages depending on the author). |
 
-Default fallback: `LanguageResolver.DEFAULT_LANGUAGE = "en"`. The MemoryContextLoader renders both languages in a `## Languages` block in the System Prompt — Engines thus get the correct language context without further action. The historical `context.language` key no longer exists; migration is "manual" (replace settings rows, the resolver does not read the old key).
+Default fallback: `LanguageResolver.DEFAULT_LANGUAGE = "en"`. The MemoryContextLoader renders both languages in a `## Languages` block in the system prompt — Engines thus get the correct language context without further action. The historical `context.language` key no longer exists; migration is "manual" (replace settings rows, the resolver does not read the old key).
 
-For Passwords, analogously: `getDecryptedUserPassword(tenantId, userId, key)` — direct, no fallback (per-user Secrets are explicit).
+#### Timezone: `display.timezone`
+
+The user's displayed timezone is a single per-user setting `display.timezone` (IANA ID, e.g., `Europe/Berlin`), resolved via [`TimezoneResolver`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance.shared/settings/TimezoneResolver.java) via `getUserStringValueWithDefault` — cascade `_user_<userId> → _tenant`, code fallback `UTC`. Consumers:
+
+- the **Current-Date-Block** in the prompt (renders in the user's zone instead of the server's zone — see [prompt-caching](prompt-caching.md) §5b),
+- the **`current_time`** tool (default zone without explicit `zone` parameter),
+- the **Scheduler** (`scheduler_set` writes the user's zone into the YAML upon creation — [scheduler](scheduler.md) §10c).
+
+The `PromptDateContextResolver` (vance-brain) lifts `Process → Session → userId` for this purpose and is headless-proof. `display.timezone` is set in the Web UI profile (timezone selector with browser default seed on first load) or in the Foot-CLI via `/timezone`; both write via the self-service `PUT /brain/{tenant}/profile/settings/display.timezone` path (key is in the Profile allowlist).
+
+For passwords, similarly: `getDecryptedUserPassword(tenantId, userId, key)` — direct, no fallback (per-user Secrets are explicit).
 
 Team and Account Scopes are not modeled in v1. If they are added, they will sit between Project and `_tenant` in the Project cascade.
 
@@ -141,13 +151,23 @@ Team and Account Scopes are not modeled in v1. If they are added, they will sit 
 For settings to be written to the `_tenant` Project, the Project must already exist during settings operations. Two paths:
 
 - **Demo Tenant `acme`:** `InitBrainService` calls `homeBootstrapService.ensureVance(ACME)` directly before `InitSettingsLoader.loadIfPresent()` — the loader places its YAML entries in `(project, _tenant)` without the caller needing to know.
-- **Other Tenants:** `_tenant` is created lazily (idempotently) by `AccessController` on the first user login, before settings can be set via the Admin REST API.
+- **Other Tenants:** `_tenant` is lazily created (idempotently) by `AccessController` on the first user login, before settings can be set via the Admin REST API.
 
 ---
 
 ## 5. Naming Conventions (Keys)
 
 Dot notation, grouped by area:
+
+### Preferences (per-user)
+
+```
+display.timezone                     string     "Europe/Berlin"
+webui.language                       string     "de"
+chat.language                        string     "de"
+```
+
+Per-user keys (storage in `_user_<login>` Project, cascade User → `_tenant`). `display.timezone` + `webui.language` are writable via the self-service Profile endpoint; see §3b.
 
 ### LLM
 
@@ -176,7 +196,7 @@ quota.warn_at_percent                int        80
 quota.downgrade_at_percent           int        95
 ```
 
-### Credentials (External Services)
+### Credentials (external services)
 
 ```
 credentials.jira.type                string     "oauth2"
@@ -219,17 +239,17 @@ connectors.max_per_project           int        10
 routing.fallback.recipe              string     hactar
 ```
 
-Recipe name that is spawned by the selector-routed `process_create`
+Recipe name that is spawned by `selector-routed process_create`
 if the trigger-gated selector returns NONE (user text does not trigger
-a special Recipe). Empty string = no fallback (caller receives NONE
-and decides itself). See
+any special Recipe). Empty string = no fallback (caller gets NONE
+back and decides itself). See
 [recipe-routing.md](recipe-routing.md) §6.
 
 ---
 
 ## 6. API
 
-### Reading Settings
+### Read Settings
 
 ```
 GET /api/settings?scope=account/acc_mike
@@ -269,7 +289,7 @@ Response:
 }
 ```
 
-### Writing Settings
+### Write Settings
 
 ```
 PUT /api/settings
@@ -282,11 +302,11 @@ PUT /api/settings
   → Stored (encrypted for password)
 ```
 
-### Deleting Settings
+### Delete Settings
 
 ```
 DELETE /api/settings?scope=account/acc_mike&key=llm.default_model
-  → Override removed, falls back to the next Scope level
+  → Override removed, falls back to next Scope level
 ```
 
 ### Bulk Operations
@@ -334,13 +354,13 @@ vance settings resolved --engine tp_12
 
 ---
 
-## 8. In the Brain (Internal)
+## 8. In the Brain (internal)
 
 ```java
 @Service
 public class SettingsService {
 
-    // Resolves a setting value through the Scope cascade
+    // Resolves a setting value through the scope cascade
     public <T> T get(String key, Class<T> type, SettingsContext ctx) {
         // ctx contains: thinkProcessId, accountId, projectId, teamId, tenantId
         // Checks: engine → account → project → team → tenant → default
@@ -354,7 +374,7 @@ public class SettingsService {
         return decrypt(s.getValue());
     }
 
-    // All settings for a Scope
+    // All settings for a scope
     public List<Setting> list(Scope scope) { ... }
 
     // All effective settings (cascade resolved)
@@ -362,7 +382,7 @@ public class SettingsService {
 }
 ```
 
-### LLM Factory Uses Settings
+### LLM-Factory uses Settings
 
 ```java
 public ChatClient createForSession(Session session, String purpose) {
@@ -421,9 +441,9 @@ Settings
 ```
 Everything is a setting.
 Settings have types: string, int, double, boolean, password.
-Passwords are stored encrypted and never returned in plaintext.
+Passwords are stored encrypted and never returned in plain text.
 Settings exist at Scope levels: Tenant → Team → Project → Account → Think Process.
-Lower levels override higher levels.
+Lower level overrides higher level.
 One system, one code path, one API.
 ```
 

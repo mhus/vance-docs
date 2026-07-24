@@ -9,7 +9,7 @@ permalink: /specs/cortex
 ---
 # Vance Cortex — Specification
 
-> Status: v1. Binding product spec for the unified Chat + Document + Execute work environment of the web UI. Implementation resides in `client_web/packages/vance-face/src/cortex/` plus the backend in `vance-brain/src/main/java/de/mhus/vance/brain/{python,script}/cortex/`.
+> Status: v1. Binding product spec for the unified Chat + Document + Execute work environment of the web UI. Implementation resides in `client_web/packages/vance-face/src/cortex/` plus the backend under `vance-brain/src/main/java/de/mhus/vance/brain/{python,script}/cortex/`.
 >
 > See also: [web-ui.md](/specs/web-ui) | [script-engine.md](/specs/script-engine) | [user-interaction.md](/specs/user-interaction)
 
@@ -19,7 +19,7 @@ permalink: /specs/cortex
 
 **What Cortex is:**
 
-- A single editor (`cortex.html`) as a Multi-Page-App entry.
+- A single editor (`cortex.html`) as a Multi-Page App entry.
 - Project file tree, multiple documents as tabs, persistent Chat panel on the right with a Help sub-tab.
 - Client tools (WS) dynamically registered with the Brain, allowing the Agent to directly edit the chat-bound Doc.
 - Run surface for executable Doc types (`.js` / `.py` currently), with Validate + Slart-Generate/Update as additional actions for JavaScript.
@@ -29,7 +29,7 @@ permalink: /specs/cortex
 - Not a real-time status mirror beyond the Chat — other editor data arrives via REST snapshot on page load (see [web-ui.md](/specs/web-ui) §1).
 - Not a second Auth context: uses the same JWT Session as `chat.html`.
 - No dedicated persistence layer: all edits go through the normal `documents`-REST endpoints.
-- No dedicated scripting language. Cortex relies on the Brain-side `ScriptCortexController` (JavaScript via GraalJS) and `PythonCortexController` (Python via ExecManager + venv).
+- No proprietary scripting language. Cortex relies on the Brain-side `ScriptCortexController` (JavaScript via GraalJS) and `PythonCortexController` (Python via ExecManager + venv).
 
 ## 2. Entry and Data Model
 
@@ -66,15 +66,15 @@ Three zones:
 
 ## 4. DocumentTabShell — Body Dispatch
 
-A single tab shell that renders each Doc kind. Resolver: `resolveBinding(doc): DocTypeBinding`. Lookup order:
+A single tab shell that renders each Doc Kind. Resolver: `resolveBinding(doc): DocTypeBinding`. Lookup order:
 
-1. **`@vance/kind-registry`** first — `resolveKindFor(doc.kind, doc.mimeType)`. Captures addon-contributed Kinds (e.g., Calendar) plus all built-ins migrated to the Registry. Mounts `kindEntry.editor ?? kindEntry.view`. Uses `kindEntry.parse` / `kindEntry.serialize` if available, otherwise the View is fed with `:document="DocumentDto"` instead of `:doc="model"`.
-2. **Hand-rolled Bindings** for the Kinds that `DocumentApp.vue` (in `src/document/`) still hardcodes dispatching: `tree`, `list`, `checklist`, `records`, `chart`, `sheet`, `graph`, `mindmap`, `slides`, `diagram`, plus `image`. Bindings reference the Views from `src/document/` directly — no Cortex-specific renderer classes.
+1. **`@vance/kind-registry`** first — `resolveKindFor(doc.kind, doc.mimeType)`. Covers addon-contributed Kinds (e.g., Calendar) plus all Built-ins migrated to the Registry. Mounts `kindEntry.editor ?? kindEntry.view`. Uses `kindEntry.parse` / `kindEntry.serialize` if available, otherwise the View is fed with `:document="DocumentDto"` instead of `:doc="model"`.
+2. **Hand-rolled Bindings** for Kinds that `DocumentApp.vue` (in `src/document/`) still hardcodes dispatching: `tree`, `list`, `checklist`, `records`, `chart`, `sheet`, `graph`, `mindmap`, `slides`, `diagram`, plus `image`. Bindings directly reference the Views from `src/document/` — no Cortex-specific renderer classes.
 3. **Catch-all `code`-Binding** — `CodeEditor` from `@vance/components` on the raw `inlineText`.
 
 Four modes of the `BindingMode`-Enum:
 
-- `'code'` — CodeEditor with text selection mirroring to the Cortex store (for `cortex_get_selection`).
+- `'code'` — CodeEditor with text selection mirroring to the Cortex store (for `doc_get_selection`).
 - `'image'` — `ImageView`, read-only.
 - `'typed-model'` — Codec-parsed `inlineText` → typed Model → View with `:doc`. On `@update:doc`, it is serialized back.
 - `'kind-registry'` — structurally identical to `typed-model`, source of the pair is the `KindEntry`.
@@ -83,11 +83,11 @@ Four modes of the `BindingMode`-Enum:
 
 **Toolbar per mode additionally** (see §5).
 
-**Parse-Error-Fallback:** typed-model + kind-registry parse `inlineText` on-render. In case of error, the Shell shows an error banner and a `CodeEditor` on the raw text, so the user can fix the malformed file.
+**Parse-Error-Fallback:** typed-model + kind-registry parse `inlineText` on-render. In case of an error, the Shell shows an error banner and a `CodeEditor` on the raw text, allowing the user to fix the malformed file.
 
 ## 5. Run / Validate / Slart — Language Adapters
 
-Run capability is orthogonal to the Doc type binding. `resolveRunAdapter(doc): RunAdapter | null` finds the appropriate language adapter for each Doc.
+Run capability is orthogonal to the Doc Type Binding. `resolveRunAdapter(doc): RunAdapter | null` finds the appropriate language adapter per Doc.
 
 ### 5.1 RunAdapter
 
@@ -113,18 +113,18 @@ interface RunHandle {
 }
 ```
 
-Active Adapters:
+Active adapters:
 
 | Adapter | Match | Backend Endpoint | Transport | Log Streaming |
 |---|---|---|---|---|
 | `jsRunner` | `.js` / `.mjs` / `.mjsh` / `.cjs` or `*/javascript` | `POST /brain/{tenant}/scripts/execute` + `script-execution-*` WS events | WebSocket Push + Polling Fallback | Live |
-| `pythonRunner` | `.py` or `text/x-python` | `POST /brain/{tenant}/python/execute` + `GET /brain/{tenant}/python/executions/{id}` | REST + Polling (1.5 s interval) | ~1.5 s Latency |
+| `pythonRunner` | `.py` or `text/x-python` | `POST /brain/{tenant}/python/execute` + `GET /brain/{tenant}/python/executions/{id}` | REST + Polling (1.5 s interval) | ~1.5 s latency |
 
 An adapter is registered in `cortex/runners/runnerRegistry.ts`. New language (Shell, R, …) = new adapter entry, Shell + Backend-REST analogous.
 
 **Save-before-Run:** If the tab is dirty, the Shell flushes synchronously before the adapter call (`store.saveTab`). The backend path loads the Doc body via `scriptId` from MongoDB — without pre-save, the previous state would run.
 
-**UI in Toolbar:** `▶ Run X` button, Args input (single-line JSON, default `{}`), Cancel button during Running. Log panel slides up below the editor (collapsible, max 45% height), shows Status badge + Duration + color-coded log lines + Result. Close button detaches the handle (backend job continues).
+**UI in Toolbar:** `▶ Run X` button, Args input (single-line JSON, default `{}`), Cancel button during Running. Log panel slides up below the editor (collapsible, max 45% height), shows Status badge + Duration + color-coded log lines + Result. Close button detaches the Handle (backend job continues).
 
 ### 5.1a Script Document API
 
@@ -132,7 +132,7 @@ Every Cortex Run has internal access to the Project documents of its owner Proje
 
 ### 5.2 PEP 723 Inline-Dependencies (Python)
 
-`PythonExecutionService` parses the PEP-723 block (`# /// script ... # ///`) in the Python source and installs declared `dependencies` into the Project's venv before the script runs. A hash marker `.vance_inline_deps_hash` in the RootDir caches the last successfully installed state — unchanged Deps skip the pip step. Failed pip leaves the marker unchanged, the next Run tries again.
+`PythonExecutionService` parses the PEP-723 block (`# /// script ... # ///`) in the Python source and installs declared `dependencies` into the Project's venv before the script runs. A hash marker `.vance_inline_deps_hash` in the RootDir caches the last successfully installed state — unchanged Deps skip the pip step. Failed pip leaves the marker unchanged; the next Run attempts again.
 
 ### 5.3 Validate + Slart (JavaScript only)
 
@@ -140,21 +140,27 @@ Additional toolbar buttons if `runAdapter.id === 'js'`:
 
 - **`✓ Validate`** opens `CortexValidateDialog` (Modal). Quick-Validate (Parse + JSDoc-Header + Tool-Allowlist via `POST /scripts/validate`) + Deep-Validate (LLM-Review via `POST /scripts/validate-deep`, server-side cached by content hash). Backend internally delegates both endpoints to `HactarService.validate(...)` and `HactarService.deepValidate(...)` respectively. Cached Deep-Review appears with indicator *"matches current"* / *"content changed since"*.
 - **`✨ Generate`** (visible if editor is empty / new Script Doc) opens `CortexHactarDialog` with `mode=CREATE`. Description input + Submit via `POST /scripts/generate { mode: "CREATE", prompt }` with polling on `GET /scripts/generations/{id}/result`. Backend spawns Slart with `outputSchemaType=SCRIPT_JS`.
-- **`✨ Update`** (visible if editor has content) opens the same dialog with `mode=UPDATE`, additionally sends `existingScriptId` + optional `failureReason` (from a last FAILED Run from the Run panel). Slart's `JsScriptArchitect` injects the existing Script as an "EXISTING SCRIPT" block + the Failure Reason as a "what to fix" hint into the user prompt. *"Apply to editor"* writes the new code via `update`-Emit through the normal pipeline (dirty → auto-save).
+- **`✨ Update`** (visible if editor has content) opens the same dialog with `mode=UPDATE`, additionally sends `existingScriptId` + optional `failureReason` (from a last FAILED Run from the Run panel). Slart's `JsScriptArchitect` injects the existing Script as an "EXISTING SCRIPT" block + the failure reason as a "what to fix" hint into the user prompt. *"Apply to editor"* writes the new code via `update`-Emit through the normal pipeline (dirty → auto-save).
 
-Python has no Validate/Generate endpoints — the buttons are then hidden.
+Python has no Validate/Generate endpoints — these buttons are then hidden.
 
 ## 6. Chat-Binding and Help-Tab
 
-**Bind-Pointer:** Exactly one Doc is chat-bound at a time. Topbar shows the bound Doc as `🔗 path/of/file`. Agent's tools target this — the user-visible active tab (`activeDocument`) can differ.
+**Bind-Pointer:** At most one Doc is chat-bound at a time. Topbar shows the bind status as `🔗 <status>`; Agent's tools target the bound Doc. The bound Doc is sent per turn as `ProcessSteerRequest.boundDocumentId` (per-turn LLM context, not persisted).
 
-Auto-Bind: first opened Doc after Restore. Auto-Prune: if the bound Doc is closed, the Bind switches to the first remaining tab. Manual Binding: button click in the Topbar.
+**Bind Mode** (toggleable via the `Chat` menu in the Topbar):
+
+- **`auto`** (Default): the bound Doc follows the active tab — the Agent always sees the Doc the user currently has open. Additionally, the current text selection of the active tab travels as `boundDocSelection` (`{from,to}`-Range, only if non-empty and in the bound Doc) with the Steer; the model reads the selected text on-demand via `doc_get_selection`.
+- **`pinned`**: the bound Doc is fixed to a specific Doc (menu "Pin to current tab"), regardless of the active tab. If the pinned tab is closed, the mode automatically reverts to `auto`.
+- **`off`** (menu "Unbind chat"): nothing is bound, no selection is sent.
+
+Mode and, if applicable, pinned Doc are persisted in the per-Session `sessionStorage`-state.
 
 **URL-Sync:** the active tab is mirrored in `?doc=<documentId>`; browser back/forward navigates through the tab history.
 
 **Right-Panel — Chat + Help:** `CortexRightPanel` has two sub-tabs.
 
-- *Chat* — `CortexChatPanel`, own WS connection, Tool Service attachment, Message stream. Remains mounted (`v-show`) when Help is active, so the WS and message buffer survive.
+- *Chat* — `CortexChatPanel`, own WS connection, Tool Service attachment, message stream. Remains mounted (`v-show`) when Help is active, so the WS and message buffer survive.
 - *Help* — `CortexHelpPanel`. Loads Markdown via `useHelp`-Composable (`help/{lang}/{path}`). Path resolution in `cortex/help.ts`:
   1. `runAdapter.id === 'js'` → `script-cortex.md`
   2. `runAdapter.id === 'py'` → `python-cortex.md`
@@ -168,11 +174,11 @@ Missing Help file (404) → hint *"No help available"*, no crash.
 
 Cortex registers a **small UI state tool set** with the Brain per Session (`CortexClientToolService.attach(ws)`):
 
-- `cortex_get_selection` — returns the current text selection in the active tab (Code + Markdown — typed Views have no selection adapter in v1).
+- `doc_get_selection` — returns the current text selection in the active tab (Code + Markdown — typed Views have no selection adapter in v1).
 - `cortex_get_active_tab` — which Doc is currently in the foreground (can differ from the chat-bound Doc).
-- `cortex_open_file` — open / bring user tab to foreground in Cortex.
+- `cortex_open_file` — open user tab in Cortex / bring to foreground.
 
-**What is NOT here anymore:** the body mutations family (`cortex_read` / `cortex_edit` / `cortex_append` / `cortex_write`). Document edits by the Agent run via the regular server-side `doc_*`-Tools since the refactor (`planning/cortex-document-invalidation.md`). Cortex is informed via `DOCUMENT_INVALIDATE`-frames on the Session WS and fetches fresh content via REST — buffer coherence via 3-way-merge on dirty State.
+**What is NO LONGER here:** the body mutation family (`cortex_read` / `cortex_edit` / `cortex_append` / `cortex_write`). Document edits by the Agent have been running via the regular server-side `doc_*`-tools since the refactor (`planning/cortex-document-invalidation.md`). Cortex is informed via `DOCUMENT_INVALIDATE`-frames on the Session WS and fetches fresh content via REST — buffer coherence via 3-way merge on dirty state.
 
 **WS-Frames:**
 
@@ -187,9 +193,9 @@ Tool set is static per Session — tab switch does not change the registered set
 
 ## 8. Save Strategy
 
-- **Auto-Save with debounce ≈ 2 s** per Doc. Watcher on `(id, inlineText.length, dirty)` key tuple.
+- **Auto-Save with Debounce ≈ 2 s** per Doc. Watcher on `(id, inlineText.length, dirty)` key tuple.
 - **Dirty-Indicator** (`●`) in tab header + in DocumentTabShell toolbar.
-- **Flush on**: tab close, tab switch (away from old tab), Cortex close, `beforeunload` handler.
+- **Flush on**: tab close, tab switch (away from old tab), Cortex close, `beforeunload`-handler.
 - **Pre-Run-Flush** synchronously in `onRun()` (see §5.1).
 
 `store.saveTab(id)` writes via `PUT /brain/{tenant}/documents/{id}/content` with body as raw text. Content-Type is the current Mime of the Doc; the server reclassifies if necessary.

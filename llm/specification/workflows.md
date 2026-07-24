@@ -1,6 +1,6 @@
 # Vance — Workflows
 
-> A **Workflow** is a project-scoped automation: a state-machine plan of typed tasks (Agent / Script / Tool / Gate / Timer / Condition / Sub-Workflow / Terminal) that is started by external triggers and runs via append-only Journal Records. Workflows live as YAML documents under `_vance/workflows/<name>.yaml` in the Document Layer.
+> A **Workflow** is a project-scoped automation: a state-machine plan of typed tasks (Agent / Shell / Script / Tool / Gate / Timer / Condition / Sub-Workflow / Terminal) that is started by external triggers and runs via append-only Journal Records. Workflows live as YAML documents under `_vance/workflows/<name>.yaml` in the Document Layer.
 >
 > Workflows are **not** a replacement for session-driven Chat Engines (Arthur) and **not** a multi-phase plan runner for Sessions (Vogon). They are the layer *above* the Engines: they spawn Jeltz/Ford/Marvin/Vogon as sub-tasks, evaluate conditions on structured outputs, and survive Session boundaries — some Workflows run for weeks.
 >
@@ -14,13 +14,13 @@
 
 | Term | Definition |
 |---|---|
-| **Workflow-Doc** | YAML document under `_vance/workflows/<name>.yaml` in the Project or in the `_tenant`-Tenant-Scope. Filename (without `.yaml`) is the Workflow name. |
-| **Workflow-Run** | A running instance, identified by an 8-hex-`workflowRunId`. Persisted as an append-only Journal in the Mongo collection `magrathea_journal`. |
-| **State** | Entry under `states:` in the YAML. Carries a Task type, an optional `storeAs:` variable, transitions (`on:`/`catch:`), and potentially a Retry block. |
+| **Workflow-Doc** | YAML document under `_vance/workflows/<name>.yaml` in the Project or in the `_tenant` Tenant Scope. The filename (without `.yaml`) is the Workflow name. |
+| **Workflow-Run** | A running instance, identified by a `workflowRunId` (full 32-hex UUID, dash-stripped — unique across all Scopes). Persisted as an append-only Journal in the Mongo collection `magrathea_journal`. |
+| **State** | Entry under `states:` in the YAML. Carries a Task type, an optional `storeAs:` variable, transitions (`on:`/`catch:`), and potentially a retry block. |
 | **Task** | An execution instance of a State. Persisted in the Mongo collection `magrathea_tasks` while it is pending/claimed/running. |
-| **Outcome** | String produced by a Task at the end (`success`, `failure`, or type-specific like `approved`, `business_error`, `timeout`, `fired`). Matched by the Transition Resolver against `on:`/`catch:`. |
-| **Journal** | Append-only audit trail of typed Records (`StartRecord`, `StateEnteredRecord`, `TaskStartedRecord`, `TaskResultRecord`, `VarRecord`, `StatusRecord`, `ResultRecord`, …). Source of truth for each Run; all status views are projections. |
-| **Frozen Snapshot** | The complete YAML body saved into the `StartRecord` at `start()`. Running Runs read exclusively from it. |
+| **Outcome** | String that a Task produces at the end (`success`, `failure`, or type-specific like `approved`, `business_error`, `timeout`, `fired`). Matched by the Transition Resolver against `on:`/`catch:`. |
+| **Journal** | Append-only audit trail of typed records (`StartRecord`, `StateEnteredRecord`, `TaskStartedRecord`, `TaskResultRecord`, `VarRecord`, `StatusRecord`, `ResultRecord`, …). Source of truth for each Run; all status views are projections. |
+| **Frozen Snapshot** | The complete YAML body saved into the `StartRecord` at `start()`. Running Runs read exclusively from this. |
 
 **Workflow ↔ Recipe ↔ Engine:** Engines are code (Arthur/Ford/Vogon/Marvin/Jeltz). Recipes are named Engine configurations. Workflows orchestrate Tasks — some of these Tasks spawn Recipes. A Workflow State definition references a Recipe by name; inline Recipe definitions are not allowed.
 
@@ -43,7 +43,7 @@ parameters:
 
 bounds:
   maxTotalCostUsd:     10.0
-  maxWallclockSeconds: 604800       # 7 Tage
+  maxWallclockSeconds: 604800       # 7 days
   maxTaskSpawns:       100
 
 allowedTools:
@@ -70,7 +70,7 @@ states:
       agent_error: human_review
 
   run_checks:
-    type: script_task
+    type: shell_task
     run: "npm test && npm run lint"
     dirName: workspace
     timeoutSeconds: 1800
@@ -98,6 +98,7 @@ states:
       title: "PR ${params.pr_url} approve?"
       assignedTo: "${params.reviewer}"
       criticality: NORMAL
+      # tags: [pr-review] # optional
     timeoutSeconds: 604800
     storeAs: review_decision
     on:
@@ -156,7 +157,7 @@ states:
 | `description` | optional | Audit marker, visible in Web UI listings. |
 | `version` | optional | Free string, lands in `StartRecord.workflowVersion`. |
 | `start` | **yes** | Name of the initial State. Must exist in `states:`. |
-| `parameters` | optional | Map of caller parameter schemas. Permissive pass-through: caller parameters outside the schema are passed through. |
+| `parameters` | optional | Map of caller parameter schemas. Permissive pass-through: caller parameters outside the schema are forwarded. |
 | `bounds` | optional | Global guardrails per Run (§9). |
 | `allowedTools` | optional | Workflow-specific Tool whitelist; AND-combined with Project + Tenant pools (§10). |
 | `tags` | optional | Audit labels. |
@@ -166,34 +167,46 @@ states:
 
 | Field | Meaning |
 |---|---|
-| `type` | Required. One of `agent_task` / `script_task` / `tool_task` / `gate_task` / `timer_task` / `condition_task` / `workflow_task` / `terminal`. |
+| `type` | Required. One of `agent_task` / `shell_task` / `script_task` / `tool_task` / `gate_task` / `timer_task` / `condition_task` / `workflow_task` / `terminal`. |
 | `description` | Audit string. |
-| `timeoutSeconds` | Task-level Timeout. `script_task` maps to `waitMs`; `gate_task` creates a parallel Timeout Timer (§5.4). |
+| `timeoutSeconds` | Task-level timeout. `shell_task`/`script_task` block the Lane until `waitMs`; `gate_task` creates a parallel timeout timer (§5.4). |
 | `storeAs` | Variable key. For non-null output, the Dispatcher writes a `VarRecord(key, value)` to the Journal. |
 | `on:` | Map outcome → next-state. Checked first by the Resolver. |
-| `catch:` | Map error-kind → next-state. Outcome interpreted as `ErrorKind`-Enum (case-insensitive, dashes→underscores). |
+| `catch:` | Map error-kind → next-state. Outcome interpreted as `ErrorKind` enum (case-insensitive, dashes→underscores). |
 | `retry:` | Spec with `maxAttempts`, `on: [error-kinds]`, `backoffSeconds`. State-level Retry preempts Resolver routing (§4.3). |
 
 ### 2.3 YAML 1.2 Boolean Semantics
 
-The Workflow parser uses a custom resolver with YAML 1.2 Boolean rules: only `true`/`false` are coerced. The barewords `on:`/`off:`/`yes:`/`no:` remain strings — otherwise, SnakeYAML defaults (YAML 1.1) would rewrite the `on:` transition block keyword to `Boolean.TRUE`.
+The Workflow parser uses a custom resolver with YAML 1.2 boolean rules: only `true`/`false` are coerced. The barewords `on:`/`off:`/`yes:`/`no:` remain strings — otherwise, SnakeYAML defaults (YAML 1.1) would rewrite the `on:` transition block keyword to `Boolean.TRUE`.
+
+### 2.4 Dataflow — `${params.X}` / `${state.X}`
+
+Any string value in a State spec may contain placeholders that are resolved **immediately before** Task execution (centrally in the Dispatcher across the entire spec map, before the Type Executor sees them):
+
+- `${params.<key>}` — a Run parameter (from `parameters:`).
+- `${state.<key>}` — a variable that an **earlier** State wrote via `storeAs: <key>`. Nested access works: `${state.review.summary}`.
+
+This is how data flows from Task to Task: a Task writes its output with `storeAs`, a later Task reads it via `${state.<key>}` into a Prompt, Tool parameter, Gate title/body, or Terminal `result`. A missing key resolves to an empty string (no crash). Values without `${…}` remain untouched.
+
+This is **different** from SpEL in `condition_task.transitions[].if` (`#state['k']` / `#params['k']`, §3.6) — SpEL evaluates conditions, `${…}` substitutes text.
 
 ---
 
 ## 3. Task Types
 
-Eight types, all sharing the same lifecycle model: each Task produces a `TaskCompletedEvent` with an Outcome string, which triggers the Transition Resolver. Sync vs. Async types differ only in **who** writes the `TaskResultRecord`.
+Nine types, all sharing the same lifecycle model: each Task produces a `TaskCompletedEvent` with an outcome string that triggers the Transition Resolver. Sync vs. Async types differ only in **who** writes the `TaskResultRecord`.
 
 | Type | Synchronous? | What it does |
 |---|---|---|
-| `condition_task` | yes | SpEL branch match via `transitions:` list. Sets `nextStateOverride`. |
+| `condition_task` | yes | SpEL branch match over `transitions:` list. Sets `nextStateOverride`. |
 | `tool_task` | yes | Calls `tool:` via Tool Dispatcher. Output = Tool Result Map. |
-| `script_task` | yes (blocks Lane until `timeoutSeconds`) | Shell command via `ExecManager`. Output = `{status, exitCode, stdout, stderr, durationMs}`. |
+| `shell_task` | yes (blocks Lane until `timeoutSeconds`) | Shell command via `ExecManager`. Output = `{status, exitCode, stdout, stderr, durationMs}`. |
+| `script_task` | yes (blocks Lane until `timeoutSeconds`) | JS script via the Unified Script Executor (`ScriptActionExecutor`). Output = Script return value. |
 | `terminal` | yes | Writes `StatusRecord(DONE/FAILED)` + optional `ResultRecord`. No transitions. |
-| `agent_task` | no | Spawns ThinkProcess via Recipe. Completion via ThinkProcess termination event. |
-| `gate_task` | no | Creates Inbox item. Completion via Inbox answer event. |
+| `agent_task` | no | Spawns ThinkProcess via Recipe. Completion via ThinkProcess Termination Event. |
+| `gate_task` | no | Creates Inbox Item. Completion via Inbox Answer Event. |
 | `timer_task` | no | Schedules entry in `magrathea_timers`. Completion via Timer Scanner. |
-| `workflow_task` | no | Spawns Sub-Workflow. Completion via Sub-Run terminal event. |
+| `workflow_task` | no | Spawns Sub-Workflow. Completion via Sub-Run Terminal Event. |
 
 ### 3.1 `agent_task`
 
@@ -212,20 +225,24 @@ plan:
     agent_error: human_review
 ```
 
-`recipe:` is required, resolved via the normal Recipe cascade. `params:` lands as `engineParams` on the spawned ThinkProcess. Jeltz consumes `prompt`+`schema` directly; Ford/Vogon/Marvin read Recipe-specific fields.
+`recipe:` is required and resolved via the normal Recipe cascade. `params:` lands as `engineParams` on the spawned ThinkProcess. Jeltz consumes `prompt`+`schema` directly; Ford/Vogon/Marvin read Recipe-specific fields.
 
 Outcome mapping:
 
-- **Jeltz**: Wrapper parse from last Assistant message. `success: true` → `outcome=success`, `output=data`. `success: false` → `outcome=agent_error`, `output=lastInvalid`.
-- **Other Engines**: Terminal CloseReason to Outcome. `DONE`/`AUTO_CLOSE` → `success` with last Assistant message as output. `STALE` → `technical_error`. `STOPPED`/`ARCHIVED`/`USER_DELETE`/`ABANDONED` → `cancelled`.
+- **Jeltz**: Wrapper parse from the last Assistant message. `success: true` → `outcome=success`, `output=data`. `success: false` → `outcome=agent_error`, `output=lastInvalid`.
+- **Other Engines**: Terminal CloseReason to Outcome. `DONE`/`AUTO_CLOSE` → `success` with the last Assistant message as output. `STALE` → `technical_error`. `STOPPED`/`ARCHIVED`/`USER_DELETE`/`ABANDONED` → `cancelled`.
 
 Sub-ThinkProcesses run in a dedicated system session `_magrathea_<runId>` analogous to the Scheduler pattern.
 
-### 3.2 `script_task`
+### 3.2 `shell_task` & `script_task`
+
+Two separate Task types — historically, `script_task` was shell-only; JS execution is now its own type, and the Shell Executor is now called `shell_task` (rename in `MagratheaTaskType`, symmetrical to `trigger-actions.md` §4).
+
+**`shell_task`** — Shell command via `ExecManager`:
 
 ```yaml
 run_checks:
-  type: script_task
+  type: shell_task
   run: "npm test && npm run lint"
   dirName: workspace
   timeoutSeconds: 1800
@@ -236,7 +253,7 @@ run_checks:
     technical_error: escalate
 ```
 
-Delegates to the existing `ExecManager.submitTrackedAndRender`. `dirName:` references a Workspace RootDir (see `workspace.md`); without it, the submit fails with `technical_error`.
+Delegates to the existing `ExecManager.submitTrackedAndRender`. `dirName:` references a Workspace RootDir (see `workspace.md`); without it, the submit fails with `technical_error`. Output = `{status, exitCode, stdout, stderr, durationMs}`.
 
 Outcome mapping:
 
@@ -244,9 +261,26 @@ Outcome mapping:
 |---|---|---|
 | `COMPLETED` | `0` | `success` |
 | `COMPLETED` | `≠0` | `business_error` |
-| `KILLED` | — | `timeout` (Watchdog Kill) |
+| `KILLED` | — | `timeout` (Watchdog kill) |
 | `RUNNING` | — | `timeout` (waitMs exhausted) |
 | `FAILED` / `ORPHANED` | — | `technical_error` |
+
+**`script_task`** — JS script via the Unified Script Executor (`ScriptActionExecutor`, the same path as Script Trigger Actions — see `trigger-actions.md` §4.4):
+
+```yaml
+transform:
+  type: script_task
+  source: document          # document | workspace
+  path: _vance/scripts/transform.js
+  dirName: workspace        # optional Workspace RootDir
+  timeoutSeconds: 120
+  on:
+    success: next
+  catch:
+    technical_error: escalate
+```
+
+The Script return value is the Task output (readable via `storeAs`). Outcomes: `success` / `technical_error`.
 
 ### 3.3 `tool_task`
 
@@ -264,13 +298,13 @@ merge:
     technical_error: retry_or_abort
 ```
 
-Direct call via `ToolDispatcher`. The Tool Invocation Context carries `tenantId`/`projectId`/`userId=startedBy`, but `sessionId`/`processId` are null — Tools requiring these must validate defensively.
+Direct call via `ToolDispatcher`. The Tool Invocation Context carries `tenantId`/`projectId`/`userId=startedBy`, but `sessionId`/`processId` are null — Tools that need these must validate defensively.
 
 Outcome: `success`, `permission_error` (PermissionDeniedException), `technical_error` (ToolException or others).
 
 ### 3.4 `gate_task`
 
-Pause on a User Inbox item. Three variants:
+Pause on a User Inbox Item. Three variants:
 
 ```yaml
 review:
@@ -279,11 +313,11 @@ review:
     kind: APPROVAL                # APPROVAL | DECISION | FEEDBACK
     title: "Approve?"
     body: "${state.summary}"
-    assignedTo: "@maintainers"    # or a User Name or Tag
+    assignedTo: "@maintainers"    # or a User name or Tag
     criticality: NORMAL           # LOW | NORMAL | CRITICAL
     tags: [pr-review]
     options: [approve, reject]    # only for DECISION
-  timeoutSeconds: 604800          # optional: parallel Timeout Timer
+  timeoutSeconds: 604800          # optional: parallel timeout timer
   storeAs: review_decision
   on:
     approved: merge
@@ -292,7 +326,7 @@ review:
     timeout: escalate
 ```
 
-**`assignedTo`-Fallback:** Spec value → `startedBy` → `"@system"`.
+**`assignedTo` fallback:** Spec value → `startedBy` → `"@system"`.
 
 **Outcome mapping by Answer Outcome × InboxItemType:**
 
@@ -302,12 +336,12 @@ review:
 | DECISION | `<chosen option>` (from `value.chosen` string) | `insufficient_info` | `undecidable` |
 | FEEDBACK | `success` (text in `value.text`) | `insufficient_info` | `undecidable` |
 
-The Inbox item carries `payload.kind = "workflow.gate"` as a discriminator plus `workflowRunId`, `workflowName`, `workflowState` for the UI.
+The Inbox Item carries `payload.kind = "workflow.gate"` as a discriminator plus `workflowRunId`, `workflowName`, `workflowState` for the UI.
 
-**Timeout mechanism:** if `timeoutSeconds:` is set, the Executor creates a timer entry in addition to the Inbox item with `firedOutcome = "timeout"`. Two race paths compete:
+**Timeout mechanism:** if `timeoutSeconds:` is set, the Executor creates a timer entry with `firedOutcome = "timeout"` in addition to the Inbox Item. Two race paths compete:
 
 - User answers first → Inbox Listener fires Outcome → Timer fire is later discarded by `appendIfAbsent` idempotence.
-- Timer fires first → `outcome=timeout`, Run advanced via `catch.timeout:`. Subsequent User answer still lands in Inbox, but the Run no longer reacts.
+- Timer fires first → `outcome=timeout`, Run advanced via `catch.timeout:`. Subsequent User answer still lands in the Inbox, but the Run no longer reacts.
 
 ### 3.5 `timer_task`
 
@@ -336,7 +370,7 @@ route_by_risk:
     - else: triage
 ```
 
-Pure SpEL evaluation. First matching rule wins; `else:` must be the last rule (loader validation).
+Pure SpEL evaluation. The first matching rule wins; `else:` must be the last rule (Loader validation).
 
 SpEL variables:
 
@@ -362,10 +396,10 @@ build_subprojects:
     failure: escalate
 ```
 
-Spawns a Sub-Run and waits for its terminal. Variable passing:
+Spawns a Sub-Run and waits for its Terminal. Variable transfer:
 
 - **Incoming** (Parent → Sub): only via `params:`. No implicit inheritance mechanism.
-- **Outgoing** (Sub → Parent): the Sub-Run's terminal State writes `ResultRecord(result)`. The Parent captures this via `storeAs:`.
+- **Outgoing** (Sub → Parent): the Terminal State of the Sub-Run writes `ResultRecord(result)`. The Parent captures this via `storeAs:`.
 
 Parent identity (`workflowRunId`, `state-name`) is persisted in `StartRecord.parentMagratheaProcessId` + `parentState` of the Sub-Run — audit chain through arbitrarily deep nesting.
 
@@ -386,7 +420,7 @@ End node. Writes:
 - `ResultRecord(state, result)` if `result:` is set.
 - For Sub-Workflows: triggers `WorkflowCompletedEvent` to the Parent.
 
-Multiple terminal States are allowed and common — typical names: `done`, `merged`, `escalated`, `aborted`.
+Multiple Terminal States are allowed and common — typical names: `done`, `merged`, `escalated`, `aborted`.
 
 ---
 
@@ -396,8 +430,8 @@ Multiple terminal States are allowed and common — typical names: `done`, `merg
 
 1. **`nextStateOverride`** — only `condition_task` sets this.
 2. **`on:`** — exact string match against Outcome.
-3. **`catch:`** — Outcome interpreted as `ErrorKind`-Enum.
-4. No match → Run failed with `StatusRecord(FAILED, reason="no transition for outcome '<x>'")`.
+3. **`catch:`** — Outcome interpreted as `ErrorKind` enum.
+4. No Match → Run failed with `StatusRecord(FAILED, reason="no transition for outcome '<x>'")`.
 
 ### 4.2 ErrorKind Vocabulary
 
@@ -406,18 +440,18 @@ Seven categories that `catch:` can understand:
 | Kind | When |
 |---|---|
 | `technical_error` | Tool/API/Shell infra broken (IOException, 5xx, …). |
-| `business_error` | Expected business error (exit !=0, Validation Fail). |
+| `business_error` | Expected business error (exit !=0, Validation fail). |
 | `agent_error` | LLM produced invalid output (Jeltz `schema_violation`). |
 | `timeout` | Task timeout or Gate timeout. |
 | `permission_error` | Tool not allowed for this Workflow/Caller. |
 | `human_rejected` | Alias for gate-`rejected` for uniform catching. |
 | `cancelled` | Workflow stopped by `cancel`/Bounds exhaustion. |
 
-### 4.3 Retry preempts Resolution
+### 4.3 Retry Preempts Resolution
 
 ```yaml
 flaky:
-  type: script_task
+  type: shell_task
   run: "npm test"
   retry:
     maxAttempts: 3
@@ -474,7 +508,7 @@ handleCompletion (on the Project Lane):
 StatusRecord(DONE/FAILED) — Run completed.
 ```
 
-Each Run has its own `workflowRunId` (8-hex-UUIDv4-prefix). A maximum of one Task runs simultaneously per Run — Tasks are serialized via the Project Lane (§11).
+Each Run has its own `workflowRunId` (full 32-hex UUID, dash-stripped). A maximum of one Task runs simultaneously per Run — Tasks are serialized via the Project Lane (§11).
 
 ---
 
@@ -496,11 +530,11 @@ The Resolver reads directly from Mongo for each `start()`. There is **no** refre
 
 ## 7. Frozen Snapshot
 
-At `start()`, the service copies the entire YAML body into `StartRecord.definitionYaml`. Every subsequent Task execution re-parses from this snapshot.
+At `start()`, the Service copies the entire YAML body into `StartRecord.definitionYaml`. Each subsequent Task execution re-parses from this snapshot.
 
 **Consequences:**
 
-- Edits to the source document do **not** affect running Runs.
+- Edits to the source document **do not** affect running Runs.
 - Long Workflows (days/weeks with Gates) are robust against mid-flight schema drift.
 - Bug fix rollouts: new Run first, old Runs must be explicitly canceled.
 - Audit: `StartRecord.definitionYaml` is the authoritative answer to "what did this Run execute", even if the source document was deleted or rewritten.
@@ -519,7 +553,7 @@ params:
   params: { type: object, optional }
 ```
 
-Not in the Recipe Pool by default. Engines that should be allowed to start Workflows (typically Marvin/Vogon, not Arthur-Chat) include it in `allowedToolsAdd`.
+Not in the Recipe Pool by default. Engines that are allowed to start Workflows (typically Marvin/Vogon, not Arthur-Chat) include it in `allowedToolsAdd`.
 
 Return value: `{ workflowRunId, workflowName }`.
 
@@ -537,11 +571,11 @@ GET  /brain/{tenant}/project/{project}/workflows/runs?workflow=<name>
   Reply: List<MagratheaProcessDto>, newest first, max 100
 ```
 
-`GET /runs/{runId}` performs Tenant/Project cross-check and returns 404 (not 403) if the Run belongs to another scope — existence is not leaked.
+`GET /runs/{runId}` performs a Tenant/Project cross-check and returns 404 (not 403) if the Run belongs to a different Scope — existence is not leaked.
 
 ### 8.3 WebSocket
 
-`MessageType.WORKFLOW_START` — Symmetrical to REST, runs over the client's bound Session (Foot, Web-UI).
+`MessageType.WORKFLOW_START` — Symmetrical to REST, runs over the client's bound Session (Foot, Web UI).
 
 ```
 client → brain: { type: "workflow-start", data: { name, params?, startedBy? } }
@@ -550,7 +584,7 @@ brain → client: { type: "workflow-start", data: { workflowRunId, workflowName 
 
 ### 8.4 Scheduler Trigger
 
-A Scheduler-Doc (`_vance/scheduler/<name>.yaml`) can have a `workflow:` field instead of `recipe:` — see [scheduler](scheduler.md) §4.2. At the cron tick (or one-shot `at:`), the `UrsaSchedulerService` calls `MagratheaWorkflowService.start(tenantId, projectId, workflowName, params, runAs)`. The Scheduler Event Log receives the `workflowRunId` as a payload field, allowing the Web-UI to reconstruct the connection between Scheduler tick and Workflow Run.
+A Scheduler Doc (`_vance/scheduler/<name>.yaml`) can carry a `workflow:` field instead of `recipe:` — see [scheduler](scheduler.md) §4.2. On a Cron tick (or one-shot `at:`), the `UrsaSchedulerService` calls `MagratheaWorkflowService.start(tenantId, projectId, workflowName, params, runAs)`. The Scheduler Event Log receives the `workflowRunId` as a payload field, so the Web UI can reconstruct the connection between the Scheduler tick and the Workflow Run.
 
 ```yaml
 # _vance/scheduler/daily-audit.yaml
@@ -582,13 +616,13 @@ log.info("started workflow", { runId });
 { "kind": "workflow.start", "name": "pr-review", "params": { "pr_url": "..." } }
 ```
 
-The UrsaHookDispatcher pins `tenantId`/`projectId` from the Ursahook scope — scripts cannot spawn cross-tenant or cross-project. `startedBy` is set to `"hook:<hookName>"` so that the Workflow Run in the Journal can be uniquely attributed to the triggering Ursahook.
+The UrsaHookDispatcher pins `tenantId`/`projectId` from the Ursahook Scope — scripts cannot spawn cross-tenant or cross-project. `startedBy` is set to `"hook:<hookName>"` so that the Workflow Run in the Journal can be uniquely attributed to the triggering Ursahook.
 
 If Magrathea is not active (`vance.services.magrathea=false`), `workflows.start()` returns `null` and logs WARN — the script decides how to react.
 
-### 8.6 Event Trigger (external, REST)
+### 8.6 Event Trigger (External, REST)
 
-Events are the external, REST-accessible trigger path — `GET|POST /brain/{tenant}/event/{project}/{event}`, JWT-free, optionally Bearer-authenticated. An Event-Doc carries only `workflow:` name + Auth config + static params; a POST body is passed to the Workflow under `params.payload`. See [events](events.md).
+Events are the external, REST-accessible trigger path — `GET|POST /brain/{tenant}/event/{project}/{event}`, JWT-free, optionally Bearer-authenticated. An Event Doc carries only `workflow:` name + Auth Config + static params; a POST body is passed to the Workflow under `params.payload`. See [events](events.md).
 
 ```yaml
 # _vance/events/github-pr.yaml
@@ -599,11 +633,11 @@ auth:
   tokenSetting: events.github.token
 ```
 
-Events are explicitly without rate limit, signature validation, or replay protection — operator responsibility, or via a dedicated provider receiver before the Brain.
+Events are explicitly without rate limits, signature validation, or replay protection — operator responsibility, or via a dedicated provider receiver before the Brain.
 
-### 8.7 Planned (outside v1)
+### 8.7 Planned (Outside v1)
 
-- **Provider-specific Webhook Receivers** (GitHub `X-Hub-Signature-256`, Stripe signature, …) with built-in signature verification, pre-pended before the Event endpoint.
+- **Provider-specific Webhook Receivers** (GitHub `X-Hub-Signature-256`, Stripe signature, …) with built-in signature verification, pre-positioned before the Event Endpoint.
 - **Async/SSE response** for Events that want to wait for Workflow completion.
 
 ---
@@ -617,7 +651,7 @@ bounds:
   maxTaskSpawns:       100           # absolute cap including retries
 ```
 
-The Bounds Check runs **after each Task completion** and **before** the next enqueue. If a Bound is exceeded, the service writes `StatusRecord(FAILED, reason="bounds exhausted: …")` and terminates the Run. Bounds do **not** route via `catch:` — they are a hard stop.
+The Bounds Check runs **after each Task completion** and **before** the next enqueue. If a Bound is exceeded, the Service writes `StatusRecord(FAILED, reason="bounds exhausted: …")` and terminates the Run. Bounds do **not** route via `catch:` — they are a hard stop.
 
 | Bound | What it checks |
 |---|---|
@@ -631,10 +665,10 @@ The Bounds Check runs **after each Task completion** and **before** the next enq
 
 ```
 allowed = tenant.allowedTools  ∩  project.allowedTools  ∩  workflow.allowedTools
-denied  = tenant.denied  ∪  project.denied  (overwrites any allow)
+denied  = tenant.denied  ∪  project.denied  (overrides any allow)
 ```
 
-Three layers, AND-combined. Workflow definitions can only **narrow** the Project pool, never expand it. If no `allowedTools:` is declared, the default pool is used without side effects (`web_search`, `doc_read`, `doc_list`, `inbox_read`).
+Three layers, AND-combined. Workflow definitions can only **narrow** the Project Pool, never expand it. If no `allowedTools:` is declared, the default pool is used without side effects (`web_search`, `doc_read`, `doc_list`, `inbox_read`).
 
 Tool calls in `tool_task` and indirectly from `agent_task` sub-Engines are checked against this pool.
 
@@ -642,11 +676,11 @@ Tool calls in `tool_task` and indirectly from `agent_task` sub-Engines are check
 
 ## 11. Pod Lane Serialization
 
-A maximum of **one** `ProjectLane` runs simultaneously per Project — a single-thread executor per `(projectId)`. Every Task execution, every completion processing, and every transition resolution runs on this Lane. Race protection for the variable map and the Task queue comes from Lane serialization.
+A maximum of **one** `ProjectLane` runs simultaneously per Project — a single-thread executor per `(projectId)`. Each Task execution, each completion processing, and each transition resolution runs on this Lane. Race protection for the variable map and the Task queue comes from Lane serialization.
 
-Tasks are claimed cross-pod via Mongo optimistic locking (CAS on `version`). A `TaskClaimer` runs per Pod (every 2s) that claims `PENDING` tasks and throws them into the local ProjectLane. If a Pod dies, the next claim attempt by another Pod takes over (see §12).
+Tasks are claimed cross-pod via Mongo optimistic locking (CAS on `version`). A `TaskClaimer` runs per Pod (every 2s) that claims `PENDING` Tasks and throws them into the local ProjectLane. If a Pod dies, the next claim attempt by another Pod takes over (see §12).
 
-Within-Run serialization: for each `workflowRunId`, at most one Task is in the queue at any time, because the next Task is only enqueued upon completion of the current one.
+Within-Run serialization: for each `workflowRunId`, a maximum of one Task is in the queue at any time, because the next Task is only enqueued upon completion of the current one.
 
 ---
 
@@ -654,20 +688,20 @@ Within-Run serialization: for each `workflowRunId`, at most one Task is in the q
 
 Pod crash resilience:
 
-- **WAITING_*-Tasks** (`agent_task`/`gate_task`/`timer_task`/`workflow_task`) do **not** need reclaim — their completion listeners fire independently of the Pod. A 7-day Gate on a dead Pod is carried forward by the Inbox Listener on another Pod.
-- **Sync-Tasks** (`condition_task`/`tool_task`/`script_task`/`terminal`) with `runStatus = null` can become stale if the Pod dies in the middle of execution. The `ReclaimScanner` (every 60s, per Pod) finds `CLAIMED`-Tasks with `claimedAt < now - 5min` and re-enqueues them as `PENDING` (Optimistic-CAS).
-- **Heartbeat** for long-running Sync-Executors: Type-Executor can call `touchHeartbeat(taskId)`, which updates `heartbeatAt`. Scanner respects `heartbeatAt`.
+- **WAITING_*-Tasks** (`agent_task`/`gate_task`/`timer_task`/`workflow_task`) normally **do not** need reclaim — their completion listeners fire independently of the Pod. A 7-day Gate on a dead Pod is forwarded by the Inbox Listener on another Pod. **Exception `WAITING_SUBPROCESS`:** if the in-memory completion event is lost during a Pod crash, the Task would become permanently stuck — a recovery scanner (`ReclaimScanner.recoverLostSubprocessCompletions`, after a 5-minute grace period) reconciles such Tasks against the persisted ThinkProcess status.
+- **Sync-Tasks** (`condition_task`/`tool_task`/`shell_task`/`script_task`/`terminal`) with `runStatus = null` can become stale if the Pod dies in the middle of execution. The `ReclaimScanner` (every 60s, per Pod) finds `CLAIMED` Tasks with `claimedAt < now - 5min` and re-enqueues them as `PENDING` (Optimistic-CAS).
+- **Heartbeat** for long-running Sync Executors: the Dispatcher (`MagratheaTaskExecutor`) automatically pings `touchHeartbeat(taskId)` every 60s while a synchronous Type Executor is running — no Executor calls this itself. The Scanner respects `heartbeatAt`, so a Task running longer than the Reclaim Grace is not falsely executed twice; a crash stops the Heartbeat, so a truly dead Task will still become stale.
 - **Exhausted attempts**: after `maxClaimAttempts` (default 3), the Task fails terminally with `outcome=technical_error` — the `catch:` block routes if declared.
 
 ---
 
-## 13. Web-UI
+## 13. Web UI
 
 - **Listing**: `GET /workflows/runs` returns a MagratheaProcessDto list, newest first.
 - **Detail**: `GET /workflows/runs/{runId}` provides status, currentState, vars, params, result, timestamps.
 - **Workflow YAML Editor**: runs via the generic Document Editor (path `_vance/workflows/`).
 
-Cancel, event stream, and live updates are v2 — the snapshot endpoint is sufficient for the v1 "what's running now?" view and is inexpensive (one Journal read).
+Cancel, Event Stream, and Live Updates are v2 — the Snapshot Endpoint is sufficient for the v1 "what's running now?" view and is inexpensive (one Journal read).
 
 ---
 
@@ -679,7 +713,7 @@ Mongo Collections:
 
 | Collection | Content |
 |---|---|
-| `magrathea_journal` | Append-only Audit Records per Run. Indexed on `(workflowRunId, createdAt)`, plus partial-unique-index on `(workflowRunId, taskId, type=TaskResultRecord)` for idempotent completion append. |
+| `magrathea_journal` | Append-only Audit Records per Run. Indexed on `(tenantId, projectId, workflowRunId, createdAt)`, plus partial-unique index on `(tenantId, projectId, workflowRunId, taskId, type=TaskResultRecord)` for idempotent Completion append. Reads are consistently tenant/project-scoped (no longer purely via `workflowRunId`). |
 | `magrathea_tasks` | Pending/Claimed/Done Tasks. Indexed on `(projectId, status, nextAttemptAt)` for Claim Scan, `(claimedBy, claimedAt)` for Reclaim. |
 | `magrathea_timers` | Pending Timers with `linkedTaskId` + `firedOutcome`. Indexed on `(firedAt, fireAt)` for Scanner, unique on `linkedTaskId`. |
 
@@ -689,30 +723,30 @@ Full implementation details: `planning/workflow-service.md`.
 
 ---
 
-## 15. What v1 does NOT do
+## 15. What v1 DOES NOT do
 
-- **External Webhooks.** External HTTP calls would require a gateway module with Auth/Rate-Limit/Tenant-Routing — the event subsystem for this does not yet exist.
-- **Cross-Project Workflows.** A Workflow lives within the scope of a Project. Cross-Project is only possible via `workflow_start` Tool calls with explicit cross-Project routing.
+- **External Webhooks.** External HTTP calls would require a Gateway module with Auth/Rate Limit/Tenant Routing — the Event subsystem for this does not yet exist.
+- **Cross-Project Workflows.** A Workflow lives within the scope of a Project. Cross-Project is only possible via `workflow_start` Tool calls with explicit cross-project routing.
 - **Inline Recipe Definitions** in YAML. Tasks only reference Recipe names.
 - **Parallel Branches** (Fan-Out / Fan-In). Currently only sequential transitions. For parallelism: multiple `workflow_task` sub-spawns + manual aggregation.
 - **Versioned Run Migration.** If a Workflow definition is changed, active Runs continue on their Frozen Snapshot.
 - **Cost Aggregation per Run.** `bounds.maxTotalCostUsd` requires LLM resource management integration.
-- **Live Event Stream in the Web-UI.** Snapshot refresh instead of push.
+- **Live Event Stream in the Web UI.** Snapshot refresh instead of push.
 - **Visual Workflow Editor.** YAML authoring via the Document Editor.
 
 ---
 
-## 16. Open Issues
+## 16. Open Items
 
-- **Cross-Project Global Locks.** Variables live per Run; a "only one deploy at a time" lock across multiple Workflows requires a separate Project-level Lock Collection.
-- **Cross-Pod ThinkProcess Termination.** Currently, the ThinkProcess must live on the same Pod as its parent Workflow (Project Lane affinity). If ThinkProcesses are later deployed cross-pod, the `ThinkProcessCompletionListener` needs a Mongo-mediated sync path.
-- **`condition_task`-Fast-Path.** v1 writes a `TaskStartedRecord` + `TaskResultRecord` for every 1-µs eval. A hot path could combine both records into a single Mongo write.
+- **Cross-Project Global Locks.** Variables live per Run; a "only one deploy at a time" lock across multiple Workflows requires a separate Project-Level Lock Collection.
+- **Cross-Pod ThinkProcess Termination.** Currently, the ThinkProcess must live on the same Pod as its parent-Workflow (Project Lane affinity). If ThinkProcesses are later deployed cross-pod, the `ThinkProcessCompletionListener` needs a Mongo-mediated sync path.
+- **`condition_task` Fast-Path.** v1 writes a `TaskStartedRecord` + `TaskResultRecord` for every 1-µs eval. A hot path could combine both records into a single Mongo write.
 - **Auto-Default for `criticality: LOW` Gates.** Vogon §2.3 has the pattern; Magrathea v1 does not implement it.
 - **Listing Pagination.** `GET /runs` is capped at 100 results. True pagination will come when a Project regularly has many Runs.
 
 ---
 
-## 17. Predecessor Concept (historical)
+## 17. Predecessor Concept (Historical)
 
 Before the Magrathea Workflow subsystem, there was another "Workflow" concept: **Templates for Marvin Task Trees** with `fixed:` nodes that the LLM was not allowed to restructure. This idea was absorbed into the Marvin Engine itself — see [marvin-engine](marvin-engine.md). The term "Workflow" has since belonged to the Magrathea State Machine subsystem.
 

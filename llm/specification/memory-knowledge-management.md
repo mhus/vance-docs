@@ -1,7 +1,7 @@
 # Vance — Memory & Knowledge Management
 
 > Defines how knowledge in Vance is structured, stored, tagged, and made searchable.
-> See also: [vision](vision.md) | [architektur-scopes-clients](architektur-scopes-clients.md) | [workflows](workflows.md)
+> See also: [vision](vision.md) | [architecture-scopes-clients](architektur-scopes-clients.md) | [workflows](workflows.md)
 
 ---
 
@@ -9,19 +9,19 @@
 
 The Memory model from [brainstorming think flow](../reference/brainstorming think flow.md) and the prototype is too simplistic:
 - Flat list of strings (`GlobalMemoryService`)
-- No file reference — text only
+- No file reference — only text
 - No structure — no folders, no files, no context
 - No tagging — not filterable, not categorizable
 - No RAG — not semantically searchable
 - No Scope isolation — everything is global or nothing
 
-A real project system requires a **Knowledge Management System** as an integral part of the Brain.
+For a real project system, a **Knowledge Management System** is needed as an integral part of the Brain.
 
 ---
 
 ## 2. What Memory in Vance Actually Is
 
-Memory is not just "facts the Brain remembers." It is the entire knowledge accumulated within a Scope. This includes:
+Memory is not just "facts the Brain remembers". It is the entire knowledge accumulated within a Scope. This includes:
 
 | Type | Examples | Origin |
 |-----|-----------|----------|
@@ -30,7 +30,7 @@ Memory is not just "facts the Brain remembers." It is the entire knowledge accum
 | **Notes** | Free-text notes, summaries, ideas | User, Think Process result |
 | **Results** | Output of a Task node, intermediate and final results | Think Process Execution |
 | **References** | Links, citations, cross-references between documents | Think Process, User |
-| **Structured Data** | Tables, JSON, YAML configurations | Tools, Think Process Output |
+| **Structured Data** | Tables, JSON, YAML configurations | Tools, Think Process output |
 
 ---
 
@@ -107,9 +107,9 @@ Tags:
   #attention          → Topic
   #efficiency         → Topic
   #foundational       → Category
-  #hypothesis         → Document Type
+  #hypothesis         → Document type
   #contradiction      → Status
-  #unread             → Workflow Status
+  #unread             → Workflow status
   #high-relevance     → Rating
   #thinkProcess:tp_12      → automatically set for Think Process result
   #2017               → Year
@@ -154,7 +154,7 @@ A Think Process does NOT see:
 Documents can be moved between Scopes:
 - **Promote:** Think Process result → Project Memory (if it's relevant across projects)
 - **Demote:** Project document → Think Process-specific (if it only applies to one Think Process)
-- **Auto-Promote:** Certain tags trigger automatic promotion (e.g., `#project-relevant`)
+- **Auto-Promote:** Certain Tags trigger automatic promotion (e.g., `#project-relevant`)
 
 ---
 
@@ -182,7 +182,7 @@ Document created/updated
 
 ### 5.3 Scope-aware RAG Query
 
-When a Think Process performs a RAG query:
+When a Think Process performs a RAG Query:
 
 ```
 Query: "What do we know about Sparse Attention scalability?"
@@ -203,7 +203,7 @@ Scope: Think Process tp_12, Session sess_7, Project proj_5, Group grp_1
 
 ### 5.4 Tag Filters in RAG
 
-RAG queries can additionally be filtered by tags:
+RAG Queries can additionally be filtered by Tags:
 
 ```
 Query: "Scalability"
@@ -228,7 +228,7 @@ Tags: [#efficiency, #benchmark]
 |--------|-----|--------|
 | **MongoDB Atlas Vector Search** | Same DB as rest, no extra service | Less mature than specialized solutions |
 | **Qdrant** | Performant, good filters, Open Source | Additional service |
-| **pgvector (PostgreSQL)** | Proven, SQL queries | Second DB next to MongoDB |
+| **pgvector (PostgreSQL)** | Proven, SQL queries | Second DB besides MongoDB |
 | **Embedded (In-Memory)** | Simple for v1 | Does not scale |
 
 **Recommendation:** MongoDB Atlas Vector Search for v1 — one service, one DB, all-in-one. Migrate to Qdrant if performance needs grow. langchain4j abstracts the VectorStore via `EmbeddingStore` anyway.
@@ -257,12 +257,12 @@ On Think Process Start:
   → Prepare RAG index for this Scope
 
 On Task Execution:
-  → RAG query against Scope cascade
+  → RAG Query against Scope cascade
   → Result is automatically saved as a Document
   → Auto-tagging based on node type (extract→#extraction, verify→#verification)
 
 On Task Change:
-  → Mark affected result documents as #stale
+  → Mark affected result Documents as #stale
   → Re-index after new execution
 ```
 
@@ -290,8 +290,8 @@ Each Task node can reference **Input Documents**:
 - id: extract_paper_1
   goal: "Extract core theses"
   input_docs: [doc_abc123]         # Explicit reference
-  input_query: "Sparse Attention"  # Or RAG query
-  input_tags: [#unread, #attention] # Or tag filter
+  input_query: "Sparse Attention"  # Or RAG Query
+  input_tags: [#unread, #attention] # Or Tag filter
 ```
 
 ### 7.2 Output Memory
@@ -320,7 +320,7 @@ verify     → confirmations, contradictions
 synthesize → aggregated documents
 ```
 
-This knowledge automatically flows into Think Process Memory and is available for subsequent Tasks via RAG. The tree builds its own knowledge.
+This knowledge automatically flows into the Think Process Memory and is available for subsequent Tasks via RAG. The tree builds its own knowledge.
 
 ---
 
@@ -377,13 +377,13 @@ Wait — there's a problem here: Think Process "Hypothesis Check" only sees the 
 
 ## 9. Open Questions
 
-1. **Automatic vs. Manual Promotion:** Should Think Process results automatically flow into Project Memory, or must the user explicitly do so? Automatic = less friction, but risk of noise. Manual = cleaner, but more work.
+1. **Automatic vs. Manual Promotion:** Should Think Process results automatically flow into Project Memory, or must the User explicitly do so? Automatic = less friction, but risk of noise. Manual = cleaner, but more work.
 
-2. **Cross-Think-Process Visibility:** Should Think Processes within the same Project see the results of other Think Processes? This would loosen Scope isolation but is often useful. Possible solution: opt-in via Think Process config.
+2. **Cross-Think-Process Visibility:** Should Think Processes within the same Project see the results of other Think Processes? This would weaken Scope isolation but is often useful. Possible solution: opt-in via Think Process Config.
 
-3. **Versioning:** If a document is updated (e.g., after a Task re-run), should old versions be retained? Important for traceability, but costs storage.
+3. **Versioning:** If a Document is updated (e.g., after a Task re-run), should old versions be retained? Important for traceability, but costs storage.
 
-4. **Embedding Costs:** Every document is embedded. With many PDFs, this can become expensive. Strategy: embed only relevant chunks? Or lazy embedding on first query?
+4. **Embedding Costs:** Every Document is embedded. With many PDFs, this can become expensive. Strategy: embed only relevant chunks? Or lazy embedding on first query?
 
 5. **File Size Limits:** Large PDFs (100+ pages) must be handled differently than short notes. Define chunking strategy per type.
 
@@ -391,49 +391,20 @@ Wait — there's a problem here: Think Process "Hypothesis Check" only sees the 
 
 ## 10. Conversation History Compaction
 
-Chat history grows with each turn — in long Sessions, it eventually exceeds the model's context window and drives up token costs. Vance has two orthogonal paths to fold older turns from active replay without deleting the history.
+Chat history grows with each turn — in long Sessions, it eventually exceeds the model's context window and drives up token costs. Vance folds older turns into an `ARCHIVED_CHAT` summary and plays this back in every subsequent prompt; the originals remain audit-readable in `chat_messages`, archived via `archivedInMemoryId`.
 
-### 10.1 Data Format
+Two paths work orthogonally:
 
-A Compaction lives as a special Memory Document:
+- **Sliding-Window Path** — automatically at the start of a turn if `tokensIn / contextWindow` exceeds a threshold (`compactionSoftThreshold` / `HardThreshold` / `EmergencyThreshold`). Strength-aware selection: PINNED messages survive every stage.
+- **Range-Recompaction Path** — semantic, at the Plan-Completion-Hook. Compresses a user-confirmed time range (sub-topic completion) and writes a visible Topic-Stitch.
 
-| Field | Value |
-|---|---|
-| `kind` | `ARCHIVED_CHAT` (Enum value in `MemoryKind`) |
-| `content` | LLM-generated summary of the compacted range |
-| `sourceRefs` | IDs of the archived `ChatMessageDocument` rows |
-| `metadata.compactedMessages` | Number of compacted messages |
-| `metadata.recompaction` | `true` for the range path (otherwise absent) |
+Both write the same `ARCHIVED_CHAT` Memory format; `markArchived` is idempotent.
 
-The original Chat Messages get `archivedInMemoryId` set to the ID of the new Memory. This means:
+`MemoryContextLoader.composeBlock(...)` re-injects the currently active summary as a `## Earlier Conversation (compacted)` block into every prompt — without replay, compaction would be *de-facto forgetting*. Workers with `parentProcessId != null` additionally receive a `## Parent Context` block; same-project Workers inherit the Parent-Summary, cross-project Workers only the Parent-Identity (Confidential-Boundary).
 
-- `ChatMessageService.history(...)` still provides them (audit path, trace).
-- `ChatMessageService.activeHistory(...)` filters them out (LLM replay path only sees summary + younger turns).
-- `history_search` / `history_recall` (see `planning/process-history-search.md`) finds them via tags and full-text — the archived original content remains discoverable for the LLM, just no longer automatically in the prompt.
+The first USER message per Process is automatically tagged with `STRENGTH:pinned` (`ChatMessageService.maybeAutoPinOriginalTask`), so that the original instruction survives every compaction stage, including EMERGENCY.
 
-### 10.2 Sliding-Window Path (automatic, size-based)
-
-`MemoryCompactionService.compact(process)` runs at the beginning of a turn if the estimated tokens exceed the `compactionTriggerRatio` (default ~0.7) of the model's context window. It compacts the oldest `total - keepRecent` messages into a single summary. On repeated runs, `compact` chains new summaries via `supersededByMemoryId` to the previous ones — the audit chain remains coherent.
-
-The trigger is mechanical (token threshold), aiming at **size**, not topic boundaries. Engines (currently Ford) call it themselves; Worker Engines usually do not.
-
-### 10.3 Range-Based Recompaction Path (Plan Mode Hook, opt-in)
-
-`MemoryCompactionService.compactRange(process, fromCreatedAt, toCreatedAt, topicLabel)` compacts an **explicit time range** of the active history — not the oldest N turns, but a sub-topic block that the user has actively completed.
-
-Trigger: the last Todo of a Plan flips to `COMPLETED`, and before the `MODE:plan` marker there are ≥ 2 USER turns about other topics → `PlanModeService.maybeOfferRecompaction` posts an Inbox Item (`type=APPROVAL`, Tag `RECOMPACTION_OFFER`). If the user accepts, `RecompactionOfferAnsweredListener` calls `compactRange` with the range coordinates stored in the payload. In addition to normal compaction, the range path inserts a `SYSTEM` marker with tag `RECOMPACTION:<topicLabel>` at the end of the range — it appears visibly in the chat as a topic stitch.
-
-The trigger is semantic (topic completion), aiming at **focus**, not size. It works engine-agnostically thanks to shared `PlanModeService` — Arthur and Eddie both benefit without engine-specific code.
-
-Details: [plan-mode](plan-mode.md) §15, `planning/topic-recompaction.md`.
-
-### 10.4 Relationship of the Two Paths
-
-They are **orthogonal and non-competing**:
-
-- Sliding-Window runs even when no Plan is involved (pure long-session hygiene).
-- Range-Compaction only runs on Plan completion with prior history — actively confirmed by the user.
-- Both use the same persistence (`ARCHIVED_CHAT` Memory + `archivedInMemoryId` on the Chat rows). A turn can theoretically be archived by both paths; `markArchived` is idempotent — the second path finds the turn already archived and skips it.
+**Full spec with data model, selector table, pinned convention, Engine participation list, and tunables**: [memory-compaction](memory-compaction.md). Range path details: [plan-mode](plan-mode.md) §15 and `planning/topic-recompaction.md`.
 
 ---
 

@@ -1,6 +1,6 @@
 # Vance — Scheduler
 
-> A **Scheduler** is a time-based trigger definition that spawns a Think Process via a Recipe. Schedulers are YAML documents located under `_vance/scheduler/<name>.yaml` in the Document Layer, loaded during project bootstrap, and re-read via a `scheduler_refresh` trigger. Each run operates in a dedicated system Session of the Scheduler, with a configured `runAs` identity.
+> A **Scheduler** is a time-based trigger definition that spawns a Think Process via a Recipe. Schedulers are stored as YAML documents under `_vance/scheduler/<name>.yaml` in the Document Layer, are loaded during project bootstrap, and re-read via a `scheduler_refresh` trigger. Each run executes in a dedicated system Session of the Scheduler, with a configured `runAs` identity.
 >
 > The only trigger path is `processCreate(recipe, params, initialMessage)`. Determinism vs. LLM control is decided by the Recipe — the Scheduler does not know this distinction.
 >
@@ -10,13 +10,13 @@
 
 ---
 
-## 1. Terms
+## 1. Terminology
 
 | Term | Definition |
 |---|---|
 | **Scheduler-Doc** | YAML document under `_vance/scheduler/<name>.yaml` in the Project. The filename (without `.yaml`) is the Scheduler name. |
 | **Scheduler-Run** | A single firing: creates (or reuses) the system Session and spawns a Process via a Recipe. |
-| **System-Session** | A dedicated Session per Scheduler, with flag `system=true`. Collects run history and is the owner of all Processes created by this Scheduler. |
+| **System-Session** | A dedicated Session per Scheduler, with flag `system=true`. Collects the run history and is the owner of all Processes created by this Scheduler. |
 | **Event-Log** | Append-only Mongo collection for lifecycle events (Scheduler, later also Webhook/Ursahook). Source of truth for "when did it last run". |
 | **Source** | Generic trigger identifier in the Event Log: `ursascheduler:<name>`, later `webhook:<id>`, `hook:<key>`. |
 
@@ -35,8 +35,8 @@ description: "Spawns a briefing Process with the analyze Recipe every morning."
 # Exactly one of these must be set:
 cron: "0 0 8 * * MON-FRI"          # recurring, Quartz-Cron (with seconds field)
 # at: "2026-05-14T08:00:00"        # OR: one-time run at a specific time (§13)
-timezone: "Europe/Berlin"          # IANA-TZ-ID, optional (default: tenant-Setting `scheduler.timezone`)
-enabled: true                      # default true — false stops the Scheduler without deleting it
+timezone: "Europe/Berlin"          # IANA-TZ-ID, optional. If missing, scheduler_set fills in the user's display timezone when created (§10c)
+enabled: true                      # default true — false pauses the Scheduler without deleting it
 
 # --- Trigger Target (exactly one of these) ---
 recipe: "analyze"                  # Recipe name (cascade lookup like everywhere else) — spawns a ThinkProcess
@@ -54,7 +54,7 @@ runAs: "mike"                      # User name. Default: `createdBy` of the Sche
 
 # --- Overlap Policy ---
 overlap: skip                      # skip | queue | cancelPrevious — default skip
-                                   # - skip:           new run is discarded if previous is still running
+                                   # - skip:           new run is discarded if previous one is still running
                                    # - queue:          new run is appended, runs after completion
                                    # - cancelPrevious: previous Process is stopped, new one starts
 
@@ -64,10 +64,10 @@ tags: [daily, briefing]
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `description` | `String` | yes | A single line — rendered in the Web Editor and in `scheduler_list` |
+| `description` | `String` | yes | One line — rendered in the Web Editor and in `scheduler_list` |
 | `cron` | `String` | see below | Quartz-Cron-Expression (Spring `CronExpression` format, **with** seconds field). Mutually exclusive with `at` |
 | `at` | `String` (ISO-8601 datetime) | see below | One-time run at a specific time (§13). Mutually exclusive with `cron` |
-| `timezone` | `String` | no | IANA-TZ. Default: tenant-Setting `scheduler.timezone` → Fallback `UTC` |
+| `timezone` | `String` | no | IANA-TZ. If missing in YAML, `scheduler_set` writes the user's display timezone (`display.timezone`, Cascade User → Tenant → `UTC`) when created (§10c). Only if no zone is set anywhere, the `UTC` fallback for execution remains. |
 | `enabled` | `boolean` | default `true` | Pause without deleting |
 | `recipe` | `String` | yes | Recipe name, resolved via the normal Cascade (Project → `_tenant` → Resource) |
 | `params` | `Map<String,Object>` | no | Override for Recipe defaults — same semantics as `process_create` |
@@ -77,7 +77,7 @@ tags: [daily, briefing]
 | `lockMode` | `enum` | default `full` | `full` \| `protected` \| `hidden` — how much the LLM can access this Scheduler, see §11a |
 | `tags` | `List<String>` | no | Free for Discovery |
 
-**Required fields:** `description`, `recipe`, and exactly one of `cron` / `at`. If both are set or both are missing, the load fails.
+**Required fields:** `description`, `recipe` and exactly one of `cron` / `at`. If both are set or both are missing, the load fails.
 
 **There is no separate Mongo collection for Schedulers.** Persistence, audit, soft-delete come from the Document Layer.
 
@@ -98,11 +98,11 @@ load(tenantId, projectId) → List<ScheduledTrigger> :=
 
 **Merge by Name:** Project override completely replaces Tenant Schedulers of the same name (no field merge). Tenant Schedulers without a Project override of the same name are active in all Projects of the Tenant.
 
-**Hot-Reload:** Project and `_tenant` Schedulers are not re-parsed on every lookup (that would be a bootstrap per tick). Instead:
+**Hot-Reload:** Project and `_tenant` Schedulers are not re-parsed with every lookup (that would be a bootstrap per tick). Instead:
 
 - **During Project Bootstrap:** `UrsaSchedulerService` reads all Scheduler-Docs of the Project and registers them with the Spring `TaskScheduler`.
-- **Refresh Trigger:** The `scheduler_refresh` tool and WebUI button discard the current registration and re-read. Tenant-wide refresh triggers run across all active Projects of the Tenant.
-- **Brain Restart:** covered by the bootstrap path — no special handling.
+- **Refresh Trigger:** Tool `scheduler_refresh` and WebUI button discard the current registration and re-read. Tenant-wide refresh triggers run across all active Projects of the Tenant.
+- **Brain Restart:** is covered by the bootstrap path — no special handling.
 
 ---
 
@@ -119,11 +119,11 @@ Two spawn variants, which branch based on the trigger target field (`recipe:` or
 4. RecipeResolver.applyDefaulting(recipeName, null, params)
 5. processCreate(session=systemSession, recipe=resolved, initialMessage=...)
    Owner-User of the spawned Process = `runAs`-User
-6. Event Log: scheduler:<name> TRIGGERED + STARTED (§7)
+6. Event-Log: scheduler:<name> TRIGGERED + STARTED (§7)
 7. Process runs in the Scheduler's Lane (Lane-Key = systemSession-ID)
 8. Engine lifecycle terminates (done | stopped | failed)
    → ProcessLifecycleListener emits COMPLETED | FAILED to the Event Log
-9. Errors or user asks land via Inbox Service at the `runAs`-User
+9. Errors or user asks land via Inbox Service with the `runAs`-User
 ```
 
 There is **no** special path "Scheduler is a Tool" or "Scheduler calls Engine directly". The Scheduler is a client like any other system client (cf. [execution-modes-trigger §2](execution-modes-trigger.md)) — it brings no Tools, lives only briefly, does not close its Session (see §6).
@@ -135,7 +135,7 @@ There is **no** special path "Scheduler is a Tool" or "Scheduler calls Engine di
 2. Overlap Check (see §5)
 3. MagratheaWorkflowService.start(tenantId, projectId, workflowName, params, runAs)
    → 8-Hex workflowRunId, frozen YAML in the StartRecord
-4. Event Log: scheduler:<name> TRIGGERED + STARTED with `workflowRunId` in the payload (§7)
+4. Event-Log: scheduler:<name> TRIGGERED + STARTED with `workflowRunId` in the payload (§7)
 5. Workflow Run runs independently — TaskClaimer/ProjectLane/Listeners take over
 6. For One-Shot (`at:`): Source document is immediately trashed (analogous to Recipe Path)
 ```
@@ -150,9 +150,9 @@ Configurable per Scheduler-Doc; default `skip`.
 
 | Policy | Behavior on tick if the last run is still active |
 |---|---|
-| `skip` | Tick is discarded. Event Log: `SKIPPED` with `reason: "overlap"`. |
-| `queue` | Tick is held in the internal queue. On `COMPLETED`/`FAILED` of the active run, the next tick from the queue fires. Multiple queue entries are consolidated into **one** (max. 1 waiting run per Scheduler). |
-| `cancelPrevious` | Active Process is terminated via `processStop(reason="scheduler-overlap")`; then the new run starts. |
+| `skip` | Tick is discarded. Event-Log: `SKIPPED` with `reason: "overlap"`. |
+| `queue` | Tick is held in the internal queue. Upon `COMPLETED`/`FAILED` of the running run, the next tick from the queue fires. Multiple queue entries are consolidated into **one** (max. 1 waiting run per Scheduler). |
+| `cancelPrevious` | Running Process is terminated via `processStop(reason="scheduler-overlap")`; then the new run starts. |
 
 "Still active" means: a Process exists under the Scheduler's system Session with status ∈ `{ready, running, paused, blocked, suspended}`.
 
@@ -163,12 +163,12 @@ Configurable per Scheduler-Doc; default `skip`.
 Each Scheduler has **one** dedicated Session named `_ursascheduler_<scheduler-name>` in the Project Scope:
 
 - Created on the first tick (lazy), not on bootstrap.
-- `system=true` flag on the `SessionDocument` → hidden by default in the UI, no auto-title, no user-touch status (cf. [session-lifecycle §3](session-lifecycle.md)).
-- `ownerUserId = runAs`. If `runAs` changes, the existing Session is **not** re-assigned — a new Session with the current suffix is created (`_ursascheduler_<name>__<runAs>` is not the schema; instead: old Session remains for history, new Session gets the same name with suffix counter `_ursascheduler_<name>_v2` — details in implementation, not in spec).
+- `system=true` flag on the `SessionDocument` → hidden by default in the UI, no auto-title, no user touch status (cf. [session-lifecycle §3](session-lifecycle.md)).
+- `ownerUserId = runAs`. If `runAs` changes, the existing Session is **not** re-assigned — a new Session with the current suffix is created (`_ursascheduler_<name>__<runAs>` is not the schema; instead: old Session remains for history, new Session gets the same name with suffix counter `_ursascheduler_<name>_v2` — details in the implementation, not in the spec).
 - Lifecycle: the Session is **not** closed between runs. It remains `IDLE`/`unbound`, collecting run history. Only when the Scheduler-Doc is deleted (or via explicit admin action) is it archived.
-- Lane serialization runs per Session — thus, overlap `queue`/`skip` is naturally covered: two parallel scheduled Processes of the same Session are already sequenced by the Lane (cf. CLAUDE.md "Think-Process / Scope Besonderheiten").
+- Lane serialization runs per Session — this naturally covers overlap-`queue`/`skip`: two parallel scheduled Processes of the same Session are already sequenced by the Lane (cf. CLAUDE.md "Think Process / Scope Peculiarities").
 
-**Why one Session per Scheduler and not one per Project?** Clean history per Scheduler, Inbox items route naturally, Lane serialization is exactly where we want it (no cross-Scheduler blocking). Tradeoff: one "technical" Session-Document per Scheduler — the `system=true` UI filtering makes this manageable.
+**Why one Session per Scheduler and not one per Project?** Clean history per Scheduler, Inbox items route naturally, Lane serialization is exactly where we want it (no cross-Scheduler blocking). Tradeoff: a "technical" Session-Document per Scheduler — the `system=true` UI filtering makes this manageable.
 
 ---
 
@@ -198,11 +198,11 @@ EventLogDocument {
 
 enum EventType {
   TRIGGERED,    // Trigger fired (Cron tick, Webhook hit, ...)
-  STARTED,      // Process created and running
-  COMPLETED,    // Process successfully finished (done)
-  FAILED,       // Process finished with error
+  STARTED,      // Process was created and is running
+  COMPLETED,    // Process successfully completed (done)
+  FAILED,       // Process completed with error
   SKIPPED,      // Trigger fired, but no Process started (Overlap-Skip, disabled-Race, ...)
-  CANCELLED     // Process terminated by Overlap-cancelPrevious
+  CANCELLED     // Process was terminated by Overlap-cancelPrevious
 }
 ```
 
@@ -214,9 +214,9 @@ enum EventType {
 
 ### Usage by the Scheduler
 
-- **Last Run:** `eventLog.findLatest(source="ursascheduler:<name>", type∈{STARTED, COMPLETED, FAILED, SKIPPED})` — no `lastRun` cache.
-- **Next Run:** calculated from the Cron expression, not persisted (Spring `CronExpression.next(...)`).
-- **Run History for the UI:** filter by `source` and time range.
+- **Last run:** `eventLog.findLatest(source="ursascheduler:<name>", type∈{STARTED, COMPLETED, FAILED, SKIPPED})` — no `lastRun` cache.
+- **Next run:** calculated from the Cron expression, not persisted (Spring `CronExpression.next(...)`).
+- **Run history for the UI:** filter by `source` and time period.
 
 ### Future Usage
 
@@ -255,15 +255,15 @@ Three paths trigger a refresh:
 
 ## 9. Agent Tools
 
-Five tools in the `scheduler` toolset, available by default for Engines with worker spawn rights (Eddie, Arthur). All mutations go through the `lockMode` gate (§10b) before any write operation — `protected`/`hidden` entries are read-only or invisible from the Tool's perspective.
+Five Tools in the `scheduler` Toolset, available by default for Engines with worker spawn rights (Eddie, Arthur). All mutations go through the `lockMode` gate (§10b) before any write operation — `protected`/`hidden` entries are read-only or invisible from the Tool's perspective.
 
 | Tool | Label | Effect |
 |---|---|---|
 | `scheduler_list` | `read-only` | Returns all non-`hidden` Schedulers of the current Project (name, description, Cron or `at`, enabled, last run, `locked: true` for `protected`). |
 | `scheduler_get(name)` | `read-only` | Returns the complete YAML of a Scheduler. `hidden` responds like a missing address ("not found"). |
-| `scheduler_set(name, yaml)` | `write` | Upsert: validates YAML, creates the Document or completely replaces the body (previous state is auto-archived by the Document Layer), triggers delta refresh. Response includes `created: true|false`. Rejected if a cascade-resolved entry with the name has `lockMode ≠ full`. |
+| `scheduler_set(name, yaml)` | `write` | Upsert: validates YAML, creates the Document or completely replaces the body (previous state is auto-archived by the Document Layer), triggers delta refresh. Response carries `created: true|false`. Rejected if a cascade-resolved entry with the name has `lockMode ≠ full`. **Timezone Auto-Fill:** if the YAML contains no `timezone:`, the caller's display timezone at the time of writing is permanently written into the body (§10c). |
 | `scheduler_delete(name)` | `write` | Removes the Document and cancels the `ScheduledFuture`; same gate check. |
-| `scheduler_refresh` | `admin` | Force-reloads all Schedulers of the Project. Disabled in the standard Engine toolset, included in the `admin` toolset. |
+| `scheduler_refresh` | `admin` | Force-reloads all Schedulers of the Project. Disabled in the standard Engine Toolset, included in the `admin` Toolset. |
 | `scheduler_fire(name)` | `admin` | Triggers a registered Scheduler immediately, bypassing the Cron schedule. Goes through the same `fire()` path as a Cron tick (Overlap Policy, Event Log, Scheduler Log, metrics) — only difference: the Scheduler Log Document carries `trigger: manual` instead of `trigger: cron`. Response provides `correlationId` + `logPath` of the run Document, which the Engine can then view via `document_read`. |
 
 ---
@@ -276,7 +276,7 @@ Each run creates a **Markdown document per Correlation ID** under
 _vance/logs/scheduler/<name>/<isoStamp>-<correlationId>.md
 ```
 
-in the firing Project. This is the LLM-/operator-readable materialization of the Event Log — no additional tool needed, the model finds the logs via `document_list` / `document_read`.
+in the firing Project. This is the LLM-/operator-readable materialization of the Event Log — no additional Tool needed, the model finds the logs via `document_list` / `document_read`.
 
 ### Content
 
@@ -322,7 +322,7 @@ outcome: completed   # pending | completed | failed | cancelled | skipped_overla
 
 **Retention Configuration** (Project Cascade, first-match-wins):
 
-1. Setting `scheduler.log.retentionDays` on `project/<projectId>` — configurable per Project (e.g., compliance Project wants 30 days).
+1. Setting `scheduler.log.retentionDays` on `project/<projectId>` — configurable per Project (e.g., Compliance Project wants 30 days).
 2. Setting `scheduler.log.retentionDays` on `project/_tenant` — Tenant-wide default.
 3. `vance.scheduler.log.retention-days` from `application.yml` (Operator fallback, default **7**).
 
@@ -331,11 +331,11 @@ outcome: completed   # pending | completed | failed | cancelled | skipped_overla
 - `0` → **Infinite Retention**. Document is written, but `expiresAt` remains `null` — Mongo's TTL monitor never cleans it up. Intended for compliance/audit Projects where run logs should be permanently preserved. Manual deletion possible via the normal Document API.
 - `< 0` → **Disabled**. The service completely skips the Document write; Event Log and metrics remain unchanged. This allows disabling the entire materialization path per Tenant/Project without affecting the Scheduler itself.
 
-The value is resolved freshly per upsert — a setting change takes effect immediately on the next lifecycle event of an active Scheduler, without Brain restart.
+The value is resolved fresh per upsert — a setting change takes effect immediately on the next lifecycle event of a running Scheduler, without Brain restart.
 
-Important: TTL deletes the Document row **permanently** — no archive, no trash step. A conscious choice, because logs are only for diagnosis and the Event Log remains the source of truth.
+Important: TTL deletes the Document row **permanently** — no archive, no trash step. This is a conscious choice because logs are only for diagnosis and the Event Log remains the source of truth.
 
-### Relationship to Event Log
+### Relationship to the Event Log
 
 - **Event Log** (`event_log` collection) remains the source of truth: atomic appends, metric coupling, REST surface (`GET /scheduler/{name}/events`).
 - **Scheduler Log Document** is the LLM-readable materialization. In case of a crash between event append and document upsert, the document remains inconsistent (`outcome: pending`) — it will be deleted by TTL anyway, the Event Log preserves the correct trace.
@@ -344,13 +344,13 @@ Important: TTL deletes the Document row **permanently** — no archive, no trash
 
 ## 10. WebUI Editor
 
-In `vance-face`, the Scheduler editor lives alongside the Recipe and Settings editors (cf. [web-ui §7](web-ui.md)):
+In `vance-face`, the Scheduler editor lives next to the Recipe and Settings editor (cf. [web-ui §7](web-ui.md)):
 
 - Editor entry: `packages/vance-face/scheduler.html`, MPA pattern like the rest.
 - Listing: REST snapshot via `GET /brain/{tenant}/project/{project}/scheduler` — no live update in v1 (cf. "Live updates exclusively in the chat editor").
 - Editor: CodeMirror 6 with YAML mode, validation against the §2 schema before saving.
-- Cron helper: small UI component that renders Cron expressions into "next 5 runs" (purely client-side via Cron parser lib).
-- Run history: right panel lists the last 20 entries from the Event Log (REST), clickable to the Run detail view with Process and Session links.
+- Cron helper: small UI component that renders Cron expression into "next 5 runs" (client-side only via Cron parser lib).
+- Run history: right panel lists the last 20 entries from the Event Log (REST), clickable to the Run detail view with Process and Session link.
 
 REST endpoints (all in `vance-brain`):
 
@@ -368,7 +368,7 @@ GET    /brain/{tenant}/project/{project}/scheduler/{name}/events  # Event Log, p
 
 ## 10a. One-Shot Trigger (`at`)
 
-Instead of `cron:`, a Scheduler may set `at:` — an ISO-8601 date-time that fires exactly once. The use case is "Eddie/Arthur says: start the morning program tomorrow morning at 8 AM" — the Engine writes a Scheduler-Doc with `at: "2026-05-14T08:00:00"` via the `scheduler_set` tool, the Brain fires exactly once and disables itself.
+Instead of `cron:`, a Scheduler may set `at:` — an ISO-8601 date-time that fires exactly once. The use case is "Eddie/Arthur says: start the morning program tomorrow morning at 8 AM" — the Engine writes a Scheduler-Doc with `at: "2026-05-14T08:00:00"` via the `scheduler_set` Tool, the Brain fires exactly once and disables itself.
 
 ```yaml
 description: "Morning program — one-time tomorrow morning."
@@ -381,11 +381,11 @@ recipe: "morning-briefing"
 
 | Form | Example | Zone |
 |---|---|---|
-| LocalDateTime | `2026-05-14T08:00:00` | `timezone:` field → Fallback UTC |
+| LocalDateTime | `2026-05-14T08:00:00` | `timezone:` field (pre-filled by `scheduler_set` with the user zone, §10c) → fallback UTC |
 | ZonedDateTime | `2026-05-14T08:00:00+02:00` | from the offset |
 | Instant (UTC-Z) | `2026-05-14T06:00:00Z` | UTC |
 
-**Registration:** instead of `CronTrigger`, `UrsaSchedulerService` calls Spring `TaskScheduler.schedule(Runnable, Instant)`. After the single fire, the `ScheduledFuture` is automatically terminated — no subsequent ticks.
+**Registration:** instead of `CronTrigger`, `UrsaSchedulerService` calls Spring `TaskScheduler.schedule(Runnable, Instant)`. After the one fire, the `ScheduledFuture` is automatically terminated — no subsequent ticks.
 
 **Source of Truth for "already fired":** the `event_log`. If a `STARTED` event exists for the source `ursascheduler:<name>`, the one-shot is considered consumed. This rule makes the path crash-safe: a Brain restart exactly between spawn and Doc cleanup does not lead to a second run.
 
@@ -402,7 +402,7 @@ register(at-scheduler):
     taskScheduler.schedule(runnable, at)
 ```
 
-**After successful fire:** the Executor moves the Scheduler-Doc via [`DocumentService.trash`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) to the Project trash (`_bin/<uuid>_<name>.yaml`). The Doc thus disappears from the `_vance/scheduler/` prefix — no re-register on the next bootstrap, no "expired" entry in the list. The run history remains in the Event Log; the original content is soft-deleted in `_bin/` and can be restored via `DocumentService.restore` if needed.
+**After successful fire:** the executor moves the Scheduler-Doc via [`DocumentService.trash`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) to the Project trash (`_vance/trash/<uuid>_<name>.yaml`). The Doc thus disappears from the `_vance/scheduler/` prefix — no re-register on the next bootstrap, no "expired" entry in the list. The run history remains in the Event Log; the original content is soft-deleted in `_vance/trash/` and can be restored via `DocumentService.restore` if needed.
 
 **Overlap Policy** is irrelevant for `at`-Schedulers (only one fire possible) — the value is parsed but not used.
 
@@ -410,7 +410,7 @@ register(at-scheduler):
 
 ## 10b. LLM Lockdown (`lockMode`)
 
-The Agent (Eddie/Arthur) has full CRUD rights on the Scheduler via the `scheduler` toolset in the standard setup. For admin-maintained Schedulers (backups, security scans, compliance checks), the LLM should **not** be able to touch anything — neither edit nor delete, possibly not even see. This is controlled by `lockMode:` in the Scheduler YAML.
+The Agent (Eddie/Arthur) has full CRUD rights on the Scheduler via the `scheduler` Toolset in the standard setup. For admin-maintained Schedulers (backups, security scans, compliance checks), the LLM should **not** be able to touch anything — neither edit nor delete, possibly not even see. This is controlled by `lockMode:` on the Scheduler YAML.
 
 | `lockMode` | `scheduler_list` (Tool) | `scheduler_get` (Tool) | create / update / delete (Tool) | WebUI / REST |
 |---|---|---|---|---|
@@ -418,15 +418,28 @@ The Agent (Eddie/Arthur) has full CRUD rights on the Scheduler via the `schedule
 | `protected` | visible, with `"locked": true` marker | visible | **rejected** (`ToolException`) | visible, editable |
 | `hidden` | **filtered out** | **"not found"** | **rejected** (`ToolException`) | visible, editable |
 
-**Gate Rule for Mutations:** Before each `scheduler_set` / `scheduler_delete`, the Tool Layer loads the Scheduler via the normal Cascade. If an entry with that name exists and its `lockMode` ≠ `full`, the operation is rejected. This prevents the Agent from circumventing a protected Tenant Scheduler by creating a project-local override with the same name.
+**Gate Rule for Mutations:** Before every `scheduler_set` / `scheduler_delete`, the Tool Layer loads the Scheduler via the normal Cascade. If an entry with the name exists and its `lockMode` ≠ `full`, the operation is rejected. This prevents the Agent from circumventing a protected Tenant Scheduler with a project-local override of the same name.
 
 **`hidden` vs. `protected`:**
-- `protected` is the normal choice: the Agent knows the Scheduler exists but cannot change it. Listing shows it as "read-only", which the LLM can incorporate into its decisions ("there's already a nightly-cleanup at 03:00, I don't need to create a second one").
-- `hidden` is intended for audit savers / compliance triggers whose existence should not even be known to the Agent. `scheduler_list` filters them out, `scheduler_get` responds as if the entry were deleted, and mutations fail with the same lock error — so the *existence* inevitably leaks as soon as an Agent guesses the name and tries to write. To circumvent this, give the entry a hard-to-guess name or use the second line of defense: remove tools entirely from the worker's toolset via Recipe `allowedToolsRemove`.
+- `protected` is the normal choice: the Agent knows the Scheduler exists but cannot change it. Listing shows it as "read-only", which the LLM can incorporate into its decisions ("a nightly-cleanup is already running at 03:00, I don't need to create a second one").
+- `hidden` is intended for audit savers / compliance triggers whose existence should not even be known to the Agent. `scheduler_list` filters them out, `scheduler_get` responds as if for a deleted entry, and mutations fail with the same lock error — so the *existence* inevitably leaks as soon as an Agent guesses the name and tries to write. To circumvent this, give the entry a hard-to-guess name or use the second line of defense: remove Tools entirely from the worker's Toolset via Recipe-`allowedToolsRemove`.
 
-**REST and WebUI** do **not** check `lockMode` — they already run behind `Resource.Project` + `Action.WRITE/ADMIN` authority. The lock model is explicitly an LLM protection layer, not an RBAC replacement.
+**REST and WebUI** do **not** check `lockMode` — they already run behind the `Resource.Project` + `Action.WRITE/ADMIN` authority. The lock model is explicitly an LLM protection layer, not an RBAC replacement.
 
-**Setting via the Tools themselves:** The Agent can set `lockMode: full` (default) when creating a new Scheduler — they may also write `protected` or `hidden`, as this would be self-restriction and is not dangerous. Escalating an existing `full` Scheduler to `protected` via update is allowed for the same reason; the Agent merely loses future access to it.
+**Setting via the Tools themselves:** The Agent can set `lockMode: full` (default) when creating a new Scheduler — they may also write `protected` or `hidden`, as this would be self-restriction and is not dangerous. Escalating an existing `full` Scheduler to `protected` via update is allowed for the same reason; the Agent then merely loses future access to it.
+
+---
+
+## 10c. Timezone Auto-Fill on Creation
+
+A user says "remind me daily at 9 AM" — meaning **their** local 9 AM, not 9 AM UTC. To ensure this is correct without LLM intervention, `scheduler_set` fills a missing `timezone:` with the **caller's display timezone** (setting `display.timezone`, Cascade User → Tenant → `UTC` — see [settings-system](settings-system.md)) when writing.
+
+- **Time: on write, not on execution.** The zone is rendered into the Scheduler YAML once. This keeps a "9 AM Berlin" Scheduler stable, even if the user later changes their global preference to `Asia/Tokyo` — the once-set intention does not move.
+- **Explicit overrides auto-fill.** If the YAML contains a non-empty `timezone:`, it is adopted unchanged.
+- **DST-correct, internally still UTC.** The zone lands as an interpretation zone in the `CronTrigger` (`TaskScheduler.schedule(Runnable, CronTrigger)`), not as a statically shifted expression to UTC. Thus, `0 0 9 * * *` in `Europe/Berlin` fires at 9 AM local time year-round — across daylight saving time changes. Storage and comparison of fire times remain `Instant`/UTC.
+- **Implementation (no string hack):** `UrsaSchedulerLoader.applyDefaultTimezone(yaml, tz)` performs a typed SnakeYAML map roundtrip (parse → put → dump); only if `timezone:` is missing/empty and a user zone is present is it written, otherwise YAML verbatim. The Tool Layer (`UrsaSchedulerToolSupport.applyDefaultTimezone`) resolves the user zone via the `TimezoneResolver`.
+
+Source of the user zone: the Web UI profile (timezone selector, browser default seed) or the Foot command `/timezone`; without an active client connection, the cascade falls back to the Tenant default and finally UTC.
 
 ---
 
@@ -435,9 +448,9 @@ The Agent (Eddie/Arthur) has full CRUD rights on the Scheduler via the `schedule
 - **No Resource default Schedulers.** Schedulers are always project- or tenant-specific.
 - **No field-level merges** between Tenant and Project Schedulers (override is all-or-nothing by name).
 - Webhooks (`POST /brain/.../event/...`) and Ursahooks (lifecycle-event-driven) are separate trigger sources with their own specs ([events](events.md), [ursahooks](ursahooks.md)) — they use the same `ActionExecutorRegistry` as the Scheduler. The Event Log records their rows with `source = "event:<name>"` or `source = "hook:<event>:<name>"`.
-- **No "run now" button with override params** — the WebUI button fires exactly like the Cron tick, without ad-hoc parameter adjustment. To vary parameters, edit the Doc or spawn directly via `process_create`.
-- **No dependency chains** (Scheduler A triggers Scheduler B). If this is needed, write a spawn step in the Recipe.
-- **No Kit integration.** Schedulers are not part of the Kit inherit chain — Kits provide Recipes/Skills/Settings/Tools (cf. [kits §2](kits.md)), Scheduler remains user/agent domain. If a need arises later for "standard Schedulers from a Kit", `scheduler/` will be added as a fourth top-level directory.
+- **No "run now" button with override params** — the WebUI button fires exactly like the Cron tick, without ad-hoc param adjustment. To vary params, edit the Doc or spawn directly via `process_create`.
+- **No dependency chains** (Scheduler A triggers Scheduler B). Those who need this write a spawn step in the Recipe.
+- **No Kit integration.** Schedulers are not part of the Kit inherit chain — Kits provide Recipes/Skills/Settings/Tools (cf. [kits §2](kits.md)), Scheduler remains user/Agent domain. If a need arises later for "standard Schedulers from a Kit", `scheduler/` will be added as a fourth top-level directory.
 
 ---
 
@@ -445,14 +458,14 @@ The Agent (Eddie/Arthur) has full CRUD rights on the Scheduler via the `schedule
 
 The following topics are **not yet** marked as binding in the spec — the respective defaults are set in the text, but the v2 behavior is intentionally open:
 
-1. **TTL default for the Event Log** (§7): currently 90 days as a suggestion; perhaps a tenant setting with a more conservative default (e.g., 30 days). Cleanup job runs daily, the volume will only be decided after real operation.
-2. **Multi-Pod coordination**: the Project runs on exactly one Pod at any given time (cf. [project-lifecycle](project-lifecycle.md)), so the Spring `TaskScheduler` locally suffices. If a Project is later to be active on multiple Pods, we will need Mongo-based lock acquisition per tick — explicitly not in v1.
+1. **TTL default for the Event Log** (§7): currently 90 days as a suggestion; perhaps a tenant setting with a more conservative default (e.g., 30 days). Cleanup job runs daily, volume will only be decided after real operation.
+2. **Multi-Pod coordination**: the Project runs on exactly one Pod at any given time (cf. [project-lifecycle](project-lifecycle.md)), so the Spring `TaskScheduler` is sufficient locally. If a Project is later to be active on multiple Pods, we will need Mongo-based lock acquisition per tick — explicitly not in v1.
 3. **Notification hook for `at`-catch-up** (§10a): a one-shot that starts several hours late due to Brain downtime currently runs silently. An Inbox item to `runAs` with a note "ran X minutes late" would be useful — will come later if the need becomes concrete.
 
 ### Decisions Cemented Since Spec Creation
 
-- **`runAs` change** (§6): old system Session remains as an audit trail, a new one is created with a suffix (`_ursascheduler_<name>_v2` etc.). Implemented in `SystemSessionResolver`.
-- **Cron syntax**: Quartz with 6 fields (seconds in the required field) — Spring `CronExpression` is native, and second resolution allows the 20-second heartbeats used in ai-test. Web-UI renders the next runs as a helper.
+- **`runAs`-change** (§6): old system Session remains as an audit trail, a new one is created with a suffix (`_ursascheduler_<name>_v2` etc.). Implemented in `SystemSessionResolver`.
+- **Cron syntax**: Quartz with 6 fields (seconds in the required field) — Spring `CronExpression` is native, and second resolution allows the 20-second heartbeats used in ai-test. Web UI renders the next runs as a helper.
 
 ---
 

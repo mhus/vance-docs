@@ -1,5 +1,5 @@
 ---
-title: "Vance — Vision & Goal"
+title: "Vance — Vision & Idea"
 parent: Specs
 permalink: /specs/vision
 ---
@@ -7,209 +7,155 @@ permalink: /specs/vision
 <!-- AUTO-GENERATED from specification/public/en/vision.md — do not edit here. -->
 
 ---
-# Vance — Vision & Goal
+# Vance — Vision & Idea
 
-> This document defines what Vance is, for whom it is built, and the architectural decisions that follow.
-
----
-
-## 1. The One Sentence
-
-**Vance is a platform for hybrid AI thinking: a Brain that breaks down complex tasks into controllable, persistent Think Processes and works through them with the user — combined with specialized Clients that give it access to the local world.**
+> What Vance is, why it exists, and how it is structured.
 
 ---
 
-## 2. Scope: Vance works with you
+## What this is
 
-> **Vance thinks and acts. Vance does not manage.**
+Vance is a personal project. I built it to develop LLM agents and shape them in
+a way that allows me to work productively with them. Over time, everything I
+found exciting — and what I believe others can benefit from — has found its way
+into it.
 
-Vance is a system for **structured work with AI** — research, analysis, writing, tool operation, reasoning-driven over multiple steps. Other AI tools advise or respond in a single turn. Vance processes a piece of work, delivers concrete outputs, and remains visible and controllable throughout.
+It is **not a product**. Nothing is sold, there is no support contract, and no
+roadmap promises. The code is open because it can benefit others, not because
+it is intended to become a business. If you want to play around with it,
+contribute, or steal ideas: feel free.
 
-### What Vance can do
+---
 
-- Break down a complex task into a **structured thinking tree**
-- Persist this tree **over days/weeks** and process it autonomously or guided
-- **Generate concrete artifacts** — Documents, Tool calls, Sub-Processes, data transformations
-- Allow the user to **intervene at any time** (pause, reprioritize, inject new info, stop)
-- **Distill insights** and find relationships between knowledge elements
-- **Ingest external sources** (papers, documents, data) and operate on them
-- **Export results** to external systems (Google Docs, Jira, Obsidian)
+## The idea in one sentence
 
-### What Vance deliberately is NOT
+**Vance is a platform for working with LLM agents: a server ("Brain") where
+agents process tasks over hours and days — and which can be configured almost
+entirely from within itself, because configuration, behavior, and knowledge are
+stored as documents in the database.**
 
-Vance produces artifacts but offers **no UI** to manage or edit them. Vance writes the document — you edit it in Google Docs. Vance creates the issue — you work on it in Jira. Vance generates the code — you commit it in your IDE. Specifically:
+---
 
-- Not a document editor → Google Docs, Notion, Obsidian
-- Not a to-do list manager → Things, Todoist, Jira
-- Not project management → Jira, Linear
-- Not a file manager → Google Drive, Dropbox
-- Not literature management → Zotero, Mendeley
-- Not an IDE → Claude Code, Cursor, IntelliJ
-- Not team chat → Slack, Teams
+## Core Principles
 
-### The Cycle
+### Everything is a document
+
+Templates, Recipes, Prompts, Schedulers, Hooks, Settings, Manuals — everything
+is stored as a document in the database. This allows the system to be shaped
+without touching code: a new Recipe is a new document, a new automation is a new
+Hook document, a new prompt behavior is an edited text. The system largely
+configures itself — and agents can do the same.
+
+### Agents control (almost) everything
+
+As many capabilities as possible are available as tools for agents. An agent can
+write documents, create Recipes, spawn processes, set up triggers, research, and
+commission other agents. Humans provide direction, observe, and intervene if they
+wish — the process remains visible and controllable.
+
+### Projects define boundaries
+
+A Project is a delimited area: its own documents, its own configuration, its own
+agents. This allows different setups to coexist without interfering with each
+other. Memory, rights, and settings are tied to a Scope cascade
+(Tenant → Project → Session → Think Process) and are inherited downwards.
+
+### Extensible
+
+Vance is deliberately open to additional mechanisms. New Engines, new Apps, new
+Connectors, new Tools are added as Addons. What I find useful, I build in; what
+someone else finds useful, they can add.
+
+### Collaborative
+
+Multiple people work simultaneously in the same Project — including jointly
+live-edited documents (Presence, 3-Way-Merge, Versioning). Agents are
+participants like humans: they sit in the same Session, read the same documents,
+and converse.
+
+---
+
+## Brain + Clients
 
 ```
-External Sources → Import → Vance works → Export → External Systems
-     (Papers,      (Connectors,   (Engines generate     (Google Docs,
-      Data,         MCP,           Outputs:              Jira Issues,
-      Documents)    Upload)        Documents,            Obsidian Notes)
-                                   Tool-Calls, Plans)
+Brain thinks, acts, and maintains state.
+Clients are the various access points to it.
+Connectors communicate with the outside world.
 ```
 
-Vance sits in the middle and works. Inputs come in from the left, artifacts go out to the right. UI management of artifacts happens in specialized external tools.
+The **Brain** (server) holds the entire state: Think Processes, Task trees,
+Memory, documents, Knowledge Graph. It orchestrates LLM calls, plans, executes
+actions, and can continue autonomously even when no client is connected.
+
+One Brain, multiple access points:
+
+| Client | What it is |
+|--------|-----------|
+| **CLI** (`vance-foot`) | Work directly at the terminal level — but always in the Project context with all stored information. For everything that should happen locally on the machine (Shell, Files, Git). |
+| **Web** (`vance-face`) | The working environment in the browser: Chat, documents, Apps. |
+| **Mobile** (`vance-facelift`) | On the go — Capacitor wrapper around the deployed Web UI, an isolated WebView per account. |
+
+The Clients are not interchangeable views, but different access points to the
+same Project.
 
 ---
 
-## 3. The Problem
+## Working Environment
 
-Today's AI assistants are either:
-- **Short-lived and smart** (Claude Code, ChatGPT) — good in the moment, forget everything after the session
-- **Long-lived and dumb** (Notion AI, Obsidian Plugins) — store everything, think superficially
-- **Long-lived and autonomous, but monolithic** (OpenClaw) — do a lot, but all in one lump without structure
+Work is done in the **Cortex** — chat, document, and execution on one surface.
+Documents come in many Kinds (Markdown, Workpage, Mindmap, Sheet, Kanban,
+Slides, Graph, Diagram, Canvas, Checklist, …), and on top of that sit **Apps**
+that bundle multiple documents into a whole — Workbook, Wiki, GTD, Kanban,
+Journal, Calendar, Canvasbook. Everything is live-shared: Presence, Merge,
+Versions included.
 
-None can:
-1. Break down a complex task into a **structured thinking tree**
-2. Persist this tree **over days/weeks**
-3. Allow the user to **intervene at any time** (pause, reprioritize, inject new info)
-4. **Continue working autonomously** when no client is connected
-5. Use **different Clients** for different aspects of the work
-6. **Actively seek connections** between knowledge elements
+This is the difference from a pure chatbot: the work lives in documents that
+persist, are versioned, and are collaboratively edited by humans and agents.
 
 ---
 
-## 4. Target Audience
+## Connectors
 
-**Knowledge workers** — people who have complex, multi-stage thinking tasks:
-- Thinking through architectural decisions
-- Translating requirements into stories
-- Structuring research projects over days
-- Developing and iteratively refining strategies
-- Conducting scientific literature reviews
-- Systematically testing hypotheses
-
-Not: Developers who need code completion.
-Not: Casual chat users.
-Not: Project managers who plan sprints.
+Vance communicates with external systems — Mail, Jira, Google services, MCP
+tools. Inputs come in and results go out via these Connectors. Finished
+artifacts that live on elsewhere are moved there: a spec in Google Docs, an
+issue in Jira, an email in the inbox.
 
 ---
 
-## 5. Architecture: Brain + Clients
+## Engines & Recipes
 
-### 5.1 The Basic Principle
+The actual thinking is done by **Engines** — Java algorithms with a lifecycle,
+where the code controls the process, not the LLM. There are few of them,
+structurally different (Session-Layer, Worker, Deep-Think, Strategy-Runner,
+Script-Executor …). They are configured via **Recipes**: YAML documents with
+Engine + Default-Params + Prompt-Prefix + Tool adaptations. Few Engines, many
+Recipes — for a new type of task, you write a Recipe, not Java code.
 
-```
-Brain thinks and acts.
-Clients provide access and local tools.
-External tools manage the artifacts.
-```
-
-The **Brain** (server) holds the entire cognitive state: Think Processes, Task trees, Memory, Knowledge Graph. It orchestrates LLM calls, plans, traverses, invalidates — and executes actions: writes Documents, calls server Tools, spawns Sub-Processes. It can continue working autonomously.
-
-The **Clients** are the user's access points to the Brain. They are **not interchangeable views of the same content**, but **completely different aspects** of interaction. Additionally, they provide local Tools that can only run on the user's machine (Shell, Filesystem, local Git).
-
-**External Tools** manage the produced artifacts: documents in Google Docs, issues in Jira, code in the IDE, files in Drive.
-
-### 5.2 Clients
-
-All local Clients are built on a common **TypeScript Client SDK**.
-
-| Client | Target Audience | Function | Local Tools |
-|--------|-----------------|----------|-------------|
-| **CLI** | Developers | Terminal control, local execution | Shell, Git, Filesystem, Code analysis |
-| **Desktop** (Electron) | Knowledge workers | Tree visualization, Dashboard, Drag-and-drop, Chat | Filesystem, PDF, LaTeX, local scripts |
-| **Mobile** (PWA) | All, on the go | Status, Review, Approval, Steering | Limited (Camera, Files) |
-| **Web UI** | All, no install | Dashboard, Read-only tree, Review | None (stateless, REST only) |
-
-A Session has a maximum of 1 local Client (CLI/Desktop/Mobile). Web UI is not a Client — it's stateless.
-
-### 5.3 Tech Stack
-
-| Component | Technology |
-|-----------|-------------|
-| Brain | Java 25 / Spring Boot 4, MongoDB (sync), langchain4j + langgraph4j (see java-cli-modulstruktur §1.5 for the mandatory stack) |
-| Client SDK | TypeScript |
-| CLI | Node.js (TypeScript) |
-| Desktop | Electron + React (TypeScript) |
-| Mobile | PWA (React) |
-| Web UI | React SPA (TypeScript) |
-| Shared UI | React component library |
-
-Two languages: Java (Brain), TypeScript (everything else). Clear boundary at the API.
-
-### 5.4 Integrations
-
-Vance integrates with external systems in two ways:
-
-| Method | For | Examples |
-|--------|-----|----------|
-| **MCP Client** | Tool Calls (single actions) | Create Google Docs, create Jira issue, send Slack message |
-| **Sync Connectors** | Bulk Import (data sources) | Scan Google Drive folder, index Zotero library, read Git repo |
-
-The Brain reads from external sources, thinks about them, and writes results back. For details, see [integrationen-externe-systeme](/specs/integrationen-externe-systeme).
+Details: [think-engines](/specs/think-engines) · [recipes](/specs/recipes)
 
 ---
 
-## 6. Core Features
+## Tech Stack (brief)
 
-### Engines
-- Think Process Lifecycle: create, pause, resume, stop
-- Task tree: LLM-generated decomposition, traversal, execution
-- Stop-after-each-Task as default
-- Autonomous operation via **Autonomous Sessions**: Brain continues working on a TTL-based Lease Holder, Clients control remotely — see execution-und-persistenz
-- Steering: send new info to a running Think Process at runtime
-- Multiple Engine classes, registry-based: Session-Layer (`arthur`, `eddie`), Worker (`ford`, `marvin`, `vogon`, `zaphod`, `jeltz`), Authoring (`slartibartfast` — Recipe-YAML + SCRIPT_JS), Script-Executor (`hactar` v2 — Load + Validate + Execute), Tool-Health-Diagnosis (`agrajag`), Workflow-Runtime (`magrathea`) — see [think-engines](/specs/think-engines)
-- Configuration via **Recipe** (YAML): Engine + Default-Params + Prompt-Prefix + Tool-Customizations, cascaded Bundled → Tenant → Project — see [recipes](/specs/recipes)
+- **Brain:** Java 25 / Spring Boot 4 / MongoDB / langchain4j + langgraph4j
+- **Web:** TypeScript / Vue 3 / Vite / Tailwind + DaisyUI
+- **Mobile:** Capacitor around the Web UI (iOS)
+- **CLI:** Java / Picocli / JLine 3 / Lanterna
 
-### Memory & Knowledge
-- Scope hierarchy: Tenant → Group → Project → Session → Think Process
-- Document-based Memory with Tags and Folders
-- Scope-aware RAG (semantic search along the Scope cascade)
-- Knowledge Graph with typed relationships (gradual v1→v4)
-- Brain Linker: active search for contradictions, supports, gaps (v3+)
+Clear boundary at the API: Java in the Brain, TypeScript in the Clients.
 
-### Workflows
-- Dedicated Workflow Runtime **Magrathea** (not a Think Engine, separate Lifecycle class)
-- Deterministic phase/step pipelines with Gates, Output Schemas, Tool calls, Sub-Process spawns
-- Workflow definitions as YAML Documents, cascaded via Project Kits
-- Mixable with Engine calls: a Workflow step can spawn an Engine, an Engine Task can spawn a Workflow
-
-### Collaboration (v3+)
-- Tenants, Teams, Users with role-based access control
-- Project Sharing: private / team / tenant
-- Parallel work on different Think Processes within the same Project
-- Not: Google-Docs-style real-time editing on the same tree
-
-For details: [architektur-scopes-clients](/specs/architektur-scopes-clients) | [workflows](/specs/workflows) | [knowledge-graph](/specs/knowledge-graph) | [multi-user-collaboration](/specs/multi-user-collaboration)
+Binding Stack Reference: java-cli-modulstruktur §1.5.
 
 ---
 
-## 7. What Vance is NOT (extended)
+## Limitations
 
-Vance produces artifacts but offers no UI to manage or edit them. UI management resides in specialized external tools.
-
-| Not | Why not | Instead |
-|-----|-------------|-------------|
-| A document editor | Vance writes Documents, but has no editor UI | Edit in Google Docs, Notion, Obsidian |
-| A content management system | Vance does not manage file hierarchies | Connectors to Google Drive, Dropbox |
-| A project management tool | Vance plans Think Processes, not sprints | Integration with Jira, Linear |
-| A collaboration tool | No Slack replacement, no real-time editing | Parallel Think Processes, not real-time collab |
-| A to-do list manager | Vance has Task trees, not manual to-do lists | Export to Things, Todoist, Jira |
-| A notebook / wiki | Vance actively produces content, but has no wiki UI | Export to Obsidian, Notion |
-| A code editor / IDE | Vance generates code, but offers no editor UI | Claude Code, Cursor, IntelliJ |
-| A workflow automator | Vance is not a generic data flow orchestrator | Workflows are Engine structures for thinking work |
-| A literature management system | Vance reads and understands Papers, but has no library UI | Connector to Zotero, Mendeley |
+Vance is a working environment and Brain — not the final storage for finished
+products. What ultimately lives elsewhere goes out via a Connector instead of
+languishing in its own administration UI. And, again: no product, no sales, no
+SLA. A project I'm building because I enjoy it and it helps me with my work.
 
 ---
 
-## 8. The Acid Test
-
-Vance is successful if a knowledge worker can say:
-
-> "Yesterday I started an architectural analysis. Vance autonomously processed three out of five subtasks overnight. This morning, I saw the progress on my phone, reprioritized a task, and then opened the desktop client on my laptop to run the code analysis locally. The results automatically flowed back into the tree. Vance also found a contradiction to an earlier insight and pointed it out to me."
-
-No system can do that today.
-
----
-
-*See also: [architektur-scopes-clients](/specs/architektur-scopes-clients) | [workflows](/specs/workflows) | [knowledge-graph](/specs/knowledge-graph) | [multi-user-collaboration](/specs/multi-user-collaboration) | [integrationen-externe-systeme](/specs/integrationen-externe-systeme) | brainstorming think flow | Other Agent Tools*
+*See also: [architektur-scopes-clients](/specs/architektur-scopes-clients) · [recipes](/specs/recipes) · [think-engines](/specs/think-engines) · [knowledge-graph](/specs/knowledge-graph) · [kits](/specs/kits) · [addon-system](/specs/addon-system) · [integrationen-externe-systeme](/specs/integrationen-externe-systeme)*

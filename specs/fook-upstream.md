@@ -19,8 +19,8 @@ permalink: /specs/fook-upstream
 > as Inbox items.
 >
 > v1 has exactly one adapter: **GitHub Issues**. The interface
-> {@code TicketProvider} is provider-agnostic; additional adapters
-> (GitLab, Gitea, Jira, …) can be added as extra Spring Beans.
+> {@code TicketProvider} is provider-agnostic; further adapters
+> (GitLab, Gitea, Jira, …) can be added as additional Spring Beans.
 >
 > See also: [fook-service](/specs/fook-service) |
 > [user-interaction](/specs/user-interaction) |
@@ -30,8 +30,8 @@ permalink: /specs/fook-upstream
 
 ## 1. Purpose & Scope
 
-**Problem.** Fook produces locally triaged tickets. For Maintainers to
-see them and Frankie to process them, they must go to a central
+**Problem.** Fook produces locally triaged tickets. For Maintainers
+to see them and Frankie to process them, they must be sent to a central
 ticket system — specifically:
 
 - **anonymized** (no user/Tenant leak),
@@ -42,10 +42,10 @@ ticket system — specifically:
 **Solution.** A small transport pipeline with three components:
 
 1. **{@code TicketProvider}** — Adapter interface to the target system.
-   v1 implementation: {@code GitHubTicketProvider} via REST
+   v1 implementation: {@code GitHubTicketProvider} via the REST
    API v3.
 2. **{@code FookTicketAnonymizer}** — Pure-logic component that
-   hashes Reporter identity and scrubs free text using configurable
+   hashes reporter identity and scrubs free text using configurable
    regex patterns before anything leaves the Tenant boundary.
 3. **{@code FookUpstreamService}** — Cluster-Master-Pod-gated
    scheduler with two ticks: Sender (local → Provider) and Poll
@@ -53,9 +53,9 @@ ticket system — specifically:
 
 **What it is not:**
 
-- Not its own Vance-HQ-Brain — the goal is a real ticket system
+- Not a dedicated Vance-HQ-Brain — the goal is a real ticket system
   (GitHub Issues); Vance remains a collector. Frankie operates
-  exclusively against the target system, not against Vance-internal
+  exclusively against the target system, not against Vance's internal
   storage.
 - No federation, no multi-hop, no custom webhook — Vance
   pulls.
@@ -71,12 +71,12 @@ Setting: {@code fook.upstream.mode}, Default {@code never}.
 
 | Value | Behavior |
 |-------|----------|
-| {@code never} | Nothing is sent. Sender tick and Poll tick run but return immediately. Inbox item during Triage says "stays local". Day-1 default. |
+| {@code never} | Nothing is sent. Sender tick and Poll tick run but return immediately. Inbox item during triage says "stays local". Day-1 default. |
 | {@code automatic} | Every ticket triaged as {@code new_ticket} gets {@code transportApproval=auto} and is pushed by the next Sender tick. |
 | {@code manual} | Triage sets {@code transportApproval=pending}. Only when an Admin sets {@code approved} (Admin UI or direct DB) does the tick send. |
 
 **Changing the mode** only affects *future* tickets — tickets already
-tagged with `none` are not suddenly sent if the mode later
+tagged with `none` will not suddenly be sent if the mode later
 switches to `automatic`.
 
 ---
@@ -125,9 +125,9 @@ filters tickets in the local store for {@code status=new} AND
 **Retryable vs. permanent failure.** Providers throw {@code ProviderException}
 with an {@code isRetryable()}-flag:
 
-- {@code 429}, {@code 5xx}, Network error → retryable. Ticket remains
+- {@code 429}, {@code 5xx}, Network-Error → retryable. Ticket remains
   in {@code new}; the next tick tries again. No Inbox update.
-- {@code 4xx} except 429 → permanent. Ticket goes to
+- {@code 4xx} except 429 → permanent. Ticket changes to
   {@code status=failed}; the Inbox item is updated to "Transfer failed";
   an Admin must intervene.
 
@@ -166,14 +166,13 @@ public void pollTick() {
 ```
 
 **Polling Anchor.** We use the minimum of {@code upstreamLastSyncedAt}
-of all transferred tickets as the `since` anchor — no update is
+of all transferred tickets as the `since`-anchor — no update will be
 missed, even with arbitrarily long Pod downtimes. For the first poll,
 it falls back to {@code transferredAt}.
 
 **Provider Filter.** Tickets that were once transferred by Provider A
 (e.g., GitHub) are only polled by Provider A — even if the Brain has
-since switched to GitLab, the old tickets remain in their original
-connection.
+since switched to GitLab, the old tickets remain in their original connection.
 
 **Inbox items for status changes** use {@code InboxItemType.OUTPUT_TEXT}
 + {@code Criticality.LOW} + {@code tags=[fook, fook-status]} +
@@ -200,10 +199,10 @@ reporterHash = sha256(tenantId + "|" + userId + "|" + instanceSecret)[:16]
 ```
 
 - **Deterministic** across Brain restarts (even for the
-  same Reporter → same hash). Frankie can recognize "same Reporter, three
+  same reporter → same hash). Frankie can recognize "same reporter, three
   reports" without ever seeing the real name.
 - **Salted** (Brain-Instance-Secret) — other Vance instances
-  produce different hashes for the same Reporter. Cross-instance
+  produce different hashes for the same reporter. Cross-instance
   correlation is explicitly *not* possible, privacy by design.
 
 If {@code anonymize=false}: everything as literal {@code "anonymous"} —
@@ -232,9 +231,9 @@ metadata (type/severity/timestamps).
 
 Before sending, another detail applies: the target system (GitHub
 Issues) is read by a Maintainer community that primarily
-works in English. However, Reporters may write in their native language.
+works in English. Reporters, however, may write in their native language.
 
-The **Triage-LLM** provides both versions
+The **Triage LLM** provides both versions
 (see [`fook-service.md §6.1`](/specs/fook-service#61-new_ticket)):
 
 - `derivedTitle` → always English
@@ -253,11 +252,11 @@ assembles the final `description` as:
 ```
 
 — if `englishTranslation` is non-empty. Otherwise, only the
-original remains. Reporters see the bilingual body in their Inbox (English
-at the top), Maintainers on GitHub see the same. The original audit trail
-is preserved — the LLM can sometimes translate incorrectly.
+original remains. Reporters see the bilingual body (English
+on top) in their Inbox; Maintainers on GitHub see the same. The original
+audit trail is preserved — the LLM can sometimes translate incorrectly.
 
-Anonymization applies **after** translation, meaning scrubber
+Anonymization applies **after** translation, i.e., scrubber
 patterns run over the final bilingual text — email addresses
 and tokens are redacted in both languages.
 
@@ -269,7 +268,7 @@ and tokens are redacted in both languages.
 | {@code reporter.tenantId} | → instanceFingerprint |
 | {@code context.projectId/sessionId/processId} | **strip** — Tenant-internal |
 | {@code context.recipe/engine} | remains — Vance constants, helpful |
-| {@code id} (Fook-UUID) | remains — as {@code fookTicketId} in the Body footer for reverse lookup |
+| {@code id} (Fook-UUID) | remains — as {@code fookTicketId} in the Body-Footer for reverse lookup |
 
 ---
 
@@ -313,7 +312,7 @@ The prefix makes Maintainer filtering trivial — Issues search via
 
 ### 6.3 Labels (automatic)
 
-Each Issue carries:
+Every Issue carries:
 
 - {@code fook} (filter anchor)
 - {@code fook/<type>} (`fook/bug`, `fook/feature`, `fook/question`, `fook/other`)
@@ -330,18 +329,18 @@ Each Issue carries:
 
 Reporters **do not need a GitHub account** — the Vance Bot posts on
 behalf of the bridge. Maintainers see the hash and can reply
-via the bridge if needed.
+back via the bridge if needed.
 
 ### 6.5 Auth
 
 Personal Access Token (fine-grained) with {@code issues:write} and
-{@code metadata:read} on the target repository. **Recommended:** dedicated
-Bot account {@code vance-fook-bot} instead of Maintainer PAT. The token is
-stored as a {@code PASSWORD} setting (encrypted at-rest).
+{@code metadata:read} on the target repo. **Recommended:** dedicated
+Bot account {@code vance-fook-bot} instead of Maintainer PAT. Token is
+stored as a {@code PASSWORD}-Setting (encrypted at-rest).
 
 ### 6.6 API Base URL for Enterprise
 
-Default {@code https://api.github.com}. The operator overrides
+Default {@code https://api.github.com}. Operator overrides
 {@code fook.upstream.github.apiBase} for GitHub Enterprise Server
 (e.g., {@code https://github.acme.de/api/v3}).
 
@@ -356,10 +355,10 @@ the reply must go back to the target system.
 new method {@code FookUpstreamService.postReply(inboxItem,
 replyText)}, which in turn calls {@code TicketProvider.postComment(ref,
 scrubbedText)}. (Anonymization also applies here — reply
-text is processed by {@code FookTicketAnonymizer.scrubText}, then the body template
-with hash prefix.)
+text is scrubbed by {@code FookTicketAnonymizer.scrubText}, then the body template
+is used with a hash prefix.)
 
-The Inbox item payload already carries everything necessary:
+The Inbox item payload already carries everything needed:
 {@code upstreamProvider}, {@code upstreamUrl},
 {@code commentExternalId} (for threading), {@code ticketId}.
 
@@ -372,7 +371,7 @@ routing can be integrated with the already existing Inbox answer handlers.
 ## 8. Settings — Complete
 
 All settings at the Brain-Instance-Scope ({@code tenant=_vance,
-scope=project, refId=_tenant}) — manageable via Setting-Form
+scope=project, refId=_tenant}) — manageable via Setting Form
 {@code _vance/setting_forms/fook-upstream.yaml}.
 
 ```
@@ -398,7 +397,7 @@ fook.upstream.instanceSecret: ""                # auto-generated on first send
 
 **Read path** is always {@code SettingService.getStringValueCascade(
 tenant=_vance, projectId=null, processId=null, key)} — lands on
-{@code (SCOPE_PROJECT, _tenant)}, where the Setting-Form writes.
+{@code (SCOPE_PROJECT, _tenant)}, where the Setting Form writes.
 
 **Auto-Generate on first send** (via
 {@code SettingService.set(...)}): fingerprint = `vance-<8hex>`,
@@ -442,8 +441,8 @@ Spring scheduler but return immediately. In case of Master failover (lease
 expiry), another Pod takes over seamlessly without configuration changes.
 
 **Why this is so important:** without a guard, every Pod would push every pending ticket
-→ N-times GitHub Issues, N-times GH-API-Rate-Limit
-waste, N-times Inbox items per status change. The lock is
+→ N-fold GitHub Issues, N-fold GH API rate limit
+waste, N-fold Inbox items per status change. The lock is
 not optional, but mandatory security.
 
 ---
@@ -452,7 +451,7 @@ not optional, but mandatory security.
 
 ### 11.1 Tracker Item (attached to the ticket)
 
-Written by {@code FookService} directly after Triage. Updated by
+Written by {@code FookService} directly after triage. Updated by
 {@code FookUpstreamService} on transfer success/failure
 **in-place** via {@code InboxItemService.updateContent}.
 
@@ -470,8 +469,8 @@ payload:         { decision, ticketId, status, upstreamProvider?,
 | Phase | Body |
 |-------|------|
 | Triage (mode=automatic) | "Your submission was opened as ticket `<uuid>`. It is being forwarded to the upstream ticket system; this item updates with the link once the transfer completes." |
-| Triage (mode=manual) | "… waiting for an admin to approve forwarding …" |
-| Triage (mode=never) | "… stays local — upstream forwarding is disabled on this brain." |
+| Triage (mode=manual) | "... waiting for an admin to approve forwarding ..." |
+| Triage (mode=never) | "... stays local — upstream forwarding is disabled on this brain." |
 | Transfer-Success | "Your submission was transferred to the upstream ticket system. Track it at \<URL\>" |
 | Transfer-Failure | "Forwarding your submission to the upstream ticket system failed permanently. Reason: \<msg\>. Contact an admin to retry." |
 
@@ -515,9 +514,9 @@ Reporter clicks "Reply" → Reply goes back to the Provider via {@code postComme
 | Provider HTTP 4xx (except 429) | Permanent — {@code status=failed}, Inbox item to "transfer failed" |
 | Provider down during Poll | Log + skip, next tick tries again |
 | {@code _vance} has no {@code instanceFingerprint} | Auto-generate + persist on first send |
-| Master Pod failover | New Master takes over seamlessly — no duplicate sends due to lease guarantee |
+| Master Pod Failover | New Master takes over seamlessly — no duplicate sends due to lease guarantee |
 | Reporter gone (User/Tenant deleted) | Inbox write fails → Log, no retry |
-| Setting-Form empty + mode != never | Provider-`checkConnection()` shows red, transferOne throws permanent + Inbox failure |
+| Setting Form empty + mode != never | Provider `checkConnection()` shows red, `transferOne` throws permanent + Inbox failure |
 
 ---
 
@@ -542,19 +541,18 @@ Audit trail via existing {@code AuditService} for
 
 ## 14. Out of Scope (v2+)
 
-- **Webhook instead of Polling** — if GH Issue webhooks are
-  configured for the Brain's public URL, pollTick can be replaced
-  by push reception. v2.
+- **Webhook instead of Polling** — if GH Issue webhooks are configured
+  for the Brain's public URL, pollTick can be replaced by push reception. v2.
 - **Federation / Multi-Sink** — one Brain, multiple sinks simultaneously
-  (e.g., GitHub for bugs, Jira for features). v3+.
-- **Pre-Send User-Approval-UI** — today, the Admin writes
+  (e.g., GitHub for Bugs, Jira for Features). v3+.
+- **Pre-Send User-Approval-UI** — currently, the Admin writes
   {@code transportApproval=approved} directly; a dedicated
   "Pending Tickets" Admin Dashboard would be v2.
 - **OAuth-linked Reporter Identity** — Reporter logs in
   once with a GH account, replies appear under their
   GitHub identity instead of the Bot. v3.
 - **LLM-based Scrubber** — Regex doesn't catch everything (no
-  "My boss Max Mustermann said …"). v2 with a small
+  "My boss Max Mustermann said ..."). v2 with a small
   LightLlm pass.
 - **Bulk Export** — import existing tickets from a second Brain.
   Out of scope.
@@ -563,11 +561,11 @@ Audit trail via existing {@code AuditService} for
 
 ## 15. References
 
-- [fook-service](/specs/fook-service) — the local Triage pipeline,
-  which is further processed here.
+- [fook-service](/specs/fook-service) — the local triage pipeline,
+  from which data is further processed here.
 - [user-interaction](/specs/user-interaction) — Inbox subsystem.
-- [setting-forms](/specs/setting-forms) — Setting-Form format.
-- [light-llm-service](/specs/light-llm-service) — used by the Triage path;
+- [setting-forms](/specs/setting-forms) — Setting Form format.
+- [light-llm-service](/specs/light-llm-service) — used by the triage path;
   transport itself communicates directly with the Provider.
 - {@code de.mhus.vance.brain.cluster.ClusterMasterService} — the
-  Master lease to which the ticks are tied.
+  Master lease, to which the ticks are tied.

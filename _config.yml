@@ -1,7 +1,7 @@
 title: Vance
 description: >-
-  Collaborative Brain — a system that takes assignments, executes them with the
-  right tools and engines, and delivers verifiable results. For teams.
+  A personal project: a server on which LLM agents work assignments over hours
+  and days, shaped almost entirely from its own documents. Not a product.
 url: "https://vance.mhus.de"
 baseurl: ""
 lang: en

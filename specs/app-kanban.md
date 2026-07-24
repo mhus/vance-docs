@@ -201,9 +201,9 @@ A folder cannot be both `app: calendar` and `app: kanban`. Each app folder hosts
 
 ## 9. Web-UI editor
 
-Kanban gets a dedicated interactive editor in the web UI, hosted by the **generic App-Editor MPA-entry** (`app.html`). Pattern: one HTML entry, the `AppEditor.vue` dispatcher reads `$meta.app` from the manifest and lazy-loads the right sub-component (`KanbanBoard.vue` for kanban, future `CalendarPlanner.vue` for calendar, etc.). Same architecture as serverside: one entry point, registry-style dispatch.
+Kanban gets a dedicated interactive editor in the web UI, mounted by the **shared Cortex / Notepad shell** via the kind-registry. The kanban addon's `./register` federation expose registers an `application:kanban` kind whose `view` is `KanbanAppKind.vue` — a thin wrapper that adapts the kind-registry mount contract (single `document` prop) to the existing `KanbanBoard.vue`'s `(projectId, folder, title)` interface.
 
-**Routing:** clicking an `_app.yaml` file in the Documents editor redirects to `/app.html?documentId={id}` instead of opening the generic document viewer (`DocumentApp.vue` checks `kind === 'application' && path.endsWith('/_app.yaml')`).
+**Routing:** clicking an `_app.yaml` file in the file tree opens it as a regular tab in `cortex.html?doc=…/_app.yaml` (or `notepad.html?…`). `docTypeRegistry.resolveBinding` sees `kind: application`, reads the `app:` discriminator from the manifest headers, calls `resolveKind('application:kanban')`, and mounts `KanbanAppKind` immersively (sidebar / tab strip / shell toolbar suppressed in App view-mode; see [doc-kind-application](/specs/doc-kind-application) §7.2). The earlier dedicated `app.html` MPA entry + `AppEditor.vue` dispatcher are gone.
 
 **Board view (`KanbanBoard.vue`):**
 - Horizontal scroll, one column per `KanbanColumnView`. Card sort = priority desc → dueDate asc → title asc.
@@ -211,11 +211,18 @@ Kanban gets a dedicated interactive editor in the web UI, hosted by the **generi
 - WIP-limit display in the column header (`count/limit`, red when exceeded). Soft-overflow warnings from the move response surface as a `VAlert` banner.
 - Per-column "+" button opens a new-card modal.
 - Card click opens the right-panel `KanbanCardDetail.vue`.
+- Owns the self-write quiet window + card array. It exposes `reload(changedPaths?)` which the `KanbanAppKind` wrapper drives on `documents.changed` pushes.
+- Each tile is tinted by the card's **accent color** (a subtle `bg-<color>-500/10` full-tile wash), in addition to the priority left-border. Neutral cards keep the default surface.
+
+**Live updates + auto-save.** Both content levels — attributes (front-matter fields) and the Markdown body — are **auto-saved**; there is no explicit Save/Discard button. The panel debounces edits (~800 ms) and PATCHes attributes + body **in a single request** so the two levels never race on the server's read-modify-write merge. The whole app folder (everything under `_app.yaml`) is subscribed via `useDocumentPrefixReaction`, so a remote change reloads the board **and** re-seeds the currently-open card (fields + editor source). A self-write quiet window (3 s, keyed per card path) suppresses the refresh for the board's own write-echoes so the editor cursor never jumps. Last-Writer-Wins — no CRDT, no per-field merge.
 
 **Card detail (`KanbanCardDetail.vue`):**
-- Edit all fields (title, priority, assignee, labels, dueDate, estimate, blocked, body).
-- Markdown body uses the shared `CodeEditor` with `text/markdown` syntax highlighting. GFM checkboxes in the body feed the board's subtask progress badge.
-- Dirty-state tracking; Save / Discard / Delete actions.
+- Edit all attribute fields (title, priority, assignee, labels, dueDate, estimate, blocked, color) inline; changes auto-save.
+- **Color** is the document-level accent (`DocumentDocument.color`, the 12-value `AccentColor` palette — *not* card front-matter). The panel uses the shared `VColorPicker`; the value rides the same debounced patch as a `color`/`clearColor` field and is applied server-side via the atomic `DocumentService.setColor`/`clearColor` (the content merge preserves it). On the wire it is the enum *name* string, because the addon's TS generator doesn't emit cross-package imports for the `vance-api` enum.
+- The body is edited in a roomy modal via the shared `WorkPageEditor` (`bodyOnly`). The modal runs the editor with `autoSaveMs=0` and drives saving through the panel's single debounced save loop (pulls the latest markdown via `editorRef.save()` on each flush) — no local buffer, no "Save to persist" step. GFM checkboxes in the body feed the board's subtask progress badge.
+- The content editor wires the block-editor's compose callbacks (`runCompose`/`pollCompose`/`cancelCompose` → the shared `@vance/shared` compose helpers, plus the host-injected `compose-output-component`), so `/compose` blocks run inside a card just like in the workbook. Relative `vance:` paths resolve against the card's app folder; runs bind to the active cortex session when present.
+- A save-status indicator (`Bearbeitet… / Speichern… / Gespeichert / error`) sits in the panel header and the content modal footer. Delete action remains explicit (confirm dialog).
+- The client never serializes the card — the body markdown is sent as `{ body }` and the server merges it into the card's front-matter via `CardCodec`.
 
 **REST surface — `KanbanBoardController`:**
 
@@ -231,14 +238,14 @@ Kanban gets a dedicated interactive editor in the web UI, hosted by the **generi
 The controller is a **thin adapter** over `KanbanApplication.moveCard()` + `KanbanFolderReader.scan()` + `DocumentService` — no business logic. The move logic is shared between the REST controller and the `kanban_move` tool by a public `KanbanApplication.moveCard(...)` method.
 
 **What the UI does NOT do (v1):**
-- **No live updates.** Two browsers viewing the same board don't see each other's moves until one refreshes. Live-update WebSocket events are deferred — same v1 stance as the rest of the editors (see `web-ui.md` §3).
-- **No inline body editing on the card tile.** Click into the right panel to edit the body. Inline edit was tempting but adds rich-text-editor weight (CodeMirror or Tiptap) to every visible card.
+- **No live cursors / presence on the board.** The board + open card live-refresh over the `documents` channel (see auto-save section above), but there is no per-user cursor overlay or viewer roster like the workpage editor has. Conflicting edits resolve Last-Writer-Wins.
+- **No inline body editing on the card tile.** Click into the right panel, then into the content modal, to edit the body. Inline edit was tempting but adds rich-text-editor weight (CodeMirror or Tiptap) to every visible card.
 - **No swimlanes / row grouping.** Columns only.
 - **No card-ID stability.** Filename is the de-facto id. Renaming a card breaks any external references.
 
 ## 10. Non-goals (v1)
 
-- **No real-time multi-user board.** Two LLM turns moving the same card race on optimistic locking; the loser retries. Acceptable for v1 — the average user is solo.
+- **No conflict resolution beyond Last-Writer-Wins.** The board + open card live-refresh over the `documents` channel (§9), but two writers touching the same card race on optimistic locking; the loser's in-flight change is overwritten on the next refresh. No CRDT, no per-field merge. Acceptable for v1 — the average user is solo, with the LLM as the second writer.
 - **No card history / audit log.** `DocumentArchiveDocument` captures versions of the card body if the document-archive feature is enabled, but there's no "card X moved from todo to doing at 14:32" timeline.
 - **No mermaid-kanban interactivity in the static `_board.md`.** The Mermaid block is a fallback for chat embeds / non-app-aware viewers. The interactive web-UI board is the canonical view.
 
