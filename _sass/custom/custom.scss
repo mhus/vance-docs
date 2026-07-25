@@ -1,0 +1,31 @@
+// Custom overrides layered on top of just-the-docs, to match the Vance
+// landing page. Loaded after the theme, so these win.
+
+$vance-serif: "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+
+// Serif headings (the landing uses a serif display face; the mark 𝑣 is a
+// math-italic serif glyph, so headings echo it).
+h1, h2, h3, h4, h5, h6,
+.site-title,
+.text-alpha, .text-beta, .text-gamma, .text-delta, .text-epsilon {
+  font-family: $vance-serif !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+// Amber selection, like the landing.
+::selection { background: rgba(168, 93, 0, 0.22); }
+
+// Quiet, bordered code blocks — consistent with the landing's cards.
+.highlight, figure.highlight, div.highlight {
+  border: 1px solid $border-color;
+  border-radius: 8px;
+}
+
+// Warm the site title / logo area a touch.
+.site-title {
+  color: $body-heading-color !important;
+}
+
+// Amber hover on links, matching the landing's interaction color.
+a:hover { text-decoration-color: #A85D00; }

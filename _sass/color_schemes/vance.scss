@@ -1,0 +1,28 @@
+// Vance docs color scheme — aligned with the landing page.
+// Light "paper field guide": warm paper ground, ink text, amber accent.
+// Only the variables we change are set; everything else falls back to the
+// just-the-docs light defaults.
+
+// Grounds
+$body-background-color:       #F4F2EA;
+$sidebar-color:               #FBFAF4;
+$search-background-color:     #FBFAF4;
+$table-background-color:      #FBFAF4;
+$code-background-color:       #FBFAF4;
+
+// Text
+$body-text-color:             #34393F;
+$body-heading-color:          #14181F;
+$search-result-preview-color: #5D626D;
+$nav-child-link-color:        #5D626D;
+
+// Accent (amber) — matches the landing's --amber
+$link-color:                  #A85D00;
+$btn-primary-color:           #A85D00;
+
+// Lines
+$border-color:                #E2DED1;
+
+// Fonts — same stacks as the landing
+$body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$mono-font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", "Roboto Mono", Consolas, monospace;
