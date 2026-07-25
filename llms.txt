@@ -1,6 +1,6 @@
 # Vance
 
-> A personal project: a server (the "Brain") on which LLM agents work assignments over hours and days — shaped almost entirely from its own documents. Not a product; nothing is for sale.
+> A personal project: a server (the "Brain") on which LLM agents work assignments over hours and days — shaped almost entirely from its own documents. Not a product; source-available, not classic open source.
 
 Almost everything in Vance is a document in MongoDB — recipes, prompts, schedulers, hooks, settings, manuals — so the system can be reshaped from its own data, by humans and by agents. Engines are Java algorithms with a lifecycle; code drives the flow, not the LLM. Recipes (YAML configs) bind engines to default params, prompt prefixes and tool adjustments — many recipes per engine, no Java change required.
 
