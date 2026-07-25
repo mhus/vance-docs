@@ -210,7 +210,7 @@
   .statement p em { color: var(--fg); font-style: italic; }
 
   /* ---- pillars ---- */
-  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 16px; overflow: hidden; }
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 16px; overflow: hidden; }
   @media (max-width: 900px) { .pillars { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 540px) { .pillars { grid-template-columns: 1fr; } }
   .pillar { background: var(--raised); padding: 26px 24px 30px; display: flex; flex-direction: column; gap: 10px; transition: background .18s; }
@@ -219,6 +219,16 @@
   .pillar h3 { font-size: 20px; margin: 2px 0 2px; line-height: 1.2; }
   .pillar p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
   .pillar code { font-family: var(--mono); font-size: 12.5px; color: var(--fg); background: color-mix(in srgb, var(--amber) 10%, transparent); padding: 1px 5px; border-radius: 4px; }
+
+  /* ---- kits ---- */
+  .kit-chain { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 22px; font-family: var(--mono); font-size: 14px; }
+  .kit-node { padding: 7px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--raised-2); color: var(--fg-strong); font-weight: 600; }
+  .kit-arrow { color: var(--amber); font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
+  .chip { font-family: var(--mono); font-size: 13px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--raised); color: var(--muted); }
+  .chip.plus { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); background: color-mix(in srgb, var(--amber) 7%, transparent); }
+  .kit-note { color: var(--muted); font-size: 16.5px; max-width: 44em; margin: 0; }
+  .kit-note em { color: var(--fg-strong); font-style: italic; }
 
   /* ---- engines (field-guide index) ---- */
   .engines-wrap { border: 1px solid var(--line); border-radius: 16px; background: var(--raised-2); overflow: hidden; }
@@ -358,7 +368,46 @@
           <h3>Built to work in, together</h3>
           <p><code>Cortex</code> unites chat, documents and execute on one surface — live-edited with other people and with agents in the same session. Presence, merge and versioning included.</p>
         </div>
+        <div class="pillar">
+          <span class="idx">05</span>
+          <h3>Memory that carries over</h3>
+          <p>Work doesn’t vanish when a session ends — it compacts into summaries and stays retrievable. Scope-aware recall (RAG) walks the cascade, so a process draws on what its project and tenant already know.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">06</span>
+          <h3>It runs itself</h3>
+          <p>Schedulers, lifecycle hooks and webhooks fire recipes, scripts or workflows. Agents act on a timer or an event — not only when you’re there to chat.</p>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Project kits</p>
+        <h2>Start a project ready to work.</h2>
+        <p>A kit is a git bundle of skills, recipes, tools and settings. Install one and a project arrives preconfigured — thinking patterns, worker recipes, tool packs, defaults. And kits inherit, so they compose:</p>
+      </div>
+      <div class="kit-chain" aria-label="Kits inherit: basic, then code-development, then security">
+        <span class="kit-node">basic</span>
+        <span class="kit-arrow">→</span>
+        <span class="kit-node">code-development</span>
+        <span class="kit-arrow">→</span>
+        <span class="kit-node">security</span>
+      </div>
+      <div class="chips">
+        <span class="chip">research</span>
+        <span class="chip">writing</span>
+        <span class="chip">learning</span>
+        <span class="chip">finance-thinking</span>
+        <span class="chip">legal-thinking</span>
+        <span class="chip">mail-triage</span>
+        <span class="chip plus">+ build your own</span>
+      </div>
+      <p class="kit-note">The interesting part isn’t the bundled ones — it’s that a kit is <em>just a git repo</em>. Point a project at yours and it’s productive from the first message.</p>
     </div>
   </section>
 
@@ -415,6 +464,30 @@
           <span class="tag">vance-facelift</span>
           <h3>Mobile</h3>
           <p>On the go — a wrapper around the deployed Web UI, with an isolated WebView per account.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">In the box</p>
+        <h2>And plenty more in the toolbox.</h2>
+        <p>The parts you reach for less often — still first-class.</p>
+      </div>
+      <div class="engines-wrap">
+        <div class="engines">
+          <div class="eng"><span class="name">connectors</span><span class="role">MCP · Jira · GitHub · Google</span></div>
+          <div class="eng"><span class="name">research</span><span class="role">web · wikipedia · arXiv</span></div>
+          <div class="eng"><span class="name">image gen</span><span class="role">fenchurch</span></div>
+          <div class="eng"><span class="name">inbox</span><span class="role">async delegation &amp; replies</span></div>
+          <div class="eng"><span class="name">project kits</span><span class="role">git-based bundles</span></div>
+          <div class="eng"><span class="name">webdav</span><span class="role">mount in Finder / Obsidian</span></div>
+          <div class="eng"><span class="name">templates &amp; wizards</span><span class="role">guided authoring</span></div>
+          <div class="eng"><span class="name">versioning &amp; locks</span><span class="role">archives + edit guard</span></div>
         </div>
       </div>
     </div>
