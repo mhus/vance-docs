@@ -7,8 +7,10 @@ permalink: /getting-started
 # Get started
 {: .no_toc }
 
-The fastest path to a running Vance is the prebuilt Docker stack. From a
-clean machine to an open Web UI: about five minutes.
+The fastest path to a running Vance is the prebuilt Docker stack. You don't
+need any developer tools — no Java, Node, Maven or even git. Just Docker
+Desktop. From a clean machine to an open Web UI: a few minutes once Docker
+is installed.
 {: .fs-5 .fw-300 }
 
 ## Table of contents
@@ -19,13 +21,22 @@ clean machine to an open Web UI: about five minutes.
 
 ---
 
-## Prerequisites
+## Before you start
 
-- **Docker 24+** with Compose v2 (`docker compose`, not the legacy
-  `docker-compose`)
-- ~2 GB free RAM
-- Outbound HTTPS to Docker Hub (image pulls) and to your LLM provider
-  (Anthropic, OpenAI, Gemini, …)
+You only need **Docker** — nothing else. This runs fine on a spare or older
+machine with no development setup on it.
+
+- **macOS / Windows:** install [Docker Desktop](https://www.docker.com/products/docker-desktop/),
+  open it once, and wait for the whale icon in the menu bar to go steady. It
+  bundles everything (`docker compose` included). Works on both **Apple
+  Silicon and older Intel Macs** — the images are multi-arch.
+- **Linux:** Docker Engine 24+ with the Compose v2 plugin (`docker compose`,
+  not the legacy `docker-compose`).
+- **~2 GB free RAM**, and outbound HTTPS to Docker Hub (image pulls) and to
+  your LLM provider (Anthropic, OpenAI, Gemini, …).
+
+The only terminal you need is the one built into your OS (Terminal.app on a
+Mac) — no shell or tooling to install.
 
 ## Pick a variant
 
@@ -43,18 +54,30 @@ vance-startup/live` instead and replace step 2 with
 
 ## Quick start
 
+**1. Get the files — no git needed.** Open
+[`vance-startup`](https://github.com/mhus/vance-startup), click the green
+**Code** button → **Download ZIP**, and unzip it. You'll get a
+`vance-startup-main/` folder with a `minimal/` folder inside. (Prefer the
+command line and have git installed? `git clone
+https://github.com/mhus/vance-startup.git` instead.)
+
+**2. Open a terminal in that `minimal/` folder** and run:
+
 ```bash
-git clone https://github.com/mhus/vance-startup.git
-cd vance-startup/minimal
 cp .env.example .env
 
-# 1. Start the stack (MongoDB + Brain + Web UI).
+# Start the stack (MongoDB + Brain + Web UI). First run pulls the images —
+# give it a minute or two.
 docker compose up -d
 
-# 2. First-time setup: create a tenant + user and configure an LLM provider.
-#    Spawns vance-anus as a one-shot against the existing compose network.
-./setup.sh
+# First-time setup: create a tenant + user and configure an LLM provider.
+# Spawns the setup wizard as a one-shot against the running stack.
+bash setup.sh
 ```
+
+> Tip: to open the folder in Terminal on a Mac, right-click the `minimal`
+> folder in Finder → **Services → New Terminal at Folder** (or drag the
+> folder onto the Terminal icon).
 
 Step 2 launches an interactive one-shot wizard. Answer the prompts and the
 container exits when you save. Then open <http://localhost:8080> and log in
