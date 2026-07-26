@@ -122,13 +122,15 @@
     transition: border-color .15s, background .15s;
   }
   .nav-cta:hover { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 8%, transparent); }
-  .theme-toggle {
+  .icon-btn {
     background: none; border: 1px solid var(--line); border-radius: 8px;
-    width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+    height: 34px; display: inline-flex; align-items: center; justify-content: center;
     color: var(--muted); cursor: pointer; transition: border-color .15s, color .15s;
   }
-  .theme-toggle:hover { border-color: var(--amber); color: var(--fg-strong); }
+  .icon-btn:hover { border-color: var(--amber); color: var(--fg-strong); }
+  .theme-toggle { width: 34px; }
   .theme-toggle svg { width: 16px; height: 16px; }
+  .lang-toggle { padding: 0 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; }
   @media (max-width: 720px) { .nav-links a.hide-sm { display: none; } }
 
   /* ---- Hero ---- */
@@ -157,7 +159,7 @@
   .hero-note a { color: var(--muted); text-underline-offset: 3px; }
   .hero-note a:hover { color: var(--amber); }
 
-  /* ---- The device (always a dark glowing screen) ---- */
+  /* ---- The device (always a dark glowing screen; stays English) ---- */
   .device {
     --scr-line: #1D2536; --scr-dim: #5C6A88; --scr-fg: #C9D3E6;
     background: linear-gradient(180deg, #10141F, #0A0D14);
@@ -203,7 +205,7 @@
   .sec-head h2 { font-size: clamp(27px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 14px; }
   .sec-head p { color: var(--muted); font-size: 17px; margin: 0; max-width: 36em; }
 
-  /* ---- statement (AI-coded) ---- */
+  /* ---- statement (origin / AI-coded) ---- */
   .statement h2 { font-size: clamp(30px, 4.6vw, 52px); line-height: 1.05; letter-spacing: -.015em; margin: 0 0 20px; }
   .statement h2 em { color: var(--amber); font-style: italic; }
   .statement p { color: var(--muted); font-size: clamp(17px, 1.7vw, 19px); max-width: 42em; margin: 0; }
@@ -230,7 +232,7 @@
   .kit-note { color: var(--muted); font-size: 16.5px; max-width: 44em; margin: 0; }
   .kit-note em { color: var(--fg-strong); font-style: italic; }
 
-  /* ---- engines (field-guide index) ---- */
+  /* ---- engines / under-the-hood index ---- */
   .engines-wrap { border: 1px solid var(--line); border-radius: 16px; background: var(--raised-2); overflow: hidden; }
   .engines { display: grid; grid-template-columns: repeat(3, 1fr); }
   @media (max-width: 820px) { .engines { grid-template-columns: repeat(2, 1fr); } }
@@ -242,13 +244,14 @@
   .engines-foot { padding: 16px 20px; border-top: 1px solid var(--line); color: var(--faint); font-family: var(--mono); font-size: 12.5px; letter-spacing: .02em; }
   .engines-foot .live { color: var(--live); }
 
-  /* ---- clients ---- */
-  .clients { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  @media (max-width: 820px) { .clients { grid-template-columns: 1fr; } }
-  .client { border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--raised); }
-  .client .tag { font-family: var(--mono); font-size: 12px; color: var(--amber); letter-spacing: .06em; }
-  .client h3 { font-size: 19px; margin: 10px 0 8px; }
-  .client p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+  /* ---- cards (clients + apps) ---- */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 820px) { .cards { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--raised); }
+  .card .tag { font-family: var(--mono); font-size: 12px; color: var(--amber); letter-spacing: .06em; }
+  .card h3 { font-size: 19px; margin: 4px 0 8px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+  .apps-more { color: var(--muted); font-family: var(--mono); font-size: 13px; margin: 22px 0 0; }
 
   /* ---- closer ---- */
   .closer { background: var(--raised-2); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
@@ -288,14 +291,15 @@
       <b>vance</b>
     </a>
     <nav class="nav-links">
-      <a class="hide-sm" href="{{ '/concepts' | relative_url }}">Concepts</a>
-      <a class="hide-sm" href="{{ '/architecture' | relative_url }}">Architecture</a>
-      <a class="hide-sm" href="{{ '/getting-started' | relative_url }}">Get started</a>
+      <a class="hide-sm" data-i18n="nav.concepts" href="{{ '/concepts' | relative_url }}">Concepts</a>
+      <a class="hide-sm" data-i18n="nav.architecture" href="{{ '/architecture' | relative_url }}">Architecture</a>
+      <a class="hide-sm" data-i18n="nav.start" href="{{ '/getting-started' | relative_url }}">Get started</a>
       <a class="nav-cta" href="https://github.com/mhus/vance">
         <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
       </a>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+      <button class="icon-btn lang-toggle" id="lang-toggle" type="button" aria-label="Switch language / Sprache wechseln"><span id="lang-label">DE</span></button>
+      <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">
         <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>
     </nav>
@@ -307,19 +311,19 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <p class="eyebrow">A personal project · not a product</p>
-        <h1>A brain you shape <em>from the inside.</em></h1>
-        <p class="lede">Vance is a server where LLM agents pick up assignments and work them over hours and days. Recipes, prompts, schedulers, hooks — <b>almost everything is a document in the database</b>, so you and the agents can reshape the system without touching code.</p>
+        <p class="eyebrow" data-i18n="hero.eyebrow">A personal project · not a product</p>
+        <h1 data-i18n="hero.h1">Give AI an application.</h1>
+        <p class="lede" data-i18n="hero.lede">Vance gives AI a real application — a workspace of documents, sheets, canvas and boards where AI doesn’t chat on the side, it does the work. The thing you open first in the morning, for work and for life, kept apart.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="{{ '/getting-started' | relative_url }}">Get started
+          <a class="btn btn-primary" href="{{ '/getting-started' | relative_url }}"><span data-i18n="cta.start">Get started</span>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <a class="btn btn-ghost" href="https://github.com/mhus/vance">
             <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-            Star on GitHub
+            <span data-i18n="cta.github">Star on GitHub</span>
           </a>
         </div>
-        <p class="hero-note">Or run it locally in a couple of minutes — <a href="https://github.com/mhus/vance-startup">Docker&nbsp;startup&nbsp;→</a></p>
+        <p class="hero-note" data-i18n="hero.note">Or run it locally in a couple of minutes — <a href="https://github.com/mhus/vance-startup">Docker&nbsp;startup&nbsp;→</a></p>
       </div>
 
       <div class="device" role="img" aria-label="A Vance think-process: the marvin engine reads a spec and writes a draft, ending in a done state.">
@@ -340,45 +344,11 @@
 
   <hr class="rule">
 
-  <section>
+  <section class="statement">
     <div class="wrap">
-      <div class="sec-head">
-        <p class="eyebrow">What makes it tick</p>
-        <h2>Four ideas do most of the work.</h2>
-        <p>Everything else is a consequence of these.</p>
-      </div>
-      <div class="pillars">
-        <div class="pillar">
-          <span class="idx">01</span>
-          <h3>Everything is a document</h3>
-          <p>Recipes, prompts, schedulers, hooks, manuals, settings — all stored in MongoDB. A new automation is a new document. The system reshapes itself from its own data, and so can agents.</p>
-        </div>
-        <div class="pillar">
-          <span class="idx">02</span>
-          <h3>Agents drive (almost) everything</h3>
-          <p>Nearly every capability is a tool: write documents, spawn processes, set triggers, research, delegate. You give the direction and step in whenever you want — the flow stays visible.</p>
-        </div>
-        <div class="pillar">
-          <span class="idx">03</span>
-          <h3>Projects draw the boundaries</h3>
-          <p>A project is a bounded area with its own documents, config and agents. Different setups live side by side. Memory and permissions inherit down a scope cascade.</p>
-        </div>
-        <div class="pillar">
-          <span class="idx">04</span>
-          <h3>Built to work in, together</h3>
-          <p><code>Cortex</code> unites chat, documents and execute on one surface — live-edited with other people and with agents in the same session. Presence, merge and versioning included.</p>
-        </div>
-        <div class="pillar">
-          <span class="idx">05</span>
-          <h3>Memory that carries over</h3>
-          <p>Work doesn’t vanish when a session ends — it compacts into summaries and stays retrievable. Scope-aware recall (RAG) walks the cascade, so a process draws on what its project and tenant already know.</p>
-        </div>
-        <div class="pillar">
-          <span class="idx">06</span>
-          <h3>It runs itself</h3>
-          <p>Schedulers, lifecycle hooks and webhooks fire recipes, scripts or workflows. Agents act on a timer or an event — not only when you’re there to chat.</p>
-        </div>
-      </div>
+      <p class="eyebrow" data-i18n="origin.eyebrow">Why it exists</p>
+      <h2 data-i18n="origin.h2">AI had no application.</h2>
+      <p data-i18n="origin.p">Someone once told me AI chats have no application — you open ChatGPT and there’s just a text box; what are you supposed to do with it? It stuck with me. Vance is my answer: I gave AI an application — a place where it can actually do something.</p>
     </div>
   </section>
 
@@ -387,9 +357,84 @@
   <section>
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow">Project kits</p>
-        <h2>Start a project ready to work.</h2>
-        <p>A kit is a git bundle of skills, recipes, tools and settings. Install one and a project arrives preconfigured — thinking patterns, worker recipes, tool packs, defaults. And kits inherit, so they compose:</p>
+        <p class="eyebrow" data-i18n="apps.eyebrow">Real surfaces</p>
+        <h2 data-i18n="apps.h2">Real apps — AI-made and connected.</h2>
+        <p data-i18n="apps.p">Not a chat window, but the tools you actually work in — all AI-native: have them created, filled, reshaped and linked. Because everything is a document, it all hangs together, and it’s shared live — people and agents at once.</p>
+      </div>
+      <div class="cards">
+        <div class="card"><h3>Sheet</h3><p data-i18n="apps.sheet">Spreadsheets with functions — pipe the results onward.</p></div>
+        <div class="card"><h3>Canvas</h3><p data-i18n="apps.canvas">Think spatially: nodes, links and groups on an open plane.</p></div>
+        <div class="card"><h3>Workbook</h3><p data-i18n="apps.workbook">Notes and pages in a block editor.</p></div>
+        <div class="card"><h3>Kanban &amp; Issues</h3><p data-i18n="apps.boards">Plan work and track it through.</p></div>
+        <div class="card"><h3>Finance</h3><p data-i18n="apps.finance">Structure money decisions.</p></div>
+        <div class="card"><h3>Cortex</h3><p data-i18n="apps.cortex">Chat, document and execute on one surface.</p></div>
+      </div>
+      <p class="apps-more" data-i18n="apps.more">…and more kinds — mindmap, calendar, slides, diagrams, checklists.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="pillars.eyebrow">What makes it tick</p>
+        <h2 data-i18n="pillars.h2">A few ideas do most of the work.</h2>
+        <p data-i18n="pillars.p">Everything else is a consequence of these.</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar">
+          <span class="idx">01</span>
+          <h3 data-i18n="p1.h">Everything is a document</h3>
+          <p data-i18n="p1.p">Recipes, prompts, schedulers, hooks, manuals, settings — all stored in MongoDB. A new automation is a new document. The system reshapes itself from its own data, and so can agents.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">02</span>
+          <h3 data-i18n="p2.h">Agents drive (almost) everything</h3>
+          <p data-i18n="p2.p">Nearly every capability is a tool: write documents, spawn processes, set triggers, research, delegate. You give the direction and step in whenever you want — the flow stays visible.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">03</span>
+          <h3 data-i18n="p3.h">Projects draw the boundaries</h3>
+          <p data-i18n="p3.p">A project is a bounded area with its own documents, config and agents. Different setups live side by side. Memory and permissions inherit down a scope cascade.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">04</span>
+          <h3 data-i18n="p4.h">Built to work in, together</h3>
+          <p data-i18n="p4.p"><code>Cortex</code> unites chat, documents and execute on one surface — live-edited with other people and with agents in the same session. Presence, merge and versioning included.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">05</span>
+          <h3 data-i18n="p5.h">Memory that carries over</h3>
+          <p data-i18n="p5.p">Work doesn’t vanish when a session ends — it compacts into summaries and stays retrievable. Scope-aware recall (RAG) walks the cascade, so a process draws on what its project and tenant already know.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">06</span>
+          <h3 data-i18n="p6.h">It runs itself</h3>
+          <p data-i18n="p6.p">Schedulers, lifecycle hooks and webhooks fire recipes, scripts or workflows. Agents act on a timer or an event — not only when you’re there to chat.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="work.eyebrow">Work and life</p>
+      <h2 data-i18n="work.h2">One place for whatever you’re working on.</h2>
+      <p data-i18n="work.p">Work or personal — Vance holds both, kept apart in separate tenants. A five-minute question or a project that runs for weeks; something off the web, a document to reshape, files right there on your machine. It’s open-ended on purpose: the stuff you’d otherwise scatter across a dozen apps tends to just fit here.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="kits.eyebrow">Project kits</p>
+        <h2 data-i18n="kits.h2">Start a project ready to work.</h2>
+        <p data-i18n="kits.p">A kit is a git bundle of skills, recipes, tools and settings. Install one and a project arrives preconfigured — thinking patterns, worker recipes, tool packs, defaults. And kits inherit, so they compose:</p>
       </div>
       <div class="kit-chain" aria-label="Kits inherit: basic, then code-development, then security">
         <span class="kit-node">basic</span>
@@ -405,9 +450,9 @@
         <span class="chip">finance-thinking</span>
         <span class="chip">legal-thinking</span>
         <span class="chip">mail-triage</span>
-        <span class="chip plus">+ build your own</span>
+        <span class="chip plus" data-i18n="kits.plus">+ build your own</span>
       </div>
-      <p class="kit-note">The interesting part isn’t the bundled ones — it’s that a kit is <em>just a git repo</em>. Point a project at yours and it’s productive from the first message.</p>
+      <p class="kit-note" data-i18n="kits.note">The interesting part isn’t the bundled ones — it’s that a kit is <em>just a git repo</em>. Point a project at yours and it’s productive from the first message.</p>
     </div>
   </section>
 
@@ -416,26 +461,27 @@
   <section>
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow">The crew</p>
-        <h2>A handful of engines. Many recipes.</h2>
-        <p>Engines are Java algorithms with a lifecycle — code drives the flow, not the LLM. Which one runs is decided by a recipe (a YAML document), so a new kind of assignment needs no new code. Yes, they’re named after the Guide.</p>
+        <p class="eyebrow" data-i18n="uh.eyebrow">Under the hood</p>
+        <h2 data-i18n="uh.h2">A handful of engines, many recipes.</h2>
+        <p data-i18n="uh.p">An approachable surface, but no power lost underneath. The work is run by engines — Java algorithms with a lifecycle, where code drives the flow, not the LLM (a recipe picks which one). And Vance keeps the raw power too: a CLI agent that works on your own machine, MCP in both directions — it speaks it and serves it — and real integrations.</p>
       </div>
       <div class="engines-wrap">
         <div class="engines">
-          <div class="eng"><span class="name">arthur</span><span class="role">reactive session</span></div>
-          <div class="eng"><span class="name">eddie</span><span class="role">default session</span></div>
-          <div class="eng"><span class="name">ford</span><span class="role">fast worker</span></div>
-          <div class="eng"><span class="name">marvin</span><span class="role">deep-think tree</span></div>
-          <div class="eng"><span class="name">vogon</span><span class="role">strategy runner</span></div>
-          <div class="eng"><span class="name">zaphod</span><span class="role">multi-head</span></div>
-          <div class="eng"><span class="name">jeltz</span><span class="role">schema loop</span></div>
-          <div class="eng"><span class="name">frankie</span><span class="role">focused worker</span></div>
-          <div class="eng"><span class="name">trillian</span><span class="role">agentic loop</span></div>
-          <div class="eng"><span class="name">slartibartfast</span><span class="role">authoring</span></div>
-          <div class="eng"><span class="name">hactar</span><span class="role">script executor</span></div>
-          <div class="eng"><span class="name">magrathea</span><span class="role">workflow runtime</span></div>
+          <div class="eng"><span class="name">arthur</span><span class="role" data-i18n="role.arthur">reactive session</span></div>
+          <div class="eng"><span class="name">eddie</span><span class="role" data-i18n="role.eddie">default session</span></div>
+          <div class="eng"><span class="name">ford</span><span class="role" data-i18n="role.ford">fast worker</span></div>
+          <div class="eng"><span class="name">marvin</span><span class="role" data-i18n="role.marvin">deep-think tree</span></div>
+          <div class="eng"><span class="name">vogon</span><span class="role" data-i18n="role.vogon">strategy runner</span></div>
+          <div class="eng"><span class="name">zaphod</span><span class="role" data-i18n="role.zaphod">multi-head</span></div>
+          <div class="eng"><span class="name">jeltz</span><span class="role" data-i18n="role.jeltz">schema loop</span></div>
+          <div class="eng"><span class="name">frankie</span><span class="role" data-i18n="role.frankie">focused worker</span></div>
+          <div class="eng"><span class="name">trillian</span><span class="role" data-i18n="role.trillian">agentic loop</span></div>
+          <div class="eng"><span class="name">slartibartfast</span><span class="role" data-i18n="role.slart">authoring</span></div>
+          <div class="eng"><span class="name">hactar</span><span class="role" data-i18n="role.hactar">script executor</span></div>
+          <div class="eng"><span class="name">magrathea</span><span class="role" data-i18n="role.magrathea">workflow runtime</span></div>
         </div>
-        <div class="engines-foot">+ services &nbsp;·&nbsp; <span class="live">fook</span> triage &nbsp;·&nbsp; <span class="live">fenchurch</span> images &nbsp;·&nbsp; <span class="live">zarniwoop</span> research &nbsp;·&nbsp; <span class="live">ursa</span> triggers</div>
+        <div class="engines-foot" data-i18n="uh.services">+ services &nbsp;·&nbsp; <span class="live">fook</span> triage &nbsp;·&nbsp; <span class="live">fenchurch</span> images &nbsp;·&nbsp; <span class="live">zarniwoop</span> research &nbsp;·&nbsp; <span class="live">ursa</span> triggers</div>
+        <div class="engines-foot" data-i18n="uh.caps">+ connectors (MCP · Jira · GitHub) &nbsp;·&nbsp; research &nbsp;·&nbsp; image gen &nbsp;·&nbsp; inbox &nbsp;·&nbsp; webdav &nbsp;·&nbsp; templates &amp; wizards &nbsp;·&nbsp; versioning &amp; locks</div>
       </div>
     </div>
   </section>
@@ -445,49 +491,25 @@
   <section>
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow">One brain, many ways in</p>
-        <h2>Meet it where you work.</h2>
-        <p>The Brain is the single source of truth. Clients are different entry points into the same project — not views on the same thing.</p>
+        <p class="eyebrow" data-i18n="clients.eyebrow">One brain, many ways in</p>
+        <h2 data-i18n="clients.h2">Meet it where you work.</h2>
+        <p data-i18n="clients.p">The Brain is the single source of truth. Clients are different entry points into the same project — not views on the same thing.</p>
       </div>
-      <div class="clients">
-        <div class="client">
+      <div class="cards">
+        <div class="card">
           <span class="tag">vance-foot</span>
           <h3>Terminal</h3>
-          <p>Work right at the command line, with local tools (shell, files, git) — but always inside a project, with everything stored in it.</p>
+          <p data-i18n="client.foot">Work right at the command line, with local tools (shell, files, git) — but always inside a project, with everything stored in it.</p>
         </div>
-        <div class="client">
+        <div class="card">
           <span class="tag">vance-face</span>
           <h3>Web</h3>
-          <p>The working environment in the browser: chat, live documents in many kinds, and apps built on top of them.</p>
+          <p data-i18n="client.web">The working environment in the browser: chat, live documents in many kinds, and apps built on top of them.</p>
         </div>
-        <div class="client">
+        <div class="card">
           <span class="tag">vance-facelift</span>
           <h3>Mobile</h3>
-          <p>On the go — a wrapper around the deployed Web UI, with an isolated WebView per account.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="rule">
-
-  <section>
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="eyebrow">In the box</p>
-        <h2>And plenty more in the toolbox.</h2>
-        <p>The parts you reach for less often — still first-class.</p>
-      </div>
-      <div class="engines-wrap">
-        <div class="engines">
-          <div class="eng"><span class="name">connectors</span><span class="role">MCP · Jira · GitHub · Google</span></div>
-          <div class="eng"><span class="name">research</span><span class="role">web · wikipedia · arXiv</span></div>
-          <div class="eng"><span class="name">image gen</span><span class="role">fenchurch</span></div>
-          <div class="eng"><span class="name">inbox</span><span class="role">async delegation &amp; replies</span></div>
-          <div class="eng"><span class="name">project kits</span><span class="role">git-based bundles</span></div>
-          <div class="eng"><span class="name">webdav</span><span class="role">mount in Finder / Obsidian</span></div>
-          <div class="eng"><span class="name">templates &amp; wizards</span><span class="role">guided authoring</span></div>
-          <div class="eng"><span class="name">versioning &amp; locks</span><span class="role">archives + edit guard</span></div>
+          <p data-i18n="client.mobile">On the go — a wrapper around the deployed Web UI, with an isolated WebView per account.</p>
         </div>
       </div>
     </div>
@@ -497,26 +519,26 @@
 
   <section class="statement">
     <div class="wrap">
-      <p class="eyebrow">The proof is the product</p>
-      <h2>Written by agents. <em>On purpose.</em></h2>
-      <p>Every line of Vance is AI-written — directed, reviewed and shaped by one human. That’s not a confession, it’s the whole point: Vance is what working <em>with</em> agents over months actually builds — a large, coherent system you can run, read and change. The tool and the demo are the same thing.</p>
+      <p class="eyebrow" data-i18n="ai.eyebrow">The proof is the product</p>
+      <h2 data-i18n="ai.h2">Written by agents. <em>On purpose.</em></h2>
+      <p data-i18n="ai.p">Every line of Vance is AI-written — directed, reviewed and shaped by one human. That’s not a confession, it’s the whole point: Vance is what working <em>with</em> agents over months actually builds — a large, coherent system you can run, read and change. The tool and the demo are the same thing.</p>
     </div>
   </section>
 
   <section class="closer">
     <div class="wrap closer-grid">
       <div>
-        <p class="eyebrow">Honest bit</p>
-        <h2>It’s a personal project.</h2>
-        <p>I built Vance to develop LLM agents and shape them until I could actually work productively with them. Over time everything I found interesting went in — plus a few things I think others might get something out of.</p>
-        <p>No support contract and no roadmap promises — it’s a project, not a product. The source is public: read it, run it, take it for a spin. It’s source-available rather than classic open source, and where it goes from here I’m keeping open.</p>
+        <p class="eyebrow" data-i18n="closer.eyebrow">Honest bit</p>
+        <h2 data-i18n="closer.h2">It’s a personal project.</h2>
+        <p data-i18n="closer.p1">I built Vance to develop LLM agents and shape them until I could actually work productively with them. Over time everything I found interesting went in — plus a few things I think others might get something out of.</p>
+        <p data-i18n="closer.p2">No support contract and no roadmap promises — it’s a project, not a product. The source is public: read it, run it, take it for a spin. It’s source-available rather than classic open source, and where it goes from here I’m keeping open.</p>
         <p class="signature">— Mike Hummel</p>
       </div>
       <div class="facts">
-        <div class="fact"><span class="fk">stack</span><span class="fv">Java 25 · Spring Boot 4 · MongoDB · langchain4j</span></div>
-        <div class="fact"><span class="fk">clients</span><span class="fv">Vue 3 web · Capacitor mobile · Picocli CLI</span></div>
-        <div class="fact"><span class="fk">license</span><span class="fv">BSL 1.1 → AGPLv3 on 2029-06-23</span></div>
-        <div class="fact"><span class="fk">status</span><span class="fv">beta · runs locally &amp; self-hosted</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.stack">stack</span><span class="fv">Java 25 · Spring Boot 4 · MongoDB · langchain4j</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.clients">clients</span><span class="fv">Vue 3 web · Capacitor mobile · Picocli CLI</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.license">license</span><span class="fv">BSL 1.1 → AGPLv3 on 2029-06-23</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.status">status</span><span class="fv" data-i18n="fact.status.v">beta · runs locally &amp; self-hosted</span></div>
       </div>
     </div>
   </section>
@@ -527,9 +549,9 @@
         <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true"><path fill="currentColor" transform="matrix(1.720655737704918 0 0 -1.720655737704918 54.305573770491776 916.3540983606558)" d="M200 476 53 465V437C53 437 83 440 99 440C117 440 123 426 123 409C123 389 116 365 113 354L93 278C82 236 71 183 71 135C71 58 100 -9 200 -9C380 -9 479 206 479 358C479 429 448 479 403 479C382 479 365 464 365 437C365 393 426 369 426 299C426 206 368 55 231 55C170 55 153 99 153 151C153 196 166 249 175 284L222 476Z"/></svg>
         <b>vance</b>
       </a>
-      <span>© 2025–2026 Mike Hummel · docs under CC BY 4.0</span>
+      <span data-i18n="footer.copy">© 2025–2026 Mike Hummel · docs under CC BY 4.0</span>
       <nav class="foot-links">
-        <a href="{{ '/getting-started' | relative_url }}">Docs</a>
+        <a data-i18n="footer.docs" href="{{ '/getting-started' | relative_url }}">Docs</a>
         <a href="https://github.com/mhus/vance">GitHub</a>
         <a href="{{ '/impressum' | relative_url }}">Impressum</a>
       </nav>
@@ -539,27 +561,138 @@
 
 <script>
   (function () {
-    /* theme toggle — persists choice; default look is light */
     var root = document.documentElement;
-    var stored = null;
-    try { stored = localStorage.getItem("vance-theme"); } catch (e) {}
-    if (stored === "dark" || stored === "light") root.setAttribute("data-theme", stored);
 
-    var toggle = document.getElementById("theme-toggle");
-    var icon = document.getElementById("theme-icon");
+    /* ---- theme toggle — persists choice; default look is light ---- */
+    var tStored = null;
+    try { tStored = localStorage.getItem("vance-theme"); } catch (e) {}
+    if (tStored === "dark" || tStored === "light") root.setAttribute("data-theme", tStored);
+    var themeToggle = document.getElementById("theme-toggle");
+    var themeIcon = document.getElementById("theme-icon");
     var SUN = '<circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>';
     var MOON = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
     function isDark() { return (root.getAttribute("data-theme") || "light") === "dark"; }
-    function paint() { if (icon) icon.innerHTML = isDark() ? SUN : MOON; }
-    paint();
-    if (toggle) toggle.addEventListener("click", function () {
-      var next = isDark() ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      try { localStorage.setItem("vance-theme", next); } catch (e) {}
-      paint();
+    function paintTheme() { if (themeIcon) themeIcon.innerHTML = isDark() ? SUN : MOON; }
+    paintTheme();
+    if (themeToggle) themeToggle.addEventListener("click", function () {
+      root.setAttribute("data-theme", isDark() ? "light" : "dark");
+      try { localStorage.setItem("vance-theme", isDark() ? "dark" : "light"); } catch (e) {}
+      paintTheme();
     });
 
-    /* hero device — a small looping think-process */
+    /* ---- language toggle (DE/EN) — default EN, persisted ---- */
+    var DE = {
+      "nav.concepts": "Konzepte",
+      "nav.architecture": "Architektur",
+      "nav.start": "Loslegen",
+      "hero.eyebrow": "Ein persönliches Projekt · kein Produkt",
+      "hero.h1": "Gib der AI eine Application.",
+      "hero.lede": "Vance gibt der AI eine echte Application: einen Arbeitsplatz mit Dokumenten, Sheets, Canvas und Boards, in dem AI nicht nebenher chattet, sondern die Arbeit macht. Der Ort, den du morgens als Erstes aufmachst — beruflich und privat, sauber getrennt.",
+      "cta.start": "Loslegen",
+      "cta.github": "Auf GitHub sternen",
+      "hero.note": 'Oder lokal in ein paar Minuten starten — <a href="https://github.com/mhus/vance-startup">Docker&nbsp;Startup&nbsp;→</a>',
+      "origin.eyebrow": "Warum es das gibt",
+      "origin.h2": "AI hatte keine Application.",
+      "origin.p": "Jemand sagte mir mal: AI-Chats haben keine Application — du machst ChatGPT auf, und da steht nur ein Textfeld; was fängst du damit an? Das ist hängengeblieben. Vance ist meine Antwort: Ich habe der AI eine Application gegeben — einen Ort, an dem sie tatsächlich etwas tun kann.",
+      "apps.eyebrow": "Echte Oberflächen",
+      "apps.h2": "Echte Apps — von AI erzeugt und verbunden.",
+      "apps.p": "Kein Chatfenster, sondern die Werkzeuge, mit denen man wirklich arbeitet — alle AI-nativ: erzeugen, füllen, umbauen, verknüpfen lassen. Weil alles ein Dokument ist, hängt es zusammen — und live geteilt, mit Menschen und Agenten zugleich.",
+      "apps.sheet": "Tabellen mit Funktionen — Ergebnisse weiter in eine Pipeline.",
+      "apps.canvas": "Räumlich denken: Knoten, Verbindungen und Gruppen auf einer offenen Fläche.",
+      "apps.workbook": "Notizen und Seiten in einem Block-Editor.",
+      "apps.boards": "Arbeit planen und durchverfolgen.",
+      "apps.finance": "Geld-Entscheidungen strukturieren.",
+      "apps.cortex": "Chat, Dokument und Ausführung auf einer Fläche.",
+      "apps.more": "…und mehr Kinds — Mindmap, Kalender, Slides, Diagramme, Checklisten.",
+      "pillars.eyebrow": "Was es ausmacht",
+      "pillars.h2": "Ein paar Ideen tragen den Großteil.",
+      "pillars.p": "Alles Weitere folgt daraus.",
+      "p1.h": "Alles ist ein Dokument",
+      "p1.p": "Recipes, Prompts, Scheduler, Hooks, Manuals, Settings — alle in MongoDB. Ein neuer Automatismus ist ein neues Dokument. Das System baut sich aus seinen eigenen Daten um — und Agenten können das auch.",
+      "p2.h": "Agenten steuern (fast) alles",
+      "p2.p": "Nahezu jede Fähigkeit ist ein Tool: Dokumente schreiben, Prozesse spawnen, Trigger setzen, recherchieren, delegieren. Du gibst die Richtung vor und greifst ein, wann du willst — der Ablauf bleibt sichtbar.",
+      "p3.h": "Projekte grenzen ab",
+      "p3.p": "Ein Projekt ist ein abgegrenzter Bereich mit eigenen Dokumenten, Konfiguration und Agenten. Verschiedene Setups leben nebeneinander. Memory und Rechte vererben sich die Scope-Kaskade hinunter.",
+      "p4.h": "Zum Arbeiten gebaut — gemeinsam",
+      "p4.p": "<code>Cortex</code> vereint Chat, Dokumente und Ausführung auf einer Fläche — live editiert mit anderen Menschen und mit Agenten in derselben Session. Presence, Merge und Versionierung inklusive.",
+      "p5.h": "Gedächtnis, das bleibt",
+      "p5.p": "Arbeit verschwindet nicht am Session-Ende — sie verdichtet sich zu Summaries und bleibt abrufbar. Scope-aware Recall (RAG) läuft die Kaskade entlang, sodass ein Prozess auf das zurückgreift, was Projekt und Tenant schon wissen.",
+      "p6.h": "Es läuft von selbst",
+      "p6.p": "Scheduler, Lifecycle-Hooks und Webhooks feuern Recipes, Scripts oder Workflows. Agenten handeln auf Timer oder Ereignis — nicht nur, wenn du zum Chatten da bist.",
+      "work.eyebrow": "Arbeit und Privat",
+      "work.h2": "Ein Ort für alles, woran du arbeitest.",
+      "work.p": "Beruflich oder privat — Vance hält beides, sauber getrennt in eigenen Tenants. Eine Fünf-Minuten-Frage oder ein Projekt über Wochen; etwas aus dem Web, ein Dokument zum Umbauen, Dateien direkt auf deiner Maschine. Bewusst offen: Was du sonst über ein Dutzend Apps verstreust, passt hier meist einfach rein.",
+      "kits.eyebrow": "Project Kits",
+      "kits.h2": "Ein Projekt startklar aufsetzen.",
+      "kits.p": "Ein Kit ist ein Git-Bundle aus Skills, Recipes, Tools und Settings. Installier eins, und ein Projekt kommt vorkonfiguriert — Denkmuster, Worker-Recipes, Tool-Packs, Defaults. Und Kits erben, also komponieren sie:",
+      "kits.plus": "+ bau dein eigenes",
+      "kits.note": "Das Spannende sind nicht die mitgelieferten — sondern dass ein Kit <em>einfach ein Git-Repo</em> ist. Zeig ein Projekt auf deins, und es ist ab der ersten Nachricht produktiv.",
+      "uh.eyebrow": "Unter der Haube",
+      "uh.h2": "Eine Handvoll Engines, viele Recipes.",
+      "uh.p": "Zugängliche Oberfläche, aber unten drunter nichts an Power verloren. Die Arbeit erledigen Engines — Java-Algorithmen mit Lifecycle, bei denen der Code den Ablauf steuert, nicht der LLM (ein Recipe wählt welche). Und Vance behält die rohe Power: einen CLI-Agenten, der auf deiner eigenen Maschine arbeitet, MCP in beide Richtungen — Vance spricht es und stellt es bereit — und echte Integrationen.",
+      "role.arthur": "reaktive Session",
+      "role.eddie": "Standard-Session",
+      "role.ford": "schneller Worker",
+      "role.marvin": "Deep-Think-Baum",
+      "role.vogon": "Strategie-Runner",
+      "role.zaphod": "Multi-Head",
+      "role.jeltz": "Schema-Loop",
+      "role.frankie": "Focused-Worker",
+      "role.trillian": "agentic Loop",
+      "role.slart": "Authoring",
+      "role.hactar": "Skript-Executor",
+      "role.magrathea": "Workflow-Runtime",
+      "uh.services": '+ Dienste &nbsp;·&nbsp; <span class="live">fook</span> Triage &nbsp;·&nbsp; <span class="live">fenchurch</span> Bilder &nbsp;·&nbsp; <span class="live">zarniwoop</span> Recherche &nbsp;·&nbsp; <span class="live">ursa</span> Trigger',
+      "uh.caps": '+ Connectoren (MCP · Jira · GitHub) &nbsp;·&nbsp; Recherche &nbsp;·&nbsp; Bildgen &nbsp;·&nbsp; Inbox &nbsp;·&nbsp; WebDAV &nbsp;·&nbsp; Vorlagen &amp; Wizards &nbsp;·&nbsp; Versionierung &amp; Locks',
+      "clients.eyebrow": "Ein Brain, viele Zugänge",
+      "clients.h2": "Dort abgeholt, wo du arbeitest.",
+      "clients.p": "Das Brain ist die Single Source of Truth. Clients sind verschiedene Zugänge zum selben Projekt — keine Views auf dasselbe.",
+      "client.foot": "Direkt auf der Kommandozeile arbeiten, mit lokalen Tools (Shell, Files, Git) — aber immer im Projekt, mit allem, was drin hinterlegt ist.",
+      "client.web": "Die Arbeitsumgebung im Browser: Chat, Live-Dokumente in vielen Kinds und darauf aufbauende Apps.",
+      "client.mobile": "Unterwegs — ein Wrapper um die deployte Web-UI, mit einem isolierten WebView pro Account.",
+      "ai.eyebrow": "Der Beweis ist das Produkt",
+      "ai.h2": "Von Agenten geschrieben. <em>Mit Absicht.</em>",
+      "ai.p": "Jede Zeile von Vance ist AI-geschrieben — dirigiert, reviewt und geformt von einem Menschen. Das ist kein Geständnis, sondern der ganze Punkt: Vance ist das, was dabei herauskommt, wenn man über Monate <em>mit</em> Agenten arbeitet — ein großes, kohärentes System, das man laufen lassen, lesen und ändern kann. Tool und Beweis sind dasselbe.",
+      "closer.eyebrow": "Ehrlich gesagt",
+      "closer.h2": "Es ist ein persönliches Projekt.",
+      "closer.p1": "Ich habe Vance gebaut, um LLM-Agenten zu entwickeln und sie so zu formen, dass ich damit wirklich produktiv arbeiten kann. Über die Zeit ist alles reingewandert, was ich spannend fand — plus ein paar Dinge, von denen ich glaube, dass andere was davon haben.",
+      "closer.p2": "Kein Support-Vertrag, keine Roadmap-Versprechen — ein Projekt, kein Produkt. Der Quellcode ist öffentlich: lesen, ausprobieren, laufen lassen. Er ist source-available, kein klassisches Open Source, und wohin die Reise geht, halte ich mir offen.",
+      "fact.stack": "Stack",
+      "fact.clients": "Clients",
+      "fact.license": "Lizenz",
+      "fact.status": "Status",
+      "fact.status.v": "Beta · läuft lokal & self-hosted",
+      "footer.copy": "© 2025–2026 Mike Hummel · Doku unter CC BY 4.0",
+      "footer.docs": "Doku"
+    };
+
+    var nodes = document.querySelectorAll("[data-i18n]");
+    nodes.forEach(function (el) { el.dataset.en = el.innerHTML; });
+
+    function applyLang(lang) {
+      nodes.forEach(function (el) {
+        var key = el.getAttribute("data-i18n");
+        if (lang === "de" && DE[key] != null) el.innerHTML = DE[key];
+        else el.innerHTML = el.dataset.en;
+      });
+      root.setAttribute("lang", lang);
+      var label = document.getElementById("lang-label");
+      if (label) label.textContent = lang === "de" ? "EN" : "DE";
+    }
+
+    var lStored = "en";
+    try { lStored = localStorage.getItem("vance-lang") || "en"; } catch (e) {}
+    if (lStored === "de") applyLang("de");
+    else { var l0 = document.getElementById("lang-label"); if (l0) l0.textContent = "DE"; }
+
+    var langToggle = document.getElementById("lang-toggle");
+    if (langToggle) langToggle.addEventListener("click", function () {
+      var next = (root.getAttribute("lang") === "de") ? "en" : "de";
+      applyLang(next);
+      try { localStorage.setItem("vance-lang", next); } catch (e) {}
+    });
+
+    /* ---- hero device — a small looping think-process (stays English) ---- */
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var log = document.getElementById("log");
     var pill = document.getElementById("pill");
