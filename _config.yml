@@ -24,7 +24,8 @@ footer_content: >-
   &copy; 2025-2026 Mike Hummel · Documentation under
   <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
   Source on <a href="https://github.com/mhus/vance-docs">GitHub</a> ·
-  <a href="/impressum">Impressum</a>.
+  <a href="/impressum">Impressum</a> ·
+  <a href="/datenschutz">Datenschutz</a>.
 
 plugins:
   - jekyll-remote-theme
