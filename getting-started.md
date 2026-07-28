@@ -35,57 +35,48 @@ machine with no development setup on it.
 - **~2 GB free RAM**, and outbound HTTPS to Docker Hub (image pulls) and to
   your LLM provider (Anthropic, OpenAI, Gemini, …).
 
-The only terminal you need is the one built into your OS (Terminal.app on a
-Mac) — no shell or tooling to install.
-
-## Pick a variant
-
-The [`vance-startup`](https://github.com/mhus/vance-startup) repo ships
-two self-contained Docker Compose stacks under separate subdirectories:
-
-| Variant | What's in it | When to pick |
-|---|---|---|
-| [`minimal/`](https://github.com/mhus/vance-startup/tree/main/minimal) | MongoDB + Brain + Web UI. Setup wizard runs as a one-shot via `./setup.sh`. | **Default for local installs.** Smallest possible footprint. Live-WS cross-pod features are off — single-pod doesn't need them. |
-| [`live/`](https://github.com/mhus/vance-startup/tree/main/live) | The above + Redis + mongo-express (profile) + Anus REPL (profile). | Pick this if you want to exercise the live features (multi-tab presence, `documents.changed` push, cross-pod fan-out) or want debug / admin tooling on tap. |
-
-The instructions below use `minimal/`; for `live/` just `cd
-vance-startup/live` instead and replace step 2 with
-`docker compose run --rm anus --setup` (anus ships as a service there).
+The only terminal you need is the one that comes with your setup: **Terminal.app**
+on a Mac, your usual shell on Linux, or — on **Windows** — the **WSL2** terminal
+(e.g. Ubuntu). Docker Desktop on Windows runs on WSL2 anyway, so open that shell
+and use the exact same commands below; the one-liners are bash. (There's no
+native `cmd`/PowerShell installer — WSL2 is the intended Windows path.)
 
 ## Quick start
 
-**1. Get the files — no git needed.** Open
-[`vance-startup`](https://github.com/mhus/vance-startup), click the green
-**Code** button → **Download ZIP**, and unzip it. You'll get a
-`vance-startup-main/` folder with a `minimal/` folder inside. (Prefer the
-command line and have git installed? `git clone
-https://github.com/mhus/vance-startup.git` instead.)
-
-**2. Open a terminal in that `minimal/` folder** and run:
+Two commands on a machine with Docker running — no git, no download:
 
 ```bash
-cp .env.example .env
+# 1) Install & start the stack (MongoDB + Brain + Web UI)
+curl -fsSL https://vance.mhus.de/install.sh | bash
 
-# Start the stack (MongoDB + Brain + Web UI). First run pulls the images —
-# give it a minute or two.
-docker compose up -d
-
-# First-time setup: create a tenant + user and configure an LLM provider.
-# Spawns the setup wizard as a one-shot against the running stack.
-bash setup.sh
+# 2) Configure it — create a tenant + user and pick an LLM provider
+curl -fsSL https://vance.mhus.de/setup.sh | bash
 ```
 
-> Tip: to open the folder in Terminal on a Mac, right-click the `minimal`
-> folder in Finder → **Services → New Terminal at Folder** (or drag the
-> folder onto the Terminal icon).
+**Step 1** runs the setup wizard straight from the official Docker image (a few
+questions — language, port, local vs. external access, plus secrets it
+generates for you), writes a `vance/` folder with your `docker-compose.yml` and
+`.env`, and starts the stack. **Step 2** finds that folder, waits for the stack
+to come up, and runs the tenant/user/LLM wizard against it. Both are
+interactive — just answer the prompts.
 
-Step 2 launches an interactive one-shot wizard. Answer the prompts and the
-container exits when you save. Then open <http://localhost:8080> and log in
-with the user you just created.
+Then open the URL it prints (default <http://localhost:8080>) and log in with
+the user you just created.
 
-### What the setup wizard asks for
+**Rather not pipe a script into your shell?** The one-liners are thin wrappers —
+do the same by hand, it only needs Docker:
 
-Have these ready before running `--setup`:
+```bash
+docker run --rm -it -v "$(pwd)":/data mhus/vance-anus:latest --setup-docker-compose
+cd vance
+docker compose up -d
+./setup.sh
+```
+
+### What `./setup.sh` asks for
+
+The `./setup.sh` step creates your tenant, first user and LLM provider. Have
+these ready:
 
 - **Tenant name + title** — e.g. `acme` / `Acme Inc.`
 - **First user** — login, display name, email, password
@@ -119,40 +110,36 @@ finish the wizard with any provider, then switch the active provider in
 the Web UI under Settings → AI, or pre-seed it with
 `confidential/init-settings.yaml` in the source repo.
 
-> **Before exposing the stack to anything beyond `localhost`:** edit `.env`
-> and change `VANCE_ENCRYPTION_PASSWORD`, `VANCE_INTERNAL_TOKEN` and
-> `MONGO_INITDB_ROOT_PASSWORD`. The defaults are intentionally weak so the
-> first run is frictionless.
+> **Secrets & exposure:** the setup wizard generates strong secrets for you
+> (encryption password, internal token, Mongo password) — no weak defaults to
+> change. To reach Vance from beyond `localhost`, pick the wizard's **external
+> URL** option: cookies then get the `Secure` flag and the bundled Caddy can
+> auto-provision TLS for your domain.
 
 ## What you get
 
-| Service | Port | `minimal/` | `live/` |
-|---|---|---|---|
-| MongoDB | 27017 | ✓ | ✓ |
-| Brain | 9990 | ✓ | ✓ |
-| Web UI | 8080 | ✓ | ✓ |
-| Redis (live-WS) | 6379 | — | ✓ |
-| mongo-express (profile: `admin`) | 9081 | — | opt-in |
-| Anus REPL (profile: `tools`) | — | — | opt-in |
+The core stack is always MongoDB + Brain + Web UI. The wizard's **expert
+options** can add Redis (for live-collaboration features) and debug UIs.
 
-All data is kept in named Docker volumes. `docker compose down` keeps it;
+| Service | Default port | When |
+|---|---|---|
+| Web UI | 8080 | always |
+| Brain (REST/WS) | 9990 | always (host-exposed only if you opt in) |
+| MongoDB | 27017 | always (host-exposed only if you opt in) |
+| Redis (live-WS) | 6379 | expert option |
+| mongo-express / redis-commander (debug UIs) | 9081 / — | expert · `--profile tools` |
+
+Ports and which services are exposed depend on your wizard answers. All data
+lives in named Docker volumes: `docker compose down` keeps it,
 `docker compose down -v` resets the stack.
 
-Both variants reuse the same Compose project name (`vance`), so switching
-between them preserves the MongoDB volume — start with `minimal/`, move to
-`live/` later without re-running the setup wizard.
+## Expert options
 
-## Optional add-ons (live/ only)
-
-In the `live/` variant, two services are gated by Compose
-[profiles](https://docs.docker.com/compose/profiles/) so they don't run
-unless you ask:
-
-- **mongo-express** (`--profile admin`) — MongoDB browser at
-  <http://localhost:9081>.
-- **Anus admin shell** (`--profile tools`) — interactive Vance admin CLI.
-
-Details: [vance-startup README](https://github.com/mhus/vance-startup#readme).
+Re-run the installer (or the direct `docker run … --setup-docker-compose`) and
+turn on **Expert mode** for extra toggles: Redis for live features, debug UIs
+(mongo-express, redis-commander) behind `docker compose --profile tools up -d`,
+an Anus admin service, exposing the Brain/Mongo/Redis host ports, and the image
+tag. Your previous answers are pre-filled from the existing `.env`.
 
 ## Upgrading
 
