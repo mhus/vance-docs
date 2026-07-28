@@ -55,8 +55,8 @@ curl -fsSL https://vance.mhus.de/setup.sh | bash
 
 **Step 1** runs the setup wizard straight from the official Docker image (a few
 questions — language, port, local vs. external access, plus secrets it
-generates for you), writes a `vance/` folder with your `docker-compose.yml` and
-`.env`, and starts the stack. **Step 2** finds that folder, waits for the stack
+generates for you), writes your `docker-compose.yml` and `.env` into `~/.vance`
+(override with `VANCE_DIR`), and starts the stack. **Step 2** finds that folder, waits for the stack
 to come up, and runs the tenant/user/LLM wizard against it. Both are
 interactive — just answer the prompts.
 
@@ -66,9 +66,10 @@ Then open the URL it prints (a local install defaults to
 **Prefer to run it by hand?** No script needed — Docker does all of it:
 
 ```bash
-# 1) scaffold docker-compose.yml + .env (interactive wizard)
-docker run --rm -it -v "$(pwd)":/data mhus/vance-anus:latest --setup-docker-compose
-cd vance
+# 1) scaffold docker-compose.yml + .env into ~/.vance (interactive wizard)
+mkdir -p ~/.vance
+docker run --rm -it -v "$HOME/.vance:/data" mhus/vance-anus:latest --setup-docker-compose
+cd ~/.vance
 
 # 2) start the stack
 docker compose up -d
