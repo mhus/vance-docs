@@ -100,5 +100,6 @@ say "${amber}Installed and starting.${z} Now configure your tenant + first user:
 say ""
 say "  ${b}curl -fsSL https://vance.mhus.de/setup.sh | bash${z}"
 say ""
-say "Afterwards, open the URL it prints (default ${b}http://localhost:8080${z})."
+url="$(sed -n 's/^VANCE_WEB_PUBLICBASEURL=//p' "$target_abs/.env" | head -n1)"
+say "Afterwards, open ${b}${url:-http://localhost:9999}${z} and log in."
 say ""

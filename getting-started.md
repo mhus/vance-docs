@@ -60,8 +60,8 @@ generates for you), writes a `vance/` folder with your `docker-compose.yml` and
 to come up, and runs the tenant/user/LLM wizard against it. Both are
 interactive — just answer the prompts.
 
-Then open the URL it prints (default <http://localhost:8080>) and log in with
-the user you just created.
+Then open the URL it prints (a local install defaults to
+<http://localhost:9999>) and log in with the user you just created.
 
 **Prefer to run it by hand?** No script needed — Docker does all of it:
 
@@ -73,11 +73,11 @@ cd vance
 # 2) start the stack
 docker compose up -d
 
-# 3) configure it — tenant + user + LLM, against the running stack
-set -a; . ./.env; set +a
-docker run --rm -it --network vance_default \
-  -e VANCE_MONGODB_URI="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@mongodb:27017/$VANCE_MONGODB_DATABASE?authSource=admin" \
-  -e VANCE_ENCRYPTION_PASSWORD="$VANCE_ENCRYPTION_PASSWORD" \
+# 3) configure it — tenant + user + LLM (Docker reads .env; we add the Mongo URI)
+pw="$(sed -n 's/^MONGO_INITDB_ROOT_PASSWORD=//p' .env)"
+docker run --rm -it --network vance_default --env-file .env \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e VANCE_MONGODB_URI="mongodb://root:$pw@mongodb:27017/vance?authSource=admin" \
   mhus/vance-anus:latest --setup
 ```
 
@@ -131,7 +131,7 @@ options** can add Redis (for live-collaboration features) and debug UIs.
 
 | Service | Default port | When |
 |---|---|---|
-| Web UI | 8080 | always |
+| Web UI | 9999 (default; `VANCE_PORT`) | always |
 | Brain (REST/WS) | 9990 | always (host-exposed only if you opt in) |
 | MongoDB | 27017 | always (host-exposed only if you opt in) |
 | Redis (live-WS) | 6379 | expert option |

@@ -55,12 +55,14 @@ command -v docker >/dev/null 2>&1 || { err "Docker not found. Is Docker Desktop 
 say "Ensuring the stack is running…"
 ( cd "$dir" && docker compose up -d ) || { err "Could not start the stack. Is Docker running?"; exit 1; }
 
-# ── Load the generated secrets ──────────────────────────────────────────────
-set -a
-# shellcheck disable=SC1091
-. "$dir/.env"
-set +a
-network="${COMPOSE_PROJECT_NAME:-vance}_default"
+# ── Read only the values we need — WITHOUT sourcing. The .env is a Docker
+#    env-file, not shell: values may contain spaces (e.g. BRAIN_JAVA_OPTS), so
+#    `. .env` would try to run them as commands. ───────────────────────────────
+env_get() { sed -n "s/^$1=//p" "$dir/.env" | head -n1; }
+mongo_user="$(env_get MONGO_INITDB_ROOT_USERNAME)"
+mongo_pass="$(env_get MONGO_INITDB_ROOT_PASSWORD)"
+mongo_db="$(env_get VANCE_MONGODB_DATABASE)"
+network="$(env_get COMPOSE_PROJECT_NAME)"; network="${network:-vance}_default"
 
 # ── Wait for MongoDB to become healthy before configuring ───────────────────
 say "${dim}Waiting for MongoDB to become ready…${z}"
@@ -75,20 +77,19 @@ for _ in $(seq 1 40); do
 done
 [ -n "$ready" ] || say "${dim}(still starting — trying anyway; re-run if it can't connect)${z}"
 
-mongo_uri="mongodb://${MONGO_INITDB_ROOT_USERNAME:-root}:${MONGO_INITDB_ROOT_PASSWORD:-example}@mongodb:27017/${VANCE_MONGODB_DATABASE:-vance}?authSource=admin"
+mongo_uri="mongodb://${mongo_user:-root}:${mongo_pass:-example}@mongodb:27017/${mongo_db:-vance}?authSource=admin"
 
 args=("$@")
 [ ${#args[@]} -gt 0 ] || args=(--setup)
 
 # ── Run the wizard (interactive → reattach the real terminal) ───────────────
+# --env-file lets Docker parse the .env correctly (spaces and all); we layer
+# the constructed Mongo URI + Spring profile on top.
 if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
   exec docker run --rm -it --network "$network" \
+    --env-file "$dir/.env" \
     -e SPRING_PROFILES_ACTIVE=prod \
     -e VANCE_MONGODB_URI="$mongo_uri" \
-    -e VANCE_MONGODB_DATABASE="${VANCE_MONGODB_DATABASE:-vance}" \
-    -e VANCE_ENCRYPTION_PASSWORD="${VANCE_ENCRYPTION_PASSWORD:-changeit}" \
-    -e VANCE_DEFAULT_LANGUAGE="${VANCE_DEFAULT_LANGUAGE:-English}" \
-    -e VANCE_DEFAULT_LANGUAGE_CODE="${VANCE_DEFAULT_LANGUAGE_CODE:-en}" \
     "$IMAGE" "${args[@]}" </dev/tty
 fi
 err "No interactive terminal available for the setup wizard."
