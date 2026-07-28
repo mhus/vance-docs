@@ -13,7 +13,7 @@ The authoritative specs are written in German under `specification/public/*.md` 
 - [Architecture](https://vance.mhus.de/architecture): brain + clients, data model, triggers.
 - [How-tos](https://vance.mhus.de/howtos/): task-oriented guides for common workflows.
 - [Source repository](https://github.com/mhus/vance): Java/TypeScript implementation, BSL 1.1.
-- [Docker startup](https://github.com/mhus/vance-startup): docker-compose stack for local installs.
+- [Install script](https://vance.mhus.de/install.sh): one-command local install (curl … | bash), no git needed.
 
 ## Specifications
 
