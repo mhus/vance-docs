@@ -125,6 +125,28 @@ the Web UI under Settings → AI, or pre-seed it with
 > URL** option: cookies then get the `Secure` flag and the bundled Caddy can
 > auto-provision TLS for your domain.
 
+## Install project kits (optional)
+
+Project kits pre-configure a project — thinking patterns, worker recipes, tool
+packs, settings. To make the catalog of available kits show up in your tenant
+(it fills the kit dropdown when you create a project), import it from the public
+kit repo with the **anus one-shot**:
+
+```bash
+curl -fsSL https://vance.mhus.de/anus.sh | bash -s -- --sudo "project-kits import -T acme"
+```
+
+Replace `acme` with your tenant name. Check what landed:
+
+```bash
+curl -fsSL https://vance.mhus.de/anus.sh | bash -s -- --sudo "project-kits show -T acme"
+```
+
+`anus.sh` is the general admin one-shot — it runs any anus command against your
+running stack (`--sudo "…"` for a single command; no args drops you into the
+interactive REPL). Already imported once? Use `project-kits update` instead of
+`import`.
+
 ## What you get
 
 The core stack is always MongoDB + Brain + Web UI. The wizard's **expert
