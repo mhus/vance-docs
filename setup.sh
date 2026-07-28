@@ -90,6 +90,7 @@ if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
     --env-file "$dir/.env" \
     -e SPRING_PROFILES_ACTIVE=prod \
     -e VANCE_MONGODB_URI="$mongo_uri" \
+    -e VANCE_ANUS_BRAIN_HTTPBASE="http://brain:9990" \
     "$IMAGE" "${args[@]}" </dev/tty
 fi
 err "No interactive terminal available for the setup wizard."
