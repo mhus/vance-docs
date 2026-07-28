@@ -5,14 +5,19 @@
 #   curl -fsSL https://vance.mhus.de/setup.sh | bash
 #
 # Run this AFTER install.sh. It configures the running stack: tenant, first
-# user and LLM provider. It locates the folder install.sh created, makes sure
-# the stack is up, waits for MongoDB, then runs the wizard against it (joining
-# the compose network so it can reach MongoDB).
+# user and LLM provider. It finds the folder install.sh created (which holds
+# .env + docker-compose.yml), makes sure the stack is up, waits for MongoDB,
+# then runs the wizard in the compose network so it can reach MongoDB.
+#
+# Self-contained: it does NOT depend on any script inside that folder — the
+# wizard only writes .env + docker-compose.yml.
 #
 # Pass-through args work too, e.g.:
 #   curl -fsSL https://vance.mhus.de/setup.sh | bash -s -- --sudo "tenant list"
 
 set -euo pipefail
+
+IMAGE="${VANCE_IMAGE:-mhus/vance-anus:${IMAGE_TAG:-latest}}"
 
 if [ -t 1 ]; then
   b=$'\033[1m'; red=$'\033[1;31m'; dim=$'\033[2m'; z=$'\033[0m'
@@ -22,29 +27,40 @@ fi
 say() { printf '%s\n' "$*"; }
 err() { printf '%s%s%s\n' "$red" "$*" "$z" >&2; }
 
-# ── Locate the folder install.sh wrote (has setup.sh + .env) ────────────────
+# ── Locate the folder install.sh wrote (has .env + docker-compose.yml) ──────
 find_dir() {
-  if [ -n "${VANCE_DIR:-}" ] && [ -f "$VANCE_DIR/setup.sh" ]; then printf '%s\n' "$VANCE_DIR"; return 0; fi
-  if [ -f "./setup.sh" ] && [ -f "./.env" ]; then printf '%s\n' "."; return 0; fi
-  if [ -f "./vance/setup.sh" ]; then printf '%s\n' "./vance"; return 0; fi
+  local d
+  for d in "${VANCE_DIR:-}" "." "./vance"; do
+    [ -n "$d" ] || continue
+    if [ -f "$d/.env" ] && [ -f "$d/docker-compose.yml" ]; then
+      printf '%s\n' "$d"; return 0
+    fi
+  done
   return 1
 }
 
 if ! dir="$(find_dir)"; then
-  err "Could not find your Vance folder (the one with setup.sh + .env)."
+  err "Could not find your Vance folder (with .env + docker-compose.yml)."
   say "Run the installer first:"
   say "  curl -fsSL https://vance.mhus.de/install.sh | bash"
   say "…or run this from that folder (or its parent)."
   exit 1
 fi
-say "Using: ${b}$(cd "$dir" && pwd)${z}"
+dir="$(cd "$dir" && pwd)"
+say "Using: ${b}${dir}${z}"
+
+command -v docker >/dev/null 2>&1 || { err "Docker not found. Is Docker Desktop installed and running?"; exit 1; }
 
 # ── Make sure the stack is up (idempotent) ──────────────────────────────────
 say "Ensuring the stack is running…"
-( cd "$dir" && docker compose up -d ) || {
-  err "Could not start the stack. Is Docker running?"
-  exit 1
-}
+( cd "$dir" && docker compose up -d ) || { err "Could not start the stack. Is Docker running?"; exit 1; }
+
+# ── Load the generated secrets ──────────────────────────────────────────────
+set -a
+# shellcheck disable=SC1091
+. "$dir/.env"
+set +a
+network="${COMPOSE_PROJECT_NAME:-vance}_default"
 
 # ── Wait for MongoDB to become healthy before configuring ───────────────────
 say "${dim}Waiting for MongoDB to become ready…${z}"
@@ -59,10 +75,22 @@ for _ in $(seq 1 40); do
 done
 [ -n "$ready" ] || say "${dim}(still starting — trying anyway; re-run if it can't connect)${z}"
 
+mongo_uri="mongodb://${MONGO_INITDB_ROOT_USERNAME:-root}:${MONGO_INITDB_ROOT_PASSWORD:-example}@mongodb:27017/${VANCE_MONGODB_DATABASE:-vance}?authSource=admin"
+
+args=("$@")
+[ ${#args[@]} -gt 0 ] || args=(--setup)
+
 # ── Run the wizard (interactive → reattach the real terminal) ───────────────
 if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
-  exec bash "$dir/setup.sh" "$@" </dev/tty
+  exec docker run --rm -it --network "$network" \
+    -e SPRING_PROFILES_ACTIVE=prod \
+    -e VANCE_MONGODB_URI="$mongo_uri" \
+    -e VANCE_MONGODB_DATABASE="${VANCE_MONGODB_DATABASE:-vance}" \
+    -e VANCE_ENCRYPTION_PASSWORD="${VANCE_ENCRYPTION_PASSWORD:-changeit}" \
+    -e VANCE_DEFAULT_LANGUAGE="${VANCE_DEFAULT_LANGUAGE:-English}" \
+    -e VANCE_DEFAULT_LANGUAGE_CODE="${VANCE_DEFAULT_LANGUAGE_CODE:-en}" \
+    "$IMAGE" "${args[@]}" </dev/tty
 fi
 err "No interactive terminal available for the setup wizard."
-say "Run it directly instead:  (cd $dir && ./setup.sh)"
+say "Run it from a real terminal (not a non-interactive pipe)."
 exit 1

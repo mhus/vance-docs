@@ -73,9 +73,21 @@ say "${dim}Pulling the setup image on first run — this can take a minute.${z}"
 say ""
 
 # ── Run the compose-setup wizard ────────────────────────────────────────────
-# Writes docker-compose.yml + .env + setup.sh into the mounted folder and
-# prints the exact next steps (including the URL for your chosen port).
-docker run --rm -it -v "${target_abs}:/data" "$IMAGE" --setup-docker-compose <"$tty_in"
+# Writes docker-compose.yml + .env into the mounted folder. It exits non-zero
+# when you quit/cancel — nothing gets written, so we stop cleanly (no compose).
+if ! docker run --rm -it -v "${target_abs}:/data" "$IMAGE" --setup-docker-compose <"$tty_in"; then
+  say ""
+  say "Setup cancelled — nothing started. Re-run when you're ready:"
+  say "  curl -fsSL https://vance.mhus.de/install.sh | bash"
+  exit 0
+fi
+
+# Belt and suspenders: only start if the wizard actually wrote a compose file.
+if [ ! -f "$target_abs/docker-compose.yml" ]; then
+  say ""
+  say "No docker-compose.yml was written — nothing to start. Re-run to try again."
+  exit 0
+fi
 
 # ── Start the stack ─────────────────────────────────────────────────────────
 say ""
@@ -88,6 +100,5 @@ say "${amber}Installed and starting.${z} Now configure your tenant + first user:
 say ""
 say "  ${b}curl -fsSL https://vance.mhus.de/setup.sh | bash${z}"
 say ""
-say "${dim}(run it from here — or, equivalently: cd ${TARGET_DIR} && ./setup.sh)${z}"
 say "Afterwards, open the URL it prints (default ${b}http://localhost:8080${z})."
 say ""

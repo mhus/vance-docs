@@ -63,20 +63,28 @@ interactive — just answer the prompts.
 Then open the URL it prints (default <http://localhost:8080>) and log in with
 the user you just created.
 
-**Rather not pipe a script into your shell?** The one-liners are thin wrappers —
-do the same by hand, it only needs Docker:
+**Prefer to run it by hand?** No script needed — Docker does all of it:
 
 ```bash
+# 1) scaffold docker-compose.yml + .env (interactive wizard)
 docker run --rm -it -v "$(pwd)":/data mhus/vance-anus:latest --setup-docker-compose
 cd vance
+
+# 2) start the stack
 docker compose up -d
-./setup.sh
+
+# 3) configure it — tenant + user + LLM, against the running stack
+set -a; . ./.env; set +a
+docker run --rm -it --network vance_default \
+  -e VANCE_MONGODB_URI="mongodb://$MONGO_INITDB_ROOT_USERNAME:$MONGO_INITDB_ROOT_PASSWORD@mongodb:27017/$VANCE_MONGODB_DATABASE?authSource=admin" \
+  -e VANCE_ENCRYPTION_PASSWORD="$VANCE_ENCRYPTION_PASSWORD" \
+  mhus/vance-anus:latest --setup
 ```
 
-### What `./setup.sh` asks for
+### What the setup step asks for
 
-The `./setup.sh` step creates your tenant, first user and LLM provider. Have
-these ready:
+The setup step (`curl … setup.sh | bash`) creates your tenant, first user and
+LLM provider. Have these ready:
 
 - **Tenant name + title** — e.g. `acme` / `Acme Inc.`
 - **First user** — login, display name, email, password
