@@ -33,11 +33,7 @@ Open the board and you get columns left-to-right — here **Backlog → In progr
 labels and assignee; a column header counts its cards (and flags a WIP limit in
 red if you set one).
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 1 — the board**
-_Open `orbit-app` → `board`. Frame all four columns with their cards — priorities,
-labels and assignees visible. Establishing shot._
-</div>
+![Kanban — the Orbit delivery board]({{ '/assets/img/howtos/kanban/board.png' | relative_url }}){: .doc-shot }
 
 ## Inside a card
 
@@ -46,12 +42,7 @@ priority, assignee, labels, due date, estimate, a blocked flag — plus a full
 **workpage body** (edited in a roomy block editor). Checkboxes in the body feed
 the card's subtask-progress badge.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 2 — a card's detail panel**
-_Click a card with some substance (e.g. "3-way merge for text docs" — it has
-fields + a checklist body). Capture the right-panel detail with its fields and
-the body visible._
-</div>
+![Kanban — a card's detail panel]({{ '/assets/img/howtos/kanban/card.png' | relative_url }}){: .doc-shot }
 
 ## Move it
 
@@ -60,23 +51,17 @@ immediately, then persists), and a hard WIP limit will block a drop that would
 overflow. This is the whole point: you push work across the board as it
 progresses.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot (optional) — a card mid-move**
-_Drag a card from one column toward another and catch it mid-drag (the card
-lifted, a gap opening in the target column). Nice-to-have — skip if the timing is
-fiddly._
-</div>
+<video class="doc-shot" autoplay loop muted playsinline
+       poster="{{ '/assets/img/howtos/kanban/move-poster.png' | relative_url }}">
+  <source src="{{ '/assets/img/howtos/kanban/move.mp4' | relative_url }}" type="video/mp4">
+</video>
 
 ## Add a card
 
 Each column has a **+** button that opens a new-card form — title, column,
 priority, assignee, labels, and a body. New cards drop straight into that column.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 3 — the new-card form**
-_Click a column's **+** and capture the new-card modal with a few fields filled
-in._
-</div>
+![Kanban — the new-card form]({{ '/assets/img/howtos/kanban/new-card.png' | relative_url }}){: .doc-shot }
 
 ## Built and read by agents
 

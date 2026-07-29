@@ -101,7 +101,9 @@ a:hover { text-decoration-color: #A85D00; }
 
 // ── Web-UI screenshots ──────────────────────────────────────────────────────
 // Framed, rounded product shots for the walkthroughs (`{: .doc-shot }`).
-img.doc-shot {
+// Applies to still images and short demo clips (`<video class="doc-shot">`).
+img.doc-shot,
+video.doc-shot {
   display: block;
   width: 100%;
   height: auto;
