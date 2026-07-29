@@ -175,7 +175,7 @@
   .dot { width: 9px; height: 9px; border-radius: 50%; background: #303B52; }
   .device-bar .title { margin-left: 6px; }
   .device-bar .agent { margin-left: auto; color: var(--amber-soft); }
-  .device-body { padding: 16px 18px 20px; min-height: 268px; color: var(--scr-fg); }
+  .device-body { padding: 16px 18px 20px; min-height: 320px; color: var(--scr-fg); }
   .device-body .row { display: flex; gap: 12px; white-space: nowrap; }
   .device-body .k { color: var(--scr-dim); width: 78px; flex: none; }
   .device-body .v { color: var(--scr-fg); overflow: hidden; text-overflow: ellipsis; }
@@ -189,13 +189,17 @@
   .pill.running { color: var(--live); }
   .pill.init { color: var(--scr-dim); }
   .pill.done { color: var(--amber); }
-  .log { margin-top: 14px; border-top: 1px dashed var(--scr-line); padding-top: 12px; display: flex; flex-direction: column; gap: 3px; }
+  .log { margin-top: 14px; border-top: 1px dashed var(--scr-line); padding-top: 12px; display: flex; flex-direction: column; gap: 3px; min-height: 132px; }
   .log .line { display: flex; gap: 10px; }
   .log .g { color: var(--scr-dim); flex: none; }
   .log .t { color: var(--scr-fg); }
   .log .t .doc { color: var(--amber-soft); }
   .log .ok { color: var(--live); }
   .caret { display: inline-block; width: 8px; height: 15px; background: var(--amber); vertical-align: -2px; margin-left: 2px; animation: blink 1.05s steps(1) infinite; }
+  a.device { display: block; text-decoration: none; color: inherit; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+  a.device:hover { transform: translateY(-2px); box-shadow: 0 18px 44px -24px rgba(0,0,0,.55); }
+  .device-foot { margin-top: 13px; font-family: var(--mono); font-size: 12px; color: var(--scr-dim); letter-spacing: .03em; transition: color .15s; }
+  a.device:hover .device-foot { color: var(--amber); }
   @keyframes blink { 50% { opacity: 0; } }
 
   /* ---- generic section ---- */
@@ -330,19 +334,20 @@
         <p class="hero-note" data-i18n="hero.note">Or run it on your own machine in a couple of minutes — <a href="{{ '/getting-started' | relative_url }}">self-host&nbsp;→</a></p>
       </div>
 
-      <div class="device" role="img" aria-label="A Vance think-process: the marvin engine reads a spec and writes a draft, ending in a done state.">
+      <a class="device" id="device" href="{{ '/howtos/uc-iron/' | relative_url }}" aria-label="A live Vance think-process — click to open the matching walk-through.">
         <div class="device-bar">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
           <span class="title">think-process</span>
-          <span class="agent">engine: marvin</span>
+          <span class="agent">engine: <span id="engine">marvin</span></span>
         </div>
         <div class="device-body">
-          <div class="row"><span class="k">assignment</span><span class="v">“Draft the Q3 architecture review”</span></div>
+          <div class="row"><span class="k">assignment</span><span class="v" id="assignment">“Research the properties of iron”</span></div>
           <div class="row" style="margin-top:6px"><span class="k">status</span><span class="v"><span class="pill running" id="pill"><span class="led"></span><span id="pill-text">RUNNING</span></span></span></div>
-          <div class="row" style="margin-top:6px"><span class="k">scope</span><span class="v">project <span class="doc">acme/platform</span> · session <span class="doc">#4f1a</span></span></div>
+          <div class="row" style="margin-top:6px"><span class="k">scope</span><span class="v" id="scope">project <span class="doc">iron-research</span> · session <span class="doc">#a77e</span></span></div>
           <div class="log" id="log" aria-hidden="true"></div>
+          <div class="device-foot" id="device-foot">↳ see the walk-through</div>
         </div>
-      </div>
+      </a>
     </div>
   </section>
 
@@ -626,12 +631,6 @@
       "apps.finance": "Geld-Entscheidungen strukturieren.",
       "apps.cortex": "Chat, Dokument und Ausführung auf einer Fläche.",
       "apps.more": "…und mehr Kinds — Mindmap, Kalender, Slides, Diagramme, Checklisten.",
-      "cases.eyebrow": "In Aktion",
-      "cases.h2": "Was Leute damit erledigen.",
-      "cases.p": "Echte Walk-throughs — aus einer Anfrage wachsen Recherche, Diagramme, Dokumente und Decks. Jeder ist eine Slideshow, der man Schritt für Schritt folgen kann.",
-      "cases.iron": "Tiefenrecherche mit Marvin, als Mindmap umformen, bebildern, in ein Dokument gießen — und als PDF exportieren. Alles in einer Unterhaltung.",
-      "cases.stock": "Aktienkurse aus dem Netz ziehen, als Candlestick-Chart darstellen und eine Einschätzung bekommen, die die zugrunde liegenden Zahlen benennt.",
-      "cases.talent": "Ein wiederverwendbares Gremium aus AI-Personas aufsetzen, eine Idee davorwerfen und ein synthetisiertes Urteil bekommen — die Meinungsverschiedenheit bleibt erhalten.",
       "pillars.eyebrow": "Was es ausmacht",
       "pillars.h2": "Ein paar Ideen tragen den Großteil.",
       "pillars.p": "Alles Weitere folgt daraus.",
@@ -727,48 +726,88 @@
     var pillText = document.getElementById("pill-text");
     if (!log) return;
 
-    var steps = [
-      { g: "read",  html: 'specs/<span class="doc">architecture.md</span>' },
-      { g: "think", html: 'decomposed into 5 sub-tasks' },
-      { g: "spawn", html: '<span class="doc">ford</span> · gather source metrics' },
-      { g: "write", html: 'review/<span class="doc">q3-draft.md</span>', caret: true },
-      { g: "done",  html: '<span class="ok">✓ written · 3 sources cited</span>', ok: true }
+    var engineEl = document.getElementById("engine");
+    var assignEl = document.getElementById("assignment");
+    var scopeEl  = document.getElementById("scope");
+    var device   = document.getElementById("device");
+
+    // Each run mirrors a real use-case walk-through (see /howtos). The whole
+    // card — engine, assignment, scope, link — swaps per run, then the log types.
+    var runs = [
+      {
+        engine: "marvin",
+        assignment: "“Research the properties of iron”",
+        scope: 'project <span class="doc">iron-research</span> · session <span class="doc">#a77e</span>',
+        href: "/howtos/uc-iron/",
+        steps: [
+          { g: "plan",  html: "decompose into 5 areas" },
+          { g: "spawn", html: '<span class="doc">web-research</span> · sources' },
+          { g: "tool",  html: "research_investigate ✓" },
+          { g: "write", html: 'report + <span class="doc">mindmap</span>', caret: true },
+          { g: "done",  html: '<span class="ok">✓ report · sources cited</span>', ok: true }
+        ]
+      },
+      {
+        engine: "arthur",
+        assignment: "“Size up Apple (AAPL)”",
+        scope: 'project <span class="doc">market-analysis</span> · session <span class="doc">#ca54</span>',
+        href: "/howtos/uc-stock/",
+        steps: [
+          { g: "find",  html: "research_search · yearly prices" },
+          { g: "chart", html: '<span class="doc">candlestick</span> 2015–2025' },
+          { g: "think", html: "assess trend + valuation", caret: true },
+          { g: "done",  html: '<span class="ok">✓ grounded verdict</span>', ok: true }
+        ]
+      },
+      {
+        engine: "zaphod",
+        assignment: "“Stress-test the pitch”",
+        scope: 'project <span class="doc">got-talent</span> · session <span class="doc">#3efa</span>',
+        href: "/howtos/uc-talent/",
+        steps: [
+          { g: "spawn", html: "4 persona heads" },
+          { g: "poll",  html: "verdicts · 4 / 4" },
+          { g: "merge", html: "synthesise", caret: true },
+          { g: "done",  html: '<span class="ok">✓ YES-IF</span>', ok: true }
+        ]
+      }
     ];
 
     function setPill(state, text) { pill.className = "pill " + state; pillText.textContent = text; }
-
-    function renderStatic() {
-      setPill("done", "DONE");
-      log.innerHTML = "";
-      steps.forEach(function (s) {
-        var line = document.createElement("div");
-        line.className = "line";
-        line.innerHTML = '<span class="g">' + s.g.padEnd(5, " ") + '</span><span class="t">' + s.html + '</span>';
-        log.appendChild(line);
-      });
+    function loadRun(run) {
+      if (engineEl) engineEl.textContent = run.engine;
+      if (assignEl) assignEl.innerHTML = run.assignment;
+      if (scopeEl)  scopeEl.innerHTML = run.scope;
+      if (device)   device.setAttribute("href", run.href);
     }
-
-    if (reduce) { renderStatic(); return; }
-
-    var i = 0;
-    function tick() {
-      if (i === 0) { log.innerHTML = ""; setPill("init", "INIT"); }
-      if (i === 1) setPill("running", "RUNNING");
-
-      var s = steps[i];
+    function lineEl(s, allowCaret) {
       var line = document.createElement("div");
       line.className = "line";
-      var caret = s.caret ? '<span class="caret"></span>' : "";
+      var caret = (allowCaret && s.caret) ? '<span class="caret"></span>' : "";
       line.innerHTML = '<span class="g">' + s.g.padEnd(5, " ") + '</span><span class="t">' + s.html + caret + '</span>';
-      log.appendChild(line);
+      return line;
+    }
 
-      if (s.ok) setPill("done", "DONE");
+    if (reduce) {
+      var r0 = runs[0]; loadRun(r0); setPill("done", "DONE"); log.innerHTML = "";
+      r0.steps.forEach(function (s) { log.appendChild(lineEl(s, false)); });
+      return;
+    }
+
+    var r = 0, i = 0;
+    function tick() {
+      var run = runs[r];
+      if (i === 0) { loadRun(run); log.innerHTML = ""; setPill("init", "INIT"); }
+      if (i === 1) setPill("running", "RUNNING");
+
+      log.appendChild(lineEl(run.steps[i], true));
+      if (run.steps[i].ok) setPill("done", "DONE");
       i++;
 
-      if (i < steps.length) {
-        setTimeout(tick, 900 + (i === 3 ? 600 : 0));
+      if (i < run.steps.length) {
+        setTimeout(tick, 900);
       } else {
-        setTimeout(function () { i = 0; tick(); }, 3200);
+        setTimeout(function () { r = (r + 1) % runs.length; i = 0; tick(); }, 3400);
       }
     }
     setTimeout(tick, 500);
