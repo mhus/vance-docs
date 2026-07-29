@@ -63,6 +63,93 @@ interactive — just answer the prompts.
 Then open the URL it prints (a local install defaults to
 <http://localhost:9999>) and log in with the user you just created.
 
+### What you'll see
+
+**Step 1** — the installer runs the wizard, then starts the stack:
+
+```console
+$ curl -fsSL https://vance.mhus.de/install.sh | bash
+
+Vance — setup
+A workspace for AI. No git, no build tools — just Docker.
+
+Setup folder: ~/.vance
+Pulling the setup image on first run — this can take a minute.
+
+Vance — Docker Compose Setup
+============================
+
+Settings
+--------
+   1) Default language:     English (en)
+   2) Anus login password:  (none — REPL open)
+   3) Secret encryption pw: ******** (auto-generated)
+   4) Analysis (Fook):      enabled
+   5) Access mode:          local (localhost)
+   8) Vance port:           http://localhost:9999
+   9) Expert mode:          off
+
+Edit a number, s) Save, q) Quit: s
+
+Starting the stack (docker compose up -d)…
+ ✔ mongodb   Healthy
+ ✔ redis     Healthy
+ ✔ brain     Started
+ ✔ face      Started
+ ✔ caddy     Started
+
+Installed and starting. Now configure your tenant + first user:
+  curl -fsSL https://vance.mhus.de/setup.sh | bash
+```
+
+**Step 2** — the setup wizard creates the tenant, first user and LLM provider:
+
+```console
+$ curl -fsSL https://vance.mhus.de/setup.sh | bash
+Using: ~/.vance
+Ensuring the stack is running…  ✔
+Waiting for MongoDB to become ready…  ✔
+
+Vance Setup
+===========
+
+No tenants yet — let's create one.
+New tenant name (lowercase, e.g. acme): acme
+Tenant title (display name, optional): Acme Inc.
+
+No users in tenant 'acme' — let's create one.
+New user name (login, lowercase, e.g. wile.coyote): wile.coyote
+User title (display name, optional): Wile E. Coyote
+Email (optional): wile@acme.example
+Password: *******
+Confirm: *******
+
+Setup
+-----
+  1) Tenant:               acme  (new)
+  2) Tenant title:         Acme Inc.
+  3) Username:             wile.coyote  (new)
+  4) User title:           Wile E. Coyote
+  5) User email:           wile@acme.example
+  6) AI provider:          Gemini
+  7) AI model:             gemini-2.5-flash
+  8) AI API key:           (not set)
+  9) Embedding API key:    (not set)  (reuses chat key if blank)
+ 10) Serper key (research): (not set)
+
+Edit [1-10], s) Save, q) Quit: 8
+AI API key (blank to keep current): ***
+
+Edit [1-10], s) Save, q) Quit: s
+
+Saving…
+  + tenant 'acme' created
+  + user 'wile.coyote' created
+  + Gemini API key written
+  ~ AI defaults written (Gemini / gemini-2.5-flash)
+Done.
+```
+
 **Prefer to run it by hand?** No script needed — Docker does all of it:
 
 ```bash
@@ -201,6 +288,45 @@ cd repos/vance/client && pnpm install && pnpm --filter @vance/vance-face dev
 
 This path requires Java 25, Maven, pnpm and a local MongoDB.
 
-## First assignment
+## First steps in the Web UI
 
-_coming soon._
+Everything above happens in a terminal. Once the stack is up and you've created a
+user, the rest lives in the browser. Here's the first walk-through — from the
+login screen to your first answer.
+
+{: .note }
+> The screenshots show an example workspace (`meridian` / `mara`). You'll see
+> your own tenant and user name instead — whatever you entered in the setup step.
+
+**1. Log in.** Open the URL the installer printed and sign in with the user you
+just created. The tenant is pre-filled; enter your login and password.
+
+![Vance login screen]({{ '/assets/img/getting-started/01-login.png' | relative_url }}){: .doc-shot }
+
+**2. Land on the hub.** After login you get the editor hub — every workspace
+surface (Chat, Documents, Cortex, Inbox, …) is one tile away. The bar top-right
+always shows the active `tenant · user`.
+
+![Vance editor hub]({{ '/assets/img/getting-started/02-home.png' | relative_url }}){: .doc-shot }
+
+**3. Create a project.** A project is a scope — its own documents, sessions,
+settings and memory. Hit **+ Add project**, give it a lowercase name (the
+technical key) and an optional title.
+
+![New project dialog]({{ '/assets/img/getting-started/03-new-project.png' | relative_url }}){: .doc-shot }
+
+**4. Start a session.** In **Chat**, open a new session and pick a *recipe* — a
+named worker configuration (engine + prompt + tools). **Default** is the project
+default; **Analyze**, **Code Read**, **Coding** and others are ready-made.
+
+![Recipe picker for a new session]({{ '/assets/img/getting-started/04-new-session.png' | relative_url }}){: .doc-shot }
+
+**5. Talk to it.** That's the payoff: a live chat with an agent. Ask a question,
+and the **Progress** panel on the right shows what it's doing turn by turn —
+tool calls, token counts, engine start/end. Jump into the full document
+workspace any time with **Open Cortex →**.
+
+![First chat with the Arthur engine]({{ '/assets/img/getting-started/05-first-chat.png' | relative_url }}){: .doc-shot }
+
+From here you're in Vance proper — see the rest of the docs for documents,
+apps, kits and automation.

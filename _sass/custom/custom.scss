@@ -29,3 +29,68 @@ h1, h2, h3, h4, h5, h6,
 
 // Amber hover on links, matching the landing's interaction color.
 a:hover { text-decoration-color: #A85D00; }
+
+// ── Terminal transcripts ────────────────────────────────────────────────────
+// ```console blocks render as the landing's dark "device" (light mono on ink,
+// with a title bar) — i.e. what you *see*, as opposed to the light ```bash
+// blocks, which are what you *type*.
+.language-console {
+  position: relative;
+  border: 1px solid #222c40 !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  // !important: beats the theme's `div.highlighter-rouge { background-color }`
+  // (specificity 0,1,1) — otherwise the body stays light and the light text
+  // on it is unreadable.
+  background: #0a0d14 !important;
+  box-shadow: 0 22px 55px -32px rgba(10, 14, 25, 0.6);
+  margin-block: 1.25em;
+}
+// Title bar with three dim dots (matches the landing device).
+.language-console::before {
+  content: "";
+  display: block;
+  height: 34px;
+  background:
+    radial-gradient(circle 4.5px at 18px 17px, #33405c 96%, transparent),
+    radial-gradient(circle 4.5px at 37px 17px, #33405c 96%, transparent),
+    radial-gradient(circle 4.5px at 56px 17px, #33405c 96%, transparent),
+    linear-gradient(#10141f, #10141f);
+  border-bottom: 1px solid #1d2536;
+}
+.language-console .highlight,
+.language-console figure.highlight,
+.language-console div.highlight {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  margin: 0;
+}
+.language-console pre,
+.language-console pre.highlight {
+  background: transparent !important;
+  margin: 0;
+  padding: 14px 18px 18px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+// Flatten Rouge tokens to one light ink colour on the dark ground, and force a
+// monospace face (terminals are mono).
+.language-console pre,
+.language-console pre * {
+  color: #c9d3e6 !important;
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", "Roboto Mono", Consolas, monospace !important;
+}
+
+// ── Web-UI screenshots ──────────────────────────────────────────────────────
+// Framed, rounded product shots for the walkthroughs (`{: .doc-shot }`).
+img.doc-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  box-shadow: 0 22px 55px -34px rgba(10, 14, 25, 0.5);
+  margin-block: 0.85em 0.35em;
+}
