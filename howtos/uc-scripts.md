@@ -1,12 +1,18 @@
 ---
-title: "Run a script in a page"
+title: "Compose — run scripts in a page"
 parent: How-tos
 nav_order: 20
 permalink: /howtos/uc-scripts/
+nav_exclude: true
 ---
 
-# Run a script in a page
+# Compose — run scripts in a page
 {: .no_toc }
+
+{: .note }
+> **Draft — a *feature*, not a use-case, and not yet published on the site.**
+> This documents Vance's compose blocks (run Shell / Python / … in a page). It's
+> kept off the nav (`nav_exclude`) until we decide where the feature lives.
 
 A Vance page can **run things**, not just hold text. Drop a compose block into a
 page, write a script, and run it — it executes server-side in a fresh workspace

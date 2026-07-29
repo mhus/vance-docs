@@ -36,7 +36,6 @@ Short, visual, "here's how X works."
 The narrative path from a request to a result, across several features at once —
 what people actually get done with Vance.
 
-- [**Run a script in a page**](/howtos/uc-scripts/) — a compose block runs Shell, Python, … right in the page _(first use-case; slideshow format)_
 - **Coding** — an agent does real, sustained engineering on a repo _(planned)_
 - **Research** — a question becomes a sourced, verified synthesis _(planned)_
 - **Automation** — work that runs on a timer or an event, no chatting _(planned)_
