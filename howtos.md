@@ -21,7 +21,7 @@ For *what something is* and *how it works internally*, see the
 
 ## Feature tours
 
-Screenshot walkthroughs of the surfaces you actually work in — one per app.
+Screenshot walkthroughs of the surfaces and building blocks you actually work in.
 Short, visual, "here's how X works."
 
 - [**Cortex** — chat, document and execute on one surface](/howtos/cortex/)
@@ -30,6 +30,7 @@ Short, visual, "here's how X works."
 - [**Kanban & Issues** — plan work and track it through](/howtos/kanban/)
 - [**Sheet** — spreadsheets with functions](/howtos/sheet/)
 - [**Finance** — structure money decisions](/howtos/finance/)
+- [**Compose** — run scripts (Shell, Python, LaTeX, an agent) right in a page](/howtos/compose/)
 
 ## Use-case stories
 
