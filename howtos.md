@@ -28,7 +28,7 @@ Short, visual, "here's how X works."
 - [**Canvas** — think spatially: nodes, links and groups](/howtos/canvas/)
 - [**Workbook** — notes and pages in a block editor](/howtos/workbook/)
 - [**Kanban & Issues** — plan work and track it through](/howtos/kanban/)
-- **Sheet** — spreadsheets with functions _(planned)_
+- [**Sheet** — spreadsheets with functions](/howtos/sheet/)
 - **Finance** — structure money decisions _(planned)_
 
 ## Use-case stories
