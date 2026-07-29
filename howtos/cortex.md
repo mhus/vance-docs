@@ -49,14 +49,16 @@ Every Cortex screen has the same shape:
   One shell renders *every* kind — a workpage, a canvas, a spreadsheet, a script
   — each with the right editor.
 - **Right — Chat / Help.** The agent session on one tab; a context-sensitive
-  Help panel (changes per document kind) on the other.
+  Help panel (changes per document kind) on the other. It collapses out of the
+  way — the `⟩` handle on the edge brings it back.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 1 — the layout**
-_Open Cortex on `orbit-app` with `engineering/architecture-review` in the middle
-tab. Frame all three zones: file tree left, the workpage centre, the Chat panel
-right. This is the establishing shot._
-</div>
+![Cortex — architecture-review workpage open in orbit-app]({{ '/assets/img/howtos/cortex/layout.png' | relative_url }}){: .doc-shot }
+
+Here the `architecture-review` workpage is open in the middle, rendered as a
+block editor — the ADR callout, the side-by-side options, the decision box.
+The toolbar carries a **View / Edit** toggle, a `Properties` deep-link, and a
+`[kind-registry:workpage]` pill telling you which editor bound to this kind. The
+chat panel is collapsed in this shot; we open it next.
 
 ## Talk about what's open
 
