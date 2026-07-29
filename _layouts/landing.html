@@ -251,6 +251,11 @@
   .card .tag { font-family: var(--mono); font-size: 12px; color: var(--amber); letter-spacing: .06em; }
   .card h3 { font-size: 19px; margin: 4px 0 8px; }
   .card p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+  a.card { display: block; text-decoration: none; color: inherit; transition: border-color .15s, transform .15s, box-shadow .15s; }
+  a.card:hover { border-color: var(--amber); transform: translateY(-2px); box-shadow: 0 12px 32px -20px rgba(0,0,0,.4); }
+  a.card h3 { display: flex; align-items: baseline; gap: 6px; }
+  a.card h3::after { content: "↗"; color: var(--amber); font-size: .72em; opacity: 0; transition: opacity .15s; }
+  a.card:hover h3::after { opacity: 1; }
   .apps-more { color: var(--muted); font-family: var(--mono); font-size: 13px; margin: 22px 0 0; }
 
   /* ---- closer ---- */
@@ -361,12 +366,12 @@
         <p data-i18n="apps.p">Not a chat window, but the tools you actually work in — all AI-native: have them created, filled, reshaped and linked. Because everything is a document, it all hangs together, and it’s shared live — people and agents at once.</p>
       </div>
       <div class="cards">
-        <div class="card"><h3>Sheet</h3><p data-i18n="apps.sheet">Spreadsheets with functions — pipe the results onward.</p></div>
-        <div class="card"><h3>Canvas</h3><p data-i18n="apps.canvas">Think spatially: nodes, links and groups on an open plane.</p></div>
-        <div class="card"><h3>Workbook</h3><p data-i18n="apps.workbook">Notes and pages in a block editor.</p></div>
-        <div class="card"><h3>Kanban &amp; Issues</h3><p data-i18n="apps.boards">Plan work and track it through.</p></div>
-        <div class="card"><h3>Finance</h3><p data-i18n="apps.finance">Structure money decisions.</p></div>
-        <div class="card"><h3>Cortex</h3><p data-i18n="apps.cortex">Chat, document and execute on one surface.</p></div>
+        <a class="card" href="{{ '/howtos/sheet/' | relative_url }}"><h3>Sheet</h3><p data-i18n="apps.sheet">Spreadsheets with functions — pipe the results onward.</p></a>
+        <a class="card" href="{{ '/howtos/canvas/' | relative_url }}"><h3>Canvas</h3><p data-i18n="apps.canvas">Think spatially: nodes, links and groups on an open plane.</p></a>
+        <a class="card" href="{{ '/howtos/workbook/' | relative_url }}"><h3>Workbook</h3><p data-i18n="apps.workbook">Notes and pages in a block editor.</p></a>
+        <a class="card" href="{{ '/howtos/kanban/' | relative_url }}"><h3>Kanban &amp; Issues</h3><p data-i18n="apps.boards">Plan work and track it through.</p></a>
+        <a class="card" href="{{ '/howtos/finance/' | relative_url }}"><h3>Finance</h3><p data-i18n="apps.finance">Structure money decisions.</p></a>
+        <a class="card" href="{{ '/howtos/cortex/' | relative_url }}"><h3>Cortex</h3><p data-i18n="apps.cortex">Chat, document and execute on one surface.</p></a>
       </div>
       <p class="apps-more" data-i18n="apps.more">…and more kinds — mindmap, calendar, slides, diagrams, checklists.</p>
     </div>
