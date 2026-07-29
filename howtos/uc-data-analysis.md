@@ -31,11 +31,14 @@ copy-pasteable: open a `workpage`, type `/compose`, and paste the YAML.
 
 ---
 
-## How it hangs together
+## One page, five blocks
 
-Five blocks, one shared workspace called `topical`. Because they name the same
-workspace, the file one block writes is still there for the next one — so the
-data flows down the page:
+The whole analysis is a **single page**. Five compose blocks stacked top to
+bottom, each with its own **▶ Run** button — and all naming the same workspace
+`topical`, so the file one block writes is still there for the next. The data
+flows down the page.
+
+![The analysis notebook — five compose blocks on one page]({{ '/assets/img/howtos/uc-analysis/overview.png' | relative_url }}){: .doc-shot }
 
 1. **Pull** the raw conversations file into the workspace.
 2. **Truncate** it to a fixed sample of 10 (fast, reproducible).
@@ -43,8 +46,54 @@ data flows down the page:
 4. **Chart** the sentiment counts as a native Vance chart.
 5. **Ask** an agent to characterise the conversation style from real turns.
 
-You don't reach the goal in one shot — you reach it by pressing five buttons in
-order, each standing on the output of the one before.
+You don't reach the goal in one shot — you reach it by pressing buttons in order,
+each standing on the output of the one before.
+
+## Working toward the result
+
+This is the real point of compose, and what a one-shot script or a notebook cell
+doesn't give you: **each block runs on its own, so you build up to the answer** —
+try, break, fix, replay, branch, or hand it to the agent. The slideshow walks the
+moves; none of them need the others.
+
+<div class="vslides">
+  <div class="vslides-head">What you can do with compose — 5 moves</div>
+  <div class="vslides-stage">
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-analysis/wip-01-fail.png' | relative_url }}" alt="A compose block that failed with a ModuleNotFoundError">
+      <figcaption><span class="step">Trial &amp; error</span>Run a block on its own with <strong>▶</strong> and just try things. This one reached for <code>pandas</code>, which isn't in the image — a red <code>ModuleNotFoundError</code>, and that's fine. Nothing else broke; the workspace still holds what earlier blocks wrote.</figcaption>
+    </figure>
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-analysis/wip-02-fixed.png' | relative_url }}" alt="The same block fixed to use the standard library, now succeeding">
+      <figcaption><span class="step">Fix &amp; replay</span>Swap <code>pandas</code> for the standard library, press <strong>▶</strong> again — <code>success</code>, and the stats come back. You replay just the one block; no need to re-run the steps before it.</figcaption>
+    </figure>
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-analysis/controls.png' | relative_url }}" alt="A compose block's more-menu: Run All Until, Clear Output, Clear All Output">
+      <figcaption><span class="step">Run the chain</span>Each block's <strong>⋯</strong> menu has <strong>Run All Until</strong> — run everything from the top down to this block, in order, stopping at the first failure. <strong>Clear All Output</strong> wipes every result to start clean.</figcaption>
+    </figure>
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-analysis/wip-03-variations.png' | relative_url }}" alt="Two variant blocks, the second marked autoRun: false">
+      <figcaption><span class="step">Try variations</span>Keep two takes on the same step side by side. Mark the one you're not using with <code>autoRun: false</code> — "Run All Until" skips it, but its own <strong>▶</strong> still runs it so you can compare. Flip the flag when a winner emerges.</figcaption>
+    </figure>
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-analysis/wip-04-agent.png' | relative_url }}" alt="The chat agent running a compose block via the compose_run tool">
+      <figcaption><span class="step">Ask the agent</span>Open the chat and just ask. Here the agent runs the block for you (you can see <code>compose_run</code> in the live-progress panel) and reads back the numbers — it can rewrite a block too. Same run path as ▶; the output lands in the page.</figcaption>
+    </figure>
+  </div>
+  <nav class="vslides-nav">
+    <button data-prev aria-label="Previous step">‹</button>
+    <span class="vslides-count"></span>
+    <button data-next aria-label="Next step">›</button>
+  </nav>
+</div>
+
+One more knob worth knowing: a block with `workspace: { clear: true }` wipes the
+workspace before it runs, so you can reset and replay the whole page from nothing.
+
+## A closer look at each block
+
+The rest of this page walks each block up close — the script it runs and the
+result it produces — so you can copy them and follow the happy path end to end.
 
 ## 1 · Pull the data
 
