@@ -25,6 +25,20 @@ it (`wb smoke showcase`), you can follow along on your own instance.
 
 ---
 
+## Getting there
+
+Cortex opens on a document, so you start in **Documents** — the project's file
+browser. Pick the project (`orbit-app`) in the left rail and you see its
+top-level folders.
+
+![Documents — orbit-app project root]({{ '/assets/img/howtos/cortex/documents-root.png' | relative_url }}){: .doc-shot }
+
+Drill into a folder to find the file you want to work on. Here, `engineering/`
+holds the workbook — its app manifest, an index, and the workpages themselves.
+Click a document and it opens in Cortex.
+
+![Documents — inside the engineering folder]({{ '/assets/img/howtos/cortex/documents-folder.png' | relative_url }}){: .doc-shot }
+
 ## The three zones
 
 Every Cortex screen has the same shape:
