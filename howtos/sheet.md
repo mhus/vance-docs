@@ -32,12 +32,7 @@ inline cell editing. The `infra-cost` example totals a monthly infra bill:
 component, units, €/unit, and a computed €/mo column, with a **Total / mo** and
 **Total / yr** at the bottom.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 1 — the sheet**
-_Open `orbit-app` → `sheets/infra-cost`. Frame the whole grid — the bold header
-row, the tinted computed `€/mo` column, and the green Total rows (203 / mo,
-2,436 / yr). Establishing shot._
-</div>
+![Sheet — the infra-cost grid with computed totals]({{ '/assets/img/howtos/sheet/grid.png' | relative_url }}){: .doc-shot }
 
 ## Formulas that compute
 
@@ -46,26 +41,24 @@ shows its *result* and carries a subtle left-edge marker; click into it and you
 see the formula itself. Change an input — say the Brain-pod count — and the
 totals recompute (server-side, then the grid updates).
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 2 — a formula in a cell**
-_Click a computed cell (e.g. the **Total / mo** cell) so the formula bar / cell
-shows `=SUM(D2:D5)` while the grid still shows the result. Bonus: bump a `Units`
-cell and catch the total changing._
-</div>
+![Sheet — Edit mode showing the formulas behind the cells]({{ '/assets/img/howtos/sheet/formulas.png' | relative_url }}){: .doc-shot }
 
-## Format and raw
+## Format a range
 
-Formatting is per-cell — bold, alignment, number format (the `€#,##0` on the
-money columns), text and background colour — from the toolbar on a selection. And
-because a sheet is just a document, a **Raw** tab shows the JSON underneath;
-CSV / XLSX import and export are there too.
+Formatting is per-cell *and* per-range. Drag out a rectangle and the panel tells
+you how many cells you grabbed ("4 cells") and applies bold, alignment, number
+format (the `€#,##0` on the money columns), text and background colour to all of
+them at once.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot (optional) — the Raw tab or a format action**
-_Either flip to the **Raw** tab to show the JSON/formula source, or select a cell
-and open the format controls (number format / colour). Skip if you'd rather keep
-the tour to two shots._
-</div>
+![Sheet — a multi-cell selection with the format panel]({{ '/assets/img/howtos/sheet/format.png' | relative_url }}){: .doc-shot }
+
+## It's just a document
+
+Because a sheet is a plain document, the **Raw** tab shows the JSON underneath —
+`$meta`, the schema, and each cell with its `data` (values and `=…` formulas) and
+formatting. CSV / XLSX import and export sit in the toolbar too.
+
+![Sheet — the Raw JSON view]({{ '/assets/img/howtos/sheet/raw.png' | relative_url }}){: .doc-shot }
 
 ## Filled and read by agents
 
