@@ -42,6 +42,7 @@ what people actually get done with Vance.
 - [**Stress-test an idea with a panel of judges**](/howtos/uc-talent/) — stand up a reusable council of AI personas, get one synthesised verdict, keep it as a document
 - [**Size up a stock with live data**](/howtos/uc-stock/) — pull a stock's prices off the web, chart them as candlesticks, and get a grounded assessment
 - [**Turn research into a slideshow**](/howtos/uc-sports/) — research a topic, fetch an image per point, and get a presentable slides document
+- [**Research a topic, end to end**](/howtos/uc-iron/) — deep-research with Marvin, reshape it, illustrate it, compile a document, export a PDF
 - **Coding** — an agent does real, sustained engineering on a repo _(planned)_
 - **Research** — a question becomes a sourced, verified synthesis _(planned)_
 - **Automation** — work that runs on a timer or an event, no chatting _(planned)_
