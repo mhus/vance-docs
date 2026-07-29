@@ -44,6 +44,12 @@ the card's subtask-progress badge.
 
 ![Kanban — a card's detail panel]({{ '/assets/img/howtos/kanban/card.png' | relative_url }}){: .doc-shot }
 
+The body isn't a plain text box — **"Content"** opens it in the same block editor
+a workpage uses: headings, lists, checkable to-dos, `/` for blocks. So a card can
+hold real notes and acceptance criteria, not just a one-liner.
+
+![Kanban — editing a card's body in the block editor]({{ '/assets/img/howtos/kanban/card-body.png' | relative_url }}){: .doc-shot }
+
 ## Move it
 
 Drag a card to another column and it goes — the move is optimistic (it lands
