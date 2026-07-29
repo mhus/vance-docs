@@ -40,6 +40,7 @@ what people actually get done with Vance.
 
 - [**Analyse a dataset, step by step**](/howtos/uc-data-analysis/) — pull public data, sample it, compute, chart, and ask an agent — five compose blocks in a row
 - [**Stress-test an idea with a panel of judges**](/howtos/uc-talent/) — stand up a reusable council of AI personas, get one synthesised verdict, keep it as a document
+- [**Size up a stock with live data**](/howtos/uc-stock/) — pull a stock's prices off the web, chart them as candlesticks, and get a grounded assessment
 - **Coding** — an agent does real, sustained engineering on a repo _(planned)_
 - **Research** — a question becomes a sourced, verified synthesis _(planned)_
 - **Automation** — work that runs on a timer or an event, no chatting _(planned)_
