@@ -94,16 +94,20 @@ presence and a 3-way merge; you can be typing in it at the same moment.
 
 ## Every kind, one shell
 
-Switch tabs and the middle pane re-skins itself to the document's kind — a
-workpage renders as a block editor, a canvas as a node graph, a spreadsheet as
-a grid. Same tabs, same chat, kind-aware editor.
+The middle pane re-skins itself to whatever the document is — a workpage is a
+block editor, a canvas a node graph, a spreadsheet a grid. Push it further and
+open an **application**: the Engineering workbook's `_app.yaml` renders as the
+*whole app* inside the same shell — its own page tree on the left, the page in
+the middle, the chat still on the right. The toolbar toggle just becomes
+**App / Edit**.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 4 — a different kind in the same shell** _(optional but strong)_
-_Open a second tab on `diagrams/system` (the canvas) alongside the workpage tab.
-Capture the tab bar with both docs open and the canvas rendered in the middle —
-it shows one surface handling very different content._
-</div>
+![Cortex — a workbook application rendered in the shell]({{ '/assets/img/howtos/cortex/app-view.png' | relative_url }}){: .doc-shot }
+
+And the blocks are live, not a flat dump: callouts, side-by-side columns,
+syntax-highlighted code, checkable to-dos, an auto-generated table of contents —
+the whole workpage block inventory rendered inline.
+
+![Cortex — rich blocks: code, checkable to-dos, table of contents]({{ '/assets/img/howtos/cortex/app-blocks.png' | relative_url }}){: .doc-shot }
 
 ## Run it
 
