@@ -36,6 +36,7 @@ Short, visual, "here's how X works."
 The narrative path from a request to a result, across several features at once —
 what people actually get done with Vance.
 
+- [**Analyse a dataset, step by step**](/howtos/uc-data-analysis/) — pull public data, sample it, compute, chart, and ask an agent — five compose blocks in a row
 - **Coding** — an agent does real, sustained engineering on a repo _(planned)_
 - **Research** — a question becomes a sourced, verified synthesis _(planned)_
 - **Automation** — work that runs on a timer or an event, no chatting _(planned)_
