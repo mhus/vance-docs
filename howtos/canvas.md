@@ -33,12 +33,7 @@ canvas opens read-only). Open the `design` canvasbook from Documents (or the
 app view) and its board fills the screen: one menu button up top switches
 between boards, and it auto-saves as you work.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 1 — the board**
-_Open `orbit-app` → `design` canvasbook on the "Sync system" board. Frame the
-whole plane: the two group frames, the nodes and the arrows between them. This is
-the establishing shot._
-</div>
+![Canvas — the Sync system board]({{ '/assets/img/howtos/canvas/board.png' | relative_url }}){: .doc-shot }
 
 ## Nodes, edges, groups
 
@@ -48,12 +43,7 @@ Three things make a canvas. **Nodes** — sticky text, links, or documents.
 It's explicit parenting, so an agent reading the canvas knows what belongs to
 what.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 2 — grouping**
-_Drag the "Brain (pod)" group frame a little (or just select it). Capture it
-mid-move or selected, so it's clear the contained nodes belong to the group and
-travel with it._
-</div>
+![Canvas — the Brain group selected, its nodes inside]({{ '/assets/img/howtos/canvas/grouping.png' | relative_url }}){: .doc-shot }
 
 ## Live documents on the board
 
@@ -62,12 +52,7 @@ kind — not a screenshot, not a link. The "Sync system" board pins the
 architecture-review **workpage** right onto the plane, rendered live, with a `↗`
 that jumps you into its Cortex tab.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 3 — a document embedded as a node**
-_Frame the `doc` node showing the architecture-review workpage rendered inside
-the canvas (the ADR callout / headings visible), ideally with its `↗` open-in-
-Cortex control in shot. This is the "nodes are real documents" point._
-</div>
+![Canvas — the architecture-review workpage embedded as a doc node]({{ '/assets/img/howtos/canvas/doc-node.png' | relative_url }}){: .doc-shot }
 
 ## Make it yours
 
@@ -77,19 +62,9 @@ bold/italic, text colour, bring-to-front / send-to-back, delete. Drag the
 sides to wire up a new edge. You can even **drag a file** onto the plane and it
 uploads and drops in as a doc node.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 4 — the node toolbar + resize**
-_Select a text node so its floating toolbar shows (colour / font / z-order /
-delete) and the resize handles are visible on the node. One clear "you're editing
-this" frame._
-</div>
+![Canvas — a node selected with its toolbar and resize handles]({{ '/assets/img/howtos/canvas/toolbar.png' | relative_url }}){: .doc-shot }
 
-<div class="shot-slot" markdown="1">
-**📷 Shot (optional) — together, live**
-_If you can open the same board as a second user (or in a second browser),
-capture the other person's live cursor on the plane. Awareness rides the pointers
-channel; nice-to-have, skip if fiddly._
-</div>
+![Canvas — a live cursor from another viewer on the plane]({{ '/assets/img/howtos/canvas/cursor.png' | relative_url }}){: .doc-shot }
 
 ---
 
