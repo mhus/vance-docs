@@ -68,8 +68,56 @@ library, files it writes surfaced as outputs.
   </nav>
 </div>
 
+## LaTeX
+
+`type: tex-task` imports a `.tex` document, typesets it, and hands back a PDF —
+rendered inline, right in the page.
+
+<div class="vslides">
+  <div class="vslides-head">LaTeX — 2 steps</div>
+  <div class="vslides-stage">
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-scripts/latex-command.png' | relative_url }}" alt="A compose block that compiles LaTeX">
+      <figcaption><span class="step">Step 1</span>Import a <code>.tex</code> file (<code>vance:/hello.tex</code>), a <code>tex-task</code> to compile it, and an <code>export</code> for the PDF.</figcaption>
+    </figure>
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-scripts/latex-output.png' | relative_url }}" alt="The compiled PDF rendered in the page">
+      <figcaption><span class="step">Step 2</span>Run it. LaTeX compiles server-side and the finished PDF renders inline in a viewer — no local TeX install.</figcaption>
+    </figure>
+  </div>
+  <nav class="vslides-nav">
+    <button data-prev aria-label="Previous step">‹</button>
+    <span class="vslides-count"></span>
+    <button data-next aria-label="Next step">›</button>
+  </nav>
+</div>
+
+## An agent
+
+The block can also hand a prompt to an **agent**: add a `session` (recipe
+`arthur`) and a `type: agent` task. The page kicks off a real agent turn and its
+answer comes back in place.
+
+<div class="vslides">
+  <div class="vslides-head">Agent — 2 steps</div>
+  <div class="vslides-stage">
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-scripts/agent-command.png' | relative_url }}" alt="A compose block with a session and an agent task">
+      <figcaption><span class="step">Step 1</span>A <code>session</code> (recipe <code>arthur</code>) plus a <code>type: agent</code> task with a prompt.</figcaption>
+    </figure>
+    <figure class="vslide">
+      <img src="{{ '/assets/img/howtos/uc-scripts/agent-output.png' | relative_url }}" alt="The agent's answer rendered in the page">
+      <figcaption><span class="step">Step 2</span>Run it. A real agent turn runs in a fresh session; its answer lands back in the block.</figcaption>
+    </figure>
+  </div>
+  <nav class="vslides-nav">
+    <button data-prev aria-label="Previous step">‹</button>
+    <span class="vslides-count"></span>
+    <button data-next aria-label="Next step">›</button>
+  </nav>
+</div>
+
 ---
 
-Same idea, more runtimes: the block also runs **JavaScript, R, LaTeX and LLM
-calls**, and can carry **state** across runs or bind to a **session**. Those land
-next in this series.
+Same idea, still more: the block also runs **JavaScript** (with a session, for
+tool calls) and **R**, and can carry **state** across runs. More to come.
