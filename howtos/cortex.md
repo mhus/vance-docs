@@ -112,16 +112,21 @@ the whole workpage block inventory rendered inline.
 ## Run it
 
 Some documents are executable — a JavaScript or Python script, a compose block.
-Cortex gives them a **Run** button (plus **Validate**, and **Generate/Update**
-for scripts) and shows the output inline. This is the "execute" third of the
-surface: author, run, read the result without leaving the page.
+Cortex gives them a **Run** button (plus **Validate** and **Update**) and shows
+the output inline. This is the "execute" third of the surface: author, run, read
+the result without leaving the page.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 5 — execute + output**
-_Open a script document (e.g. `meridian-ops` → `scripts/mail-triage.js`, or any
-`.js` in the project), switch the shell to its Run view, and capture the code
-with its output/console panel populated after a run._
-</div>
+![Cortex — running a script, output panel populated]({{ '/assets/img/howtos/cortex/run.png' | relative_url }}){: .doc-shot }
+
+The console lines stream into the panel and the **result** is the value of the
+script's *last expression* — here `true`. (There's no top-level `return`; the
+last expression is the result.)
+
+{: .note }
+> **The script runs on the server, not in your browser.** It executes in the
+> Brain — with access to the project, its documents and its tools — and only the
+> output is streamed back to this page. So `console.log` and the result come from
+> the server side, not from client-side JavaScript.
 
 ---
 
