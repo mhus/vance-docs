@@ -31,6 +31,7 @@ Short, visual, "here's how X works."
 - [**Sheet** — spreadsheets with functions](/howtos/sheet/)
 - [**Finance** — structure money decisions](/howtos/finance/)
 - [**Compose** — run scripts (Shell, Python, LaTeX, an agent) right in a page](/howtos/compose/)
+- [**Images** — generate and refine pictures from a description](/howtos/images/)
 
 ## Use-case stories
 
