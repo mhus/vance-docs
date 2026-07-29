@@ -27,7 +27,7 @@ Short, visual, "here's how X works."
 - [**Cortex** — chat, document and execute on one surface](/howtos/cortex/)
 - [**Canvas** — think spatially: nodes, links and groups](/howtos/canvas/)
 - [**Workbook** — notes and pages in a block editor](/howtos/workbook/)
-- **Kanban & Issues** — plan work and track it through _(planned)_
+- [**Kanban & Issues** — plan work and track it through](/howtos/kanban/)
 - **Sheet** — spreadsheets with functions _(planned)_
 - **Finance** — structure money decisions _(planned)_
 
