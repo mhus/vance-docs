@@ -29,7 +29,7 @@ Short, visual, "here's how X works."
 - [**Workbook** — notes and pages in a block editor](/howtos/workbook/)
 - [**Kanban & Issues** — plan work and track it through](/howtos/kanban/)
 - [**Sheet** — spreadsheets with functions](/howtos/sheet/)
-- **Finance** — structure money decisions _(planned)_
+- [**Finance** — structure money decisions](/howtos/finance/)
 
 ## Use-case stories
 
