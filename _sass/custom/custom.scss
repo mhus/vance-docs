@@ -99,6 +99,49 @@ a:hover { text-decoration-color: #A85D00; }
 .shot-slot strong { display: block; margin-bottom: 0.25em; }
 .shot-slot em { color: #6b6252; font-style: italic; }
 
+// ── Walkthrough slideshow ────────────────────────────────────────────────────
+// <details class="vslides"> with .vslide figures → a collapsible step-through
+// (see assets/js/slideshow.js).
+.vslides {
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  margin-block: 1.25em;
+  overflow: hidden;
+  background: $body-background-color;
+}
+.vslides > summary {
+  cursor: pointer;
+  padding: 0.6em 0.9em;
+  font-weight: 600;
+  list-style: none;
+  background: rgba(168, 93, 0, 0.05);
+  border-bottom: 1px solid $border-color;
+}
+.vslides:not([open]) > summary { border-bottom: 0; }
+.vslides > summary::-webkit-details-marker { display: none; }
+.vslides > summary::before { content: "▸ "; color: #A85D00; }
+.vslides[open] > summary::before { content: "▾ "; }
+.vslides-stage { padding: 0.6em; outline: none; }
+.vslide { margin: 0; }
+.vslide[hidden] { display: none; }
+.vslide img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid $border-color; border-radius: 8px;
+  box-shadow: 0 18px 44px -30px rgba(10, 14, 25, 0.45);
+}
+.vslide figcaption { margin-top: 0.7em; color: $body-text-color; font-size: 0.95em; line-height: 1.55; }
+.vslide figcaption .step { color: #A85D00; font-weight: 600; margin-right: 0.4em; }
+.vslides-nav {
+  display: flex; align-items: center; justify-content: center; gap: 1.1em;
+  padding: 0.2em 0.6em 0.7em;
+}
+.vslides-nav button {
+  border: 1px solid $border-color; background: transparent; color: inherit;
+  border-radius: 8px; padding: 0.05em 0.7em; font-size: 1.2em; line-height: 1.4; cursor: pointer;
+}
+.vslides-nav button:hover { border-color: #A85D00; color: #A85D00; }
+.vslides-count { font-variant-numeric: tabular-nums; color: #6b6252; font-size: 0.9em; min-width: 3.2em; text-align: center; }
+
 // ── Web-UI screenshots ──────────────────────────────────────────────────────
 // Framed, rounded product shots for the walkthroughs (`{: .doc-shot }`).
 // Applies to still images and short demo clips (`<video class="doc-shot">`).
