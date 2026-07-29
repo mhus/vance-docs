@@ -33,12 +33,7 @@ the selected node's detail on the right. The `studio-budget` example rolls a
 studio's month up from two branches: **Revenue** and **Costs**. The top shows the
 net, and a switcher recomputes it per day / week / month / year.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 1 — the tree**
-_Open `meridian-ops` → `finance/studio-budget`. Frame the tree (studio → revenue,
-costs, with their line items) and the net total (≈ €37,164 / yr, or €3,097 / mo).
-Establishing shot._
-</div>
+![Finance — the studio-budget tree with its net rollup]({{ '/assets/img/howtos/finance/tree.png' | relative_url }}){: .doc-shot }
 
 ## Sign flips the subtree
 
@@ -47,13 +42,7 @@ entered as a positive amount (salaries 18,000/mo, infra 203/mo, …) and subtrac
 automatically. A record can be a **recurring** rate (with a period) or a
 **one-time** sum on a date (the €5,000 legal setup). You never juggle minus signs.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 2 — a node up close**
-_Select a node with records — e.g. **Costs** (to show `sign: −1`) or a line item
-like **Salaries** or **Legal setup**. Capture the detail panel with its value
-record(s): amount, period (or the one-time date), and the computed per-year /
-per-month figure._
-</div>
+![Finance — the Costs node with "negative (flips subtree)" ticked]({{ '/assets/img/howtos/finance/sign.png' | relative_url }}){: .doc-shot }
 
 ## Reports compile out of it
 
@@ -62,12 +51,11 @@ The **Report** button runs a processor over the tree and writes the result
 `chart` (a time series per node), **assessment** → a `markdown` write-up. Same
 source, different compiled artefact — inline, or saved as its own document.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot 3 — a report**
-_Open the **Report** dropdown and generate one (a **table** → sheet is the quick,
-LLM-free one). Capture either the dropdown with the processor choices, or the
-generated report next to the tree._
-</div>
+![Finance — generating an assessment report from the tree]({{ '/assets/img/howtos/finance/report.png' | relative_url }}){: .doc-shot }
+
+Here the **assessment** processor turns the numbers into a written read — bottom
+line, main drivers, one-time items — but the same dialog will just as happily
+compile a `sheet` matrix or a `chart` series from the identical tree.
 
 ---
 
