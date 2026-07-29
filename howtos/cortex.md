@@ -62,28 +62,38 @@ chat panel is collapsed in this shot; we open it next.
 
 ## Talk about what's open
 
-The chat panel isn't a generic assistant — it knows the document in front of
-you. Ask it to explain a section, tighten the wording, or add the thing you're
-missing, and it works against *this* file.
+Open the **Chat** panel on the right (the `⟨` handle, or the chat icon in the
+top bar) and you have an agent session sitting next to the document. It isn't a
+generic assistant — it works against *this* file: ask it to explain a section,
+tighten the wording, or add what's missing.
+
+![Cortex — document with the chat panel open]({{ '/assets/img/howtos/cortex/chat.png' | relative_url }}){: .doc-shot }
+
+Document on the left, conversation on the right, one session. The chat panel
+carries its own tab bar (`Chat` / `Help`) and a session picker, so you can
+switch conversations without leaving the document.
+
+## View or edit the source
+
+The **View / Edit** toggle in the toolbar flips between the rendered block editor
+and the raw source. Everything is a document, so "edit" just means the plain
+markdown underneath — frontmatter (`$meta`), the `vance-callout` and
+`vance-columns` fences, the lot. Edit it here, or let the agent edit it; same file.
+
+![Cortex — the workpage in Edit (raw markdown) view]({{ '/assets/img/howtos/cortex/edit.png' | relative_url }}){: .doc-shot }
+
+That's the point of one surface: read it rendered, drop into the source when you
+need to, and keep the conversation open the whole time.
+
+When the agent writes to the document, you don't reload — the editor updates live
+over the documents channel, with a presence badge showing who (or what) is
+editing. You can type in the same file at the same moment; edits merge.
 
 <div class="shot-slot" markdown="1">
-**📷 Shot 2 — chat + document together**
-_In the Chat panel, ask something grounded in the open doc — e.g. "Summarise the
-decision in ADR-014 and list the open follow-ups." Capture the agent's reply next
-to the visible document, so the "same surface" point reads at a glance._
-</div>
-
-## Watch it edit
-
-When the agent writes to the document, you don't reload — the editor updates
-live over the documents channel, with a presence badge showing who (or what) is
-editing. You can type in the same file at the same time; edits merge.
-
-<div class="shot-slot" markdown="1">
-**📷 Shot 3 — a live edit**
+**📷 Shot (optional) — a live agent edit**
 _Ask the agent to make a concrete change ("add a follow-up: 'load-test the merge
-path'"). Capture the moment the new content appears in the workpage with the
-`⏺ agent` awareness badge visible. If the badge fades too fast, grab it mid-write._
+path'"). Capture the moment the new content appears with the `⏺ agent` awareness
+badge visible. Nice-to-have — skip if the badge fades too fast to catch._
 </div>
 
 ## Every kind, one shell
