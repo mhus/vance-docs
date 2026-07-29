@@ -85,16 +85,12 @@ markdown underneath — frontmatter (`$meta`), the `vance-callout` and
 That's the point of one surface: read it rendered, drop into the source when you
 need to, and keep the conversation open the whole time.
 
-When the agent writes to the document, you don't reload — the editor updates live
-over the documents channel, with a presence badge showing who (or what) is
-editing. You can type in the same file at the same moment; edits merge.
+As you edit, the tab shows a **dirty indicator** — the `●` next to the file name
+— marking unsaved changes. Edits stream over the documents channel, so when the
+agent (or another person) writes to the same file, it updates live, with
+presence and a 3-way merge; you can be typing in it at the same moment.
 
-<div class="shot-slot" markdown="1">
-**📷 Shot (optional) — a live agent edit**
-_Ask the agent to make a concrete change ("add a follow-up: 'load-test the merge
-path'"). Capture the moment the new content appears with the `⏺ agent` awareness
-badge visible. Nice-to-have — skip if the badge fades too fast to catch._
-</div>
+![Cortex — editing the source, unsaved-changes dot on the tab]({{ '/assets/img/howtos/cortex/editing.png' | relative_url }}){: .doc-shot }
 
 ## Every kind, one shell
 
