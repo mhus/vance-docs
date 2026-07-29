@@ -389,7 +389,7 @@ tasks:
 ## Where to go next
 
 - The runtime behind these blocks — Shell, Python, LaTeX, agents — has its own
-  reference: [Damogran / Compose spec](/specs/damogran-system/).
+  reference: [Damogran / Compose spec](/specs/damogran-system).
 - How a chart document is structured: it's just a `kind: chart` file — open one
   in [Cortex](/howtos/cortex/) and flip to **Edit**.
 - Haven't got a running instance yet? [Get started](/getting-started).
