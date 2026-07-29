@@ -1,6 +1,6 @@
 // Minimal, dependency-free slideshow for the how-to walkthroughs.
-// Any <details class="vslides"> with .vslide figures becomes a step-through
-// (prev/next + counter + arrow keys). Collapsible via the native <details>.
+// Any <div class="vslides"> with .vslide figures becomes a step-through
+// (prev/next + counter + arrow keys). Always open — no collapse.
 (function () {
   function init(root) {
     var slides = Array.prototype.slice.call(root.querySelectorAll('.vslide'));

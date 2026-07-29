@@ -14,8 +14,8 @@ in a fresh workspace and the result lands right back in the page. No terminal, n
 setup.
 {: .fs-5 .fw-300 }
 
-<details class="vslides" open>
-  <summary>Walkthrough — 2 steps</summary>
+<div class="vslides">
+  <div class="vslides-head">Walkthrough — 2 steps</div>
   <div class="vslides-stage">
     <figure class="vslide">
       <img src="{{ '/assets/img/howtos/uc-shell/01-command.png' | relative_url }}" alt="A compose block in a page holding a bash command">
@@ -31,7 +31,7 @@ setup.
     <span class="vslides-count"></span>
     <button data-next aria-label="Next step">›</button>
   </nav>
-</details>
+</div>
 
 That's the whole idea: a shell command lives in the document, next to your notes.
 The same block runs **Python, JavaScript, R, LaTeX or an LLM call** — and can carry

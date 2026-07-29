@@ -100,7 +100,7 @@ a:hover { text-decoration-color: #A85D00; }
 .shot-slot em { color: #6b6252; font-style: italic; }
 
 // ── Walkthrough slideshow ────────────────────────────────────────────────────
-// <details class="vslides"> with .vslide figures → a collapsible step-through
+// <div class="vslides"> with .vslide figures → an always-open step-through
 // (see assets/js/slideshow.js).
 .vslides {
   border: 1px solid $border-color;
@@ -109,18 +109,12 @@ a:hover { text-decoration-color: #A85D00; }
   overflow: hidden;
   background: $body-background-color;
 }
-.vslides > summary {
-  cursor: pointer;
+.vslides-head {
   padding: 0.6em 0.9em;
   font-weight: 600;
-  list-style: none;
   background: rgba(168, 93, 0, 0.05);
   border-bottom: 1px solid $border-color;
 }
-.vslides:not([open]) > summary { border-bottom: 0; }
-.vslides > summary::-webkit-details-marker { display: none; }
-.vslides > summary::before { content: "▸ "; color: #A85D00; }
-.vslides[open] > summary::before { content: "▾ "; }
 .vslides-stage { padding: 0.6em; outline: none; }
 .vslide { margin: 0; }
 .vslide[hidden] { display: none; }
