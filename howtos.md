@@ -25,7 +25,7 @@ Screenshot walkthroughs of the surfaces you actually work in — one per app.
 Short, visual, "here's how X works."
 
 - [**Cortex** — chat, document and execute on one surface](/howtos/cortex/)
-- **Canvas** — think spatially: nodes, links and groups _(planned)_
+- [**Canvas** — think spatially: nodes, links and groups](/howtos/canvas/)
 - **Workbook** — notes and pages in a block editor _(planned)_
 - **Kanban & Issues** — plan work and track it through _(planned)_
 - **Sheet** — spreadsheets with functions _(planned)_
