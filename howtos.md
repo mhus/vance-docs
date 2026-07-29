@@ -14,10 +14,31 @@ For *what something is* and *how it works internally*, see the
 {: .fs-5 .fw-300 }
 
 {: .note }
-> This section is being filled in. The list below is the planned
-> coverage; pages land as they are written. If you want to suggest a
-> guide or contribute one, open an issue on
+> This section is being filled in. Some pages are live (linked below);
+> the rest are planned coverage and land as they are written. To suggest
+> or contribute a guide, open an issue on
 > [`vance-docs`](https://github.com/mhus/vance-docs/issues).
+
+## Feature tours
+
+Screenshot walkthroughs of the surfaces you actually work in — one per app.
+Short, visual, "here's how X works."
+
+- [**Cortex** — chat, document and execute on one surface](/howtos/cortex/)
+- **Canvas** — think spatially: nodes, links and groups _(planned)_
+- **Workbook** — notes and pages in a block editor _(planned)_
+- **Kanban & Issues** — plan work and track it through _(planned)_
+- **Sheet** — spreadsheets with functions _(planned)_
+- **Finance** — structure money decisions _(planned)_
+
+## Use-case stories
+
+The narrative path from a request to a result, across several features at once —
+what people actually get done with Vance.
+
+- **Coding** — an agent does real, sustained engineering on a repo _(planned)_
+- **Research** — a question becomes a sourced, verified synthesis _(planned)_
+- **Automation** — work that runs on a timer or an event, no chatting _(planned)_
 
 ## Planned guides
 

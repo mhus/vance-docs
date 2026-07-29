@@ -83,6 +83,22 @@ a:hover { text-decoration-color: #A85D00; }
   font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", "Roboto Mono", Consolas, monospace !important;
 }
 
+// ── Screenshot-slot placeholders ────────────────────────────────────────────
+// A dashed slot standing in for a screenshot that hasn't been captured yet.
+// Swap for `![alt](path){: .doc-shot }` once the PNG lands. `.shot-slot em`
+// carries the capture spec (what frame to shoot).
+.shot-slot {
+  border: 1px dashed $border-color;
+  border-radius: 12px;
+  padding: 1.1em 1.2em;
+  margin-block: 0.85em 0.35em;
+  background: rgba(168, 93, 0, 0.04);
+  color: $body-text-color;
+  font-size: 0.9em;
+}
+.shot-slot strong { display: block; margin-bottom: 0.25em; }
+.shot-slot em { color: #6b6252; font-style: italic; }
+
 // ── Web-UI screenshots ──────────────────────────────────────────────────────
 // Framed, rounded product shots for the walkthroughs (`{: .doc-shot }`).
 img.doc-shot {
