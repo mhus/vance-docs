@@ -134,3 +134,17 @@ The three ways something starts running in Vancetope — the
 All three are just [Documents](#document) under `_vance/scheduler/`,
 `_vance/events/`, `_vance/hooks/`. To add a new trigger, you write a YAML
 document, not Java.
+
+## The name — Vancetope vs. `vance`
+
+The product is **Vancetope** — the *-tope* is Greek *tópos*, "place": the
+place your documents and agents share. It grew up under the working name
+**`vance`**, and that name still lives on wherever it's a *technical*
+identifier rather than the brand: the CLI command you type (`vance chat`),
+and the package and repository names (`@vance/…`, `github.com/mhus/vance`).
+
+You'll also still see a small `vance` wordmark in plenty of the
+**screenshots** throughout these docs — they were captured before the
+rename. That's expected, not a mistake: think of it like `psql` for
+PostgreSQL — the place is Vancetope, the command is `vance`. Wherever a
+screenshot still says "vance", read it as "Vancetope".
