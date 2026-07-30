@@ -74,7 +74,7 @@ sub-key `dirName` are still read by `WorkTarget.fromMap(...)`
 **Pseudo-Projects (`_user_<login>`, `_tenant`, `_vance`):** no
 special path. These Projects are `ProjectKind.SYSTEM` +
 `LifecycleType.HOMELESS` and get the same RootDir path
-(`~/.vance/workspaces/<tenant>/<projectId>/`). Since Recipes
+(`~/.vancetopetope/workspaces/<tenant>/<projectId>/`). Since Recipes
 typically do **not** set a `dirName` on them, all WORK calls
 land in a Temp-RootDir that disappears on Process close — de facto
 "Workspaces are temporary" without needing to explicitly model that

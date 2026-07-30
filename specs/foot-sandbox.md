@@ -51,10 +51,10 @@ Not in scope (always passed through): Exec job inspection (`client_exec_status`/
 
 ### 4.1 Two Sources
 
-- **Central** `~/.vance/permissions.yaml` — the user's full policy (allow + deny + `sandbox`). Override of the file via property `vance.permissions.file`.
-- **Local** `./.vance/permissions.yaml` (CWD) — **tightening only**. Override via `vance.permissions.local-file`.
+- **Central** `~/.vancetopetope/permissions.yaml` — the user's full policy (allow + deny + `sandbox`). Override of the file via property `vance.permissions.file`.
+- **Local** `./.vancetope/permissions.yaml` (CWD) — **tightening only**. Override via `vance.permissions.local-file`.
 
-The project-local `.vance/` is otherwise intended for ordinary local Config; Permissions are deliberately separated into their own `permissions.yaml`.
+The project-local `.vancetope/` is otherwise intended for ordinary local Config; Permissions are deliberately separated into their own `permissions.yaml`.
 
 ### 4.2 Tightening-only Merge
 
@@ -72,7 +72,7 @@ Resolution rule: Sandbox is on if the central Config does not explicitly say `fa
 ### 4.3 Schema
 
 ```yaml
-# ~/.vance/permissions.yaml  (central — full policy)
+# ~/.vancetopetope/permissions.yaml  (central — full policy)
 permissions:
   sandbox: true
   paths:
@@ -82,7 +82,7 @@ permissions:
     deny:  ["^\\s*rm\\s+-rf\\s+/", "\\|\\s*sh\\b"]     # Regex on command string
     allow: ["^git( |$)", "^ls( |$)", "^cat ", "^sed -n"]
 
-# ./.vance/permissions.yaml  (local — tightening only; allow/sandbox:false ignored)
+# ./.vancetope/permissions.yaml  (local — tightening only; allow/sandbox:false ignored)
 permissions:
   sandbox: true
   paths:
@@ -105,7 +105,7 @@ The subject path is canonized **before** matching: `~` expands, relative paths r
 A bundled, **non-overridable** deny floor is always evaluated in addition to the file rules:
 
 ```
-~/.ssh/**   ~/.aws/**   ~/.gnupg/**   ~/.vance/**
+~/.ssh/**   ~/.aws/**   ~/.gnupg/**   ~/.vancetopetope/**
 ```
 
 This ensures that a missing/empty Config protects credentials by default, and an accidental `allow: ["~/**"]` cannot enable these paths.
@@ -134,7 +134,7 @@ If a call results in `ASK`, the Foot displays a menu in the REPL and blocks unti
 ```
 
 - **allow once / deny once** — applies only to this single call, no state saved.
-- **allow always / deny always** — additionally writes an **exact** rule to the central `~/.vance/permissions.yaml` (§8) and reloads the policy; future identical subjects will be resolved automatically.
+- **allow always / deny always** — additionally writes an **exact** rule to the central `~/.vancetopetope/permissions.yaml` (§8) and reloads the policy; future identical subjects will be resolved automatically.
 
 **Timeout & Fallback:** The menu has 25 s (just under the Brain's ~30 s Tool timeout). If it expires → `DENY`. If **no** interactive interface is available → immediate `DENY`, without menu, with a WARN log line (Tool + subject) for auditability. This is **explicitly** decided: with `--no-ui` / Daemon, `VanceFootCommand` sets `PermissionService.setInteractive(false)` before connecting — this way, an early Tool invoke automatically denies instead of blocking for input that never comes (additionally, the fallback "no REPL attached" applies).
 
@@ -219,7 +219,7 @@ Isolation is only active if **all** apply: sandbox on (`--no-sandbox` also disab
 
 ### 11.3 Local-Tightening
 
-As with the rules (§4.2), the local file may only tighten, here asymmetrically: the **central** isolation is decisive; a local `./.vance/permissions.yaml` can only **introduce** isolation where none is defined centrally — it cannot disable the central one (`mode: none` is ignored) nor replace its wrapper.
+As with the rules (§4.2), the local file may only tighten, here asymmetrically: the **central** isolation is decisive; a local `./.vancetope/permissions.yaml` can only **introduce** isolation where none is defined centrally — it cannot disable the central one (`mode: none` is ignored) nor replace its wrapper.
 
 ### 11.4 Caveats & Alternative
 

@@ -61,7 +61,7 @@ RootDirs are **the** unit for sharing, cleanup, and suspend. The Workspace itsel
     workspace.json                            (Workspace metadata: tenant, projectId, createdAt, status)
 ```
 
-`workspaceRoot` is configurable via Spring property (`vance.workspace.root`). Default: `${user.home}/.vance/workspaces/`.
+`workspaceRoot` is configurable via Spring property (`vance.workspace.root`). Default: `${user.home}/.vancetope/workspaces/`.
 
 `dirName` is unique within a Workspace. The Worker may suggest a hint (e.g., `repo-knowledge`); in case of collision, the Service appends `-2`, `-3`. If no hint → UUID. The `dirName` is the hard identifier; an optional `label` in the Descriptor stores the original hint for debug/audit.
 

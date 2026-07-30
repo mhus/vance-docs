@@ -52,10 +52,10 @@ Foot gets its own root anchor on the local user disk, comparable to the Brain-Wo
 Spring property in `vance-foot`:
 
 ```
-vance.foot.workspace.root = ${user.home}/.vance/foot
+vance.foot.workspace.root = ${user.home}/.vancetope/foot
 ```
 
-Default: `~/.vance/foot/`. Override via `application.yml` or Env (`VANCE_FOOT_WORKSPACE_ROOT`).
+Default: `~/.vancetopetope/foot/`. Override via `application.yml` or Env (`VANCE_FOOT_WORKSPACE_ROOT`).
 
 ### 3.2 Layout
 
@@ -69,7 +69,7 @@ Default: `~/.vance/foot/`. Override via `application.yml` or Env (`VANCE_FOOT_WO
 **Example:** Brain calls `client_file_download(dirName="reports", remotePath="2026-q2.pdf", localPath="reports/2026-q2.pdf")` with active Tenant `acme`, Project `proj-research`. File lands at:
 
 ```
-~/.vance/foot/acme/proj-research/reports/2026-q2.pdf
+~/.vancetopetope/foot/acme/proj-research/reports/2026-q2.pdf
 ```
 
 ### 3.3 Sandbox
@@ -84,7 +84,7 @@ Symlinks in the Foot-Workspace are **not** followed (`LinkOption.NOFOLLOW_LINKS`
 
 ### 3.4 Auto-Create
 
-Sub-directories are created lazily on first write access (`Files.createDirectories`). The Foot-Workspace-Root itself (`~/.vance/foot/`) is created on Foot boot if it doesn't exist.
+Sub-directories are created lazily on first write access (`Files.createDirectories`). The Foot-Workspace-Root itself (`~/.vancetopetope/foot/`) is created on Foot boot if it doesn't exist.
 
 ---
 

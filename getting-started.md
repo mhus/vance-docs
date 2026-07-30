@@ -55,7 +55,7 @@ curl -fsSL https://vance.mhus.de/setup.sh | bash
 
 **Step 1** runs the setup wizard straight from the official Docker image (a few
 questions — language, port, local vs. external access, plus secrets it
-generates for you), writes your `docker-compose.yml` and `.env` into `~/.vance`
+generates for you), writes your `docker-compose.yml` and `.env` into `~/.vancetopetope`
 (override with `VANCE_DIR`), and starts the stack. **Step 2** finds that folder, waits for the stack
 to come up, and runs the tenant/user/LLM wizard against it. Both are
 interactive — just answer the prompts.
@@ -73,7 +73,7 @@ $ curl -fsSL https://vance.mhus.de/install.sh | bash
 Vancetope — setup
 A workspace for AI. No git, no build tools — just Docker.
 
-Setup folder: ~/.vance
+Setup folder: ~/.vancetopetope
 Pulling the setup image on first run — this can take a minute.
 
 Vancetope — Docker Compose Setup
@@ -106,7 +106,7 @@ Installed and starting. Now configure your tenant + first user:
 
 ```console
 $ curl -fsSL https://vance.mhus.de/setup.sh | bash
-Using: ~/.vance
+Using: ~/.vancetopetope
 Ensuring the stack is running…  ✔
 Waiting for MongoDB to become ready…  ✔
 
@@ -153,10 +153,10 @@ Done.
 **Prefer to run it by hand?** No script needed — Docker does all of it:
 
 ```bash
-# 1) scaffold docker-compose.yml + .env into ~/.vance (interactive wizard)
-mkdir -p ~/.vance
-docker run --rm -it -v "$HOME/.vance:/data" mhus/vance-anus:latest --setup-docker-compose
-cd ~/.vance
+# 1) scaffold docker-compose.yml + .env into ~/.vancetopetope (interactive wizard)
+mkdir -p ~/.vancetopetope
+docker run --rm -it -v "$HOME/.vancetopetope:/data" mhus/vance-anus:latest --setup-docker-compose
+cd ~/.vancetopetope
 
 # 2) start the stack
 docker compose up -d
