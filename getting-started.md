@@ -192,7 +192,6 @@ and your keys and token spend stay with whoever you get it from. Two ways:
 
 - **A hosted API**, bought or rented per token — e.g.
   [OpenAI](https://platform.openai.com),
-  [Anthropic](https://console.anthropic.com),
   [Google Gemini](https://ai.google.dev),
   [DeepSeek](https://platform.deepseek.com),
   [Z.ai (GLM)](https://z.ai), or an OpenAI-compatible gateway like
@@ -218,7 +217,7 @@ collapse under that load. Rough current picture (mid-2026):
 | **DeepSeek V4** | Strong choice. Comparable quality to GLM-5.2, very competitive pricing. |
 | **Gemini 3.x Pro / Flash** | Solid. Flash is good for the fast-tier alias, Pro for analyze/deep. Wizard preset. **Stick to 3.x — 2.5 is shaky under agentic load.** |
 | **OpenAI GPT-4o / o-series** | Solid. Wizard preset. |
-| **Anthropic Claude** | Wizard preset, **but read Anthropic's Usage Policy and Commercial Terms first** — they impose restrictions on autonomous-agent use cases that some Vancetope workflows fall under. Not recommended for unattended production agents unless you've confirmed your use case is covered. |
+| **Anthropic Claude** | **Not recommended.** Anthropic's Usage Policy and Commercial Terms restrict autonomous-agent use — which is the core of what Vancetope does. Capable models, but the terms rule them out for this; confirm your specific use case is covered before relying on them. |
 | **Gemma 4** | The realistic minimum. Works, but expect occasional tool-call failures and weaker long-context reasoning. Use only if you have a hard self-hosting requirement. |
 | **Qwen 3.5** | **Not recommended.** Inconsistent tool-call behaviour and instruction-following under Vancetope's load patterns. |
 
