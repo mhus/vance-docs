@@ -3,13 +3,13 @@ layout: default
 title: "Research a topic, end to end — in one conversation"
 date: 2026-07-30
 permalink: /blog/research-a-topic-end-to-end/
-description: "Ask once, and Vance commissions a deep-dive with Marvin, reshapes it into a mindmap, illustrates it, compiles a document — and exports a PDF. All without leaving the chat."
+description: "Ask once, and Vancetope commissions a deep-dive with Marvin, reshapes it into a mindmap, illustrates it, compiles a document — and exports a PDF. All without leaving the chat."
 nav_exclude: true
 ---
 
 # Research a topic, end to end — in one conversation
 
-One of the things Vance is genuinely good at is not a single trick but a *chain*:
+One of the things Vancetope is genuinely good at is not a single trick but a *chain*:
 you ask a broad question, and the agent takes it the whole distance — research,
 restructuring, images, a written document, a shareable PDF — while you just keep
 asking the next natural thing.

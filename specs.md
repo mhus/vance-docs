@@ -7,7 +7,7 @@ has_children: true
 
 # Specs
 
-Reference specifications for Vance internals — engines, services, data
+Reference specifications for Vancetope internals — engines, services, data
 model, protocols. Each page is the source of truth for one subsystem.
 
 Browse the sidebar on the left, or use the search box (top right) to
@@ -18,10 +18,10 @@ works, start with the [How-tos](/howtos/) section instead.
 
 ## Reading order
 
-If you're new to Vance and want a tour rather than a reference, start
+If you're new to Vancetope and want a tour rather than a reference, start
 here:
 
-1. [Get started](/getting-started) — install and run Vance locally.
+1. [Get started](/getting-started) — install and run Vancetope locally.
 2. [Concepts](/concepts) — the core vocabulary (engine, recipe, scope,
    think-process, kit).
 3. [Architecture](/architecture) — brain, clients, triggers.

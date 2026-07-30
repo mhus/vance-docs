@@ -10,7 +10,7 @@ permalink: /howtos/canvas/
 
 A canvas is an open 2D plane — text notes, links, and **live documents** as
 nodes, connected by arrows and organised into groups. It isn't a diagram tool
-bolted on the side: the nodes are real Vance documents, it's collaborative
+bolted on the side: the nodes are real Vancetope documents, it's collaborative
 (live cursors), and agents can build and query it with tools, same as any other
 document.
 {: .fs-5 .fw-300 }

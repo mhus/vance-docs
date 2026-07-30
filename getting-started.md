@@ -7,7 +7,7 @@ permalink: /getting-started
 # Get started
 {: .no_toc }
 
-The fastest path to a running Vance is the prebuilt Docker stack. You don't
+The fastest path to a running Vancetope is the prebuilt Docker stack. You don't
 need any developer tools — no Java, Node, Maven or even git. Just Docker
 Desktop. From a clean machine to an open Web UI: a few minutes once Docker
 is installed.
@@ -70,13 +70,13 @@ Then open the URL it prints (a local install defaults to
 ```console
 $ curl -fsSL https://vance.mhus.de/install.sh | bash
 
-Vance — setup
+Vancetope — setup
 A workspace for AI. No git, no build tools — just Docker.
 
 Setup folder: ~/.vance
 Pulling the setup image on first run — this can take a minute.
 
-Vance — Docker Compose Setup
+Vancetope — Docker Compose Setup
 ============================
 
 Settings
@@ -86,7 +86,7 @@ Settings
    3) Secret encryption pw: ******** (auto-generated)
    4) Analysis (Fook):      enabled
    5) Access mode:          local (localhost)
-   8) Vance port:           http://localhost:9999
+   8) Vancetope port:           http://localhost:9999
    9) Expert mode:          off
 
 Edit a number, s) Save, q) Quit: s
@@ -110,7 +110,7 @@ Using: ~/.vance
 Ensuring the stack is running…  ✔
 Waiting for MongoDB to become ready…  ✔
 
-Vance Setup
+Vancetope Setup
 ===========
 
 No tenants yet — let's create one.
@@ -186,7 +186,7 @@ explicitly change them.
 
 ### Choosing a model
 
-Vance is an agentic system — the model spends a lot of tokens reasoning,
+Vancetope is an agentic system — the model spends a lot of tokens reasoning,
 calling tools and writing back. Models that look fine in a chat UI can
 collapse under that load. Rough current picture (mid-2026):
 
@@ -196,9 +196,9 @@ collapse under that load. Rough current picture (mid-2026):
 | **DeepSeek V4** | Strong choice. Comparable quality to GLM-5.2, very competitive pricing. |
 | **Gemini 3.x Pro / Flash** | Solid. Flash is good for the fast-tier alias, Pro for analyze/deep. Wizard preset. **Stick to 3.x — 2.5 is shaky under agentic load.** |
 | **OpenAI GPT-4o / o-series** | Solid. Wizard preset. |
-| **Anthropic Claude** | Wizard preset, **but read Anthropic's Usage Policy and Commercial Terms first** — they impose restrictions on autonomous-agent use cases that some Vance workflows fall under. Not recommended for unattended production agents unless you've confirmed your use case is covered. |
+| **Anthropic Claude** | Wizard preset, **but read Anthropic's Usage Policy and Commercial Terms first** — they impose restrictions on autonomous-agent use cases that some Vancetope workflows fall under. Not recommended for unattended production agents unless you've confirmed your use case is covered. |
 | **Gemma 4** | The realistic minimum. Works, but expect occasional tool-call failures and weaker long-context reasoning. Use only if you have a hard self-hosting requirement. |
-| **Qwen 3.5** | **Not recommended.** Inconsistent tool-call behaviour and instruction-following under Vance's load patterns. |
+| **Qwen 3.5** | **Not recommended.** Inconsistent tool-call behaviour and instruction-following under Vancetope's load patterns. |
 
 The wizard ships presets for **Gemini, OpenAI and Anthropic**. For
 **GLM-5.2, DeepSeek and self-hosted models** (Gemma via Ollama etc.),
@@ -208,7 +208,7 @@ the Web UI under Settings → AI, or pre-seed it with
 
 > **Secrets & exposure:** the setup wizard generates strong secrets for you
 > (encryption password, internal token, Mongo password) — no weak defaults to
-> change. To reach Vance from beyond `localhost`, pick the wizard's **external
+> change. To reach Vancetope from beyond `localhost`, pick the wizard's **external
 > URL** option: cookies then get the `Secure` flag and the bundled Caddy can
 > auto-provision TLS for your domain.
 
@@ -270,7 +270,7 @@ If you've pinned `IMAGE_TAG` in `.env`, bump it first.
 
 ## Running from source (developers)
 
-If you want to hack on Vance itself, clone the source repo and build
+If you want to hack on Vancetope itself, clone the source repo and build
 locally instead of pulling images:
 
 ```bash
@@ -301,13 +301,13 @@ login screen to your first answer.
 **1. Log in.** Open the URL the installer printed and sign in with the user you
 just created. The tenant is pre-filled; enter your login and password.
 
-![Vance login screen]({{ '/assets/img/getting-started/01-login.png' | relative_url }}){: .doc-shot }
+![Vancetope login screen]({{ '/assets/img/getting-started/01-login.png' | relative_url }}){: .doc-shot }
 
 **2. Land on the hub.** After login you get the editor hub — every workspace
 surface (Chat, Documents, Cortex, Inbox, …) is one tile away. The bar top-right
 always shows the active `tenant · user`.
 
-![Vance editor hub]({{ '/assets/img/getting-started/02-home.png' | relative_url }}){: .doc-shot }
+![Vancetope editor hub]({{ '/assets/img/getting-started/02-home.png' | relative_url }}){: .doc-shot }
 
 **3. Create a project.** A project is a scope — its own documents, sessions,
 settings and memory. Hit **+ Add project**, give it a lowercase name (the
@@ -328,5 +328,5 @@ workspace any time with **Open Cortex →**.
 
 ![First chat with the Arthur engine]({{ '/assets/img/getting-started/05-first-chat.png' | relative_url }}){: .doc-shot }
 
-From here you're in Vance proper — see the rest of the docs for documents,
+From here you're in Vancetope proper — see the rest of the docs for documents,
 apps, kits and automation.

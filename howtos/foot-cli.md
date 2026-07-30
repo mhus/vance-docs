@@ -34,7 +34,7 @@ a Brain. Foot is the terminal alternative — useful when you want:
   Brain keeps working in the meantime.
 - IDE integration: spawn Foot from IntelliJ via the
   [`--intellij-mcp`](#intellij-integration) flag and your IDE becomes a
-  Vance tool surface.
+  Vancetope tool surface.
 
 Foot is **not** a mirror of the Web UI. It does the things a terminal
 is good at; for live documents, mindmaps, or the document editor,
@@ -62,7 +62,7 @@ WebSocket to the Brain configured in `vance.bootstrap.*` properties.
 
 ```
 $ java -jar target/vance-foot.jar
-Vance Foot 0.1.0 — terminal client
+Vancetope Foot 0.1.0 — terminal client
 > Connecting to brain at https://localhost:9990 …
 > Connected as wile.coyote@acme. Session bootstrapped (session-id: 0FK…).
 
@@ -230,7 +230,7 @@ Flags passed when starting `java -jar vance-foot.jar`.
 | `--intellij-mcp` | Expose IntelliJ as an MCP tool surface to the Brain. |
 | `--intellij-mcp-default` | Use IntelliJ MCP as the default tool backend. |
 
-These need the IntelliJ Vance plugin running; see
+These need the IntelliJ Vancetope plugin running; see
 [`vance-facelift`](/specs/vance-facelift) and
 [`mcp-tool-routing`](/specs/mcp-tool-routing) for the protocol details.
 

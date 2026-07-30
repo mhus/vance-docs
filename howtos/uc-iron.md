@@ -23,7 +23,7 @@ other side as a finished, illustrated PDF.
 It's a **research workflow**: *ask → deep-research (Marvin) → restructure
 (mindmap) → gather images → narrow to a sub-question → compile an illustrated
 document → export a PDF.* Each step is just the next thing you'd naturally ask,
-and Vance keeps the growing body of work — reports, mindmaps, documents, the
+and Vancetope keeps the growing body of work — reports, mindmaps, documents, the
 PDF — as real documents in the project.
 
 ## Table of contents

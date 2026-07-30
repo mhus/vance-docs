@@ -8,13 +8,13 @@ permalink: /howtos/images/
 # Images — generate and refine
 {: .no_toc }
 
-Ask for a picture in plain language and Vance generates one, right in the chat.
+Ask for a picture in plain language and Vancetope generates one, right in the chat.
 No separate tool, no prompt syntax to learn — describe what you want, and refine
 it by asking for changes. Every image is saved as a document in the project, so
 you can open, download or reuse it later.
 {: .fs-5 .fw-300 }
 
-Behind the scenes this is **Fenchurch**, Vance's image service. You never pick a
+Behind the scenes this is **Fenchurch**, Vancetope's image service. You never pick a
 model or endpoint — the agent calls it for you and streams progress while it
 works.
 

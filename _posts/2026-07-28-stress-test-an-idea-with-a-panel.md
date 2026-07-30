@@ -10,7 +10,7 @@ nav_exclude: true
 # Stress-test an idea with a panel of judges
 
 One agent gives you one opinion. A hard call — a pitch, a product, a campaign —
-wants several, from people who disagree. So Vance lets you stand up a **council**:
+wants several, from people who disagree. So Vancetope lets you stand up a **council**:
 a named panel of distinct personas that argue a question out and hand back one
 synthesised verdict.
 

@@ -57,7 +57,7 @@ v1.0
 
 Foundation-Kit für das Pattern „kurzer Skill-Body + Manuals on
 demand". Inspiriert von Claude Code's Skill-Architektur, aber an
-Vance' Engine-Push-Modell angepasst: Trigger aktivieren den Skill,
+Vancetope' Engine-Push-Modell angepasst: Trigger aktivieren den Skill,
 Skill-Body listet Manuals als Speisekarte, Modell zieht via
 manual_read die Detail-Tiefe nach.
 
@@ -138,7 +138,7 @@ was man eigentlich sagen will.
                            Mimik und Stimmlage fehlen
 
 Domain-frei: Arbeit, Teams, persönliche Beziehungen,
-Verhandlungen. Vance ist Think-Tool — diese Skills
+Verhandlungen. Vancetope ist Think-Tool — diese Skills
 helfen vor und nach den Gesprächen, ersetzen weder
 Therapie noch professionelle Mediation. Bei
 hochpersönlichen Themen ist der Hinweis auf
@@ -176,7 +176,7 @@ bei größeren Geld-Fragen).
 
 #### Wichtig: KEIN finance advice
 
-Vance ist Think-Tool, kein Finanzberater. Diese Skills
+Vancetope ist Think-Tool, kein Finanzberater. Diese Skills
 helfen dir Strukturen für eigenes Denken zu finden — sie
 ersetzen keine Beratung, kein Tax-Planning, keine
 Investment-Empfehlung. Konkrete Entscheidungen mit
@@ -266,7 +266,7 @@ Streitfälle, KEINE Rechtsberatung. Inherits von basic.
 
 #### Wichtig: KEINE Rechtsberatung
 
-Vance ist Think-Tool, kein Anwalt. Diese Skills helfen
+Vancetope ist Think-Tool, kein Anwalt. Diese Skills helfen
 dir, Legal-Texte zu verstehen und Streitfälle zu
 strukturieren. Sie ersetzen keinen Rechtsanwalt, keine
 Steuerberatung, keine spezifische rechtliche Empfehlung
@@ -469,8 +469,8 @@ classes geht in die Tiefe.
 v1.0
 {: .label .label-blue }
 
-Meta-Kit für Vance-Konfigurations-Authoring: Recipes und Skills
-schreiben für Vance selbst. Inherits von basic — die
+Meta-Kit für Vancetope-Konfigurations-Authoring: Recipes und Skills
+schreiben für Vancetope selbst. Inherits von basic — die
 Decision-Frame / Stuck / Rubber-Duck / Review-Output Skills
 helfen auch beim Authoring (z.B. „decision-frame" wenn man
 zwischen Engine-Optionen schwankt, „review-output" zum Review
@@ -496,7 +496,7 @@ Skills:
                        `app: calendar`; weitere App-Types werden
                        später ergänzt.
 
-Zielgruppe: Vance-Power-User und Tenant-Admins, die das
+Zielgruppe: Vancetope-Power-User und Tenant-Admins, die das
 Verhalten anpassen. Nicht für Endbenutzer.
 
 Hinweis: Diese Skills werden Brain-intern interessant, weil

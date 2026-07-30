@@ -9,7 +9,7 @@ permalink: /howtos/uc-sports/
 {: .no_toc }
 
 Ask for a topic *and* the deck in one go: research it, pull a picture for each
-point, and assemble a presentable slideshow. Vance does the whole chain —
+point, and assemble a presentable slideshow. Vancetope does the whole chain —
 web research, an image per item, and a real slides document you can open and
 present — from a single request.
 {: .fs-5 .fw-300 }

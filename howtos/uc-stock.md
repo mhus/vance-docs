@@ -9,13 +9,13 @@ permalink: /howtos/uc-stock/
 {: .no_toc }
 
 Ask a real question — *"how's this stock doing, and what do you make of it?"* —
-and Vance does the whole thing: pulls the numbers off the web, draws them as a
+and Vancetope does the whole thing: pulls the numbers off the web, draws them as a
 chart, and hands back an assessment that **cites the data it's standing on**. One
 message in, a grounded answer out.
 {: .fs-5 .fw-300 }
 
 This uses live **web research** (a search provider the operator wired up) plus
-Vance's native **chart** documents. The agent delegates the lookup to a research
+Vancetope's native **chart** documents. The agent delegates the lookup to a research
 worker, builds the chart, and writes the verdict — you just ask.
 
 ## Table of contents

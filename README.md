@@ -1,6 +1,6 @@
 # vance-docs
 
-Source of the public Vance documentation. Served via GitHub Pages at
+Source of the public Vancetope documentation. Served via GitHub Pages at
 **https://vance.mhus.de**.
 
 ## Stack

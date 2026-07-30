@@ -9,14 +9,14 @@ permalink: /howtos/uc-talent/
 {: .no_toc }
 
 One agent gives you one opinion. A hard call — a pitch, a product, a campaign —
-wants several, from people who disagree. Vance lets you stand up a **council**:
+wants several, from people who disagree. Vancetope lets you stand up a **council**:
 a named panel of distinct personas that argue a question out and hand back one
 synthesised verdict. Define it once; consult it for the rest of the project.
 {: .fs-5 .fw-300 }
 
 Here we build a *Got-Talent*-style jury — a ruthless market perfectionist, a
 pop-culture trendsetter, an unconventional fan-favourite, and an empath — and
-throw a real pitch at it. It runs on Vance's **Zaphod** engine (a multi-head
+throw a real pitch at it. It runs on Vancetope's **Zaphod** engine (a multi-head
 council); you never touch that name — a wizard writes it for you.
 
 ## Table of contents

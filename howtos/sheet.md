@@ -9,7 +9,7 @@ permalink: /howtos/sheet/
 {: .no_toc }
 
 A sheet is a spreadsheet document — cells, formulas, formatting — with the twist
-that it's just another Vance document. Formulas evaluate **server-side** (Apache
+that it's just another Vancetope document. Formulas evaluate **server-side** (Apache
 POI, the full Excel function pool), so an agent can drop inputs into cells, ask
 for a recalc, and read the results the exact same way you do.
 {: .fs-5 .fw-300 }

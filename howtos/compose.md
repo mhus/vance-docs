@@ -8,7 +8,7 @@ permalink: /howtos/compose/
 # Compose — run scripts in a page
 {: .no_toc }
 
-A Vance page can **run things**, not just hold text. Drop a compose block into a
+A Vancetope page can **run things**, not just hold text. Drop a compose block into a
 page, write a script, and run it — it executes server-side in a fresh workspace
 and the result lands right back in the page. No terminal, no setup. And it's the
 *same block* whatever the language: swap the task type and you're running Shell,

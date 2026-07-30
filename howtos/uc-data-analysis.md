@@ -43,7 +43,7 @@ flows down the page.
 1. **Pull** the raw conversations file into the workspace.
 2. **Truncate** it to a fixed sample of 10 (fast, reproducible).
 3. **Analyse** the sample — turns, message length, sentiment mix.
-4. **Chart** the sentiment counts as a native Vance chart.
+4. **Chart** the sentiment counts as a native Vancetope chart.
 5. **Ask** an agent to characterise the conversation style from real turns.
 
 You don't reach the goal in one shot — you reach it by pressing buttons in order,
@@ -255,7 +255,7 @@ tasks:
 
 ## 4 · Chart the sentiment
 
-A table of counts is fine; a chart is better. This block builds a native Vance
+A table of counts is fine; a chart is better. This block builds a native Vancetope
 **chart document** from the sentiment counts and `export`s it into the project —
 where it opens as a real, editable bar chart, not a static image.
 
@@ -294,7 +294,7 @@ export:
 
 The trick is the `$meta: {kind: chart}` the script writes into the JSON. As a
 workspace file it's just JSON; once `export`ed into the project as
-`sentiment.chart.json`, Vance recognises the kind and renders it.
+`sentiment.chart.json`, Vancetope recognises the kind and renders it.
 
 <div class="vslides">
   <div class="vslides-head">4 · Chart — command &amp; result</div>

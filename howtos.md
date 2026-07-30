@@ -36,7 +36,7 @@ Short, visual, "here's how X works."
 ## Use-case stories
 
 The narrative path from a request to a result, across several features at once —
-what people actually get done with Vance.
+what people actually get done with Vancetope.
 
 - [**Analyse a dataset, step by step**](/howtos/uc-data-analysis/) — pull public data, sample it, compute, chart, and ask an agent — five compose blocks in a row
 - [**Stress-test an idea with a panel of judges**](/howtos/uc-talent/) — stand up a reusable council of AI personas, get one synthesised verdict, keep it as a document
@@ -51,16 +51,16 @@ what people actually get done with Vance.
 
 ### Getting productive
 
-- **Your first Vance session** — install, log in, run a Recipe, read the result
+- **Your first Vancetope session** — install, log in, run a Recipe, read the result
 - **vance-foot CLI reference** — commands, flags, slash-commands, a typical session
-- **Picking a model** — what Vance asks of an LLM and how the recommended models compare under that load
+- **Picking a model** — what Vancetope asks of an LLM and how the recommended models compare under that load
 
-### Building on Vance
+### Building on Vancetope
 
 - **Write your first Recipe** — a `default`-style YAML recipe end-to-end, with the LLM you already configured
 - **Build a Project Kit** — pack skills, recipes, tools and settings into a Git repo and install it into a project
 - **Add a server-side tool** — register a `vance-shared` tool, wire it into a recipe, call it from a session
-- **Anbind an MCP server** — point Vance at an MCP endpoint, expose its tools through the recipe layer
+- **Anbind an MCP server** — point Vancetope at an MCP endpoint, expose its tools through the recipe layer
 
 ### Operations
 

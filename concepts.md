@@ -7,7 +7,7 @@ permalink: /concepts
 # Concepts
 {: .no_toc }
 
-The core terms in Vance. Each will later link to its own page.
+The core terms in Vancetope. Each will later link to its own page.
 {: .fs-5 .fw-300 }
 
 ## Table of contents
@@ -54,7 +54,7 @@ maintenance of team standards.
 
 ## Document
 
-In Vance, **almost everything is a Document** — persisted in MongoDB,
+In Vancetope, **almost everything is a Document** — persisted in MongoDB,
 addressable by name within a scope, versioned via `document_archives`,
 served through one [`DocumentService`](/specs/server-tools) API. Same
 read/write/list/event surface for all of:
@@ -94,7 +94,7 @@ as a menu, the model pulls detail via `manual_read`. Skills are how
 
 Most resources resolve through a **cascade across scopes**. When a process
 asks for "the `analyze` recipe", it doesn't get a single hardcoded file —
-Vance walks the cascade and picks the first match:
+Vancetope walks the cascade and picks the first match:
 
 ```
 think-process  →  session  →  project  →  tenant  →  bundled defaults
@@ -122,7 +122,7 @@ Details: [recipes §cascade](/specs/recipes), [llm-resource-management §3a](/sp
 
 ## Trigger
 
-The three ways something starts running in Vance — the
+The three ways something starts running in Vancetope — the
 [Ursa](/specs/ursahooks) trigger subsystem fires the same action hierarchy
 (recipe / script / workflow) from any of:
 

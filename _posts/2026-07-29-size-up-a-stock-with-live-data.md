@@ -3,14 +3,14 @@ layout: default
 title: "Size up a stock with live data — a grounded answer, not a chatbot one"
 date: 2026-07-29
 permalink: /blog/size-up-a-stock-with-live-data/
-description: "Ask about a stock and Vance pulls the prices off the web, charts them as candlesticks, and returns an assessment that cites the numbers it stands on."
+description: "Ask about a stock and Vancetope pulls the prices off the web, charts them as candlesticks, and returns an assessment that cites the numbers it stands on."
 nav_exclude: true
 ---
 
 # Size up a stock with live data
 
 Ask a real question — *"how's this stock doing, and what do you make of it?"* —
-and Vance does the whole thing in one message: it recognises it needs *live*
+and Vancetope does the whole thing in one message: it recognises it needs *live*
 data, spawns a research worker to pull the figures off the web, draws them as a
 native chart, and writes an assessment that **cites the data it's standing on**.
 

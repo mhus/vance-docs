@@ -8,7 +8,7 @@ permalink: /howtos/cortex/
 # Cortex — chat, document, execute
 {: .no_toc }
 
-Cortex is the surface where the three things you do with Vance happen in one
+Cortex is the surface where the three things you do with Vancetope happen in one
 place: **talk to an agent**, **work on a document**, and **run it**. No jumping
 between a chat window, an editor and a terminal — they share one screen, one
 session, and the same live document underneath.
