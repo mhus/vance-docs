@@ -155,7 +155,7 @@ Done.
 ```bash
 # 1) scaffold docker-compose.yml + .env into ~/.vancetope (interactive wizard)
 mkdir -p ~/.vancetope
-docker run --rm -it -v "$HOME/.vancetope:/data" mhus/vance-anus:latest --setup-docker-compose
+docker run --rm -it -v "$HOME/.vancetope:/data" mhus/vancetope-anus:latest --setup-docker-compose
 cd ~/.vancetope
 
 # 2) start the stack
@@ -166,7 +166,7 @@ pw="$(sed -n 's/^MONGO_INITDB_ROOT_PASSWORD=//p' .env)"
 docker run --rm -it --network vance_default --env-file .env \
   -e SPRING_PROFILES_ACTIVE=prod \
   -e VANCE_MONGODB_URI="mongodb://root:$pw@mongodb:27017/vance?authSource=admin" \
-  mhus/vance-anus:latest --setup
+  mhus/vancetope-anus:latest --setup
 ```
 
 ### What the setup step asks for
