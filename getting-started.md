@@ -63,6 +63,14 @@ interactive — just answer the prompts.
 Then open the URL it prints (a local install defaults to
 <http://localhost:9999>) and log in with the user you just created.
 
+{: .note }
+> **Latest vs. a specific version.** By default the stack pulls the `latest`
+> images. To pin a release, set `IMAGE_TAG` on the `bash` side of the pipe —
+> e.g. `curl -fsSL https://vance.mhus.de/install.sh | IMAGE_TAG=0.1.0 bash`. The
+> wizard writes it into `.env`, so later `docker compose pull && docker compose
+> up -d` stays on that version until you bump it. Available tags are on the
+> [Releases page](https://github.com/mhus/vance/releases).
+
 ### What you'll see
 
 **Step 1** — the installer runs the wizard, then starts the stack:
@@ -232,6 +240,34 @@ the Web UI under Settings → AI, or pre-seed it with
 > change. To reach Vancetope from beyond `localhost`, pick the wizard's **external
 > URL** option: cookies then get the `Secure` flag and the bundled Caddy can
 > auto-provision TLS for your domain.
+
+## Desktop app & CLI (optional)
+
+The Web UI works in any browser, but there are two native clients too — both
+from the Homebrew tap `mhus/vancetope`. Each connects to a running Brain (it
+asks for the Brain URL and your login on first launch); neither bundles one.
+
+**Desktop app (macOS)** — a native Vancetope window around the workspace:
+
+```bash
+brew install --cask mhus/vancetope/vancetope-desktop
+```
+
+{: .warning }
+> **Not signed yet.** The 0.1.x app isn't code-signed or notarized, so macOS
+> Gatekeeper blocks it on first launch (*"Vancetope can't be opened…"* or *"is
+> damaged"*). Signing is on the roadmap. Until then, either install without the
+> quarantine flag — `brew install --cask --no-quarantine mhus/vancetope/vancetope-desktop` —
+> or, if it's already installed, run `xattr -dr com.apple.quarantine /Applications/Vancetope.app`
+> and then open it (or right-click the app → **Open**).
+
+**CLI** — the `vancetope` terminal client (bundles its own OpenJDK 25, no system
+Java needed):
+
+```bash
+brew install mhus/vancetope/vancetope
+vancetope chat
+```
 
 ## Install project kits (optional)
 
