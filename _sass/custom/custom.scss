@@ -136,6 +136,59 @@ a:hover { text-decoration-color: #A85D00; }
 .vslides-nav button:hover { border-color: #A85D00; color: #A85D00; }
 .vslides-count { font-variant-numeric: tabular-nums; color: #6b6252; font-size: 0.9em; min-width: 3.2em; text-align: center; }
 
+// Slide images and standalone shots are clickable → open the lightbox (magnifier cursor).
+img.vslide-zoom { cursor: zoom-in; }
+
+// ── Lightbox ────────────────────────────────────────────────────────────────
+// Click a slide → the whole slideshow, enlarged and navigable, over a backdrop.
+.vlightbox {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+}
+.vlightbox[hidden] { display: none; }
+.vlb-backdrop { position: absolute; inset: 0; background: rgba(8, 11, 20, 0.92); cursor: zoom-out; }
+.vlb-figure {
+  position: relative; z-index: 1; margin: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0.85em;
+  max-width: 92vw;
+}
+.vlb-img {
+  display: block; width: auto; height: auto;
+  max-width: 88vw; max-height: 80vh;
+  border-radius: 10px; background: #fff; cursor: pointer;
+  box-shadow: 0 40px 120px -30px rgba(0, 0, 0, 0.75);
+}
+.vlb-cap {
+  color: #E7EAF1; font-size: 0.98em; line-height: 1.55;
+  max-width: min(880px, 88vw); text-align: center;
+}
+.vlb-cap .step { color: #f0a24a; font-weight: 600; margin-right: 0.4em; }
+.vlb-close {
+  position: absolute; top: 16px; right: 20px; z-index: 2;
+  width: 40px; height: 40px; font-size: 1.15em; line-height: 1; cursor: pointer;
+  color: #fff; background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 8px;
+}
+.vlb-close:hover { background: rgba(255, 255, 255, 0.18); }
+.vlb-nav {
+  position: absolute; z-index: 2; top: 50%; transform: translateY(-50%);
+  width: 52px; height: 52px; font-size: 1.8em; line-height: 1; cursor: pointer;
+  color: #fff; background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 999px;
+}
+.vlb-nav:hover { background: rgba(255, 255, 255, 0.18); }
+.vlb-prev { left: max(16px, 3vw); }
+.vlb-next { right: max(16px, 3vw); }
+.vlb-count {
+  position: absolute; z-index: 2; bottom: 18px; left: 50%; transform: translateX(-50%);
+  color: #cfd6e6; font-variant-numeric: tabular-nums; font-size: 0.9em;
+  background: rgba(0, 0, 0, 0.4); padding: 4px 12px; border-radius: 999px;
+}
+@media (max-width: 640px) {
+  .vlb-nav { width: 42px; height: 42px; font-size: 1.4em; }
+  .vlb-img { max-height: 70vh; }
+}
+
 // ── Web-UI screenshots ──────────────────────────────────────────────────────
 // Framed, rounded product shots for the walkthroughs (`{: .doc-shot }`).
 // Applies to still images and short demo clips (`<video class="doc-shot">`).
