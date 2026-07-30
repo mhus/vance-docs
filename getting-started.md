@@ -184,6 +184,28 @@ The wizard writes everything to MongoDB and exits. Re-run it later to add
 another tenant or user; existing entries are not overwritten unless you
 explicitly change them.
 
+### Bring your own model
+
+Vancetope is **not an AI provider.** It ships no model and hosts none — it's
+the *place* the agents work, not the brain behind them. You supply the model,
+and your keys and token spend stay with whoever you get it from. Two ways:
+
+- **A hosted API**, bought or rented per token — e.g.
+  [OpenAI](https://platform.openai.com),
+  [Anthropic](https://console.anthropic.com),
+  [Google Gemini](https://ai.google.dev),
+  [DeepSeek](https://platform.deepseek.com),
+  [Z.ai (GLM)](https://z.ai), or an OpenAI-compatible gateway like
+  [Cortecs](https://cortecs.ai) (EU-hosted, one key for many models). Paste the
+  API key into **Settings → AI** (or the setup wizard).
+- **A local model** you run yourself — [Ollama](https://ollama.com) or
+  [LM Studio](https://lmstudio.ai) on your own machine, no per-token cost. Point
+  Vancetope at its endpoint.
+
+Any OpenAI-compatible endpoint works: set the provider's `type`, `apiKey` and
+`baseUrl` under **Settings → AI**. Which model actually holds up under agentic
+load is a separate question — see below.
+
 ### Choosing a model
 
 Vancetope is an agentic system — the model spends a lot of tokens reasoning,
