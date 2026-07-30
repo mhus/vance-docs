@@ -254,7 +254,7 @@ Effective-Kit := merge(inherits[0], inherits[1], …, inherits[n-1], top-layer)
 | Tool Exposition | `kit_install`, `kit_update`, `kit_apply`, `kit_export`, `kit_status` as Server Tools |
 | Web Editor | dedicated editor `kit.html` with form (see [web-ui.md](/specs/web-ui) §6 for editor convention) |
 
-**Tmp Workspace:** Located under the Brain Workspace (e.g., `~/.vancetopetope/tmp/kits/`), not in the Project itself. Each operation gets its own UUID, lifecycle-managed via `Path.toFile().deleteOnExit()` as fallback + explicit cleanup in finally block.
+**Tmp Workspace:** Located under the Brain Workspace (e.g., `~/.vancetope/tmp/kits/`), not in the Project itself. Each operation gets its own UUID, lifecycle-managed via `Path.toFile().deleteOnExit()` as fallback + explicit cleanup in finally block.
 
 **JGit Auth:** Token-based via `UsernamePasswordCredentialsProvider("x-access-token", token)` for GitHub/GitLab. SSH keys are not supported in v1 — tokens are more portable and sufficient for 99% of cases. Folder URLs (`file://...` or absolute path) pass directly through JGit without Auth.
 

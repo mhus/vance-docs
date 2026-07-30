@@ -10,7 +10,7 @@
 # requirement is Docker (Docker Desktop on macOS/Windows, Engine on Linux).
 #
 # Options (all optional):
-#   First argument   target directory (default: $HOME/.vancetopetope)
+#   First argument   target directory (default: $HOME/.vancetope)
 #   VANCE_DIR=…       same as the argument (env override)
 #   VANCE_IMAGE=…     override the setup image (default: mhus/vance-anus:latest)
 #   IMAGE_TAG=…       override just the tag
@@ -21,7 +21,7 @@ IMAGE="${VANCE_IMAGE:-mhus/vance-anus:${IMAGE_TAG:-latest}}"
 # Default install location: a fixed, hidden folder in the user's home — not a
 # "vance/" dir wherever curl happened to run. On Windows this is the WSL2 home
 # (the intended Windows path). Override with $VANCE_DIR or a first argument.
-TARGET_DIR="${1:-${VANCE_DIR:-$HOME/.vancetopetopetope}}"
+TARGET_DIR="${1:-${VANCE_DIR:-$HOME/.vancetope}}"
 
 # Colours only when writing to a real terminal.
 if [ -t 1 ]; then

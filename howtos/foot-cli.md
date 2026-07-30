@@ -78,7 +78,7 @@ calls and document writes are reported in the same stream. Type
 By default Foot reads the Brain URL and credentials from
 `vance.bootstrap.*` in `application.yaml` (or environment variables
 following Spring's naming rules). The most common config file is
-`~/.vancetopetope/foot.yaml`:
+`~/.vancetope/foot.yaml`:
 
 ```yaml
 vance:

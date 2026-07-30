@@ -27,7 +27,7 @@ err() { printf '%s%s%s\n' "$red" "$*" "$z" >&2; }
 # ── Locate the folder install.sh wrote ──────────────────────────────────────
 find_dir() {
   local d
-  for d in "${VANCE_DIR:-}" "$HOME/.vancetopetope" "." "./vance"; do
+  for d in "${VANCE_DIR:-}" "$HOME/.vancetope" "." "./vance"; do
     [ -n "$d" ] || continue
     if [ -f "$d/.env" ] && [ -f "$d/docker-compose.yml" ]; then
       printf '%s\n' "$d"; return 0
