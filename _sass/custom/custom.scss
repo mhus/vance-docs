@@ -189,6 +189,14 @@ img.vslide-zoom { cursor: zoom-in; }
   .vlb-img { max-height: 70vh; }
 }
 
+// ── Blog list (/blog) ───────────────────────────────────────────────────────
+.blog-list { list-style: none; padding: 0; margin: 1.5em 0; }
+.blog-item { padding: 1em 0; border-bottom: 1px solid $border-color; }
+.blog-item:last-child { border-bottom: none; }
+.blog-title { font-size: 1.15em; font-weight: 600; }
+.blog-date { margin-left: 0.6em; color: #6b6252; font-size: 0.85em; font-variant-numeric: tabular-nums; }
+.blog-desc { margin: 0.35em 0 0; color: $body-text-color; opacity: 0.85; font-size: 0.95em; line-height: 1.55; }
+
 // ── Web-UI screenshots ──────────────────────────────────────────────────────
 // Framed, rounded product shots for the walkthroughs (`{: .doc-shot }`).
 // Applies to still images and short demo clips (`<video class="doc-shot">`).
