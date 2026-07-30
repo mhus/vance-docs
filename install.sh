@@ -4,7 +4,7 @@
 #
 #   curl -fsSL https://vance.mhus.de/install.sh | bash
 #
-# Runs the Vance setup wizard straight from the vance-anus Docker image. The
+# Runs the Vance setup wizard straight from the vancetope-anus Docker image. The
 # wizard scaffolds docker-compose.yml + .env + setup.sh into a target folder;
 # from there `docker compose up -d` + `./setup.sh` bring the stack up. The only
 # requirement is Docker (Docker Desktop on macOS/Windows, Engine on Linux).
@@ -12,12 +12,12 @@
 # Options (all optional):
 #   First argument   target directory (default: $HOME/.vancetope)
 #   VANCE_DIR=…       same as the argument (env override)
-#   VANCE_IMAGE=…     override the setup image (default: mhus/vance-anus:latest)
+#   VANCE_IMAGE=…     override the setup image (default: mhus/vancetope-anus:latest)
 #   IMAGE_TAG=…       override just the tag
 
 set -euo pipefail
 
-IMAGE="${VANCE_IMAGE:-mhus/vance-anus:${IMAGE_TAG:-latest}}"
+IMAGE="${VANCE_IMAGE:-mhus/vancetope-anus:${IMAGE_TAG:-latest}}"
 # Default install location: a fixed, hidden folder in the user's home — not a
 # "vance/" dir wherever curl happened to run. On Windows this is the WSL2 home
 # (the intended Windows path). Override with $VANCE_DIR or a first argument.

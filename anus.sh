@@ -14,7 +14,7 @@
 
 set -euo pipefail
 
-IMAGE="${VANCE_IMAGE:-mhus/vance-anus:${IMAGE_TAG:-latest}}"
+IMAGE="${VANCE_IMAGE:-mhus/vancetope-anus:${IMAGE_TAG:-latest}}"
 
 if [ -t 1 ]; then
   b=$'\033[1m'; red=$'\033[1;31m'; dim=$'\033[2m'; z=$'\033[0m'
