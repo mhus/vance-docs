@@ -138,13 +138,13 @@ document, not Java.
 ## The name — Vancetope vs. `vance`
 
 The product is **Vancetope** — the *-tope* is Greek *tópos*, "place": the
-place your documents and agents share. It grew up under the working name
-**`vance`**, and that name still lives on wherever it's a *technical*
-identifier rather than the brand: the CLI command you type (`vance chat`),
-and the package and repository names (`@vance/…`, `github.com/mhus/vance`).
+place your documents and agents share. Everything you actually touch is
+Vancetope — the product, the desktop app, and the `vancetope` command.
 
-You'll also still see a small `vance` wordmark in plenty of the
-**screenshots** throughout these docs — they were captured before the
-rename. That's expected, not a mistake: think of it like `psql` for
-PostgreSQL — the place is Vancetope, the command is `vance`. Wherever a
-screenshot still says "vance", read it as "Vancetope".
+It grew up under the working name **`vance`**, which now lives on only
+*under the hood*: package names (`@vance/…`), the source repository
+(`github.com/mhus/vance`) and module directories (`vance-foot`, `vance-face`,
+`vance-brain`). You'll also still see a small `vance` wordmark in plenty of the
+**screenshots** throughout these docs — they were captured before the rename.
+None of that is a mistake — `vance` is just the internal codename. Wherever you
+see it, read it as "Vancetope".
