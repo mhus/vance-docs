@@ -1,5 +1,5 @@
 ---
-title: "Vance — RAG (Retrieval-Augmented Generation)"
+title: "Vancetope — RAG (Retrieval-Augmented Generation)"
 parent: Specs
 permalink: /specs/rag
 ---
@@ -7,9 +7,9 @@ permalink: /specs/rag
 <!-- AUTO-GENERATED from specification/public/en/rag.md — do not edit here. -->
 
 ---
-# Vance — RAG (Retrieval-Augmented Generation)
+# Vancetope — RAG (Retrieval-Augmented Generation)
 
-> How Vance places documents into a vector index, how the index is synchronized with the Project lifecycle, and how LLM engines query hits from this index. It builds upon the existing, low-level RAG subsystem (`RagDocument`/`RagChunkDocument`/`RagBackend`) and adds a canonical **Project RAG layer** on top.
+> How Vancetope places documents into a vector index, how the index is synchronized with the Project lifecycle, and how LLM engines query hits from this index. It builds upon the existing, low-level RAG subsystem (`RagDocument`/`RagChunkDocument`/`RagBackend`) and adds a canonical **Project RAG layer** on top.
 >
 > See also: [project-lifecycle.md](/specs/project-lifecycle) | auto-summary.md | [llm-resource-management.md](/specs/llm-resource-management) | [knowledge-graph.md](/specs/knowledge-graph) (standalone system, not RAG) | planning/project-rag.md
 
@@ -181,7 +181,7 @@ Variant C — Pre-Turn Hybrid with Threshold:
      source path when you use these.
 
      - documents/notes/topic.md (score 0.81)
-       Vance is a Think-Tool, not a productivity tool. …
+       Vancetope is a Think-Tool, not a productivity tool. …
      - documents/architecture.md [summary] (score 0.72)
        Multi-Pod cluster with Mongo-centric state. …
 
@@ -205,7 +205,7 @@ rag:
 
 Why three values instead of just rotating precedence on a boolean: a boolean cannot distinguish "Recipe explicitly says OFF" (→ override setting) from "Recipe says nothing" (→ let setting decide) — both would be `false`. Only the third value `AUTO` (= default) makes "defer" expressible.
 
-Precedence **innermost-wins** (consistent with all other Vance cascades):
+Precedence **innermost-wins** (consistent with all other Vancetope cascades):
 
 - **Recipe `ON`/`OFF` wins** over the setting — the RAG stance is part of the Recipe's identity. A `discuss`-like Recipe pins `OFF` and cannot be forcibly activated by any Project.
 - Recipe `AUTO`/absent → Cascade Setting `rag.autoInject.enabled` decides: `ON`/`OFF` wins, `AUTO`/absent defers further.

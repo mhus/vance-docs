@@ -1,5 +1,5 @@
 ---
-title: "Vance Application — `app: gtd`"
+title: "Vancetope Application — `app: gtd`"
 parent: Specs
 permalink: /specs/app-gtd
 ---
@@ -7,7 +7,7 @@ permalink: /specs/app-gtd
 <!-- AUTO-GENERATED from specification/public/en/app-gtd.md — do not edit here. -->
 
 ---
-# Vance Application — `app: gtd`
+# Vancetope Application — `app: gtd`
 
 > Getting-Things-Done container via `kind: action` pages, in the **Things** paradigm
 > (Cultured Code), built on the [doc-kind-application](/specs/doc-kind-application)

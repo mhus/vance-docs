@@ -1,5 +1,5 @@
 ---
-title: "Vance Mobile-UI — Specification"
+title: "Vancetope Mobile-UI — Specification"
 parent: Specs
 permalink: /specs/mobile-ui
 ---
@@ -7,7 +7,7 @@ permalink: /specs/mobile-ui
 <!-- AUTO-GENERATED from specification/public/en/mobile-ui.md — do not edit here. -->
 
 ---
-# Vance Mobile-UI — Specification
+# Vancetope Mobile-UI — Specification
 
 > Status: v1 Initial Draft. Binding for the development of the mobile app under `repos/vance/client/packages/vance-fingers/`.
 >
@@ -15,7 +15,7 @@ permalink: /specs/mobile-ui
 
 ## 1. Goals and Scope
 
-Vance will receive a native mobile app for iOS and Android as a complement to the existing clients (`vance-cli`, `vance-foot`, `vance-face`). The mobile app is a standalone client with a significantly narrower range of functions than the Web-UI.
+Vancetope will receive a native mobile app for iOS and Android as a complement to the existing clients (`vance-cli`, `vance-foot`, `vance-face`). The mobile app is a standalone client with a significantly narrower range of functions than the Web-UI.
 
 **What the Mobile App is:**
 
@@ -105,7 +105,7 @@ repos/vance/client/                          (Workbench-Symlink: vance-wb/client
 | | iOS | Android |
 |---|---|---|
 | Bundle ID / Package | `de.mhus.vance.mobile` | `de.mhus.vance.mobile` |
-| App Name | `Vance` | `Vance` |
+| App Name | `Vancetope` | `Vancetope` |
 | Min Version | iOS 15 | Android 8 (API 26) |
 
 ## 3. View Inventory v1

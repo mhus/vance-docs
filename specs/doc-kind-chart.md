@@ -1,5 +1,5 @@
 ---
-title: "Vance — Document Kind `chart`"
+title: "Vancetope — Document Kind `chart`"
 parent: Specs
 permalink: /specs/doc-kind-chart
 ---
@@ -7,7 +7,7 @@ permalink: /specs/doc-kind-chart
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-chart.md — do not edit here. -->
 
 ---
-# Vance — Document Kind `chart`
+# Vancetope — Document Kind `chart`
 
 > Specifies the **`chart` payload** for documents that carry one or more data series with chart-rendering metadata. **One kind for all chart types** — the variant (`line`, `bar`, `candlestick`, …) is a discriminator inside the document, not a separate kind. Only JSON and YAML; Markdown is intentionally not supported.
 > See also: [doc-kind-graph](/specs/doc-kind-graph) | [doc-kind-records](/specs/doc-kind-records) | [doc-kind-sheet](/specs/doc-kind-sheet) | [web-ui](/specs/web-ui)
@@ -26,7 +26,7 @@ Distinctions:
 
 **Design Principle — One Kind, Many Chart Types.** All data diagrams share the same document shape (axes, series, title, legend). The specific type is a field (`chart.chartType`), not a separate Kind. Rationale: the data model is almost identical across types; a user who switches a Line chart to Bar changes one field — no Kind change, no file change. Established libraries (ECharts, Plotly, Vega) do the same.
 
-**Design Principle — Lean custom schema, ECharts option as escape hatch.** We define a custom mini-schema (10-12 fields) in `vance-api` that the Vance Face renderer maps to an ECharts option. Rationale:
+**Design Principle — Lean custom schema, ECharts option as escape hatch.** We define a custom mini-schema (10-12 fields) in `vance-api` that the Vancetope Face renderer maps to an ECharts option. Rationale:
 - Grafana spec is coupled to panel data sources — we have static document content, not a pull query.
 - Vega-Lite is academically clean but too cumbersome for LLM generation (grammar-of-graphics concepts complicate clean YAML generation).
 - Raw ECharts option is too library-specific and verbose (~50 fields); we don't want to rewrite all docs if the library changes.
@@ -230,7 +230,7 @@ When switching `Chart → Raw`, the parsed model is serialized back; when switch
 **Apache ECharts** (`echarts`, MIT, ~1 MB minified with tree-shakable v5 import):
 - **Native Candlestick** (`series.type: 'candlestick'`) including OHLC tooltip; volume overlay as a second series is possible.
 - All v1 chart types out-of-the-box: line, bar, area (`line` + `areaStyle`), scatter, pie, candlestick, heatmap.
-- Declarative option object — clean mapping from the Vance chart schema.
+- Declarative option object — clean mapping from the Vancetope chart schema.
 - Pan/Zoom (`dataZoom` component), tooltip, legend built-in.
 - DaisyUI theme integration via CSS variables (background/text colors from `--b1`/`--bc`).
 
@@ -267,7 +267,7 @@ Alternatives considered and rejected:
 
 - `<ChartView>` — Top-level. Receives `:doc: ChartDocument`, emits `update:doc`.
   - Holds a local, mutable copy of `chart`/`xAxis`/`yAxis`/`series`.
-  - Maps the Vance schema → ECharts option via `chartSchemaToEChartsOption(doc)` (pure function in `@vance/shared/chart`).
+  - Maps the Vancetope schema → ECharts option via `chartSchemaToEChartsOption(doc)` (pure function in `@vance/shared/chart`).
   - Initializes ECharts in `onMounted`, calls `chart.setOption(option, true)` on schema change, disposes in `onBeforeUnmount`.
   - Merges `echartsOptionOverride` via `lodash.merge` over the generated option (document override wins).
   - Side panel on the right: global chart properties (Type, Title, Legend, Axes); when a series is selected (click on legend), Color + Name are editable.
@@ -318,7 +318,7 @@ For reports, email embedding, external linking. ECharts can be rendered on the s
 
 ### 6.5 Annotations and Markers
 
-`markPoint`/`markLine` on Series — e.g., "Release date as vertical line", "Min/Max marker". ECharts supports this natively; only schema extension in the Vance schema is needed.
+`markPoint`/`markLine` on Series — e.g., "Release date as vertical line", "Min/Max marker". ECharts supports this natively; only schema extension in the Vancetope schema is needed.
 
 ### 6.6 Recipe Tool: chart_create
 

@@ -1,5 +1,5 @@
 ---
-title: "Vance — Execution Modes & Trigger"
+title: "Vancetope — Execution Modes & Trigger"
 parent: Specs
 permalink: /specs/execution-modes-trigger
 ---
@@ -7,7 +7,7 @@ permalink: /specs/execution-modes-trigger
 <!-- AUTO-GENERATED from specification/public/en/execution-modes-trigger.md — do not edit here. -->
 
 ---
-# Vance — Execution Modes & Trigger
+# Vancetope — Execution Modes & Trigger
 
 > Defines how Think Processes are triggered and how the unified client session model works.
 > Core principle: Everything is a client. Everything runs in a session.

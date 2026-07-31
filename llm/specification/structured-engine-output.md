@@ -1,4 +1,4 @@
-# Vance — Structured Engine Output
+# Vancetope — Structured Engine Output
 
 > An Engine ends each turn with a mandatory `respond` tool call. This tool call contains the user-facing message **plus** a boolean flag that explicitly states whether the Engine is waiting for user input. This eliminates language-dependent intent heuristics, and the Engine lifecycle (BLOCKED vs. READY) is structured rather than guessed from free text.
 >

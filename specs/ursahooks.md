@@ -1,5 +1,5 @@
 ---
-title: "Vance — Ursahooks"
+title: "Vancetope — Ursahooks"
 parent: Specs
 permalink: /specs/ursahooks
 ---
@@ -7,7 +7,7 @@ permalink: /specs/ursahooks
 <!-- AUTO-GENERATED from specification/public/en/ursahooks.md — do not edit here. -->
 
 ---
-# Vance — Ursahooks
+# Vancetope — Ursahooks
 
 > **Ursahooks** are project-specific, lifecycle-event-driven triggers.
 > Conceptually, they are the same as Schedulers and Events — but with
@@ -71,7 +71,7 @@ load(tenantId, projectId, event) → List<UrsaHookDef> :=
 
 **Merge per Ursahook Name:** A Project Ursahook completely replaces a Tenant Ursahook of the same name (no field merge). Tenant Ursahooks without a Project override of the same name are active in all projects of the Tenant. The execution order per Event is **not specified** — Ursahooks are independent and must not rely on each other.
 
-**There are no Resource Layer defaults.** Bundled Ursahooks make no sense — no Vance default should write to external systems. To provide standard Ursahooks for a Project bootstrap, deliver them via a Kit (see [kits](/specs/kits) — Ursahook files are Documents and are included by the Kit Apply).
+**There are no Resource Layer defaults.** Bundled Ursahooks make no sense — no Vancetope default should write to external systems. To provide standard Ursahooks for a Project bootstrap, deliver them via a Kit (see [kits](/specs/kits) — Ursahook files are Documents and are included by the Kit Apply).
 
 ---
 

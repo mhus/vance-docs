@@ -1,5 +1,5 @@
 ---
-title: "Vance Application — `app: journal`"
+title: "Vancetope Application — `app: journal`"
 parent: Specs
 permalink: /specs/app-journal
 ---
@@ -7,14 +7,14 @@ permalink: /specs/app-journal
 <!-- AUTO-GENERATED from specification/public/en/app-journal.md — do not edit here. -->
 
 ---
-# Vance Application — `app: journal`
+# Vancetope Application — `app: journal`
 
 > Journal container via `kind: journal-entry` pages, built on the
 > [doc-kind-application](/specs/doc-kind-application) foundation. One folder = one
 > journal, one file = one day. Date-anchored, reflective prose — unlike
 > [app-kanban](/specs/app-kanban) (workflow states) and
 > [app-calendar](/specs/app-calendar) (scheduled events). Journaling is thinking;
-> the daily entry is a legitimate Vance artifact.
+> the daily entry is a legitimate Vancetope artifact.
 
 ## 1. Why a Journal Application
 

@@ -1,5 +1,5 @@
 ---
-title: "Vance — Document Kind `finance-tree`"
+title: "Vancetope — Document Kind `finance-tree`"
 parent: Specs
 permalink: /specs/doc-kind-finance-tree
 ---
@@ -7,7 +7,7 @@ permalink: /specs/doc-kind-finance-tree
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-finance-tree.md — do not edit here. -->
 
 ---
-# Vance — Document Kind `finance-tree`
+# Vancetope — Document Kind `finance-tree`
 
 > Hierarchical financial modeling tool: a tree of income/expense nodes,
 > which the system calculates **bottom-up** to a canonical **per-year** figure.

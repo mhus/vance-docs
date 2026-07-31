@@ -1,5 +1,5 @@
 ---
-title: "Vance — Zarniwoop Service (Research / Search Provider System)"
+title: "Vancetope — Zarniwoop Service (Research / Search Provider System)"
 parent: Specs
 permalink: /specs/zarniwoop-service
 ---
@@ -7,11 +7,11 @@ permalink: /specs/zarniwoop-service
 <!-- AUTO-GENERATED from specification/public/en/zarniwoop-service.md — do not edit here. -->
 
 ---
-# Vance — Zarniwoop Service (Research / Search Provider System)
+# Vancetope — Zarniwoop Service (Research / Search Provider System)
 
 > Persona: **Zarniwoop** (*The Hitchhiker's Guide to the Galaxy*) — the Imperial employee who has an electronic model of the universe in his office. If someone wants to know something, they don't ask the universe directly — they ask Zarniwoop, and he knows which sub-index is responsible.
 >
-> Zarniwoop is Vance's **Research/Search Provider System**: a central dispatcher, a pluggable Protocol SPI, a project-bound Factory, and a thin LLM tool layer over multiple provider backends (Serper, Wikipedia, OpenAlex, arXiv, PubMed, OpenLibrary, HackerNews). One tool schema per task, one Modality param axis, no hard provider coupling in the LLM contract.
+> Zarniwoop is Vancetope's **Research/Search Provider System**: a central dispatcher, a pluggable Protocol SPI, a project-bound Factory, and a thin LLM tool layer over multiple provider backends (Serper, Wikipedia, OpenAlex, arXiv, PubMed, OpenLibrary, HackerNews). One tool schema per task, one Modality param axis, no hard provider coupling in the LLM contract.
 >
 > See also: [agrajag-engine](/specs/agrajag-engine) | [light-llm-service](/specs/light-llm-service) | [recipes](/specs/recipes) | [tool-availability](/specs/tool-availability) | [addon-system](/specs/addon-system)
 

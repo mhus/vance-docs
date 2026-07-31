@@ -1,6 +1,6 @@
-# Vance — Live-WS (Multi-Channel WebSocket)
+# Vancetope — Live-WS (Multi-Channel WebSocket)
 
-> Multi-channel envelope protocol for external Vance clients (Web, Foot, Mobile)
+> Multi-channel envelope protocol for external Vancetope clients (Web, Foot, Mobile)
 > and the associated cross-pod chat streaming architecture.
 > See also: [websocket-protocol](websocket-protokoll.md) (Inner Chat-Frame
 > Format), [architecture-scopes-clients](architektur-scopes-clients.md)
@@ -16,7 +16,7 @@
 
 ## 1. Overview
 
-External Vance clients (Web-UI, Foot-CLI, Eddie-Worker, Mobile) communicate with
+External Vancetope clients (Web-UI, Foot-CLI, Eddie-Worker, Mobile) communicate with
 the Brain via **a single** WebSocket endpoint. The wire format is a
 **multi-channel-capable envelope** (`LiveEnvelope`), which wraps the existing
 chat frames (`WebSocketEnvelope`) on the `session` channel variant.
@@ -49,23 +49,23 @@ not directly accessible from outside.
 
 Identical to [websocket-protocol](websocket-protokoll.md) §2: JWT in the
 `Authorization: Bearer …` header (or `?token=…` as query fallback for
-browsers), `X-Vance-Profile`, `X-Vance-Client-Version`, optional
-`X-Vance-Client-Name`. JWT is validated by `BrainAccessFilter`,
+browsers), `X-Vancetope-Profile`, `X-Vancetope-Client-Version`, optional
+`X-Vancetope-Client-Name`. JWT is validated by `BrainAccessFilter`,
 `VanceHandshakeInterceptor` builds the `ConnectionContext`.
 
 ### 2.2 Handshake on `/internal/{tenant}/ws/chat`
 
-In addition to the Shared-Secret-Header (`X-Vance-Internal-Token`), the
+In addition to the Shared-Secret-Header (`X-Vancetope-Internal-Token`), the
 Face-Pod carries the tunneled identity in dedicated headers:
 
 | Header | Required | Description |
 |---|---|---|
-| `X-Vance-Internal-Token` | ✓ | Cluster-internal Shared-Secret (constant-time comparison) |
-| `X-Vance-Forwarded-User-Id` | ✓ | UserId of the original caller (Face-Pod has JWT-validated it) |
-| `X-Vance-Forwarded-Tenant-Id` | ✓ | Must match `{tenant}` in the URL path — defense-in-depth |
-| `X-Vance-Forwarded-Display-Name` | no | Fallback to `forwarded-user-id` if empty |
-| `X-Vance-Forwarded-Client-Ip` | no | Original client IP, for audit; fallback to Face-Pod IP |
-| `X-Vance-Profile`, `X-Vance-Client-Version`, `X-Vance-Client-Name` | as external | Passed through 1:1 |
+| `X-Vancetope-Internal-Token` | ✓ | Cluster-internal Shared-Secret (constant-time comparison) |
+| `X-Vancetope-Forwarded-User-Id` | ✓ | UserId of the original caller (Face-Pod has JWT-validated it) |
+| `X-Vancetope-Forwarded-Tenant-Id` | ✓ | Must match `{tenant}` in the URL path — defense-in-depth |
+| `X-Vancetope-Forwarded-Display-Name` | no | Fallback to `forwarded-user-id` if empty |
+| `X-Vancetope-Forwarded-Client-Ip` | no | Original client IP, for audit; fallback to Face-Pod IP |
+| `X-Vancetope-Profile`, `X-Vancetope-Client-Version`, `X-Vancetope-Client-Name` | as external | Passed through 1:1 |
 
 The Home-Pod-Handler is identical to the external User-WS-Handler — it sees
 a regular user connection, except that the identity comes from the
@@ -287,7 +287,7 @@ protocol to learn from practice before channels are hardened:
 - **CRDT for simultaneous multi-user editing** on `documents` —
   deliberately not implemented. The `documents`-Channel has provided since v1
   Presence + Live-Push + 3-way-Merge of the Cortex-Editor-Buffers (see
-  [`documents-channel.md`](documents-channel.md)), but Vance remains a
+  [`documents-channel.md`](documents-channel.md)), but Vancetope remains a
   Think-Tool and not Google-Docs. The `pointers`-Channel has supplemented since v1
   ephemeral live cursors for spatial areas (Canvas) — this is pure
   awareness (who is pointing where), **not** edit sync and no CRDT.

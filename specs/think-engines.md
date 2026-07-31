@@ -1,5 +1,5 @@
 ---
-title: "Vance — Think Engines and Think Processes"
+title: "Vancetope — Think Engines and Think Processes"
 parent: Specs
 permalink: /specs/think-engines
 ---
@@ -7,9 +7,9 @@ permalink: /specs/think-engines
 <!-- AUTO-GENERATED from specification/public/en/think-engines.md — do not edit here. -->
 
 ---
-# Vance — Think Engines and Think Processes
+# Vancetope — Think Engines and Think Processes
 
-> A **Think Engine** is an interchangeable algorithm. A **Think Process** is a running instance that operates according to the algorithm of a Think Engine. Vance starts with **`arthur`** (reactive Session-Chat) and **`ford`** (Generalist-Worker); `vogon` (deterministic multi-phase runner) and `marvin` (deep-think — dynamic task tree) will follow. The architecture is designed for multiple, named Think Engines.
+> A **Think Engine** is an interchangeable algorithm. A **Think Process** is a running instance that operates according to the algorithm of a Think Engine. Vancetope starts with **`arthur`** (reactive Session-Chat) and **`ford`** (Generalist-Worker); `vogon` (deterministic multi-phase runner) and `marvin` (deep-think — dynamic task tree) will follow. The architecture is designed for multiple, named Think Engines.
 >
 > **Engines vs. Recipes:** Engines are the algorithm layer (3-5 structurally distinct classes). The *user-facing* configuration is called a **Recipe** — named bundles of Engine + Default-Params + Prompt-Prefix + Tool-adjustments. Recipes are the view through which Arthur and clients spawn. Details: [recipes](/specs/recipes).
 >

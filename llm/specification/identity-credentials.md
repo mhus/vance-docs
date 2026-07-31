@@ -1,4 +1,4 @@
-# Vance — Identity, Credentials & Tool-Auth
+# Vancetope — Identity, Credentials & Tool-Auth
 
 > Defines the unified account model, how credentials work, and why everything is tied to an account.
 > Core principle: User and Service Account are the same. Every client logs in. Credentials are tied to the account.

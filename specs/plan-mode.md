@@ -1,5 +1,5 @@
 ---
-title: "Vance — Plan-Mode"
+title: "Vancetope — Plan-Mode"
 parent: Specs
 permalink: /specs/plan-mode
 ---
@@ -7,9 +7,9 @@ permalink: /specs/plan-mode
 <!-- AUTO-GENERATED from specification/public/en/plan-mode.md — do not edit here. -->
 
 ---
-# Vance — Plan-Mode
+# Vancetope — Plan-Mode
 
-> **Plan-Mode** is Vance's mechanism for *exploration-before-execution*
+> **Plan-Mode** is Vancetope's mechanism for *exploration-before-execution*
 > for non-trivial requests. Plan, TodoList, and explicit transition
 > to execution are modeled as distinct Actions in the schema.
 >

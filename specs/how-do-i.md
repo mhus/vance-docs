@@ -1,5 +1,5 @@
 ---
-title: "Vance — `how_do_i` Discovery Tool"
+title: "Vancetope — `how_do_i` Discovery Tool"
 parent: Specs
 permalink: /specs/how-do-i
 ---
@@ -7,7 +7,7 @@ permalink: /specs/how-do-i
 <!-- AUTO-GENERATED from specification/public/en/how-do-i.md — do not edit here. -->
 
 ---
-# Vance — `how_do_i` Discovery Tool
+# Vancetope — `how_do_i` Discovery Tool
 
 > A Discovery Tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full Source Catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `&#123;{ sources }}`.
 >
@@ -34,7 +34,7 @@ Discovery currently has **two entry points**, both running on the same `Discover
 
 | Entry Point | When | Where Defined |
 |---|---|---|
-| `DISCOVER` Action (`type: "DISCOVER"`, `intent: …`) | **User mentions a term the Engine doesn't know** — Vance jargon, Kit feature, invented word, ambiguous metaphor. Top-level decision: "before I even build an answer, I need to look it up". | `ArthurActionSchema.TYPE_DISCOVER` / `EddieActionSchema.TYPE_DISCOVER` |
+| `DISCOVER` Action (`type: "DISCOVER"`, `intent: …`) | **User mentions a term the Engine doesn't know** — Vancetope jargon, Kit feature, invented word, ambiguous metaphor. Top-level decision: "before I even build an answer, I need to look it up". | `ArthurActionSchema.TYPE_DISCOVER` / `EddieActionSchema.TYPE_DISCOVER` |
 | `how_do_i` Tool | **Engine knows the term but wants to validate a detail** — e.g., check fence syntax before the first fence block, or confirm the Kind's schema before `doc_create`. Mid-turn tool call, not a separate Action Type. | `tools/discovery/HowDoITool.java` |
 
 **Engine Lifecycle for DISCOVER (continuing action):** LLM emits `arthur_action(type=DISCOVER, intent=…)`; Engine calls `DiscoveryService.discover(intent)` synchronously, formats the result as JSON (same shape as `how_do_i`: `loaded` / `alternatives` / `hint`), returns it as a Tool Result to the Action loop. The next iteration sees the result and selects the actual Action (ANSWER / DELEGATE / ASK_USER / …).
@@ -221,7 +221,7 @@ params:
   model: default:fast
   maxAttempts: 3                  # schema-retry budget
 promptPrefix: |
-  You are the Discovery component of Vance. The caller's LLM has an
+  You are the Discovery component of Vancetope. The caller's LLM has an
   intent it needs to resolve — point it to the right capability
   (manual, skill, or tool) from the catalog below.
 
@@ -357,7 +357,7 @@ public record CatalogSnapshot(String markdown, String contentHash) {}
 | Subsequent call | Cache hit, no rebuild. |
 | Manual invalidation | `invalidate(tenantId)` via code call — Document-Save-Hook is not yet wired. |
 
-**v2 (planned): Mongo Persistence.** When Vance runs multi-pod, the local cache layer will be supplemented by a `DiscoveryCatalogDocument`-Mongo-Collection as a shared source of truth:
+**v2 (planned): Mongo Persistence.** When Vancetope runs multi-pod, the local cache layer will be supplemented by a `DiscoveryCatalogDocument`-Mongo-Collection as a shared source of truth:
 
 ```java
 @Document("discovery_catalog")
@@ -510,7 +510,7 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 ## 13. Open Questions (for later)
 
 - **Multi-Tenant Cache Sharing:** If 100 Tenants have identical bundled defaults, a shared Catalog snapshot is worthwhile. Currently separate per Tenant — storage trivial, so not a priority.
-- **Discovery for Wizards/Workflows:** Should Vance Wizards and saved Workflows be additional Catalog sources?
+- **Discovery for Wizards/Workflows:** Should Vancetope Wizards and saved Workflows be additional Catalog sources?
 - **Per-User-Catalog:** Should the Catalog know user memory sources? Clarify privacy boundaries.
 - **Catalog Size vs. Selective Inclusion:** If Catalog >60 KB, Manuals must be selectively included (e.g., by Tenant frequency). Heuristic then needed.
 - **Catalog Sync between Pods:** In multi-pod deployment — rebuild per pod (idempotent) or shared Mongo snapshot? Probably shared (one source of truth).

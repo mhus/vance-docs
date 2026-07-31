@@ -1,5 +1,5 @@
 ---
-title: "Vance — Workbook Reactive Forms (Fence `form` + `saveScript`)"
+title: "Vancetope — Workbook Reactive Forms (Fence `form` + `saveScript`)"
 parent: Specs
 permalink: /specs/workbook-forms
 ---
@@ -7,10 +7,10 @@ permalink: /specs/workbook-forms
 <!-- AUTO-GENERATED from specification/public/en/workbook-forms.md — do not edit here. -->
 
 ---
-# Vance — Workbook Reactive Forms (Fence `form` + `saveScript`)
+# Vancetope — Workbook Reactive Forms (Fence `form` + `saveScript`)
 
 > Editable, typed forms over a data document plus a server-side executed
-> **recompute script** on save — Vance's answer to "Notion with backend logic".
+> **recompute script** on save — Vancetope's answer to "Notion with backend logic".
 > Unlike Notion, calculations are performed **in the backend**, not as a client-side formula.
 >
 > Separation: the data document (`kind: records`) only carries **data**

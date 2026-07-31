@@ -1,8 +1,8 @@
-# Vance — Trillian Engine
+# Vancetope — Trillian Engine
 
-> **Trillian** is Vance's **Agentic User Loop** — a layer above
+> **Trillian** is Vancetope's **Agentic User Loop** — a layer above
 > Arthur/Eddie/Marvin/Frankie. From Trillian's perspective, these are the
-> tools a human user works with in Vance —
+> tools a human user works with in Vancetope —
 > Trillian *uses* them in the same way, just without a human in front.
 > Observe-Think-Act-Reflect as an endless loop that sleeps when there's
 > nothing to do.
@@ -217,7 +217,7 @@ Human                Control               Trillian-User             Worker
   │◄─────────────────────┤                       │                       │
 ```
 
-Routing between Sessions is Vance standard: `EngineMessageRouter`
+Routing between Sessions is Vancetope standard: `EngineMessageRouter`
 dispatches by-processId, transparently crossing Session/Pod boundaries.
 
 ## 6. Trillian-specific Tools
@@ -405,7 +405,7 @@ breaks.
 `process.projectId = Target-Project`, the Pod claiming this
 Target-Project runs the Lane. If Trillian-User-Session is in
 Project A (Pod 1) and spawns a Worker for Project B (Pod 2),
-this is normal Vance Cross-Pod operation — `EngineMessageRouter`
+this is normal Vancetope Cross-Pod operation — `EngineMessageRouter`
 routes ProcessEvents between the Pods.
 
 ## 11. Worker-Termination and `enrichWithLastReply`
@@ -425,7 +425,7 @@ the Summary and append it to the DONE-ProcessEvent. Trillian-User
 receives the actual Summary instead of the generic "Child process X
 status=done".
 
-## 12. Vance-Core Adaptation — `ThinkEngineService.newContext`
+## 12. Vancetope-Core Adaptation — `ThinkEngineService.newContext`
 
 Before Trillian, `ThinkEngineService.newContext()` always read the `projectId`
 for the `ToolInvocationContext` from the Session

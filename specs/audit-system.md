@@ -1,5 +1,5 @@
 ---
-title: "Vance — Audit System"
+title: "Vancetope — Audit System"
 parent: Specs
 permalink: /specs/audit-system
 ---
@@ -7,9 +7,9 @@ permalink: /specs/audit-system
 <!-- AUTO-GENERATED from specification/public/en/audit-system.md — do not edit here. -->
 
 ---
-# Vance — Audit System
+# Vancetope — Audit System
 
-> Central audit pipeline for Vance Server (Brain + Anus). Producers emit typed audit events; an `AuditService` normalizes, buffers, and fans them out to a configurable list of `AuditConsumer` implementations. Synchronous or asynchronous, switchable at runtime, with a bounded queue + drop counter and guaranteed drain on shutdown.
+> Central audit pipeline for Vancetope Server (Brain + Anus). Producers emit typed audit events; an `AuditService` normalizes, buffers, and fans them out to a configurable list of `AuditConsumer` implementations. Synchronous or asynchronous, switchable at runtime, with a bounded queue + drop counter and guaranteed drain on shutdown.
 >
 > See also: [llm-resource-management](/specs/llm-resource-management) | [identity-credentials](/specs/identity-credentials) | settings-system
 

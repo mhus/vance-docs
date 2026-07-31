@@ -1,5 +1,5 @@
 ---
-title: "Vance Application — `app: kanban`"
+title: "Vancetope Application — `app: kanban`"
 parent: Specs
 permalink: /specs/app-kanban
 ---
@@ -7,7 +7,7 @@ permalink: /specs/app-kanban
 <!-- AUTO-GENERATED from specification/public/en/app-kanban.md — do not edit here. -->
 
 ---
-# Vance Application — `app: kanban`
+# Vancetope Application — `app: kanban`
 
 > Self-contained Kanban-board pattern built on the `kind: application` foundation (see `doc-kind-application.md`). One folder = one board. Sub-folders = columns. One `kind: card` file per ticket. Derived artifacts (`_board.md`, `_stats.yaml`) regenerate from the source cards.
 
@@ -16,7 +16,7 @@ permalink: /specs/app-kanban
 After Calendar proved out the `kind: application` foundation (folder-as-app, manifest-driven, deterministic Java-driven create/refresh), Kanban is the second concrete app — same pattern, different domain. It exists because:
 
 - Workflow-state tracking is fundamentally different from time-anchored planning (the Calendar app). Cards move between columns; events sit on a timeline.
-- Boards are a high-leverage primitive in Vance because most "what should I do?" sessions resolve into "promote X from todo to doing, decompose Y in backlog into smaller cards". A board representation is closer to that vocabulary than a calendar or a checklist.
+- Boards are a high-leverage primitive in Vancetope because most "what should I do?" sessions resolve into "promote X from todo to doing, decompose Y in backlog into smaller cards". A board representation is closer to that vocabulary than a calendar or a checklist.
 - Cards are description-heavy: a Kanban card has acceptance criteria, design notes, links, discussion. That argues for one **file** per card (Markdown body + structural front-matter), not one Map entry inside a single big YAML.
 
 ## 2. Folder layout
@@ -175,7 +175,7 @@ progress:
 | `kanban_card_create` | Single-card add. Doesn't auto-rebuild. | `KanbanCardCreateTool` direct write through `DocumentService`. |
 | `kanban_move` | Move a card between columns. Respects WIP limits (soft warns, hard blocks). Optional `rebuild: true`. | `KanbanMoveTool` via `DocumentService.update(..., newPath=...)`. |
 | `kanban_aggregate` | Read-only query — column / assignee / labels / blocked / priority filters. | `KanbanAggregateTool` via `KanbanFolderReader.scan`. |
-| `app_rebuild` | Generic — works for any Vance application. Dispatches to `KanbanApplication.refresh()` via the registry. | `AppRebuildTool` + `VanceApplicationRegistry`. |
+| `app_rebuild` | Generic — works for any Vancetope application. Dispatches to `KanbanApplication.refresh()` via the registry. | `AppRebuildTool` + `VanceApplicationRegistry`. |
 
 The Java services own the schema. The LLM doesn't get to invent it.
 

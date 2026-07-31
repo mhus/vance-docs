@@ -1,5 +1,5 @@
 ---
-title: "Vance — Vision & Idea"
+title: "Vancetope — Vision & Idea"
 parent: Specs
 permalink: /specs/vision
 ---
@@ -7,15 +7,15 @@ permalink: /specs/vision
 <!-- AUTO-GENERATED from specification/public/en/vision.md — do not edit here. -->
 
 ---
-# Vance — Vision & Idea
+# Vancetope — Vision & Idea
 
-> What Vance is, why it exists, and how it is structured.
+> What Vancetope is, why it exists, and how it is structured.
 
 ---
 
 ## What this is
 
-Vance is a personal project. I built it to develop LLM agents and shape them in
+Vancetope is a personal project. I built it to develop LLM agents and shape them in
 a way that allows me to work productively with them. Over time, everything I
 found exciting — and what I believe others can benefit from — has found its way
 into it.
@@ -28,8 +28,8 @@ classic open source, and I deliberately keep its future direction open.
 
 ## Written by agents. On purpose.
 
-Every line of Vance is AI-written — directed, reviewed, and shaped by a human.
-This is not a confession, but the whole point: Vance is what emerges when you
+Every line of Vancetope is AI-written — directed, reviewed, and shaped by a human.
+This is not a confession, but the whole point: Vancetope is what emerges when you
 work *with* agents for months, instead of just chatting with them. A large,
 coherent system that can be run, read, and modified — tool and proof are the
 same.
@@ -38,7 +38,7 @@ same.
 
 ## The idea in one sentence
 
-**Vance is a platform for working with LLM agents: a server ("Brain") where
+**Vancetope is a platform for working with LLM agents: a server ("Brain") where
 agents process tasks over hours and days — and which can be almost entirely
 configured from within itself, because configuration, behavior, and knowledge
 are stored as documents in the database.**
@@ -71,7 +71,7 @@ each other. Memory, rights, and settings are tied to a Scope cascade
 
 ### Extensible
 
-Vance is deliberately open to further mechanisms. New Engines, new Apps, new
+Vancetope is deliberately open to further mechanisms. New Engines, new Apps, new
 Connectors, new Tools are added as Addons. What I find useful, I build in;
 what someone else finds useful, they can add.
 
@@ -126,7 +126,7 @@ persist, are versioned, and are collaboratively edited by humans and agents.
 
 ## Connectors
 
-Vance communicates with external systems — Mail, Jira, Google services, MCP
+Vancetope communicates with external systems — Mail, Jira, Google services, MCP
 tools. Inputs come in and results go out via these Connectors. Finished
 artifacts that continue to live externally are moved there: a spec in Google
 Docs, an issue in Jira, an email in the inbox.
@@ -161,7 +161,7 @@ Binding Stack Reference: java-cli-modulstruktur §1.5.
 
 ## Limitations
 
-Vance is a work environment and Brain — not the final storage for finished
+Vancetope is a work environment and Brain — not the final storage for finished
 products. What ultimately lives elsewhere is sent out via a Connector instead
 of languishing in its own administration UI. And, again: not a product, no SLA
 — a project I'm building because I enjoy it and it helps me with my work.

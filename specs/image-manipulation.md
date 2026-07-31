@@ -1,5 +1,5 @@
 ---
-title: "Vance — Image Manipulation Tools"
+title: "Vancetope — Image Manipulation Tools"
 parent: Specs
 permalink: /specs/image-manipulation
 ---
@@ -7,7 +7,7 @@ permalink: /specs/image-manipulation
 <!-- AUTO-GENERATED from specification/public/en/image-manipulation.md — do not edit here. -->
 
 ---
-# Vance — Image Manipulation Tools
+# Vancetope — Image Manipulation Tools
 
 > Pure-Java image processing on existing Document assets. Complements [Fenchurch](/specs/fenchurch-service): where Fenchurch creates a **new** image, these tools manipulate an **existing** one. Implemented as `ImageManipulationService` + tool-set in `vance-brain`, parallel to Fenchurch's structure, but without an LLM/provider layer — all processing runs locally in the Pod using the [Scrimage](https://sksamuel.github.io/scrimage/)-Library.
 >
@@ -19,7 +19,7 @@ permalink: /specs/image-manipulation
 
 ## 1. Purpose & Scope
 
-**Problem.** Fenchurch delivers fresh images. Once they are in the Document Store, Vance needs an equally clean path to **edit** them — deterministically, quickly, without external API calls, and without the LLM having to write Python code or use an external tool. Typical cases:
+**Problem.** Fenchurch delivers fresh images. Once they are in the Document Store, Vancetope needs an equally clean path to **edit** them — deterministically, quickly, without external API calls, and without the LLM having to write Python code or use an external tool. Typical cases:
 
 - Chat user: "Crop the image to the top-left quadrant", "Make it black and white", "Enlarge it to 1920×1080".
 - Magrathea workflows: Normalize image assets (generate thumbnails, uniform aspect ratio) before they go into the final document.
@@ -114,7 +114,7 @@ Exactly two artifacts in `vance-brain/pom.xml`:
 
 Reason in one sentence: **Pod images remain glibc-free and native-lib-free**. If WebP ever becomes a need, it will be a conscious step with discussion about the base image, not a drive-by.
 
-Scrimage-`core` since Major Version 4 is pure Java, no Scala runtime in the classpath. The `ImmutableImage` API fits the Vance pattern *load → transform → write* — each operation returns a new `ImmutableImage`, no hidden mutation on a shared `BufferedImage` instance.
+Scrimage-`core` since Major Version 4 is pure Java, no Scala runtime in the classpath. The `ImmutableImage` API fits the Vancetope pattern *load → transform → write* — each operation returns a new `ImmutableImage`, no hidden mutation on a shared `BufferedImage` instance.
 
 ---
 
@@ -452,7 +452,7 @@ What is **not** in v1 (with a one-sentence justification to clarify if it's park
 
 - **WebP / HEIC / SVG / TIFF Read+Write** — parked, will only come with real demand and accepted native-lib footprint.
 - **Watermark / Text Overlay** — parked, easily retrofittable with Scrimage, but no urgent use case.
-- **Composite (combining multiple images)** — parked; Vance workflows currently do not produce a need for combining.
+- **Composite (combining multiple images)** — parked; Vancetope workflows currently do not produce a need for combining.
 - **AI Enhancement / Upscaling / Restoration** — deliberately separated; its own tool family with provider call, its own quota.
 - **Batch operations in one call** — discarded; multiple tool calls in sequence are the correct granularity from an LLM perspective.
 - **Auto-EXIF Rotation on Read** — parked; if Foot/Web users upload photos, this might change. Currently, we rely on the Document path without rotation magic.

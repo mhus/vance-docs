@@ -1,5 +1,5 @@
 ---
-title: "Vance — Document Kinds with Items"
+title: "Vancetope — Document Kinds with Items"
 parent: Specs
 permalink: /specs/doc-kind-items
 ---
@@ -7,7 +7,7 @@ permalink: /specs/doc-kind-items
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-items.md — do not edit here. -->
 
 ---
-# Vance — Document Kinds with Items
+# Vancetope — Document Kinds with Items
 
 > Specifies the **`items` payload** for documents that carry an ordered list of small records — currently the privileged `kind: list`. Defines a single canonical model that maps to three on-disk formats (markdown, JSON, YAML) and round-trips losslessly.
 > See also: [web-ui](/specs/web-ui) | [recipes](/specs/recipes) | DocumentDocument / DocumentHeader
@@ -16,7 +16,7 @@ permalink: /specs/doc-kind-items
 
 ## 1. Purpose
 
-Documents in Vance have a `kind` header (see `DocumentHeader.kind`). For some kinds — `list` is the first — the actual content consists of an **ordered sequence of small, uniform items**. The Web-UI should offer the following for such Documents:
+Documents in Vancetope have a `kind` header (see `DocumentHeader.kind`). For some kinds — `list` is the first — the actual content consists of an **ordered sequence of small, uniform items**. The Web-UI should offer the following for such Documents:
 
 - **Specialized editors/views** (CRUD, drag-and-drop, multi-select), in addition to the existing raw editor.
 - **Format-agnostic** operation — the same editor serves Markdown, JSON, and YAML documents.

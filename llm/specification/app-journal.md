@@ -1,11 +1,11 @@
-# Vance Application — `app: journal`
+# Vancetope Application — `app: journal`
 
 > Journal container via `kind: journal-entry` pages, built on the
 > [doc-kind-application](doc-kind-application.md) foundation. One folder = one
 > journal, one file = one day. Date-anchored, reflective prose — unlike
 > [app-kanban](app-kanban.md) (workflow states) and
 > [app-calendar](app-calendar.md) (scheduled events). Journaling is thinking;
-> the daily entry is a legitimate Vance artifact.
+> the daily entry is a legitimate Vancetope artifact.
 
 ## 1. Why a Journal Application
 

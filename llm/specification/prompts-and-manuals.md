@@ -1,4 +1,4 @@
-# Vance — Prompts and Manuals
+# Vancetope — Prompts and Manuals
 
 > How Engine and Recipe Prompts stay compact: Capabilities, How-Tos, and domain knowledge reside in **Manuals**, which the LLM loads on demand via `manual_read('name')`. The Prompt only specifies **what exists** and **when to load it**, not the content itself.
 >
@@ -132,7 +132,7 @@ If a Manual addresses a failure mode that the model **frequently** goes through,
 checking the relevant manual. The UI renders more than you think.
 ```
 
-Reason: models have default reflexes ("I'm a text model, I can't show images") that the **Vance setup refutes**. The negation block prevents the model from prematurely saying "cannot do" without having performed the Manual check.
+Reason: models have default reflexes ("I'm a text model, I can't show images") that the **Vancetope setup refutes**. The negation block prevents the model from prematurely saying "cannot do" without having performed the Manual check.
 
 ### Complete Hook Example
 
@@ -221,15 +221,15 @@ Wrong form → User sees either plain text (fence in stored body → Web-UI fall
 1. **Decision table at the top** with clear user phrases per path
 2. **Inline form FIRST** — complete code example in the ` ```<kind> ` block, plus explicit reminder *"The reply must CONTAIN this fence verbatim — narrating without the actual fenced block leaves the user with no render."*
 3. **Stored form SECOND** — `doc_create(kind="<kind>", content=<raw>)`-call with raw content, plus explicit warning *"The content must NOT be wrapped in a ```<kind> fence."*
-4. **Anti-Pattern section** names at least (a) library defaults from training data (Chart.js instead of Vance-Chart, Cytoscape instead of Vance-Graph, OPML/Freemind instead of Vance-Mindmap) and (b) wrap-the-stored-body errors
+4. **Anti-Pattern section** names at least (a) library defaults from training data (Chart.js instead of Vancetope-Chart, Cytoscape instead of Vancetope-Graph, OPML/Freemind instead of Vancetope-Mindmap) and (b) wrap-the-stored-body errors
 
 **Order justification:** LLMs often pattern-match the *first seen* code example. If the stored example comes first, the model will omit the fence for inline requests. If the inline example comes first, the decision table at the top is the safety net for stored requests — reinforced by the hard rule in the Engine Prompt (see §6.2).
 
-**Exception — `kind-diagram`:** Diagram is the only Vance Kind where the fence in the stored body **is desired** (Markdown with a `\`\`\`mermaid`-fence is the canonical on-disk form per `doc-kind-diagram` §1.5). The Manual makes this exception explicit; the Engine Prompt hard rule (§6.2) references it as a special case.
+**Exception — `kind-diagram`:** Diagram is the only Vancetope Kind where the fence in the stored body **is desired** (Markdown with a `\`\`\`mermaid`-fence is the canonical on-disk form per `doc-kind-diagram` §1.5). The Manual makes this exception explicit; the Engine Prompt hard rule (§6.2) references it as a special case.
 
 ### 6.2 Hard-Rule Pattern in the Engine Prompt
 
-Some tools have conventions that the Manual lazy-load path **does not enforce on its own**. Example: `doc_create(kind=X, content=…)` with the wrong body format produces a syntactically valid Document that does not render in the Web-UI — no compile error, no codec error, just broken UX. Models without a strong bias towards Vance conventions (especially cloud models NOT fine-tuned on Vance) then guess based on training data and usually miss.
+Some tools have conventions that the Manual lazy-load path **does not enforce on its own**. Example: `doc_create(kind=X, content=…)` with the wrong body format produces a syntactically valid Document that does not render in the Web-UI — no compile error, no codec error, just broken UX. Models without a strong bias towards Vancetope conventions (especially cloud models NOT fine-tuned on Vancetope) then guess based on training data and usually miss.
 
 **Solution:** a **"Hard rule"** in the Engine Prompt (Arthur, Eddie, …) that forces the model to call `how_do_i('…')` or `manual_read('<topic>')` before the tool call. The Hard-Rule provides:
 

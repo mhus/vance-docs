@@ -9,7 +9,7 @@ permalink: /specs/permission-system
 ---
 # Permission System — Authorization via Pluggable Providers
 
-> Vance authorizes every access via a narrow, abstract interface
+> Vancetope authorizes every access via a narrow, abstract interface
 > (`PermissionService.enforce(SecurityContext, Resource, Action)`). The
 > **decision logic** resides behind a pluggable `PermissionResolver`-SPI,
 > provided by a **Provider Addon** — either the included **Simple-Auth**
@@ -76,7 +76,7 @@ classpath ⇒ provider active, JAR removed ⇒ gone. Two providers:
   - **`vance-addon-shared-simpleauth`** (Spring-Library, `vance-shared` only) — Mongo-Entity `PermissionGrantDocument` + Repository + `PermissionGrantService`, `MongoPermissionResolver` (R2–R7; R1-SYSTEM-Trust is in the framework's `PermissionService`), `PermissionBootstrap`-Impl, Migration, `@AutoConfiguration`. Context-neutral, loads into **both** hosts (Brain + anus) because both persist + check grants. Package `de.mhus.vance.simpleauth`. **No Client** → does not follow the `vance-addon-brain-*`-federation convention.
   - **`vance-addon-brain-simpleauth`** (+ `vance-brain`, with `client/`-federation) — Admin-REST under `/brain/{tenant}/admin/permission-grants`, LLM-Grant-Tools (`permission_grant_set`/`_list`/`_remove`), Web-UI-Area. Only in Brain. Package `de.mhus.vance.simpleauth.brain`.
   - **`vance-addon-anus-simpleauth`** (+ spring-shell) — Grant-CRUD-Commands. Only in the anus-Context.
-- **EE-Governor** (commercial) — its own `PermissionResolver`, fetches rights externally; does not implement the Vance Grant surfaces.
+- **EE-Governor** (commercial) — its own `PermissionResolver`, fetches rights externally; does not implement the Vancetope Grant surfaces.
 
 There is **no** shipped "Allow-All" provider — Simple-Auth is the only included
 production provider. Dev/IDE-Bundles (`vance-brain-all1/all2`) load Simple-Auth;

@@ -1,5 +1,5 @@
 ---
-title: "Vance — Knowledge Graph & Insights"
+title: "Vancetope — Knowledge Graph & Insights"
 parent: Specs
 permalink: /specs/knowledge-graph
 ---
@@ -7,9 +7,9 @@ permalink: /specs/knowledge-graph
 <!-- AUTO-GENERATED from specification/public/en/knowledge-graph.md — do not edit here. -->
 
 ---
-# Vance — Knowledge Graph & Insights
+# Vancetope — Knowledge Graph & Insights
 
-> How Vance not only stores knowledge but maps relationships and actively finds connections from a perspective.
+> How Vancetope not only stores knowledge but maps relationships and actively finds connections from a perspective.
 > Designed for extensibility: v1 simple, later phases increasingly intelligent.
 > See also: [memory-knowledge-management](/specs/memory-knowledge-management) | [vision](/specs/vision) | [architektur-scopes-clients](/specs/architektur-scopes-clients)
 

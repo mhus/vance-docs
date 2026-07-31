@@ -1,4 +1,4 @@
-# Vance — Document Kind `finance-tree`
+# Vancetope — Document Kind `finance-tree`
 
 > Hierarchical financial modeling tool: a tree of income/expense nodes,
 > which the system calculates **bottom-up** to a canonical **per-year** figure.

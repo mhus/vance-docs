@@ -1,5 +1,5 @@
 ---
-title: "Vance — Fenchurch Image-Generation Service"
+title: "Vancetope — Fenchurch Image-Generation Service"
 parent: Specs
 permalink: /specs/fenchurch-service
 ---
@@ -7,9 +7,9 @@ permalink: /specs/fenchurch-service
 <!-- AUTO-GENERATED from specification/public/en/fenchurch-service.md — do not edit here. -->
 
 ---
-# Vance — Fenchurch Image-Generation Service
+# Vancetope — Fenchurch Image-Generation Service
 
-> Vance's sole path for **newly generated images**. Persona: Fenchurch (Arthur Dent's great love, *So Long, and Thanks for All the Fish*) — intuition, creative images. Implemented as a **service + tool-set**, not a worker engine: synchronous, single provider call per image, no dedicated `ThinkProcess` lifecycle.
+> Vancetope's sole path for **newly generated images**. Persona: Fenchurch (Arthur Dent's great love, *So Long, and Thanks for All the Fish*) — intuition, creative images. Implemented as a **service + tool-set**, not a worker engine: synchronous, single provider call per image, no dedicated `ThinkProcess` lifecycle.
 >
 > Four tools are in every Engine's default tool inventory: `image_generate` (the main call) and `image_style_set` / `image_style_get` / `image_style_prompt` (persistent style layers). Images are written via the normal `DocumentService` path and are thus available to all Document editors / Markdown renderers / RAG indices without special handling.
 >
@@ -19,7 +19,7 @@ permalink: /specs/fenchurch-service
 
 ## 1. Purpose & Scope
 
-**Problem.** Vance needs a clearly defined place that answers "generate a new image":
+**Problem.** Vancetope needs a clearly defined place that answers "generate a new image":
 
 - Chat user: "Draw me a book cover", "Logo for…", "Sketch of a medieval marketplace".
 - Magrathea workflows / Marvin plans: one image per chapter, per slide, per asset.

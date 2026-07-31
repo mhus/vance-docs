@@ -1,8 +1,8 @@
-# Vance — Zarniwoop Service (Research / Search Provider System)
+# Vancetope — Zarniwoop Service (Research / Search Provider System)
 
 > Persona: **Zarniwoop** (*The Hitchhiker's Guide to the Galaxy*) — the Imperial employee who has an electronic model of the universe in his office. If someone wants to know something, they don't ask the universe directly — they ask Zarniwoop, and he knows which sub-index is responsible.
 >
-> Zarniwoop is Vance's **Research/Search Provider System**: a central dispatcher, a pluggable Protocol SPI, a project-bound Factory, and a thin LLM tool layer over multiple provider backends (Serper, Wikipedia, OpenAlex, arXiv, PubMed, OpenLibrary, HackerNews). One tool schema per task, one Modality param axis, no hard provider coupling in the LLM contract.
+> Zarniwoop is Vancetope's **Research/Search Provider System**: a central dispatcher, a pluggable Protocol SPI, a project-bound Factory, and a thin LLM tool layer over multiple provider backends (Serper, Wikipedia, OpenAlex, arXiv, PubMed, OpenLibrary, HackerNews). One tool schema per task, one Modality param axis, no hard provider coupling in the LLM contract.
 >
 > See also: [agrajag-engine](agrajag-engine.md) | [light-llm-service](light-llm-service.md) | [recipes](recipes.md) | [tool-availability](tool-availability.md) | [addon-system](addon-system.md)
 

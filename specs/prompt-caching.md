@@ -1,5 +1,5 @@
 ---
-title: "Vance — Prompt Caching"
+title: "Vancetope — Prompt Caching"
 parent: Specs
 permalink: /specs/prompt-caching
 ---
@@ -7,7 +7,7 @@ permalink: /specs/prompt-caching
 <!-- AUTO-GENERATED from specification/public/en/prompt-caching.md — do not edit here. -->
 
 ---
-# Vance — Prompt Caching
+# Vancetope — Prompt Caching
 
 > Anthropic prompt caching for the `vance-brain` LLM layer. Goal: 60–85% token cost reduction for medium to long Sessions, without Engines (Eddie, Arthur, Ford, Marvin, …) needing to modify their code.
 >
@@ -22,7 +22,7 @@ permalink: /specs/prompt-caching
 | Term | Definition |
 |---|---|
 | **Cache Marker** | `cache_control: { type: "ephemeral" }` on a block in the Anthropic request. Anthropic caches **everything before and including** this block as a prefix. |
-| **Cache Boundary** | Vance-internal Enum (`CacheBoundary`) that specifies **where** in the request the marker is placed (`SYSTEM_AND_TOOLS` is default). |
+| **Cache Boundary** | Vancetope-internal Enum (`CacheBoundary`) that specifies **where** in the request the marker is placed (`SYSTEM_AND_TOOLS` is default). |
 | **Cache Hit** | Subsequent call with an identical prefix hash. Anthropic charges `cache_read_input_tokens` — ~10% of standard price. |
 | **Cache Creation** | First call of a prefix. Anthropic charges `cache_creation_input_tokens` — ~125% of standard price. |
 | **TTL** | Cache Time-To-Live. 5min (default, no extra charge) or 1h (~2× write-cost, beta header required). |

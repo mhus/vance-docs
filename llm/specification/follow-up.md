@@ -1,4 +1,4 @@
-# Vance — Follow-Up Service
+# Vancetope — Follow-Up Service
 
 > REST endpoint that generates context-aware follow-up suggestions from a text fragment plus cursor position. Single-shot, no Process-Spawn — built on the [LightLlmService](light-llm-service.md) with Recipe `follow-up` as the configuration profile.
 >
@@ -12,9 +12,9 @@
 
 **Problem.** Multiple UI surfaces want to display context-aware "what-could-come-next" suggestions:
 
-- Chat Prompt (Edit Mode): User starts typing, Vance suggests next words/sentence completions at the cursor.
-- Chat Reply (Reply Mode): User looks at the last Assistant message, Vance suggests how to respond to it.
-- Text Editor (Edit Mode): User writes a document, Vance suggests next sentences or follow-up questions at the cursor.
+- Chat Prompt (Edit Mode): User starts typing, Vancetope suggests next words/sentence completions at the cursor.
+- Chat Reply (Reply Mode): User looks at the last Assistant message, Vancetope suggests how to respond to it.
+- Text Editor (Edit Mode): User writes a document, Vancetope suggests next sentences or follow-up questions at the cursor.
 - Future Surfaces: Inbox Quick-Replies, Wizard Form Free-Text fields, Voice-Mode hints.
 
 Implementing each of these use cases as a separate Engine would be overkill: no lifecycle, no history, no tools — just a single LLM call with text context in, suggestion list out.
@@ -195,7 +195,7 @@ params:
   maxAttempts: 2
   temperature: 0.7
 promptPrefix: |
-  You are Vance's follow-up suggestion component. Produce up to
+  You are Vancetope's follow-up suggestion component. Produce up to
   {{ count }} short follow-up suggestions matching the context below.
 
   {% if precedingContext %}
@@ -289,7 +289,7 @@ const replyResp: FollowUpResponseDto = await restPost(
 - Adoption: **Tab** → suggestion is inserted at the cursor, cursor jumps to the end of the insertion, tooltip disappears.
 - Discarding: **Escape** → tooltip disappears without insertion. Any document change or cursor movement also discards the suggestion (anchor position would then be stale).
 - Stale-Drop: Pending fetch is discarded via sequence counter if a newer trigger or a document change occurs.
-- Other Editors (Code with Java/Python/YAML, Office Editor, Setting Forms): **deliberately no Follow-Up** — code completion is the task of the IDE, not Vance. Only Markdown.
+- Other Editors (Code with Java/Python/YAML, Office Editor, Setting Forms): **deliberately no Follow-Up** — code completion is the task of the IDE, not Vancetope. Only Markdown.
 
 **Other UI Surfaces** (Inbox Quick-Reply, Wizards, Voice): no Follow-Up in v1.
 

@@ -1,4 +1,4 @@
-# Vance — Document Kind `data`
+# Vancetope — Document Kind `data`
 
 > Specifies the **`data` payload** for documents that carry an arbitrary, free-form data tree — objects, arrays, and primitive types. Designed as a **container that other tools or processes consume**, not as a thing humans hand-edit through a structured editor. The Web-UI offers a Preview-only viewer; raw editing is the only write path.
 > See also: [doc-kind-items](doc-kind-items.md) | [doc-kind-records](doc-kind-records.md) | [web-ui](web-ui.md)
@@ -57,7 +57,7 @@ A `data` Document consists of two parts:
 
 There is **no** `items` wrapper, **no** `schema`, **no** predefined top-level shape. The entire body is free. The top level can be an object, an array, or even a scalar — anything that JSON / YAML accepts as a top-level value.
 
-**Round-Trip Guarantee:** Reading + writing is lossless. Order of object keys is preserved (insertion order). Comments in YAML are lost — this is the only accepted round-trip loss and applies equally to all Vance codecs.
+**Round-Trip Guarantee:** Reading + writing is lossless. Order of object keys is preserved (insertion order). Comments in YAML are lost — this is the only accepted round-trip loss and applies equally to all Vancetope codecs.
 
 **What remains unobserved:**
 - Cycles in the data structure: neither JSON nor YAML natively support them. `data` does not perform cycle detection — a tool that produces cycles will receive a codec error from the underlying library.
@@ -219,6 +219,6 @@ Full-text search over keys and values with highlighting in the tree. Good UX, bu
 ## 7. Open Points
 
 - **Canonical form for Top-Level Array:** should the codec accept a top-level array or wrap it in an object with key `items` before saving? v1 accepts both; UI recommendation: top-level object, as `$meta` can be cleanly placed there.
-- **YAML Anchors / Aliases:** the library default expands them on read. Round-trip is therefore not truly lossless if the user uses anchors — anchors become inline values. Accepted trade-off because Vance tools rarely produce anchors.
+- **YAML Anchors / Aliases:** the library default expands them on read. Round-trip is therefore not truly lossless if the user uses anchors — anchors become inline values. Accepted trade-off because Vancetope tools rarely produce anchors.
 - **Very Large Bodies (> Inline-Threshold):** the Document becomes storage-backed (same mechanism as for other Kinds). The Preview tab must be able to stream content, or a "Body too large for preview, use a tool to access" fallback is shown. v1: Inline-Threshold is sufficient; storage-backed `kind: data` is a spec point for later.
 - **Default Format on Creation:** if the user selects "new `kind: data` Document", should the stub be `.json` or `.yaml`? Suggestion: YAML — more compact, human-readable, equally consumable by tools.

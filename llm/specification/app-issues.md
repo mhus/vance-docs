@@ -1,11 +1,11 @@
-# Vance Application — `app: issues`
+# Vancetope Application — `app: issues`
 
 > A lightweight **GitHub-Issues-style** issue tracker, built on the
 > [doc-kind-application](doc-kind-application.md) foundation. `kind: issue` pages
 > with a stable number (#42), `open`/`closed` state, labels, archive, and a
 > comment thread. **Not** Kanban (no board) and **not** Scrum (no
 > sprints) — it tracks the *lifecycle + discussion* of individual items.
-> Framed as Vance's own bug/idea tracker, not as a Jira/Linear replacement.
+> Framed as Vancetope's own bug/idea tracker, not as a Jira/Linear replacement.
 
 ## 1. Issues ≠ Kanban ≠ Scrum
 
@@ -14,7 +14,7 @@
   number (#42)**, cross-references. No board requirement.
 - **Scrum** = iteration management (deferred, too complex + vision-borderline).
 
-**Fook Synergy (v2):** Vance triages bug/feature reports to tickets with [Fook](../fook-service.md).
+**Fook Synergy (v2):** Vancetope triages bug/feature reports to tickets with [Fook](../fook-service.md).
 An `app: issues` can later become their native local home;
 the data model is prepared for this, but v1 does not build the integration.
 

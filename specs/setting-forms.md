@@ -1,5 +1,5 @@
 ---
-title: "Vance — Setting Forms"
+title: "Vancetope — Setting Forms"
 parent: Specs
 permalink: /specs/setting-forms
 ---
@@ -7,7 +7,7 @@ permalink: /specs/setting-forms
 <!-- AUTO-GENERATED from specification/public/en/setting-forms.md — do not edit here. -->
 
 ---
-# Vance — Setting Forms
+# Vancetope — Setting Forms
 
 > A **Setting Form** is a named form that configures Settings in a structured way — analogous to [Wizards](/specs/wizards), but instead of generating a prompt text, it writes directly to the `settings` collection. Use cases: "Switch LLM for this project", "Choose Quota Preset", "Connect external system" — anywhere where the bare key/value editor is too cumbersome and a user-friendly form makes sense.
 >

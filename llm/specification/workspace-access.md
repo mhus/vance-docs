@@ -1,4 +1,4 @@
-# Vance — Workspace Access (Web-UI ↔ Brain)
+# Vancetope — Workspace Access (Web-UI ↔ Brain)
 
 > Defines how the Web-UI accesses a Project's Workspace. Workspaces are **pod-sticky** (Folder + Snapshots live on a specific Brain process — the Project's Home Pod), but the Web-UI hits any Brain replica. This spec describes the two-tier routing architecture, pod discovery, routing cache, REST endpoints, and failure behavior.
 >
@@ -50,7 +50,7 @@ WebUI ──HTTPS──► Brain-Pod (Layer 1, Entry) ──HTTP──► Brain-
 
 ### 3.1 `ProjectDocument.homeNode` + Cluster Registry
 
-Vance separates Pod identity (stable per boot) from Pod address (variable across restarts):
+Vancetope separates Pod identity (stable per boot) from Pod address (variable across restarts):
 
 - `ProjectDocument.homeNode` (`@Nullable String`) holds the **Cluster Node Name** of the owner Pod (e.g., `maya-prosser`). Each Brain boot assigns a fresh name from the `cluster-node-names.txt` dictionary (`ClusterNodeNameGenerator`) and registers itself in `brain_pods` with Node Name + current Endpoint + Heartbeat.
 - `ProjectDocument.claimedAt` marks the last refresh.
@@ -102,7 +102,7 @@ record PodEntry(
 ) {}
 ```
 
-Map type: `ConcurrentHashMap<ProjectPodKey, PodEntry>`. Caffeine is allowed but not mandatory — for Vance scale (≤ a few thousand Projects per Brain process), a simple map with periodic cleanup or `expireAfterAccess` if Caffeine is sufficient.
+Map type: `ConcurrentHashMap<ProjectPodKey, PodEntry>`. Caffeine is allowed but not mandatory — for Vancetope scale (≤ a few thousand Projects per Brain process), a simple map with periodic cleanup or `expireAfterAccess` if Caffeine is sufficient.
 
 ### 4.2 Lookup Path
 
@@ -179,7 +179,7 @@ public enum NodeType { FILE, DIR }
 Layer 1 → Layer 2 is **not** secured with User-JWT. Instead:
 
 - Shared-Secret in K8s-Secret (`vance-internal-token`), mounted as Env in all Brain processes.
-- Layer 1 sets header `X-Vance-Internal-Token: <secret>` for every request to Layer 2.
+- Layer 1 sets header `X-Vancetope-Internal-Token: <secret>` for every request to Layer 2.
 - Layer 2 compares in a Spring filter in constant time (`MessageDigest.isEqual`), rejects without the header (`401`).
 - Token rotation: Pod restart after Secret update is sufficient (no graceful reload needed in v1).
 
@@ -201,7 +201,7 @@ Layer 1 → Layer 2 is **not** secured with User-JWT. Instead:
 | Internal-Token missing/incorrect on Layer 2 | `401`. |
 | File exceeds size limit | `413 Payload Too Large` with hint about configured limit. Checked in Layer 2 (`WorkspaceService` knows file size), Layer 1 passes through. |
 
-**No Auto-Reassignment:** if the Home Pod is permanently dead, Vance cannot autonomously move the Workspace to another Brain process — the disk data is gone or inaccessible. Recovery is a manual process (Suspend-Snapshot from Mongo + Recover on new Brain process, if snapshot exists; otherwise accept data loss). This spec does not automatically trigger that.
+**No Auto-Reassignment:** if the Home Pod is permanently dead, Vancetope cannot autonomously move the Workspace to another Brain process — the disk data is gone or inaccessible. Recovery is a manual process (Suspend-Snapshot from Mongo + Recover on new Brain process, if snapshot exists; otherwise accept data loss). This spec does not automatically trigger that.
 
 ---
 

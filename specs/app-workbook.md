@@ -1,5 +1,5 @@
 ---
-title: "Vance Application — `app: workbook`"
+title: "Vancetope Application — `app: workbook`"
 parent: Specs
 permalink: /specs/app-workbook
 ---
@@ -7,7 +7,7 @@ permalink: /specs/app-workbook
 <!-- AUTO-GENERATED from specification/public/en/app-workbook.md — do not edit here. -->
 
 ---
-# Vance Application — `app: workbook`
+# Vancetope Application — `app: workbook`
 
 > Notion-style Workbook built on the `kind: application` foundation (see
 > [doc-kind-application](/specs/doc-kind-application)). One folder = one workbook.

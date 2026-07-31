@@ -1,4 +1,4 @@
-# Vance — Settings System
+# Vancetope — Settings System
 
 > Unified, typed settings system for all configurations.
 > Core principle: Everything is a setting with a type. Passwords are encrypted. No separate config/secret system.

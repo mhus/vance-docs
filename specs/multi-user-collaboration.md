@@ -1,5 +1,5 @@
 ---
-title: "Vance — Multi-User, Teams & Collaboration"
+title: "Vancetope — Multi-User, Teams & Collaboration"
 parent: Specs
 permalink: /specs/multi-user-collaboration
 ---
@@ -7,7 +7,7 @@ permalink: /specs/multi-user-collaboration
 <!-- AUTO-GENERATED from specification/public/en/multi-user-collaboration.md — do not edit here. -->
 
 ---
-# Vance — Multi-User, Teams & Collaboration
+# Vancetope — Multi-User, Teams & Collaboration
 
 > Defines how Tenants, Teams, Users, and Project Sharing work.
 > Builds upon [architektur-scopes-clients](/specs/architektur-scopes-clients), extending the Scope hierarchy.

@@ -1,4 +1,4 @@
-# Vance — MCP & Tool Routing
+# Vancetope — MCP & Tool Routing
 
 > Defines where MCP tools reside (server vs. client), how routing works, and what happens when no client is present.
 > See also: [vision](vision.md) | [architecture-scopes-clients](architektur-scopes-clients.md) | [integrations-external-systems](integrationen-externe-systeme.md)
@@ -23,7 +23,7 @@ A Task requires a Tool. Where does the Tool run?
 
 ```
 ┌─────────────────────────────────────────────┐
-│              Vance Brain                     │
+│              Vancetope Brain                     │
 │                                              │
 │   Server MCP Client                          │
 │     ├── Google Drive MCP Server              │
@@ -83,7 +83,7 @@ A Task requires a Tool. Where does the Tool run?
 
 ## 3. Tool Registry
 
-Every Tool known to Vance has a **Location Type**:
+Every Tool known to Vancetope has a **Location Type**:
 
 ```yaml
 tools:

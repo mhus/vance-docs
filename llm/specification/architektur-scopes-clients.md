@@ -1,4 +1,4 @@
-# Vance — Architecture: Scopes & Clients
+# Vancetope — Architecture: Scopes & Clients
 
 > Defines the hierarchy of Scopes, the Client model, and the Session concept.
 > See also: [vision](vision.md) | [workflows](workflows.md)
@@ -11,8 +11,8 @@ Five levels, from outer to inner. Each level has its own Memory that is inherite
 
 | Level | Lifespan | Example | Memory Content |
 |-------|----------|---------|----------------|
-| **Tenant** | Eternal | "Mike's Vance" | API Keys, Preferences, Billing (v2+) |
-| **Project Group** | Months/Years | "Doctoral Thesis", "Vance Dev" | Overarching facts, terms, people |
+| **Tenant** | Eternal | "Mike's Vancetope" | API Keys, Preferences, Billing (v2+) |
+| **Project Group** | Months/Years | "Doctoral Thesis", "Vancetope Dev" | Overarching facts, terms, people |
 | **Project** | Weeks/Months | "Literature Review", "Brain Architecture" | Project context, reference documents, tool config |
 | **Session** | Hours/Days | "Monday morning work session" | Chat history, temporary context, undo history |
 | **Think Process** | Within a Session | "Analyze papers on Attention" | Process goal, task tree, intermediate results |
@@ -209,7 +209,7 @@ Client SDK (TypeScript)
                   │ WebSocket (max 1 per Session)
                   ▼
 ┌──────────────────────────────────────────────────────────┐
-│                     Vance Brain                           │
+│                     Vancetope Brain                           │
 │                   Java / Spring Boot                      │
 │                                                           │
 │  Think Process Registry · Task Tree · Memory Manager             │

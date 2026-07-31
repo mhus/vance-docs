@@ -1,4 +1,4 @@
-# Vance — Document Kind `diagram`
+# Vancetope — Document Kind `diagram`
 
 > Specifies the **`diagram` payload** for documents that carry a single, text-defined diagram (flowchart, sequence, state, ER, gantt, gitGraph, …) rendered to SVG. The renderer is **Mermaid** (`mermaid`, MIT) — a text-DSL → SVG library. The diagram source is an opaque string in Mermaid syntax; the renderer parses it at display time, the codec does not.
 > See also: [doc-kind-chart](doc-kind-chart.md) | [doc-kind-graph](doc-kind-graph.md) | [doc-kind-mindmap](doc-kind-mindmap.md) | [web-ui](web-ui.md)
@@ -16,7 +16,7 @@ Distinctions:
 - **mindmap**: hierarchical outline with radial rendering. While Mermaid itself has a `mindmap` diagram type, it is only one of many possible source variants here — semantically clean Mindmap documents remain `kind: mindmap`.
 - **slides**: slide deck. A single Mermaid diagram can be referenced or embedded in a slide (see `slides` §6.3), but it is not a slide document.
 
-**Design Principle — Text as Truth.** The `source` is the source. No structured representation of nodes/edges in Vance — Mermaid parses it itself at render time. Rationale:
+**Design Principle — Text as Truth.** The `source` is the source. No structured representation of nodes/edges in Vancetope — Mermaid parses it itself at render time. Rationale:
 
 - **LLM Fluency:** Mermaid syntax is in virtually every LLM training set (GitHub Markdown, documentation sites, Stack Overflow). Models write it compactly and usually syntactically correct. A custom JSON schema for it would first need to be explained in the prompt.
 - **Token Efficiency:** 5-10 lines of Mermaid vs. dozens of lines of JSON with `x/y` coordinates. Mermaid (dagre internally) handles layout itself.
@@ -25,7 +25,7 @@ Distinctions:
 
 **Design Principle — Mermaid as Renderer, not as App.** We use `mermaid` as a pure library (`mermaid.render(id, src) → { svg }`). No pan/zoom plugin, no live editor, no custom toolbar in the render output. SVG is returned, we mount it into a container. Rationale:
 
-- Library character (function, no global state, no UI shell) fits Vance editor embedding, analogous to `marked` for `kind: doc` and `marpit` for `kind: slides`.
+- Library character (function, no global state, no UI shell) fits Vancetope editor embedding, analogous to `marked` for `kind: doc` and `marpit` for `kind: slides`.
 - Industry standard — GitHub, GitLab, Obsidian, Notion render Mermaid natively in Markdown; roundtrip to other tools is trivial.
 - Render errors are returned as an exception — UI can display them as a banner, the LLM can receive them as a tool result ("source had a syntax error on line N").
 
@@ -98,9 +98,9 @@ What is accepted as `source` is exactly what Mermaid (version pinned in `@vance/
 | C4                   | `C4Context` / `C4Container` / …     |                                                 |
 | Block / Packet / Architecture | `block-beta` / `packet-beta` / `architecture-beta` | Beta diagram types — functional but unstable. |
 
-The table is informative, not prescriptive. Vance does not validate the source — Mermaid does this during rendering and throws an exception for broken syntax, which appears as a banner in the UI and as an error message in the LLM tool result.
+The table is informative, not prescriptive. Vancetope does not validate the source — Mermaid does this during rendering and throws an exception for broken syntax, which appears as a banner in the UI and as an error message in the LLM tool result.
 
-**Mermaid's own Frontmatter:** Mermaid allows YAML frontmatter directly **within** the source (`---\ntitle: …\nconfig:\n  theme: dark\n---\nflowchart TD\n…`). This is Mermaid's own syntax and opaque to Vance — pass-through, no conflict with the Vance Document frontmatter (which is outside the code fence).
+**Mermaid's own Frontmatter:** Mermaid allows YAML frontmatter directly **within** the source (`---\ntitle: …\nconfig:\n  theme: dark\n---\nflowchart TD\n…`). This is Mermaid's own syntax and opaque to Vancetope — pass-through, no conflict with the Vancetope Document frontmatter (which is outside the code fence).
 
 **Canonical Form** (JSON):
 
@@ -320,7 +320,7 @@ If the LLM writes a syntactically incorrect diagram, this is currently an error 
 
 ### 6.7 Embed Directive in Slides / Markdown Documents
 
-A `kind: slides` or `kind: doc` references a `kind: diagram` Document via Vance URI: `![](vance:document/<id>)` renders the diagram inline. The convention for `vance:` URLs belongs in a separate spec, then this one attaches to it (same point as [doc-kind-slides §6.3](doc-kind-slides.md#63-embed-direktiven-chart-mindmap-)).
+A `kind: slides` or `kind: doc` references a `kind: diagram` Document via Vancetope URI: `![](vance:document/<id>)` renders the diagram inline. The convention for `vance:` URLs belongs in a separate spec, then this one attaches to it (same point as [doc-kind-slides §6.3](doc-kind-slides.md#63-embed-direktiven-chart-mindmap-)).
 
 ### 6.8 Further Dialects: d2, PlantUML
 
@@ -330,8 +330,8 @@ A `kind: slides` or `kind: doc` references a `kind: diagram` Document via Vance 
 
 ## 7. Open Issues
 
-- **Dialect validation on write:** does the codec accept arbitrary `dialect` values in pass-through (for forward compatibility), or does it reject unknown dialects with a codec warning? Suggestion: accept with warning, render then falls back to Raw editor (see §5.1). This allows a future Vance client with d2 support to read an old Vance v1 Document without it appearing broken.
+- **Dialect validation on write:** does the codec accept arbitrary `dialect` values in pass-through (for forward compatibility), or does it reject unknown dialects with a codec warning? Suggestion: accept with warning, render then falls back to Raw editor (see §5.1). This allows a future Vancetope client with d2 support to read an old Vancetope v1 Document without it appearing broken.
 - **Theme auto-switch:** if the browser user switches between DaisyUI Light and DaisyUI Dark, should the `Diagram` tab automatically switch between Mermaid `default` and `dark`? Suggestion: yes, provided `diagram.theme` is not explicitly set (i.e., default case). If a theme is explicitly set, the user's choice remains.
 - **Multiple render performance:** if a user frequently clicks the `Diagram` tab open and closed, should Mermaid re-render it every time? Cache the last SVG output, invalidate on `source`/`diagram` change. Trivial memoization, belongs in `<DiagramView>` implementation.
 - **Server-side RAG-Indexing:** the `inlineText` body contains the raw Mermaid source. RAG finds "Sequence Diagram for Login Flow" because "sequenceDiagram" and "Login" appear as tokens — this is OK. Should additionally extracted labels (node names, edge descriptions) be indexed as a structured meta-field? v1 no, because this would require a server-side Mermaid parser, which we deliberately avoid. If searching by node name becomes relevant, full-text fallback is usually sufficient.
-- **Document Title vs. Mermaid Frontmatter Title:** Mermaid accepts a `title:` field in its own source frontmatter, which is rendered above the diagram. The Vance Document also has a `title`. Conflict behavior: both remain independent, the user decides. We do not interfere with the `source`.
+- **Document Title vs. Mermaid Frontmatter Title:** Mermaid accepts a `title:` field in its own source frontmatter, which is rendered above the diagram. The Vancetope Document also has a `title`. Conflict behavior: both remain independent, the user decides. We do not interfere with the `source`.

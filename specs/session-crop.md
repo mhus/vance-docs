@@ -1,5 +1,5 @@
 ---
-title: "Vance — Session Modify / Crop"
+title: "Vancetope — Session Modify / Crop"
 parent: Specs
 permalink: /specs/session-crop
 ---
@@ -7,7 +7,7 @@ permalink: /specs/session-crop
 <!-- AUTO-GENERATED from specification/public/en/session-crop.md — do not edit here. -->
 
 ---
-# Vance — Session Modify / Crop
+# Vancetope — Session Modify / Crop
 
 > "Crop" removes messages from a Session's **memory** without deleting them.
 > The user can remove individual turns in the middle or "crop from here"

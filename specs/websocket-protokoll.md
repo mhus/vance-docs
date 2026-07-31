@@ -1,5 +1,5 @@
 ---
-title: "Vance — WebSocket Protocol"
+title: "Vancetope — WebSocket Protocol"
 parent: Specs
 permalink: /specs/websocket-protokoll
 ---
@@ -7,9 +7,9 @@ permalink: /specs/websocket-protokoll
 <!-- AUTO-GENERATED from specification/public/en/websocket-protokoll.md — do not edit here. -->
 
 ---
-# Vance — WebSocket Protocol
+# Vancetope — WebSocket Protocol
 
-> Chat-Frame Wire-Format (`WebSocketEnvelope`) between local clients (CLI, Desktop, Mobile) and the Vance Brain. **This document describes only the inner frame** — the outer multi-channel envelope, endpoint topology, and cross-pod routing are in [live-ws](/specs/live-ws). Frames, as described here, are the `payload` field of the `LiveEnvelope` with `channel="session"`.
+> Chat-Frame Wire-Format (`WebSocketEnvelope`) between local clients (CLI, Desktop, Mobile) and the Vancetope Brain. **This document describes only the inner frame** — the outer multi-channel envelope, endpoint topology, and cross-pod routing are in [live-ws](/specs/live-ws). Frames, as described here, are the `payload` field of the `LiveEnvelope` with `channel="session"`.
 > See also: [live-ws](/specs/live-ws) (multi-channel wrapper, endpoints, cross-pod tunnel), [architektur-scopes-clients](/specs/architektur-scopes-clients) (Sessions, Client Model), [client-protokoll-erweiterbarkeit](/specs/client-protokoll-erweiterbarkeit) (external clients, Robot, MCP), java-cli-modulstruktur §2.1 (where message classes reside), [identity-credentials](/specs/identity-credentials) (Accounts, OAuth2 → JWT).
 > Status: v1 production (Live-WS refactor 06/2026 wraps the format described here into the `LiveEnvelope.session` channel — the inner frame remains unchanged).
 
@@ -80,9 +80,9 @@ Host: brain.local:9990
 Upgrade: websocket
 Connection: Upgrade
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-X-Vance-Profile: foot
-X-Vance-Client-Version: 0.1.0
-X-Vance-Client-Name: mikes-laptop
+X-Vancetope-Profile: foot
+X-Vancetope-Client-Version: 0.1.0
+X-Vancetope-Client-Name: mikes-laptop
 Sec-WebSocket-Key: ...
 Sec-WebSocket-Version: 13
 ```
@@ -90,9 +90,9 @@ Sec-WebSocket-Version: 13
 | Header | Required | Description |
 |--------|----------|-------------|
 | `Authorization: Bearer <jwt>` | yes | Signed JWT, at least `sub` and `exp` claims |
-| `X-Vance-Profile` | no (default `web`) | Open string, shape `^[a-z][a-z0-9_-]{0,31}$` |
-| `X-Vance-Client-Version` | yes | SemVer of the client, for compatibility checks |
-| `X-Vance-Client-Name` | no | Optional client identifier (logs/UI) |
+| `X-Vancetope-Profile` | no (default `web`) | Open string, shape `^[a-z][a-z0-9_-]{0,31}$` |
+| `X-Vancetope-Client-Version` | yes | SemVer of the client, for compatibility checks |
+| `X-Vancetope-Client-Name` | no | Optional client identifier (logs/UI) |
 
 Headers and query parameters are equivalent — browser clients cannot set custom headers on the WS upgrade and use `?profile=`, `?clientVersion=`, `?name=` as a fallback.
 
@@ -133,7 +133,7 @@ The server aborts the upgrade with an HTTP status transported in the WebSocket h
 | Status | Cause |
 |--------|-------|
 | **401 Unauthorized** | `Authorization` header missing, token invalidly signed, token expired, issuer mismatch |
-| **400 Bad Request** | `X-Vance-Client-Version` missing; or `X-Vance-Profile` violates the shape pattern |
+| **400 Bad Request** | `X-Vancetope-Client-Version` missing; or `X-Vancetope-Profile` violates the shape pattern |
 | **403 Forbidden** | JWT valid, but account blocked or tenant not allowed |
 
 The client recognizes the error situation by the HTTP status — a WebSocket connection is not established in these cases.

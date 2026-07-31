@@ -1,4 +1,4 @@
-# Vance — Fook Service
+# Vancetope — Fook Service
 
 > Built-in bug/feature triage system: a reporter (LLM or User) sends
 > free text, Fook asynchronously decides whether to create a new
@@ -19,7 +19,7 @@
 
 ## 1. Purpose & Scope
 
-**Problem.** Vance bugs, feature requests, and documentation gaps
+**Problem.** Vancetope bugs, feature requests, and documentation gaps
 require a low-threshold reporting channel — both for running Engines
 ("I cannot perform this operation, but it should be possible") and
 for human users in Web and Foot. Without a built-in path, bugs
@@ -28,7 +28,7 @@ disappear into Sessions and user minds.
 **Solution.** Three reporter channels all land in the same pipeline:
 
 - **LLM Tool `vance_support_request(text)`** — any Engine can
-  independently report a Vance deficiency it detects. Rate-limit max.
+  independently report a Vancetope deficiency it detects. Rate-limit max.
   3 per Process-Lifetime against loop spam.
 - **Web Fook Button** in the user menu of `EditorTopbar` (globally
   accessible across all editors), opens a modal with a textarea.
@@ -141,7 +141,7 @@ vance_support_request(text: string) → { submissionId, status, remainingBudget,
   `recipe`/`engine` from the Process-Document.
 - **Tool-Description:** explicitly states that this is *NOT* intended
   for user project data or ongoing user tasks — exclusively for
-  Vance-as-system topics.
+  Vancetope-as-system topics.
 
 **Reporter Kind:** `ENGINE`.
 
@@ -304,7 +304,7 @@ Severity heuristic: `high` = crash/data loss/security/user-blocking,
 `medium` = degraded behavior, `low` = cosmetic. For non-bug types,
 the Recipe defaults to `medium`.
 
-**Language handling.** Vance tickets go to an English-speaking
+**Language handling.** Vancetope tickets go to an English-speaking
 upstream tracker (see [`fook-upstream.md`](fook-upstream.md)).
 So that maintainers can read without translation effort:
 
@@ -352,11 +352,11 @@ retry-on-violation).
 **Discard categories:**
 
 - `project_data` — reporter talks about user project content
-  ("Document X is missing"), not about Vance.
-- `documentation_question` — genuine question about Vance, but
+  ("Document X is missing"), not about Vancetope.
+- `documentation_question` — genuine question about Vancetope, but
   answerable from existing Manuals; reporter is referred to
   `manual_read`/`how_do_i`.
-- `unrelated` — off-topic, has nothing to do with Vance.
+- `unrelated` — off-topic, has nothing to do with Vancetope.
 - `nonsense` — gibberish, no signal, "asdf", empty noise.
 - `self_loop` — Fook submitted via Fook (recursion).
 - `other` — fallback if nothing fits.
@@ -503,17 +503,17 @@ The `promptPrefix`-Template is compile-validated during Recipe load
 
 ## 11. Lifecycle after `new` — Out of Scope (Frankie)
 
-The following is explicitly not in this spec — Vance only prepares
+The following is explicitly not in this spec — Vancetope only prepares
 tickets locally:
 
 - Status transitions after transfer (`triaged` → `accepted` →
   `in_progress` → `resolved` → `closed`) happen in the external
-  ticket system (GitHub Issues), not in Vance. Vance only mirrors
+  ticket system (GitHub Issues), not in Vancetope. Vancetope only mirrors
   the Open/Closed state back.
 - Aggregate reports on tickets.
 - Knowledge-Graph entries for ticket relations.
 - Cross-Pod queue synchronization.
-- Web-UI for ticket browsing in Vance — the canonical UI is the
+- Web-UI for ticket browsing in Vancetope — the canonical UI is the
   external ticket system.
 
 **Outbound transport** (local triage → external system) is covered

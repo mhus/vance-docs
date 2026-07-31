@@ -1,5 +1,5 @@
 ---
-title: "Vance — Session Lifecycle"
+title: "Vancetope — Session Lifecycle"
 parent: Specs
 permalink: /specs/session-lifecycle
 ---
@@ -7,7 +7,7 @@ permalink: /specs/session-lifecycle
 <!-- AUTO-GENERATED from specification/public/en/session-lifecycle.md — do not edit here. -->
 
 ---
-# Vance — Session Lifecycle
+# Vancetope — Session Lifecycle
 
 > Defines the status set for Sessions and Engines (Think Processes), the typed lifecycle properties of a Session, the suspend/archive/close behavior depending on the trigger, auto-restart and manual resume after forced suspends, as well as the user-facing metadata (Title/Icon/Color/Tags/Pin) and the search infrastructure that makes Sessions portable as long-lived knowledge containers.
 >
@@ -228,7 +228,7 @@ A Session is idle *from a lifecycle perspective* if it has nothing pending — n
 - If all three conditions are met → Suspend-Cascade (§9) with `suspendCause=IDLE`.
 - `onIdle=NONE` → nothing to do (already filtered out by the Mongo query).
 
-`lastActivityAt` is updated on every inbound WS frame (including Vance protocol ping, default every 30 s) by `SessionService.heartbeat`. **Indirect consequence:** as long as a client is connected and pings, the Session remains fresh and idle-suspend does not trigger — an additional condition "no WS-Bind active" is not necessary. As soon as the WS connection is gone, the pings stop, `lastActivityAt` ages, and after `idleTimeoutMs`, the Sweeper parks it cleanly. Engine status changes and Pending-Message appends can additionally refresh `lastActivityAt`, but this is primarily a bind-stale protection for autonomous Engines without client ping.
+`lastActivityAt` is updated on every inbound WS frame (including Vancetope protocol ping, default every 30 s) by `SessionService.heartbeat`. **Indirect consequence:** as long as a client is connected and pings, the Session remains fresh and idle-suspend does not trigger — an additional condition "no WS-Bind active" is not necessary. As soon as the WS connection is gone, the pings stop, `lastActivityAt` ages, and after `idleTimeoutMs`, the Sweeper parks it cleanly. Engine status changes and Pending-Message appends can additionally refresh `lastActivityAt`, but this is primarily a bind-stale protection for autonomous Engines without client ping.
 
 ---
 
@@ -250,7 +250,7 @@ If a Pod crashes hard or a TCP connection breaks without a clean `afterConnectio
 
 `SessionService.tryBind` therefore performs an additional CAS branch since the cluster project management extension: a bind is also accepted if the existing `boundConnectionId` is "stale", i.e., `lastActivityAt` is older than `vance.session.bindStaleAfter` (default `PT2M`).
 
-`lastActivityAt` is updated on **every** incoming WS frame by `SessionService.heartbeat` — including the Vance protocol `PING` (default `vance.brain.ws.pingIntervalSeconds=30s`). As long as the client pings and the Pod is alive, the bind remains "fresh". As soon as a Pod is gone, the heartbeats stop, the TTL expires, and the next reconnect takes over cleanly.
+`lastActivityAt` is updated on **every** incoming WS frame by `SessionService.heartbeat` — including the Vancetope protocol `PING` (default `vance.brain.ws.pingIntervalSeconds=30s`). As long as the client pings and the Pod is alive, the bind remains "fresh". As soon as a Pod is gone, the heartbeats stop, the TTL expires, and the next reconnect takes over cleanly.
 
 ### 8.2 Multi-User Sessions: Bind-Holder Escalation + Heartbeat
 
@@ -682,7 +682,7 @@ Performance limit: up to ~1M Messages per Tenant without problems. For larger vo
 
 ### Stage 3 — Semantic Search (v2, optional)
 
-Vance already has RAG-Embedding infrastructure for the Memory system (see [memory-knowledge-management.md](/specs/memory-knowledge-management)). Reuse for Session-Search:
+Vancetope already has RAG-Embedding infrastructure for the Memory system (see [memory-knowledge-management.md](/specs/memory-knowledge-management)). Reuse for Session-Search:
 
 - Embedding index over conversation chunks (existing RAG pipeline).
 - Search query embedded, vector-search, re-rank against Stage 1 + 2.

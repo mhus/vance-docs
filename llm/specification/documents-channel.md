@@ -20,7 +20,7 @@ Three awareness needs for editable documents:
 
 The channel is **not** a full-fledged CRDT/OT editor. For most
 use cases, "clean merges flow in silently, hard conflicts show a banner" is sufficient.
-Vance remains a Think Engine, not Google Docs.
+Vancetope remains a Think Engine, not Google Docs.
 
 ## 2. Wire Format
 
@@ -412,7 +412,7 @@ Client side (`console.debug`):
 | **OCC with `If-Match`** — Server rejects outdated PUTs with 412, client retries with fresh-fetched + 3-way-merge | Phase C, open. Solves last-write-wins loss in true race conditions. |
 | **CodeMirror-Gutter-Highlight** — Line numbers of changed lines briefly light up after merge | Phase D, open. CSS decoration over the diff result. |
 | **Partial-Apply on Conflicts** — silently accept non-colliding hunks, only colliding ones in the banner | Deliberately excluded — editor buffer in an intermediate state would be more confusing than all-or-nothing. |
-| **Operational Transformation / CRDT** | Deliberately excluded — Vance is a Think Engine, not Google Docs. |
+| **Operational Transformation / CRDT** | Deliberately excluded — Vancetope is a Think Engine, not Google Docs. |
 | **Cursor-Position-Sharing** | Deliberately excluded — awareness layer is `presence` (who's there) + `changed` (who wrote), not "who is where". |
 
 ## 12. Reload Compatibility / Rolling Deploy

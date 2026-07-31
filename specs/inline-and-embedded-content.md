@@ -1,5 +1,5 @@
 ---
-title: "Vance — Inline & Embedded Content"
+title: "Vancetope — Inline & Embedded Content"
 parent: Specs
 permalink: /specs/inline-and-embedded-content
 ---
@@ -7,7 +7,7 @@ permalink: /specs/inline-and-embedded-content
 <!-- AUTO-GENERATED from specification/public/en/inline-and-embedded-content.md — do not edit here. -->
 
 ---
-# Vance — Inline & Embedded Content
+# Vancetope — Inline & Embedded Content
 
 > Defines how structured content (tables, mindmaps, graphs, code, images, PDFs, ...) is displayed in chat messages and document bodies. Two delivery channels, one common render path in the frontend.
 > See also: [web-ui](/specs/web-ui) · [recipes](/specs/recipes) · [doc-kind-mindmap](/specs/doc-kind-mindmap) · [doc-kind-sheet](/specs/doc-kind-sheet) · [doc-kind-graph](/specs/doc-kind-graph) · [doc-kind-slides](/specs/doc-kind-slides)
@@ -49,7 +49,7 @@ Both channels arrive at the Web UI using the **same renderer per kind**. The ren
 
 ````markdown
 ```mindmap
-- Vance
+- Vancetope
   - Brain
     - Engines
   - Foot
@@ -75,7 +75,7 @@ public record User(String name, int age) {}
 - The first token after the backticks is the `kind`. Lowercase, ASCII, no whitespace.
 - Body is plain text. The content schema is determined by the respective kind (e.g., `mindmap`-body is a bullet list according to [doc-kind-mindmap §3.1](/specs/doc-kind-mindmap#31-markdown), `table`-body is Markdown table or CSV according to [doc-kind-sheet](/specs/doc-kind-sheet), `java`-body is Java source).
 - Optional fence meta after the kind, comma-separated, `key=value` form: ` ```mindmap theme=dark,direction=right `. Reserved for renderer-specific hints. Unknown meta-keys are ignored.
-- Standard programming languages (`java`, `python`, `sql`, `bash`, ...) are **valid kinds**. The `code`-renderer (default for language tags) provides syntax-highlighted `<pre>` (CodeMirror Read-Mode). Special Vance-kinds (`mindmap`, `table`, `graph`, `tree`, `sheet`, `records`, ...) have dedicated renderers.
+- Standard programming languages (`java`, `python`, `sql`, `bash`, ...) are **valid kinds**. The `code`-renderer (default for language tags) provides syntax-highlighted `<pre>` (CodeMirror Read-Mode). Special Vancetope-kinds (`mindmap`, `table`, `graph`, `tree`, `sheet`, `records`, ...) have dedicated renderers.
 - The list of kinds is **open**. The server does not know the list; the frontend has a registry and falls back to the plain renderer (`<pre>`-box with copy button) for unknowns.
 
 **Streaming:** Inline fences are streamed token by token from the LLM and displayed (at least as `<pre>`) in the UI as they arrive. As soon as the closing ` ``` ` arrives, the renderer can switch to the special canvas if the registry knows the `kind`.
@@ -188,7 +188,7 @@ type Renderer = {
 }
 
 const registry: Record<string, Renderer> = {
-  // Vance-Kinds (text-based, both paths)
+  // Vancetope-Kinds (text-based, both paths)
   mindmap:  { inline: InlineMindmap,  embedded: EmbeddedMindmap },
   tree:     { inline: InlineTree,     embedded: EmbeddedTree    },
   list:     { inline: InlineList,     embedded: EmbeddedList    },
@@ -244,7 +244,7 @@ All actions are visible via a hover toolbar on the block header (same pattern as
 | Kind known, no suitable adapter (e.g., `pdf` inline) | `<pre>`-Plain + Hint | Generic Reference Card |
 | Kind unknown | `<pre>`-Plain + Copy Button | Generic Reference Card with Mime/Name |
 | Kind-Hint vs. actual Document-Kind differs | — | Renderer switches to actual Kind after Metadata-Load (Dev-Toast, otherwise silent) |
-| URI with unknown Scheme (`foo:`) | — | Standard Markdown Link (not touched by Vance) |
+| URI with unknown Scheme (`foo:`) | — | Standard Markdown Link (not touched by Vancetope) |
 | `vance:`-URI with stale path (Document does not exist) | — | Disabled Card "Document not found: `<path>`" |
 | `vance://<project>/`-URI, Project does not exist or no Read-Access | — | Disabled Card "No access to Project `<project>`" or "Project not in Tenant" |
 | `vance:`-URI with Tenant segment (e.g., `vance:///<tenant>/<project>/...`) | — | Disabled Card "Cross-Tenant references not supported" |
@@ -346,7 +346,7 @@ Never invent paths. Embedded links must point to documents that exist
 
 | Kind | Inline-Fence | Embedded-Link-Syntax | Renderer Note |
 |------|:------------:|:---------------------|----------------|
-**Currently registered Vance-Kinds** (see §11.4 for implementation):
+**Currently registered Vancetope-Kinds** (see §11.4 for implementation):
 
 | Kind | Inline-Fence | Embedded-Link-Syntax | Renderer |
 |------|:------------:|:---------------------|----------|
@@ -527,7 +527,7 @@ Located in `vance-shared` because both Java-Foot (TTS-Subscriber-Mode) and prosp
 
 Every external `https://`-link that the LLM leaves in a chat reply (web_search results, user-mentioned sources, image_search source pages) gets a Slack-/Telegram-style preview card in the Web UI with `og:title`, `og:description`, `og:image`, `og:site_name`. The inline link remains clickable text — the card appears **below** the paragraph as additional context.
 
-**Why not pure-Frontend?** Browser fetch to external domains fails due to CORS — most sites do not set `Access-Control-Allow-Origin: *`. Slack/Discord/Telegram all have a server proxy for this reason. Vance also: a thin `LinkPreviewService` in the Brain fetches OG tags once, caches them tenant-agnostically in `link_preview_cache` (Mongo, TTL index), and responds to all clients via a REST endpoint.
+**Why not pure-Frontend?** Browser fetch to external domains fails due to CORS — most sites do not set `Access-Control-Allow-Origin: *`. Slack/Discord/Telegram all have a server proxy for this reason. Vancetope also: a thin `LinkPreviewService` in the Brain fetches OG tags once, caches them tenant-agnostically in `link_preview_cache` (Mongo, TTL index), and responds to all clients via a REST endpoint.
 
 **Architecture:**
 
@@ -619,7 +619,7 @@ Binary kinds have **no** `'inline'`-mode (see §8). With `mode='editor'`, they r
 
 ### 11.4 Registry
 
-New file `packages/vance-face/src/kindRenderers/registry.ts`. It contains **only Vance-specific kinds** — ordinary code/data languages (` ```java`, ` ```json`, ` ```yaml`, ...) deliberately fall back to standard Markdown `<pre><code class="language-…">` rendering, so that a broken LLM response wrapping its action JSON in ` ```json` does not become a large canvas.
+New file `packages/vance-face/src/kindRenderers/registry.ts`. It contains **only Vancetope-specific kinds** — ordinary code/data languages (` ```java`, ` ```json`, ` ```yaml`, ...) deliberately fall back to standard Markdown `<pre><code class="language-…">` rendering, so that a broken LLM response wrapping its action JSON in ` ```json` does not become a large canvas.
 
 ```ts
 import { defineAsyncComponent, type Component } from 'vue'
@@ -641,7 +641,7 @@ const AudioView   = defineAsyncComponent(() => import('@/document/AudioView.vue'
 const VideoView   = defineAsyncComponent(() => import('@/document/VideoView.vue'))
 
 export const kindRegistry: Record<string, KindRenderer> = {
-  // Vance structured kinds — share their full View across the three
+  // Vancetope structured kinds — share their full View across the three
   // modes (editor / inline / embedded) via the `mode` prop.
   mindmap: { inline: MindmapView, embedded: MindmapView, label: 'Mindmap', icon: '🧠' },
   tree:    { inline: TreeView,    embedded: TreeView,    label: 'Tree',    icon: '🌳' },

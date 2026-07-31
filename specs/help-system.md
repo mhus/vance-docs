@@ -1,5 +1,5 @@
 ---
-title: "Vance — Help System"
+title: "Vancetope — Help System"
 parent: Specs
 permalink: /specs/help-system
 ---
@@ -7,7 +7,7 @@ permalink: /specs/help-system
 <!-- AUTO-GENERATED from specification/public/en/help-system.md — do not edit here. -->
 
 ---
-# Vance — Help System
+# Vancetope — Help System
 
 > A **generic help subsystem** delivers Markdown/text help content from the Brain to the Web UI (and potentially other clients). Content resides as static resources in the Brain, delivered via a single REST endpoint with **language fallback to English**. The Web UI (e.g., the Recipes editor) loads individual help files on demand and renders them in the right panel.
 > See also: [web-ui](/specs/web-ui) | [recipes](/specs/recipes)

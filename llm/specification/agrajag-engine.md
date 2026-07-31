@@ -1,6 +1,6 @@
-# Vance — Agrajag (Tool Health Diagnosis Engine)
+# Vancetope — Agrajag (Tool Health Diagnosis Engine)
 
-> Agrajag checks tools, classifies their errors, and writes their health state. In the Adams universe, Agrajag is one half of the diagnostic duo "Agrajag & Frankie"; in Vance, it is the first **Service Engine** (see [think-engines §7b](think-engines.md)) — an Engine that does not live in the user chat but works asynchronously as a system-driven specialist.
+> Agrajag checks tools, classifies their errors, and writes their health state. In the Adams universe, Agrajag is one half of the diagnostic duo "Agrajag & Frankie"; in Vancetope, it is the first **Service Engine** (see [think-engines §7b](think-engines.md)) — an Engine that does not live in the user chat but works asynchronously as a system-driven specialist.
 >
 > This spec defines the **diagnosis logic**. The state model that Agrajag writes to is in [tool-availability](tool-availability.md). The Service Engine pattern, which Agrajag concretizes for future relatives (Frankie, Prak, Agrajag), is in [think-engines §7b](think-engines.md).
 
@@ -111,16 +111,16 @@ AgrajagChecker.handle(toolName, callerUserId, callerSessionId, exception, respon
 
 ### 4.2 Pattern Rules — Document Cascade
 
-The Checker's classification rules are **not a hardcoded Java switch**, but are stored as YAML in the Vance Document System and merged via the normal Tenant→Project cascade. This allows a Tenant Admin to adjust rules without touching Brain code, and project-specific peculiarities (e.g., "in this project, tool X delivers its auth error as a 200 with a JSON marker") can be overridden locally.
+The Checker's classification rules are **not a hardcoded Java switch**, but are stored as YAML in the Vancetope Document System and merged via the normal Tenant→Project cascade. This allows a Tenant Admin to adjust rules without touching Brain code, and project-specific peculiarities (e.g., "in this project, tool X delivers its auth error as a 200 with a JSON marker") can be overridden locally.
 
-**Paths in the Cascade** (first match wins — standard Vance cascade analogous to [recipes §3](recipes.md)):
+**Paths in the Cascade** (first match wins — standard Vancetope cascade analogous to [recipes §3](recipes.md)):
 
 ```
 <project>/_vance/agrajag/error-patterns.yaml         Project-specific (rare)
    ↓
 _vance/agrajag/error-patterns.yaml                   Tenant-wide (standard override point)
    ↓
-classpath:vance-defaults/agrajag/error-patterns.yaml Bundled, shipped with Vance
+classpath:vance-defaults/agrajag/error-patterns.yaml Bundled, shipped with Vancetope
 ```
 
 **Format:**
@@ -201,7 +201,7 @@ The final order determines which rule matches first. New tenant rules can be pri
 
 **"Locked" Concept:** in the current state (no auto-learning), `locked` is pure documentation. As soon as we later build a learning layer (Agrajag observes that a certain 5xx variant was classified as `TECHNICALLY_BROKEN` 20 times in a row → automatically suggests a new pattern rule / adjusts an existing one), it respects the flag: a rule with `locked: true` will neither be changed nor removed by auto-maintenance. Tenant Admins set `locked` on rules whose classification they consider final — even if practical data suggests otherwise.
 
-**Default Patterns (Bundled)** — the following list is the initial set shipped with Vance. It is reflected 1:1 in `classpath:vance-defaults/agrajag/error-patterns.yaml`:
+**Default Patterns (Bundled)** — the following list is the initial set shipped with Vancetope. It is reflected 1:1 in `classpath:vance-defaults/agrajag/error-patterns.yaml`:
 
 | `id` | Match | `signature` | `classification` | `cooldown` | `locked` |
 |---|---|---|---|---|---|

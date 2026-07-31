@@ -1,5 +1,5 @@
 ---
-title: "Vance — MCP & Tool Routing"
+title: "Vancetope — MCP & Tool Routing"
 parent: Specs
 permalink: /specs/mcp-tool-routing
 ---
@@ -7,7 +7,7 @@ permalink: /specs/mcp-tool-routing
 <!-- AUTO-GENERATED from specification/public/en/mcp-tool-routing.md — do not edit here. -->
 
 ---
-# Vance — MCP & Tool Routing
+# Vancetope — MCP & Tool Routing
 
 > Defines where MCP tools reside (server vs. client), how routing works, and what happens when no client is present.
 > See also: [vision](/specs/vision) | [architecture-scopes-clients](/specs/architektur-scopes-clients) | [integrations-external-systems](/specs/integrationen-externe-systeme)
@@ -32,7 +32,7 @@ A Task requires a Tool. Where does the Tool run?
 
 ```
 ┌─────────────────────────────────────────────┐
-│              Vance Brain                     │
+│              Vancetope Brain                     │
 │                                              │
 │   Server MCP Client                          │
 │     ├── Google Drive MCP Server              │
@@ -92,7 +92,7 @@ A Task requires a Tool. Where does the Tool run?
 
 ## 3. Tool Registry
 
-Every Tool known to Vance has a **Location Type**:
+Every Tool known to Vancetope has a **Location Type**:
 
 ```yaml
 tools:

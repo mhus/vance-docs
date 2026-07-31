@@ -1,5 +1,5 @@
 ---
-title: "Vance — Settings System"
+title: "Vancetope — Settings System"
 parent: Specs
 permalink: /specs/settings-system
 ---
@@ -7,7 +7,7 @@ permalink: /specs/settings-system
 <!-- AUTO-GENERATED from specification/public/en/settings-system.md — do not edit here. -->
 
 ---
-# Vance — Settings System
+# Vancetope — Settings System
 
 > Unified, typed settings system for all configurations.
 > Core principle: Everything is a setting with a type. Passwords are encrypted. No separate config/secret system.

@@ -1,6 +1,6 @@
-# Vance — Project Kits
+# Vancetope — Project Kits
 
-> A **Kit** is a bundle of Skills, Recipes, Documents, Settings, and Server Tools, imported into a Project from a Git repo. Kits are the clean answer to "my colleague has a good setup, give it to me" and to reusable setups like `kernel-security`, `python-data-science`, `c-development`. Kit contents land in Vance persistence via the respective services — not in the Project's filesystem. The Kit source tree is merely a transport format.
+> A **Kit** is a bundle of Skills, Recipes, Documents, Settings, and Server Tools, imported into a Project from a Git repo. Kits are the clean answer to "my colleague has a good setup, give it to me" and to reusable setups like `kernel-security`, `python-data-science`, `c-development`. Kit contents land in Vancetope persistence via the respective services — not in the Project's filesystem. The Kit source tree is merely a transport format.
 >
 > **Persistence:** Kit contents are written to Mongo during `install`/`apply` (Documents via [`DocumentService`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java), Settings via [`SettingService`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/settings/SettingService.java)). Server Tool configurations are also Documents (`server-tools/<name>.yaml`) — see [server-tools.md](server-tools.md). A `_vance/kit-manifest.yaml` file (itself a Document!) keeps track of what belongs to the active Kit.
 >
@@ -307,7 +307,7 @@ PASSWORD Settings are encrypted on the server with `AesEncryptionService` (see `
 | Vault Password | `password` | Required if PASSWORD Settings are in the manifest. |
 | Commit Message | `text` | Default: `vance-export: <kit-name>@<server-sha>`. |
 
-**The UI is available in every Project** — including `_tenant`- and `_user_<id>`-Project. The latter is even useful: a User Kit can synchronize personal Skills + Settings across multiple Vance installations.
+**The UI is available in every Project** — including `_tenant`- and `_user_<id>`-Project. The latter is even useful: a User Kit can synchronize personal Skills + Settings across multiple Vancetope installations.
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "Vance — Marvin Think Engine"
+title: "Vancetope — Marvin Think Engine"
 parent: Specs
 permalink: /specs/marvin-engine
 ---
@@ -7,7 +7,7 @@ permalink: /specs/marvin-engine
 <!-- AUTO-GENERATED from specification/public/en/marvin-engine.md — do not edit here. -->
 
 ---
-# Vance — Marvin Think Engine
+# Vancetope — Marvin Think Engine
 
 > **Marvin** is the **deep-think** Engine. It builds a
 > dynamic, persistent Task-Tree, where each node is an

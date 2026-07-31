@@ -1,5 +1,5 @@
 ---
-title: "Vance Application — `app: canvasbook`"
+title: "Vancetope Application — `app: canvasbook`"
 parent: Specs
 permalink: /specs/app-canvasbook
 ---
@@ -7,7 +7,7 @@ permalink: /specs/app-canvasbook
 <!-- AUTO-GENERATED from specification/public/en/app-canvasbook.md — do not edit here. -->
 
 ---
-# Vance Application — `app: canvasbook`
+# Vancetope Application — `app: canvasbook`
 
 > Folder container for multiple `kind: canvas` pages — a "book" of Canvases,
 > built on the [doc-kind-application](/specs/doc-kind-application) foundation.

@@ -1,4 +1,4 @@
-# Vance — Document Kind `mindmap`
+# Vancetope — Document Kind `mindmap`
 
 > Specifies the **`mindmap` payload** for documents that carry a hierarchical, ordered set of items rendered as a radial mindmap. Reuses the `tree` schema 1:1 and adds optional per-node visual metadata (color, icon, link, tags) plus document-level rendering options.
 > See also: [doc-kind-tree](doc-kind-tree.md) | [doc-kind-items](doc-kind-items.md) | [web-ui](web-ui.md)
@@ -77,7 +77,7 @@ When reading, CSS named colors (`red`, `blue`, …) and `rgb(…)`/`hsl(…)` ar
   },
   "items": [
     {
-      "text": "Vance",
+      "text": "Vancetope",
       "color": "#3b82f6",
       "children": [
         {
@@ -120,7 +120,7 @@ mindmap:
   theme: default
   direction: right
 ---
-- Vance
+- Vancetope
   - Brain
     - Engines
   - Foot
@@ -159,7 +159,7 @@ mindmap:
   direction: right
   initialExpandLevel: -1
 items:
-  - text: Vance
+  - text: Vancetope
     color: "#3b82f6"
     children:
       - text: Brain

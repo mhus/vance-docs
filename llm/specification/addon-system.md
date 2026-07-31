@@ -4,7 +4,7 @@
 > Design discussion and discarded alternatives: `planning/addon-system.md`.
 
 The Addon system allows third-party code to extend Brain and Face with Java
-Beans (REST controllers, server tools, Vance applications) and Vue 3
+Beans (REST controllers, server tools, Vancetope applications) and Vue 3
 editors. Distribution as a `.vab` bundle, activation
 via the `addons` collection in MongoDB, controlled by `vance-anus`
 CRUD. First first-party Addon: `vance-addon-brain-slideshow`.

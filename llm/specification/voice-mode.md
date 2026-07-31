@@ -1,4 +1,4 @@
-# Vance — Voice Mode
+# Vancetope — Voice Mode
 
 > Dynamic per-turn toggle that signals Engines (Arthur, Eddie, later Foot-with-TTS): *"User is hearing this response and/or speaking the next input."* Output becomes shorter, long/structured parts are wrapped in Markdown constructs that the existing `MarkdownToSpeech` stripper skips. Input is interpreted tolerantly for STT artifacts. The toggle is a single boolean — the UI may have multiple switches, but the Brain receives **one** signal.
 >
@@ -238,7 +238,7 @@ A later **Direct Mode** (silence-based auto-send) is conceivable as a second mod
 
 ### 13.3 Voice Commands
 
-A command is `<Trigger Name> <Word>`, e.g., **"Computer send"**. The default trigger is **"Computer"** (speech recognition transcribes this reliably, unlike Engine names like "Arthur") plus "Vance".
+A command is `<Trigger Name> <Word>`, e.g., **"Computer send"**. The default trigger is **"Computer"** (speech recognition transcribes this reliably, unlike Engine names like "Arthur") plus "Vancetope".
 
 | Action | Default Words | Allowed in |
 |---|---|---|

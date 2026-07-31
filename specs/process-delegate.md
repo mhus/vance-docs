@@ -1,5 +1,5 @@
 ---
-title: "Vance — `process_create_delegate`"
+title: "Vancetope — `process_create_delegate`"
 parent: Specs
 permalink: /specs/process-delegate
 ---
@@ -7,7 +7,7 @@ permalink: /specs/process-delegate
 <!-- AUTO-GENERATED from specification/public/en/process-delegate.md — do not edit here. -->
 
 ---
-# Vance — `process_create_delegate`
+# Vancetope — `process_create_delegate`
 
 > A tool that starts a new Think Process **without the caller needing to know the Recipe name**. Instead, the caller describes the task in natural language; a bundled Selector Recipe selects the appropriate entry from the Project Recipe inventory and delegates to the existing `process_create` spawn path. If nothing matches: `decision: NONE` — the caller decides on the fallback (typically: spawn Slartibartfast for a freshly generated Strategy, or ask the user for clarification).
 >
@@ -19,7 +19,7 @@ permalink: /specs/process-delegate
 
 ## 1. Delimitation — when to use which tool?
 
-Vance has two complementary spawn tools for LLM callers:
+Vancetope has two complementary spawn tools for LLM callers:
 
 | Tool | Caller knows | Main Schema Parameter | Use Case |
 |---|---|---|---|

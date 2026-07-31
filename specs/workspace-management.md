@@ -1,5 +1,5 @@
 ---
-title: "Vance — Workspace Management"
+title: "Vancetope — Workspace Management"
 parent: Specs
 permalink: /specs/workspace-management
 ---
@@ -7,7 +7,7 @@ permalink: /specs/workspace-management
 <!-- AUTO-GENERATED from specification/public/en/workspace-management.md — do not edit here. -->
 
 ---
-# Vance — Workspace Management
+# Vancetope — Workspace Management
 
 > Defines the Workspace of a Project: a container for temporary working files (Git checkouts, temp files, later persistent data) that are *not* persisted as Project Documents. Describes the on-disk layout, descriptor format, handler types, and service API. Suspend/Recover enables Pod migration and quota reclaim.
 >

@@ -1,5 +1,5 @@
 ---
-title: "Vance — User Progress Channel"
+title: "Vancetope — User Progress Channel"
 parent: Specs
 permalink: /specs/user-progress-channel
 ---
@@ -7,7 +7,7 @@ permalink: /specs/user-progress-channel
 <!-- AUTO-GENERATED from specification/public/en/user-progress-channel.md — do not edit here. -->
 
 ---
-# Vance — User Progress Channel
+# Vancetope — User Progress Channel
 
 > Live status for the user while Engines are working. **One** message class `PROCESS_PROGRESS` with three payload variants, separate from the authoritative chat stream. Ephemeral, not in Conversation History.
 >

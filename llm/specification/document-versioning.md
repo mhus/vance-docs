@@ -1,4 +1,4 @@
-# Vance — Document Versioning
+# Vancetope — Document Versioning
 
 > Every overwritten document leaves an archived version. Versions reside in their own Mongo collection, are linked to the active document by a stable `lineageId`, and can be viewed, restored, or deleted individually. This feature can be disabled per Project via the setting cascade.
 >
@@ -8,14 +8,14 @@
 
 ## 1. Purpose
 
-Vance is a Think Engine tool — users frequently write, refactor, and delete notes, tables, mind maps, and small code snippets. Without versioning, every overwrite irrevocably loses the old content. Document Versioning is the safety net: after every significant edit, the previous version is stored as an independent archive version that can be restored at any time.
+Vancetope is a Think Engine tool — users frequently write, refactor, and delete notes, tables, mind maps, and small code snippets. Without versioning, every overwrite irrevocably loses the old content. Document Versioning is the safety net: after every significant edit, the previous version is stored as an independent archive version that can be restored at any time.
 
 Deliberately excluded (v1):
 
 - **No Diff Viewer** — only read-only preview per version; comparison is done by the browser if the user opens tabs side-by-side.
 - **No Automatic Thinning** — versions remain until manually deleted or the active document is deleted. Retention policies are explicitly for later.
 - **No Versioning for trash/`_vance/trash/`** — Soft-Delete and versioning are orthogonal; a second layer of protection for deleted documents is not necessary.
-- **No Versioned Restore History** — the restore itself archives the previous live version (see §4), but Vance does not track "who restored to which version when". The who/when lives in the `createdBy` field of the created Archive entries.
+- **No Versioned Restore History** — the restore itself archives the previous live version (see §4), but Vancetope does not track "who restored to which version when". The who/when lives in the `createdBy` field of the created Archive entries.
 
 ## 2. Data Model
 
@@ -190,7 +190,7 @@ In the Document-Editor (`vance-face`), a new "Versions" block appears **below th
 - **Restore Confirmation** in its own modal: explicitly explains that the current content is automatically saved as a new version (no data loss due to accidental restore).
 - **Delete Confirmation** also in a modal, with a note that only this version is removed and the live document remains untouched.
 
-Component: `DocumentArchives.vue` — uses Vance-Primitives (`VModal`, `VButton`, `VAlert`), no direct DaisyUI classes outside of `src/components/`. Composable: `useDocumentArchives.ts` encapsulates the five REST calls + local list/preview state.
+Component: `DocumentArchives.vue` — uses Vancetope-Primitives (`VModal`, `VButton`, `VAlert`), no direct DaisyUI classes outside of `src/components/`. Composable: `useDocumentArchives.ts` encapsulates the five REST calls + local list/preview state.
 
 After a successful restore, `DocumentArchives` swaps the selection via the `restored`-event in `DocumentApp.vue` so that the opened document immediately shows the restored content — no second roundtrip needed.
 

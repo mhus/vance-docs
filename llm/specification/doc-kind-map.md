@@ -1,4 +1,4 @@
-# Vance — Document Kind `map`
+# Vancetope — Document Kind `map`
 
 > Specifies the **`map` payload** for documents that carry geospatial features — markers (points), areas (polygons) and routes (polylines). Rendered in the Web-UI with Leaflet on top of OpenStreetMap tiles by default. JSON and YAML only on disk; markdown is intentionally **not** supported.
 > See also: [doc-kind-graph](doc-kind-graph.md) | [web-ui](web-ui.md)
@@ -243,7 +243,7 @@ Cascade: Project → `_vance` Tenant default → Hardcoded OSM defaults in the f
 | Requirement | Fulfillment |
 |---|---|
 | Unique User-Agent | Browser UA / WKWebView UA — no generic lib default |
-| Valid Referer | Browser/WKWebView sends Referer to Vance domain |
+| Valid Referer | Browser/WKWebView sends Referer to Vancetope domain |
 | HTTP Caching ≥ 7 days | Browser respects Tile server headers |
 | No Prefetching | Leaflet only loads viewport tiles |
 | Attribution | Hardcoded into the renderer |

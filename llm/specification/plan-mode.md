@@ -1,6 +1,6 @@
-# Vance — Plan-Mode
+# Vancetope — Plan-Mode
 
-> **Plan-Mode** is Vance's mechanism for *exploration-before-execution*
+> **Plan-Mode** is Vancetope's mechanism for *exploration-before-execution*
 > for non-trivial requests. Plan, TodoList, and explicit transition
 > to execution are modeled as distinct Actions in the schema.
 >

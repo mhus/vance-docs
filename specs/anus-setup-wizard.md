@@ -1,5 +1,5 @@
 ---
-title: "Vance — Anus Setup Wizard"
+title: "Vancetope — Anus Setup Wizard"
 parent: Specs
 permalink: /specs/anus-setup-wizard
 ---
@@ -7,16 +7,16 @@ permalink: /specs/anus-setup-wizard
 <!-- AUTO-GENERATED from specification/public/en/anus-setup-wizard.md — do not edit here. -->
 
 ---
-# Vance — Anus Setup Wizard
+# Vancetope — Anus Setup Wizard
 
-> Interactive bootstrap mode of the Anus Admin Shell for **initial provisioning of a fresh Vance deployment**: creates Tenant + User, configures AI Provider (API Key, Model, Aliases, Embeddings) and optionally the complete Research Endpoint Cascade (Serper + keyless providers). Call: `anus --setup`. One-shot mode like [`--sudo`](#) — the process terminates after Save or Quit.
+> Interactive bootstrap mode of the Anus Admin Shell for **initial provisioning of a fresh Vancetope deployment**: creates Tenant + User, configures AI Provider (API Key, Model, Aliases, Embeddings) and optionally the complete Research Endpoint Cascade (Serper + keyless providers). Call: `anus --setup`. One-shot mode like [`--sudo`](#) — the process terminates after Save or Quit.
 > See also: java-cli-module-structure | [llm-resource-management](/specs/llm-resource-management) | [settings-system](/specs/settings-system)
 
 ---
 
 ## 1. Purpose
 
-Production bootstrap of a Vance stack without `init-settings.yaml` secret knowledge and without Acme demo data. Specific use case: Start Docker-Compose stack (Brain runs with `vance.bootstrap.acme=false`), then **once** start an Anus one-shot container with `--setup` — the operator clicks through tenant + user + provider + serper, writes everything, and the container exits.
+Production bootstrap of a Vancetope stack without `init-settings.yaml` secret knowledge and without Acme demo data. Specific use case: Start Docker-Compose stack (Brain runs with `vance.bootstrap.acme=false`), then **once** start an Anus one-shot container with `--setup` — the operator clicks through tenant + user + provider + serper, writes everything, and the container exits.
 
 **Distinction from existing paths:**
 
@@ -79,7 +79,7 @@ main()
 Immediately upon startup, the wizard outputs the **complete Tenant + User structure** (System Tenant `_vance` hidden, Service Accounts shown under Users in the Tenant listing for completeness, but filtered during later User selection).
 
 ```
-Vance Setup
+Vancetope Setup
 ===========
 
 Existing tenants:

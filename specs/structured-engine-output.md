@@ -1,12 +1,12 @@
 ---
-title: "Vance — Structured Engine Output"
+title: "Vancetope — Structured Engine Output"
 parent: Specs
 permalink: /specs/structured-engine-output
 ---
 
 <!-- AUTO-GENERATED from specification/public/en/structured-engine-output.md — do not edit here. -->
 
-# Vance — Structured Engine Output
+# Vancetope — Structured Engine Output
 
 > An Engine ends each turn with a mandatory `respond` tool call. This tool call contains the user-facing message **plus** a boolean flag that explicitly states whether the Engine is waiting for user input. This eliminates language-dependent intent heuristics, and the Engine lifecycle (BLOCKED vs. READY) is structured rather than guessed from free text.
 >

@@ -1,4 +1,4 @@
-# Vance — User Interaction
+# Vancetope — User Interaction
 
 > How the system communicates with humans when non-chat mechanisms are needed — decision templates, free-text feedback, ordering inputs, structured outputs (texts, images, documents). Plus: how the user is notified of new items, cross-channel.
 >

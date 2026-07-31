@@ -1,4 +1,4 @@
-# Vance — Workflows
+# Vancetope — Workflows
 
 > A **Workflow** is a project-scoped automation: a state-machine plan of typed tasks (Agent / Shell / Script / Tool / Gate / Timer / Condition / Sub-Workflow / Terminal) that is started by external triggers and runs via append-only Journal Records. Workflows live as YAML documents under `_vance/workflows/<name>.yaml` in the Document Layer.
 >

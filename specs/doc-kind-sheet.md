@@ -1,5 +1,5 @@
 ---
-title: "Vance — Document Kind `sheet`"
+title: "Vancetope — Document Kind `sheet`"
 parent: Specs
 permalink: /specs/doc-kind-sheet
 ---
@@ -7,7 +7,7 @@ permalink: /specs/doc-kind-sheet
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-sheet.md — do not edit here. -->
 
 ---
-# Vance — Document Kind `sheet`
+# Vancetope — Document Kind `sheet`
 
 > Specifies the **`sheet` payload** for documents that carry a 2D table with A1 cell addresses — a table with named columns and numbered rows, sparse cell storage, optional per-cell formatting. Excel-compatible addressing. Formula strings are round-trip stable; evaluation only in v2. Markdown is intentionally **not** supported; only JSON and YAML.
 > See also: [doc-kind-records](/specs/doc-kind-records) | [doc-kind-graph](/specs/doc-kind-graph) | [web-ui](/specs/web-ui)

@@ -1,5 +1,5 @@
 ---
-title: "Vance — Document Kind `application`"
+title: "Vancetope — Document Kind `application`"
 parent: Specs
 permalink: /specs/doc-kind-application
 ---
@@ -7,9 +7,9 @@ permalink: /specs/doc-kind-application
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-application.md — do not edit here. -->
 
 ---
-# Vance — Document Kind `application`
+# Vancetope — Document Kind `application`
 
-> Specifies the **`application` payload** for documents named `_app.yaml` — the manifest at the root of a Vance "application folder". The folder + manifest convention turns an otherwise-flat tree of documents into a self-contained domain workspace (calendar suite, kanban board, wiki, …) with its own derived artifacts and per-app Java service.
+> Specifies the **`application` payload** for documents named `_app.yaml` — the manifest at the root of a Vancetope "application folder". The folder + manifest convention turns an otherwise-flat tree of documents into a self-contained domain workspace (calendar suite, kanban board, wiki, …) with its own derived artifacts and per-app Java service.
 > See also: [doc-kind-calendar](/specs/doc-kind-calendar) | [app-calendar](/specs/app-calendar) | [app-canvasbook](/specs/app-canvasbook) | [doc-kind-canvas](/specs/doc-kind-canvas) | [web-ui](/specs/web-ui)
 
 ---
@@ -22,9 +22,9 @@ Beyond a certain complexity, a single YAML file is no longer sufficient for a do
 - A **Kanban board** (v2) with Cards in `todo/`, `doing/`, `done/` subfolders.
 - A **wiki** (v2) with linked Pages and an auto-generated backlinks index.
 
-Vance solves this with the **Application Pattern** — analogous to macOS `.app` bundles, which appear as a single file in Finder but are actually a folder with an `Info.plist` manifest:
+Vancetope solves this with the **Application Pattern** — analogous to macOS `.app` bundles, which appear as a single file in Finder but are actually a folder with an `Info.plist` manifest:
 
-- A folder with `_app.yaml` at its root is a **Vance Application Instance**.
+- A folder with `_app.yaml` at its root is a **Vancetope Application Instance**.
 - The manifest specifies: which app type (`$meta.app: calendar`), how it's configured (`config.calendar: {...}`).
 - Domain tools recognize the folder and dispatch operations to the correct Java service.
 - Generated artifacts (e.g., `_gantt.md`, `_conflicts.yaml`) reside in the same folder, are immediately recognizable as "system-managed" via the `_`-prefix, and are rewritten with every `app_rebuild`.
@@ -42,7 +42,7 @@ Vance solves this with the **Application Pattern** — analogous to macOS `.app`
 
 The refresh contract (`VanceApplication.refresh()`, §5) is intentionally a **deterministic, terminating DAG**: source files in → artifacts out, no re-entry. This eliminates the need for cascade protection — the danger simply doesn't arise. Background and the consciously **not** built alternative (`document.*`-Change-Hook + Cascade-Guard) are in [`ursahooks`](/specs/ursahooks) §3 and `planning/ursa-cascade-guard.md`.
 
-**Design Principle — Apps may go beyond Vance's standard conventions.** Vance intentionally has a unified editor model ("CodeMirror everywhere", one Doc tab per file, Markdown source as truth). Apps are the sanctioned escape: the immersive App View hides the standard shell and gives the app the entire tab body — it may provide its own block editor, a drag-and-drop board, a slideshow, or an interactive form (Kanban does exactly this with `KanbanBoard.vue`). The price for this is non-negotiable: **the on-disk format must remain Vance-compatible** — diff-friendly files, LLM-readable (Markdown or structured YAML/JSON according to the App schema), no editor state hidden in a binary blob, no lossy round-trip if someone opens the file in the fallback CodeEditor. An app whose data can only be edited via its own UI does not belong in Vance — it belongs in an external application with Vance export.
+**Design Principle — Apps may go beyond Vancetope's standard conventions.** Vancetope intentionally has a unified editor model ("CodeMirror everywhere", one Doc tab per file, Markdown source as truth). Apps are the sanctioned escape: the immersive App View hides the standard shell and gives the app the entire tab body — it may provide its own block editor, a drag-and-drop board, a slideshow, or an interactive form (Kanban does exactly this with `KanbanBoard.vue`). The price for this is non-negotiable: **the on-disk format must remain Vancetope-compatible** — diff-friendly files, LLM-readable (Markdown or structured YAML/JSON according to the App schema), no editor state hidden in a binary blob, no lossy round-trip if someone opens the file in the fallback CodeEditor. An app whose data can only be edited via its own UI does not belong in Vancetope — it belongs in an external application with Vancetope export.
 
 **What this spec defines:**
 
@@ -76,11 +76,11 @@ The refresh contract (`VanceApplication.refresh()`, §5) is intentionally a **de
 
 ### 2.2 Discovery Rule
 
-A folder is a Vance app if `<folder>/_app.yaml` exists AND `kind == "application"`. Other app types are distinguished via `$meta.app` — if a Calendar app is expected, check `app == "calendar"` and throw `KindCodecException` if not.
+A folder is a Vancetope app if `<folder>/_app.yaml` exists AND `kind == "application"`. Other app types are distinguished via `$meta.app` — if a Calendar app is expected, check `app == "calendar"` and throw `KindCodecException` if not.
 
 ### 2.3 `$meta`-Mirroring (DB Layer)
 
-Vance's standard `JsonHeaderStrategy` / `YamlHeaderStrategy` extracts all scalar `$meta` fields into `DocumentDocument.headers` (Map). `kind` is privileged + indexed; `app` runs as a regular header entry.
+Vancetope's standard `JsonHeaderStrategy` / `YamlHeaderStrategy` extracts all scalar `$meta` fields into `DocumentDocument.headers` (Map). `kind` is privileged + indexed; `app` runs as a regular header entry.
 
 This allows both discovery queries to work without a body scan:
 
@@ -308,7 +308,7 @@ Each of these apps would be a new `@Service implements VanceApplication` plus th
 
 ---
 
-## 10. Mapping to Other Vance Concepts
+## 10. Mapping to Other Vancetope Concepts
 
 - **Kits**: Apps are suitable as Kit templates — a "Sprint Planning Kit" could offer a pre-configured `app: calendar` folder with default Lanes.
 - **RAG**: each source file in an App folder is indexed normally (default behavior). Generated artifacts are also indexed — they are useful search results ("where is the Q3 Gantt?").

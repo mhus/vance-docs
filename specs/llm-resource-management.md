@@ -1,5 +1,5 @@
 ---
-title: "Vance — LLM Resource Management"
+title: "Vancetope — LLM Resource Management"
 parent: Specs
 permalink: /specs/llm-resource-management
 ---
@@ -7,7 +7,7 @@ permalink: /specs/llm-resource-management
 <!-- AUTO-GENERATED from specification/public/en/llm-resource-management.md — do not edit here. -->
 
 ---
-# Vance — LLM Resource Management
+# Vancetope — LLM Resource Management
 
 > Defines how LLM access is managed: providers, keys, quotas, routing.
 > Core principle: Every LLM call runs under an account. Credentials and quotas can be defined at any Scope level.
@@ -746,7 +746,7 @@ Preferences cascade for model selection: Think Process override → Project pref
 
 ## 7a. Model Characteristics: Context-Discipline vs. Training-Trust
 
-Models of the same performance class behave **differently disciplined** when tool outputs or user corrections contradict their training snapshot. For Vance, this is not academic — the architecture is designed for workers to retrieve fresh data and for the model to *synthesize* an answer from it. If the model ignores fresh data in favor of its training, the entire research pipeline is ineffective.
+Models of the same performance class behave **differently disciplined** when tool outputs or user corrections contradict their training snapshot. For Vancetope, this is not academic — the architecture is designed for workers to retrieve fresh data and for the model to *synthesize* an answer from it. If the model ignores fresh data in favor of its training, the entire research pipeline is ineffective.
 
 ### Two Dimensions
 
@@ -757,9 +757,9 @@ Models of the same performance class behave **differently disciplined** when too
 
 ### Observed Profiles (as of 2026-06-15)
 
-This table is **empirical**, not exhaustive. It is based on Vance-internal research sessions (see `analysis/sess_*/COMPARISON.md` for the underlying traces) and is explicitly allowed to be falsified as soon as vendor releases change behavior. Model character drift is real — Anthropic / OpenAI / Google regularly patch tool-use behavior.
+This table is **empirical**, not exhaustive. It is based on Vancetope-internal research sessions (see `analysis/sess_*/COMPARISON.md` for the underlying traces) and is explicitly allowed to be falsified as soon as vendor releases change behavior. Model character drift is real — Anthropic / OpenAI / Google regularly patch tool-use behavior.
 
-| Model | Context-Discipline | Tool-Loop-Persistence | Vance Recommendation |
+| Model | Context-Discipline | Tool-Loop-Persistence | Vancetope Recommendation |
 |---|---|---|---|
 | `gemini:gemini-2.5-pro` | **Weak** — known training override bias for factual questions | Medium | Codegen / Boilerplate / Language translation. **Not** to be set as default `analyze`/`web` alias for research workflows. |
 | `gemini:gemini-2.5-flash` | Weak (same bias mechanism as Pro) | Strong | Cheap tier for classification, tag recognition, Inbox triage — where training knowledge already provides the answer |
@@ -771,12 +771,12 @@ This table is **empirical**, not exhaustive. It is based on Vance-internal resea
 
 ### Consequence for Recipe Defaults
 
-Vance Recipes have a sensible default model alias (`default:analyze`, `default:web`, `default:deep`). Tenant Operators configure the *binding* of these aliases. The recommendation to Operators:
+Vancetope Recipes have a sensible default model alias (`default:analyze`, `default:web`, `default:deep`). Tenant Operators configure the *binding* of these aliases. The recommendation to Operators:
 
 - `default:fast` can be a model with weak Context-Discipline (classification / triage benefits from training trust)
 - `default:analyze`, `default:web`, `default:deep` **should** be bound to models with strong Context-Discipline, otherwise Ford workers and Marvin trees are self-serving theater
 
-In Vance v1, this is **not** enforced by an automatic selector — Tenants have their own provider contracts. The character information in this table is decision support for `init-settings-*.yaml` and Web UI setting forms, not code.
+In Vancetope v1, this is **not** enforced by an automatic selector — Tenants have their own provider contracts. The character information in this table is decision support for `init-settings-*.yaml` and Web UI setting forms, not code.
 
 ### Symptoms in Trace (Diagnostic Heuristics)
 
@@ -820,7 +820,7 @@ Token Usage — Today (Account: Mike)
   ├── Total: 142k / 500k (28%)
   ├── By Project:
   │     Transformer Review: 89k / 5M monthly (1.8%)
-  │     Vance Architecture: 53k / no project limit
+  │     Vancetope Architecture: 53k / no project limit
   ├── By Provider:
   │     Anthropic (project key): 89k
   │     Google (personal key): 53k

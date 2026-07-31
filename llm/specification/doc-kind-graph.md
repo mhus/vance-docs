@@ -1,4 +1,4 @@
-# Vance — Document Kind `graph`
+# Vancetope — Document Kind `graph`
 
 > Specifies the **`graph` payload** for documents that carry a (typically directed) graph: top-level `nodes` and `edges` arrays where edges are first-class entities with their own metadata. Layout matches the convention used by Cytoscape, GraphML/GEXF, vue-flow internally, and the JSON Graph Spec. Markdown is intentionally **not** supported on disk; only JSON and YAML.
 > See also: [doc-kind-records](doc-kind-records.md) | [doc-kind-mindmap](doc-kind-mindmap.md) | [web-ui](web-ui.md)

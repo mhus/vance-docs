@@ -1,4 +1,4 @@
-# Vance — Project Kits Catalog
+# Vancetope — Project Kits Catalog
 
 > A tenant-wide catalog of pre-configured Kits, serving as a selection list
 > during Project creation. This document complements [kits.md](kits.md) (what a Kit is
@@ -12,7 +12,7 @@
 
 ## 1. Purpose
 
-Vance uses the Kit system from [kits.md](kits.md) — bundles of
+Vancetope uses the Kit system from [kits.md](kits.md) — bundles of
 Documents/Settings/Tools imported into a Project from a Git repo. When creating
 a new Project, users should be able to install *one* of these Kits directly
 without needing to know the Git URL.

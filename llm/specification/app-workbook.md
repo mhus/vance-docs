@@ -1,4 +1,4 @@
-# Vance Application — `app: workbook`
+# Vancetope Application — `app: workbook`
 
 > Notion-style Workbook built on the `kind: application` foundation (see
 > [doc-kind-application](doc-kind-application.md)). One folder = one workbook.

@@ -1,4 +1,4 @@
-# Vance Application — `app: gtd`
+# Vancetope Application — `app: gtd`
 
 > Getting-Things-Done container via `kind: action` pages, in the **Things** paradigm
 > (Cultured Code), built on the [doc-kind-application](doc-kind-application.md)

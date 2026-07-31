@@ -1,4 +1,4 @@
-# Vance — Memory Compaction
+# Vancetope — Memory Compaction
 
 > Long Sessions accumulate more chat history than any model's context window can hold. Memory Compaction folds older turns into an **`ARCHIVED_CHAT` summary** and replays it in every subsequent prompt — the LLM continues to see the main thread without the prompt exploding. This spec describes **triggers, selection, persistence, replay, and the Pinned convention**, which guarantees that critical messages never have to survive compaction because it never affects them.
 >
@@ -87,7 +87,7 @@ The **Anchor** is the set of the last K messages that *always* remain verbatim �
 
 If step 2 fails, the chat rows remain unarchived; the next turn tries again. If step 3 fails, there are briefly two active summaries — `MemoryContextLoader.appendArchivedChatSummary` takes the newest via `getLast()` in that case.
 
-**Client-visible Signal.** `ChatMessageStatus.COMPACTION` is emitted via the progress channel — the Web UI renders a `[compaction]` status stitch in the chat history, so the user sees "Vance summarized the thread here."
+**Client-visible Signal.** `ChatMessageStatus.COMPACTION` is emitted via the progress channel — the Web UI renders a `[compaction]` status stitch in the chat history, so the user sees "Vancetope summarized the thread here."
 
 ### 3.2 Range Recompaction Path (Plan Mode Hook, opt-in)
 
@@ -200,7 +200,7 @@ If `PrakProperties.sideChannelEnabled=true` is activated (currently default `fal
 
 With `PrakProperties.inlineOnCompaction=true` (currently default `false`), Prak additionally fires **directly before** a HARD compaction, so the selector sees fresh tags instead of relying on the optimistic fallback (`TrivialPatterns`).
 
-This description is informative — standard compaction in Vance runs without Prak, relying on Auto-Pin (§5.3) plus `StrengthAwareSelector`'s optimistic fallback for unrated messages.
+This description is informative — standard compaction in Vancetope runs without Prak, relying on Auto-Pin (§5.3) plus `StrengthAwareSelector`'s optimistic fallback for unrated messages.
 
 ---
 

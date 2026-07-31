@@ -1,4 +1,4 @@
-# Vance — WebDAV Access
+# Vancetope — WebDAV Access
 
 > Access to Project documents via **WebDAV** at `/brain/{tenant}/webdav/{project}/{path...}`. The target is standard clients like **macOS Finder** (mounted volume) and **Obsidian** (WebDAV Sync plugin). WebDAV is a pure **View** on the document store — not a new data store, no separate authorization model.
 >
@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-Users should be able to treat the documents of a Vance Project like a normal network drive: mount them in Finder, synchronize them as a Vault in Obsidian, and read and write them with any WebDAV-enabled tools. Access uses the same users and permissions as the rest of the system; data sovereignty remains with the `DocumentService`.
+Users should be able to treat the documents of a Vancetope Project like a normal network drive: mount them in Finder, synchronize them as a Vault in Obsidian, and read and write them with any WebDAV-enabled tools. Access uses the same users and permissions as the rest of the system; data sovereignty remains with the `DocumentService`.
 
 **Distinction — what WebDAV is NOT:** not a second document store, not a sync protocol with conflict resolution (Last-Writer-Wins at the document level, secured by Optimistic Locking), no Project enumeration (the mount always addresses exactly one Project).
 
@@ -32,7 +32,7 @@ WebDAV clients use **HTTP Basic-Auth**, not the Bearer JWT of the rest of the Br
 
 - `Authorization: Basic <base64(user:password)>` is checked against the same password mechanism as the regular login (active users with `loginEnabled`, password hash verification).
 - The **Tenant comes from the URL** — a user always authenticates only for the Tenant in the path; a login for Tenant A cannot access Tenant B.
-- Missing/invalid credentials → `401` with `WWW-Authenticate: Basic realm="Vance"`.
+- Missing/invalid credentials → `401` with `WWW-Authenticate: Basic realm="Vancetope"`.
 
 The user's normal login password serves as the Basic-Auth password.
 
@@ -107,7 +107,7 @@ Prefix `vance.webdav.*`:
 
 | Property | Default | Meaning |
 |---|---|---|
-| `realm` | `Vance` | Basic-Auth realm in the `WWW-Authenticate` challenge |
+| `realm` | `Vancetope` | Basic-Auth realm in the `WWW-Authenticate` challenge |
 | `folder-marker.ttl` (`folderMarkerTtl`) | 1 day | Retention of the `MKCOL` marker |
 | `sidecarTtl` | 1 day | Retention of Redis sidecar blobs |
 | `lockTimeout` | 1 h | Default lock timeout |
@@ -118,7 +118,7 @@ Hard prerequisite: `vance.redis.enabled=true` (§2).
 
 ## 10. Attributes
 
-WebDAV provides standard file attributes (`displayname`, `getcontentlength`, `getcontenttype`, `getlastmodified`, `creationdate`, `resourcetype`, `getetag`). Vance-specific attributes like `color`/`tags` are **not** exposed in v1; provision as `vance:`-DAV-Custom-Properties or as a bidirectional AppleDouble bridge is planned as a later extension.
+WebDAV provides standard file attributes (`displayname`, `getcontentlength`, `getcontenttype`, `getlastmodified`, `creationdate`, `resourcetype`, `getetag`). Vancetope-specific attributes like `color`/`tags` are **not** exposed in v1; provision as `vance:`-DAV-Custom-Properties or as a bidirectional AppleDouble bridge is planned as a later extension.
 
 ---
 

@@ -1,4 +1,4 @@
-# Vance — Session Modify / Crop
+# Vancetope — Session Modify / Crop
 
 > "Crop" removes messages from a Session's **memory** without deleting them.
 > The user can remove individual turns in the middle or "crop from here"

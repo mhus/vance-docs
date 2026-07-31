@@ -1,5 +1,5 @@
 ---
-title: "Vance Facelift — Specification"
+title: "Vancetope Facelift — Specification"
 parent: Specs
 permalink: /specs/vance-facelift
 ---
@@ -7,7 +7,7 @@ permalink: /specs/vance-facelift
 <!-- AUTO-GENERATED from specification/public/en/vance-facelift.md — do not edit here. -->
 
 ---
-# Vance Facelift — Specification
+# Vancetope Facelift — Specification
 
 > Status: v1. This spec is binding for the Capacitor shell
 > under `client_web/packages/facelift-bridge/`, the custom plugin
@@ -19,7 +19,7 @@ permalink: /specs/vance-facelift
 
 ## 1. Goals and Scope
 
-`vance-facelift` is a **native iOS shell around the deployed Vance
+`vance-facelift` is a **native iOS shell around the deployed Vancetope
 web UI**. Instead of writing a mobile client from scratch, a Capacitor
 wrapper loads the existing `vance-face` website per account in an
 isolated WKWebView. Multi-identity, native bridges (Share, Voice, Push,
@@ -48,8 +48,8 @@ reside in the wrapper; the editor logic remains in the unchanged Vue website.
   wrapper knows brain URLs + optional display names + (for Phase 2
   via Share Extension) a bearer token mirrored from login.
 - No WebView added value beyond user-typing-URL-bar. Facelift is
-  focused on Vance deployments; wrapper-side validation prevents
-  non-Vance URLs from being saved (§6).
+  focused on Vancetope deployments; wrapper-side validation prevents
+  non-Vancetope URLs from being saved (§6).
 
 ## 2. Module Structure
 
@@ -130,7 +130,7 @@ as a URL scheme).
 | Package | May depend on |
 |---|---|
 | `@vance/facelift-account-webview` | `@capacitor/core` (peer). No other workspace package. |
-| `@vance/facelift-bridge` | `@vance/facelift-account-webview`, `@capacitor/*`, Vue/Pinia/Router. **NOT** on `@vance/shared`, `@vance/vance-face`, `@vance/generated` — the wrapper has no Vance business logic. |
+| `@vance/facelift-bridge` | `@vance/facelift-account-webview`, `@capacitor/*`, Vue/Pinia/Router. **NOT** on `@vance/shared`, `@vance/vance-face`, `@vance/generated` — the wrapper has no Vancetope business logic. |
 | `@vance/shared` | unchanged. Contains the `isFacelift()` / `requestBackToPicker()` helpers that the website uses, but no wrapper imports. |
 | `@vance/vance-face` | unchanged. Detects Facelift via `isFacelift()` from `@vance/shared`, calls `window.vanceFacelift.*` defensively. Does not fail if the bridge is missing (= in the browser). |
 
@@ -393,12 +393,12 @@ Creates an Inbox Item with `type=OUTPUT_TEXT`, `requires-
 Action=false`, tags `share` + `project:<name>`, payload with
 `source=share-extension`. User processes further in the Inbox editor.
 
-## 9. "Open in Vance App" Banner
+## 9. "Open in Vancetope App" Banner
 
 `vance-face`'s `IndexApp.vue` renders a narrow strip at the top on login:
 
 ```
-📱 Vance has a native iOS app — Open ›
+📱 Vancetope has a native iOS app — Open ›
 ```
 
 Visible **only** if:
@@ -409,7 +409,7 @@ Visible **only** if:
 Tap → `window.location.href = 'vance-facelift://'`. iOS launches the
 Facelift app if installed (the URL scheme is registered);
 otherwise, nothing visually happens (App Store link comes in Phase 2,
-once Vance is in the Store).
+once Vancetope is in the Store).
 
 ## 10. Asset Pipeline
 
@@ -447,7 +447,7 @@ build ad-hoc.
 
 - **No browser mode.** The WebView is limited to the Brain origin of
   the respective account URL; navigations are not further
-  filtered (Vance Brain is the trusted source).
+  filtered (Vancetope Brain is the trusted source).
   Hard origin lock + external link to Safari is Phase 2 (cf.
   planning, if needed).
 - **No Push Notifications.** APNs setup + server dispatcher are

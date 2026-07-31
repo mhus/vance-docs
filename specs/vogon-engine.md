@@ -1,5 +1,5 @@
 ---
-title: "Vance — Vogon Think Engine"
+title: "Vancetope — Vogon Think Engine"
 parent: Specs
 permalink: /specs/vogon-engine
 ---
@@ -7,7 +7,7 @@ permalink: /specs/vogon-engine
 <!-- AUTO-GENERATED from specification/public/en/vogon-engine.md — do not edit here. -->
 
 ---
-# Vance — Vogon Think Engine
+# Vancetope — Vogon Think Engine
 
 > **Vogon** is the Think Engine for **deterministic multi-phase orchestration**. While Arthur reacts and converses with the user, and Ford, as a generalist worker, solves individual tasks, Vogon executes a predefined plan — phases, gates, checkpoints, loops, forks, escalations. It's the bureaucratic engine whose success relies on not being persuaded by any LLM to skip a step.
 >

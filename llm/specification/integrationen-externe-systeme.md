@@ -1,41 +1,41 @@
-# Vance — Integrations & External Systems
+# Vancetope — Integrations & External Systems
 
-> Defines what Vance itself does, what external tools do, and how the connection looks.
-> Core principle: Vance thinks, external tools manage.
+> Defines what Vancetope itself does, what external tools do, and how the connection looks.
+> Core principle: Vancetope thinks, external tools manage.
 > See also: [vision](vision.md) | [multi-user-collaboration](multi-user-collaboration.md) | [memory-knowledge-management](memory-knowledge-management.md)
 
 ---
 
 ## 1. Design Principle
 
-**Vance is a thinking system, not a productivity suite.**
+**Vancetope is a thinking system, not a productivity suite.**
 
-Vance does not rebuild:
+Vancetope does not rebuild:
 - No document editor (for that there's Google Docs, Notion, Obsidian)
 - No project management tool (for that there's Jira, Linear, Things)
 - No file storage (for that there's Google Drive, Dropbox)
 - No reference management (for that there's Zotero, Mendeley)
 - No chat/messaging (for that there's Slack, Teams)
 
-Instead: **Vance integrates with these tools** and uses them as data sources and action targets.
+Instead: **Vancetope integrates with these tools** and uses them as data sources and action targets.
 
 ---
 
-## 2. What Vance Does Itself vs. What Stays External
+## 2. What Vancetope Does Itself vs. What Stays External
 
-| Function | Vance | External | Rationale |
+| Function | Vancetope | External | Rationale |
 |----------|-------|--------|-----------|
-| **Thinking / Planning** | Yes — Core Feature | — | This IS Vance |
+| **Thinking / Planning** | Yes — Core Feature | — | This IS Vancetope |
 | **Task Trees** | Yes — Think Process Tasks | — | Core Feature |
 | **Knowledge Graph** | Yes — Insights, Relations | — | Core Feature |
 | **Memory / RAG** | Yes — Entities, Embeddings | — | Requires Scope-Awareness |
-| **Store Documents** | References + Metadata + Cache | Original remains external | Vance is not the master for files |
-| **Edit Documents** | No | Google Docs, Notion, Obsidian | Vance can generate drafts, editing is external |
-| **Todo Lists (manual)** | No | Things, Todoist, Jira | Vance has task trees, not manual todos |
-| **Project Management** | No | Jira, Linear | Vance plans thinking processes, not sprints |
-| **Reference Management** | No | Zotero, Mendeley, BibTeX | Vance reads and understands papers, but does not manage a library |
+| **Store Documents** | References + Metadata + Cache | Original remains external | Vancetope is not the master for files |
+| **Edit Documents** | No | Google Docs, Notion, Obsidian | Vancetope can generate drafts, editing is external |
+| **Todo Lists (manual)** | No | Things, Todoist, Jira | Vancetope has task trees, not manual todos |
+| **Project Management** | No | Jira, Linear | Vancetope plans thinking processes, not sprints |
+| **Reference Management** | No | Zotero, Mendeley, BibTeX | Vancetope reads and understands papers, but does not manage a library |
 | **Code Management** | No | Git, GitHub | CLI client can operate Git |
-| **Communication** | Notifications only | Slack, Email, Teams | Vance informs, does not chat |
+| **Communication** | Notifications only | Slack, Email, Teams | Vancetope informs, does not chat |
 | **Calendar** | No | Google Calendar | Potentially Trigger: "Deadline in 3 days" |
 
 ---
@@ -44,7 +44,7 @@ Instead: **Vance integrates with these tools** and uses them as data sources and
 
 ### 3.1 The Problem
 
-Knowledge is not only in Vance. A researcher has:
+Knowledge is not only in Vancetope. A researcher has:
 - Papers in Zotero
 - Notes in Obsidian
 - Draft documents in Google Docs
@@ -53,17 +53,17 @@ Knowledge is not only in Vance. A researcher has:
 - Team knowledge in Confluence
 - References as BibTeX
 
-Vance must be able to **read and understand** this knowledge without duplicating it.
+Vancetope must be able to **read and understand** this knowledge without duplicating it.
 
 ### 3.2 Two Integration Patterns
 
-#### Pattern A: Import (Copy into Vance)
+#### Pattern A: Import (Copy into Vancetope)
 
 ```
-External Source → Vance imports → Entity in Memory → RAG-indexed
+External Source → Vancetope imports → Entity in Memory → RAG-indexed
 ```
 
-- Vance has a copy of the document
+- Vancetope has a copy of the document
 - Independent of the source (source can go offline)
 - Risk: Copy becomes outdated if original changes
 - Good for: PDFs, papers, static references
@@ -71,10 +71,10 @@ External Source → Vance imports → Entity in Memory → RAG-indexed
 #### Pattern B: Connector (Live Connection)
 
 ```
-External Source ← Vance reads on demand → Cache + Entity Reference → RAG-indexed
+External Source ← Vancetope reads on demand → Cache + Entity Reference → RAG-indexed
 ```
 
-- Vance only keeps a reference + cache
+- Vancetope only keeps a reference + cache
 - On access: fresh data from the source
 - Sync strategy: periodic, on-access, or webhook
 - Good for: Google Drive, Confluence, Git Repos (living documents)
@@ -83,7 +83,7 @@ External Source ← Vance reads on demand → Cache + Entity Reference → RAG-i
 
 ```
 ┌─────────────────────────────────────────┐
-│              Vance Brain                 │
+│              Vancetope Brain                 │
 │                                          │
 │  Source Registry                         │
 │    ├── Connector: Google Drive           │
@@ -109,7 +109,7 @@ External Source ← Vance reads on demand → Cache + Entity Reference → RAG-i
 
 ### 3.4 Connector Types
 
-| Connector | Source | Auth | Sync | What Vance Sees |
+| Connector | Source | Auth | Sync | What Vancetope Sees |
 |-----------|--------|------|------|----------------|
 | **Google Drive** | Folders/files in Drive | OAuth2 | Webhook + periodic | Documents, Sheets, Slides as text |
 | **Zotero** | Library, Collections | API Key | Periodic | Papers with metadata (author, year, abstract, tags) |
@@ -178,7 +178,7 @@ status: active                        # active | paused | error
 
 ## 4. Actions in External Systems
 
-Vance doesn't just read — it can also write to external systems:
+Vancetope doesn't just read — it can also write to external systems:
 
 | Action | System | Example |
 |--------|--------|---------|
@@ -197,15 +197,15 @@ These actions are **Tools** that the Brain or the Client can execute:
 
 ## 5. Manual Todo Lists
 
-### 5.1 Does Vance Need Its Own Todos?
+### 5.1 Does Vancetope Need Its Own Todos?
 
-**No — but Vance can create and track todos in external systems.**
+**No — but Vancetope can create and track todos in external systems.**
 
 The difference:
 - **Think Process Tasks** are thinking tasks that the Brain executes. Not manual.
 - **Manual Todos** are tasks for humans: "Write email", "Prepare for meeting". These belong in Things, Todoist, Jira.
 
-What Vance can do:
+What Vancetope can do:
 - Derive a todo for the user from a Think Process result and write it to the external system
 - Read the status of external todos (via Connector) and consider them in the context of a Think Process
 - Recognize "Blockers": Think Process waits for a manual todo before it can proceed
@@ -228,9 +228,9 @@ Think Process Task "Identify next steps"
 
 ## 6. Document Editing
 
-### 6.1 Vance Creates, External Edits
+### 6.1 Vancetope Creates, External Edits
 
-Vance can **create** documents (Think Process output: draft of a paper, an analysis, a story). But editing happens externally:
+Vancetope can **create** documents (Think Process output: draft of a paper, an analysis, a story). But editing happens externally:
 
 ```
 Think Process "Paper Draft" 
@@ -238,19 +238,19 @@ Think Process "Paper Draft"
   → User says: "Export to Google Docs"
   → Brain creates Google Doc via Connector
   → User edits in Google Docs
-  → On next sync: Vance reads the current version
+  → On next sync: Vancetope reads the current version
   → Think Process "Review Draft" uses the edited version as input
 ```
 
 ### 6.2 Round-Trip Pattern
 
 ```
-Vance creates Draft → Export to external system → User edits externally
+Vancetope creates Draft → Export to external system → User edits externally
       ↑                                                    │
       └────── Connector syncs changed version back ────┘
 ```
 
-This is cleaner than building a proprietary editor. Vance is the thinker, not the desk.
+This is cleaner than building a proprietary editor. Vancetope is the thinker, not the desk.
 
 ---
 
@@ -263,10 +263,10 @@ Many of the integrations mentioned above already exist as **MCP Servers**:
 - GitHub MCP
 - Obsidian MCP
 
-Instead of building a separate connector for each service, Vance could use MCP as a universal integration protocol:
+Instead of building a separate connector for each service, Vancetope could use MCP as a universal integration protocol:
 
 ```
-Vance Brain
+Vancetope Brain
   └→ MCP Client
        ├── Google Drive MCP Server
        ├── Slack MCP Server
@@ -279,7 +279,7 @@ Vance Brain
 - Hundreds of existing MCP Servers
 - Standardized protocol
 - Community-maintained
-- New service = install new MCP Server, no Vance code needed
+- New service = install new MCP Server, no Vancetope code needed
 
 ### Disadvantages
 - MCP is optimized for tool calls, not for bulk sync
@@ -297,7 +297,7 @@ Vance Brain
 
 ```
 ┌──────────────────────────────────────────────┐
-│                 Vance Brain                    │
+│                 Vancetope Brain                    │
 │                                                │
 │  ┌──────────────┐    ┌───────────────────┐    │
 │  │ MCP Client   │    │ Sync Connectors   │    │
@@ -342,10 +342,10 @@ Vance Brain
 
 ## 10. Summary
 
-> **Vance thinks. External tools manage.**
+> **Vancetope thinks. External tools manage.**
 >
-> Vance does not build editors, todo lists, or file managers.
-> Instead, Vance reads from external sources (Connectors + MCP),
+> Vancetope does not build editors, todo lists, or file managers.
+> Instead, Vancetope reads from external sources (Connectors + MCP),
 > thinks about them (Think Processes + Knowledge Graph),
 > and writes results back to external systems (MCP + Export).
 >

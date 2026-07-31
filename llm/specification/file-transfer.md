@@ -1,4 +1,4 @@
-# Vance — File Transfer (Foot ↔ Brain)
+# Vancetope — File Transfer (Foot ↔ Brain)
 
 > Defines the protocol for transferring files between Foot client and Brain server in both directions. Data lands on the respective receiver's disk (Brain: Workspace-RootDir, Foot: Foot-Workspace). What the Agent does with received files (e.g., Document-Import) is explicitly *not* part of this spec — transfer ends on the HDD.
 
@@ -6,7 +6,7 @@
 
 ## 1. Purpose
 
-Vance Agents need files beyond what fits into chat messages:
+Vancetope Agents need files beyond what fits into chat messages:
 - User uploads audio/PDF/image for analysis (Foot → Brain)
 - Agent generates report/audio/binary, user downloads it (Brain → Foot)
 

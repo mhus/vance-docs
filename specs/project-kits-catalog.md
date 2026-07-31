@@ -1,5 +1,5 @@
 ---
-title: "Vance — Project Kits Catalog"
+title: "Vancetope — Project Kits Catalog"
 parent: Specs
 permalink: /specs/project-kits-catalog
 ---
@@ -7,7 +7,7 @@ permalink: /specs/project-kits-catalog
 <!-- AUTO-GENERATED from specification/public/en/project-kits-catalog.md — do not edit here. -->
 
 ---
-# Vance — Project Kits Catalog
+# Vancetope — Project Kits Catalog
 
 > A tenant-wide catalog of pre-configured Kits, serving as a selection list
 > during Project creation. This document complements [kits.md](/specs/kits) (what a Kit is
@@ -21,7 +21,7 @@ permalink: /specs/project-kits-catalog
 
 ## 1. Purpose
 
-Vance uses the Kit system from [kits.md](/specs/kits) — bundles of
+Vancetope uses the Kit system from [kits.md](/specs/kits) — bundles of
 Documents/Settings/Tools imported into a Project from a Git repo. When creating
 a new Project, users should be able to install *one* of these Kits directly
 without needing to know the Git URL.

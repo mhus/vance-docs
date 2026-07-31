@@ -377,7 +377,7 @@ Outputs gone, until re-execution (exactly like Jupyter after kernel restart).
   (parallel to `vance:` for Documents). The client loads it from
   `GET /brain/{tenant}/projects/{project}/workspace/file`.
 - **Rendering:** `ComposeOutput` (vance-face) renders Markdown/Text/Image/PDF
-  by file type; **structured Vance Kinds** (records→table, tree, chart, …) via
+  by file type; **structured Vancetope Kinds** (records→table, tree, chart, …) via
   `resolveRenderer(kind,'inline')`, but only if the output **explicitly**
   declares a Kind (`outputs: [{ path: x.yaml, as: records }]`) — this way, only
   canonically formatted content passes through the Kind renderers, a raw `.csv`

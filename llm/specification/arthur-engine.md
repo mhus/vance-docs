@@ -1,4 +1,4 @@
-# Vance — Arthur Think Engine
+# Vancetope — Arthur Think Engine
 
 > **Arthur** is the reactive **Session Chat Think Engine** — the default engine of the Chat Think Process, which is automatically created when an Interactive Session is established. Arthur is also the **reference implementation example** that fully demonstrates the general Think Engine framework. Anyone building a new Think Engine will find the concrete API that Arthur uses here — other engines (e.g., `deep-think`) implement the same framework.
 > See also: [think-engines](think-engines.md) (terms, registry, lifecycle contract), [architecture-scopes-clients §2](architecture-scopes-clients.md) (Session ownership), [execution-and-persistence](../execution-und-persistenz.md) (memory types, Pod binding), [engine-message-routing](../engine-message-routing.md) (Inbox persistence, Working WS)
@@ -235,7 +235,7 @@ Arthur has a deliberately **limited** Tool Pool (set in `ArthurEngine.allowedToo
 
 **Not v1 in Arthur's Pool** (originally planned in arthur-spec): `memory.query`, `memory.read`, `knowledge.graph`. These Memory and Knowledge Graph Tools do not yet exist as server tools; they will be added when the associated subsystems are ready.
 
-**Discovery via `DISCOVER` Action.** Arthur also has a structural discovery entry point: the continuing action `type=DISCOVER` with `intent: "<term>"` synchronously calls `DiscoveryService` and passes the result as a Tool Result to the Action Loop. Used when the User Input contains a term Arthur doesn't know (Vance jargon, Kit feature, invented word). The `how_do_i` tool remains available for proactive mid-turn lookups. Full description: [how-do-i §1a](how-do-i.md).
+**Discovery via `DISCOVER` Action.** Arthur also has a structural discovery entry point: the continuing action `type=DISCOVER` with `intent: "<term>"` synchronously calls `DiscoveryService` and passes the result as a Tool Result to the Action Loop. Used when the User Input contains a term Arthur doesn't know (Vancetope jargon, Kit feature, invented word). The `how_do_i` tool remains available for proactive mid-turn lookups. Full description: [how-do-i §1a](how-do-i.md).
 
 What Arthur **does not** have: Filesystem, Shell, Web-Fetch, direct LLM calls (except its own turn), MCP Tools. The actual worker is a Worker. This keeps Arthur's context small and its LLM call fast/cheap.
 

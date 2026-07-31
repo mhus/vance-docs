@@ -1,5 +1,5 @@
 ---
-title: "Vance — Prompt Wizards"
+title: "Vancetope — Prompt Wizards"
 parent: Specs
 permalink: /specs/wizards
 ---
@@ -7,7 +7,7 @@ permalink: /specs/wizards
 <!-- AUTO-GENERATED from specification/public/en/wizards.md — do not edit here. -->
 
 ---
-# Vance — Prompt Wizards
+# Vancetope — Prompt Wizards
 
 > A **Wizard** is a named form that guides the user step-by-step through the input parameters of a complex Prompt and, at the end, injects a complete Prompt text into the chat input field. This solves the "empty input field" problem: special workflows like "Create a council" or "Plan Vogon strategy" are discoverable via visible Cards/Tabs, without the user needing to know Engine names (`slart`, `vogon`, `marvin`, …) or Recipe conventions.
 >

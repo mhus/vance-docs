@@ -1,4 +1,4 @@
-# Vance — Frankie Think Engine
+# Vancetope — Frankie Think Engine
 
 > **Frankie** is the **generic Pi-style Executor Engine**. It
 > processes a task in multiple turns — LLM call → Tool calls →
@@ -7,7 +7,7 @@
 > comes from *natural conversation*, *explicit tool terminate*,
 > *external interrupt*, or *safety net*.
 >
-> Frankie is the Vance adaptation of the Pi-Coding-Agent-Loop pattern
+> Frankie is the Vancetope adaptation of the Pi-Coding-Agent-Loop pattern
 > (see `instructions/pi-analyse.md`). Where Arthur is the **Hub/Host**
 > and Marvin builds a **dynamic task tree**, Frankie is the
 > **focused Leaf-Worker**: drainPending → LLM → Tools →
@@ -308,7 +308,7 @@ Recipes reference via `params.manualPaths`:
 ```yaml
 manualPaths:
   - frankie/manuals/   # engine-intrinsic first
-  - manuals/            # global Vance as fallback
+  - manuals/            # global Vancetope as fallback
 ```
 
 Recipe prefix requirement: Recipe-specific Manuals carry the
@@ -659,7 +659,7 @@ Examples (not exhaustive):
 
 ### 14.5 Bundled Application: `code-review`
 
-Vance ships the `code-review` Recipe (`_vance/recipes/code-review.yaml`)
+Vancetope ships the `code-review` Recipe (`_vance/recipes/code-review.yaml`)
 + the `code_review_decide` Tool as the first productive Hook application.
 The Recipe has:
 

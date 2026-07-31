@@ -1,5 +1,5 @@
 ---
-title: "Vance — Skills"
+title: "Vancetope — Skills"
 parent: Specs
 permalink: /specs/skills
 ---
@@ -7,7 +7,7 @@ permalink: /specs/skills
 <!-- AUTO-GENERATED from specification/public/en/skills.md — do not edit here. -->
 
 ---
-# Vance — Skills
+# Vancetope — Skills
 
 > A **Skill** is a reusable capability bundle focused on a single LLM turn: description + auto-trigger + prompt extension + tool whitelist + reference docs. Skills activate either **implicitly** (Arthur recognizes a suitable Skill based on user intent) or **explicitly** (user types `/skill <name>`). Both paths lead to the same Ford loading code. Skills are orthogonal to Recipes: Recipes configure *how* an Engine runs (Engine choice, defaults, lock), Skills are attached capabilities that define *what* it does.
 >
@@ -262,7 +262,7 @@ The existing `ProcessSteerHandler` (WebSocket) forwards `process-steer` with `co
 
 ### 6c. Auto-Complete
 
-Vance-foot uses JLine-3-Completer, which fills `/skill <TAB>` with names from `SkillResolver.listAvailable(scope)`. Web-UI uses a `<VSlashCommandPicker>` analogously (see `web-ui.md` §7).
+vance-foot uses JLine-3-Completer, which fills `/skill <TAB>` with names from `SkillResolver.listAvailable(scope)`. Web-UI uses a `<VSlashCommandPicker>` analogously (see `web-ui.md` §7).
 
 ---
 

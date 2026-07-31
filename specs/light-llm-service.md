@@ -1,5 +1,5 @@
 ---
-title: "Vance — Light LLM Service"
+title: "Vancetope — Light LLM Service"
 parent: Specs
 permalink: /specs/light-llm-service
 ---
@@ -7,7 +7,7 @@ permalink: /specs/light-llm-service
 <!-- AUTO-GENERATED from specification/public/en/light-llm-service.md — do not edit here. -->
 
 ---
-# Vance — Light LLM Service
+# Vancetope — Light LLM Service
 
 > A central helper service for **single-shot LLM calls** using Recipes as configuration profiles. No Process spawn, no Lane lock, no dedicated chat audit trail. If you need a quick LLM call (classification, title generation, discovery, anti-hallucination check, summary), use this service instead of writing your own `ThinkEngine` or wiring `ChatModel` directly.
 >

@@ -1,5 +1,5 @@
 ---
-title: "Vance — Server Tools"
+title: "Vancetope — Server Tools"
 parent: Specs
 permalink: /specs/server-tools
 ---
@@ -7,7 +7,7 @@ permalink: /specs/server-tools
 <!-- AUTO-GENERATED from specification/public/en/server-tools.md — do not edit here. -->
 
 ---
-# Vance — Server Tools
+# Vancetope — Server Tools
 
 > A **Server Tool** is a configurable instance of a Tool Type, addressed by Engines/Recipes via its `name`. Server Tool configurations live as YAML documents under `server-tools/<name>.yaml` in the [DocumentService](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) and are resolved via the standard cascade (`project` → `_tenant` → `classpath:vance-defaults/server-tools/`) — Built-in Beans serve as an additional fallback layer. Recipes reference Tools by `name` or by label selector (`@<label>`).
 >

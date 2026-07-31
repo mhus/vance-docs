@@ -1,5 +1,5 @@
 ---
-title: "Vance Application — `app: wiki`"
+title: "Vancetope Application — `app: wiki`"
 parent: Specs
 permalink: /specs/app-wiki
 ---
@@ -7,7 +7,7 @@ permalink: /specs/app-wiki
 <!-- AUTO-GENERATED from specification/public/en/app-wiki.md — do not edit here. -->
 
 ---
-# Vance Application — `app: wiki`
+# Vancetope Application — `app: wiki`
 
 > Name-addressed link-graph wiki over `kind: workpage` pages, built
 > on the [doc-kind-application](/specs/doc-kind-application) foundation. Unlike

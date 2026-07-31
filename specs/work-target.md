@@ -1,5 +1,5 @@
 ---
-title: "Vance — WorkTarget & Generic File/Exec Tool-Layer"
+title: "Vancetope — WorkTarget & Generic File/Exec Tool-Layer"
 parent: Specs
 permalink: /specs/work-target
 ---
@@ -7,7 +7,7 @@ permalink: /specs/work-target
 <!-- AUTO-GENERATED from specification/public/en/work-target.md — do not edit here. -->
 
 ---
-# Vance — WorkTarget & Generic File/Exec Tool-Layer
+# Vancetope — WorkTarget & Generic File/Exec Tool-Layer
 
 > A **WorkTarget** describes, per `ThinkProcess`, which backend the
 > generic `file_*` and `exec_*` tools dispatch to: the user's local
@@ -29,7 +29,7 @@ permalink: /specs/work-target
 
 ## 1. Role and Classification
 
-Vance currently has three parallel storage/exec surfaces:
+Vancetope currently has three parallel storage/exec surfaces:
 
 | Surface | Where | Tool-Prefix | Lifetime |
 |---|---|---|---|

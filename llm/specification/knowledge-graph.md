@@ -1,6 +1,6 @@
-# Vance — Knowledge Graph & Insights
+# Vancetope — Knowledge Graph & Insights
 
-> How Vance not only stores knowledge but maps relationships and actively finds connections from a perspective.
+> How Vancetope not only stores knowledge but maps relationships and actively finds connections from a perspective.
 > Designed for extensibility: v1 simple, later phases increasingly intelligent.
 > See also: [memory-knowledge-management](memory-knowledge-management.md) | [vision](vision.md) | [architektur-scopes-clients](architektur-scopes-clients.md)
 

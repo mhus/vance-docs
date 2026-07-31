@@ -41,7 +41,7 @@ Hactar v2 is the corresponding **Script-Execution-Engine**
 (Phase 3 of the Split-Refactor, see
 `planning/script-architect-executor-split.md`): no authoring,
 only loading + validating + executing sandboxed JS. Thus, Slart
-is the **only LLM-driven authoring Engine** in Vance —
+is the **only LLM-driven authoring Engine** in Vancetope —
 JavaScript scripts (`outputSchemaType=SCRIPT_JS`) now belong
 to Slart's output family, not Hactar's.
 

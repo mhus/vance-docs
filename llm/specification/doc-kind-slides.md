@@ -1,4 +1,4 @@
-# Vance — Document Kind `slides`
+# Vancetope — Document Kind `slides`
 
 > Specifies the **`slides` payload** for documents that carry a sequence of presentation slides, written as Markdown sections separated by CommonMark thematic breaks (`---`). Renderer is **Marpit** (`@marp-team/marpit`) — a pure markdown→HTML+CSS library, no runtime framework.
 > See also: [doc-kind-mindmap](doc-kind-mindmap.md) | [doc-kind-items](doc-kind-items.md) | [web-ui](web-ui.md)
@@ -15,11 +15,11 @@ Distinctions:
 - **mindmap**: visual hierarchy, not a linear slide deck.
 - **chart**: one chart per document; a deck can reference multiple charts (see §6.3).
 
-**Design Principle — Markdown is the truth.** Slides are primarily Markdown sections, separated by CommonMark Thematic Breaks (`---`). This is exactly what reveal.js, Marp, Slidev, and Obsidian Advanced Slides have in common. No Vance-specific dialect. This makes the source format trivially human-editable, LLM-friendly, and round-trip stable.
+**Design Principle — Markdown is the truth.** Slides are primarily Markdown sections, separated by CommonMark Thematic Breaks (`---`). This is exactly what reveal.js, Marp, Slidev, and Obsidian Advanced Slides have in common. No Vancetope-specific dialect. This makes the source format trivially human-editable, LLM-friendly, and round-trip stable.
 
 **Design Principle — Marpit as renderer, not a slide runtime.** We use `@marp-team/marpit` (MIT, TypeScript-native, ~15 KB minified without themes). Marpit is a pure function `markdown → { html, css }`. Rationale:
 
-- Its library character (no global state, no keyboard bindings, no custom app shell) fits Vance Editor embedding, analogous to `marked` for `kind: doc`.
+- Its library character (no global state, no keyboard bindings, no custom app shell) fits Vancetope Editor embedding, analogous to `marked` for `kind: doc`.
 - Microsoft-backed standard (official VS Code extension "Marp for VS Code"), actively maintained, no vendor lock-in.
 - The slide separator is plain CommonMark — no proprietary syntax that might cause issues later.
 - CSS scope is trivial: Marpit emits the theme CSS as a string, we wrap it in a container with a class prefix or a Shadow Root.
@@ -85,7 +85,7 @@ Each `items[i]` is a **Markdown string** describing the content of **one** slide
 | `<!-- _paginate: false -->`                        | Spot directive: disables pagination on this slide.   |
 | `<!-- Speaker note in plain comment -->`           | Speaker note (Marpit convention: HTML comment without `_`-prefix directive). |
 
-This is the **Marpit standard**, not a Vance dialect. What Marpit does not support (e.g., `<!-- .slide: data-transition="zoom" -->` from reveal.js), we also do not support.
+This is the **Marpit standard**, not a Vancetope dialect. What Marpit does not support (e.g., `<!-- .slide: data-transition="zoom" -->` from reveal.js), we also do not support.
 
 **Canonical JSON form:**
 
@@ -98,7 +98,7 @@ This is the **Marpit standard**, not a Vance dialect. What Marpit does not suppo
     "paginate": true
   },
   "items": [
-    "# Vance\n\nA Think Tool, not a productivity app.",
+    "# Vancetope\n\nA Think Tool, not a productivity app.",
     "<!-- _class: lead -->\n\n## Why?\n\n- Focus on thinking\n- Not on managing\n- LLM as the worker, not the toy",
     "## Architecture\n\n- Brain\n- Foot\n- Face\n\n<!-- Each layer has its own deployment cadence. -->"
   ]
@@ -120,7 +120,7 @@ slides:
   paginate: true
 ---
 
-# Vance
+# Vancetope
 
 A Think Tool, not a productivity app.
 
@@ -168,7 +168,7 @@ Identical to the canonical form from §2:
   "$meta": { "kind": "slides" },
   "slides": { "theme": "default", "aspect": "16:9", "paginate": true },
   "items": [
-    "# Vance\n\nA Think Tool.",
+    "# Vancetope\n\nA Think Tool.",
     "## Why?\n\n- Focus"
   ]
 }
@@ -189,7 +189,7 @@ slides:
   paginate: true
 items:
   - |
-    # Vance
+    # Vancetope
 
     A Think Tool, not a productivity app.
   - |
@@ -303,7 +303,7 @@ CodeMirror left, Marpit render right, scroll-synchronized per slide. Once we hav
 
 ### 6.3 Embed Directives (Chart, Mindmap, …)
 
-A slide references another document in the same Project via Vance URI: `![](vance:document/<id>)` renders the linked document inline (Chart becomes SVG, Mindmap becomes markmap render, etc.). The convention for `vance:` URLs belongs in a separate spec, then this one will attach to it.
+A slide references another document in the same Project via Vancetope URI: `![](vance:document/<id>)` renders the linked document inline (Chart becomes SVG, Mindmap becomes markmap render, etc.). The convention for `vance:` URLs belongs in a separate spec, then this one will attach to it.
 
 ### 6.4 Export — PDF, PPTX, HTML
 

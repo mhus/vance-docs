@@ -1,5 +1,5 @@
 ---
-title: "Vance — Client Protocol & Extensibility"
+title: "Vancetope — Client Protocol & Extensibility"
 parent: Specs
 permalink: /specs/client-protokoll-erweiterbarkeit
 ---
@@ -7,9 +7,9 @@ permalink: /specs/client-protokoll-erweiterbarkeit
 <!-- AUTO-GENERATED from specification/public/en/client-protokoll-erweiterbarkeit.md — do not edit here. -->
 
 ---
-# Vance — Client Protocol & Extensibility
+# Vancetope — Client Protocol & Extensibility
 
-> Defines the WebSocket protocol, how external systems connect as clients, and how Vance thereby becomes an open platform.
+> Defines the WebSocket protocol, how external systems connect as clients, and how Vancetope thereby becomes an open platform.
 > See also: [execution-modes-trigger](/specs/execution-modes-trigger) | [architektur-scopes-clients](/specs/architektur-scopes-clients) | [mcp-tool-routing](/specs/mcp-tool-routing)
 
 ---
@@ -18,7 +18,7 @@ permalink: /specs/client-protokoll-erweiterbarkeit
 
 Anything that connects to the Brain is a client. The protocol is the same — whether a human is sitting at a terminal, a cron job fires, or an external robot knocks.
 
-This makes Vance an **open platform**: any system that speaks WebSocket + JSON can use Vance as a thinking backend.
+This makes Vancetope an **open platform**: any system that speaks WebSocket + JSON can use Vancetope as a thinking backend.
 
 ---
 
@@ -180,12 +180,12 @@ Any external system that connects as a client and interacts with the Brain autom
 | Robot Type | Example | What it does |
 |----------|---------|-----------|
 | **CI/CD Step** | GitHub Actions, Jenkins | After deploy: starts Architecture Review Think Process |
-| **n8n / Zapier Node** | n8n Workflow | On event: triggers Vance workflow, waits for result |
-| **External Coding Agent** | IDE or CLI coding assistant with Vance Tool | Uses Vance as a Deep Think backend for complex questions |
-| **Another Vance System** | Vance Instance B | Cross-system Knowledge exchange |
+| **n8n / Zapier Node** | n8n Workflow | On event: triggers Vancetope workflow, waits for result |
+| **External Coding Agent** | IDE or CLI coding assistant with Vancetope Tool | Uses Vancetope as a Deep Think backend for complex questions |
+| **Another Vancetope System** | Vancetope Instance B | Cross-system Knowledge exchange |
 | **Custom Script** | Python/Node.js Script | Batch import of documents, result export |
 | **Monitoring Bot** | Alerting system | On anomaly: starts analysis Think Process |
-| **Slack Bot** | Slack App | User types in Slack, bot delegates to Vance |
+| **Slack Bot** | Slack App | User types in Slack, bot delegates to Vancetope |
 
 ### 3.2 Handshake of a Robot Client
 
@@ -262,16 +262,16 @@ CI-Bot connects with Tools: [github_api, docker_inspect]
 
 ---
 
-## 4. Vance as a Backend for other AI Systems
+## 4. Vancetope as a Backend for other AI Systems
 
 ### 4.1 External Coding Agent as Client
 
-An IDE or CLI coding agent can integrate Vance as a Deep Think Tool:
+An IDE or CLI coding agent can integrate Vancetope as a Deep Think Tool:
 
 ```
 User in Coding Agent: "Thoroughly analyze the architecture of this repo"
 Agent:
-  → Connects as client to the Vance Brain
+  → Connects as client to the Vancetope Brain
   → Starts Think Process: "Architecture Review for repo X"
   → Brings Tools: [shell_execute, read_file, git_log]
   → Brain plans tree, uses the Agent's local Tools
@@ -280,7 +280,7 @@ Agent:
 
 ### 4.2 MCP Server Mode
 
-Alternatively: Vance exposes itself as an **MCP Server**. Then any MCP-capable system (desktop chats, IDE extensions, coding agents) can use Vance as a Tool without implementing the client protocol.
+Alternatively: Vancetope exposes itself as an **MCP Server**. Then any MCP-capable system (desktop chats, IDE extensions, coding agents) can use Vancetope as a Tool without implementing the client protocol.
 
 ```
 MCP Tool: vance_start_engine
@@ -300,10 +300,10 @@ This is simpler than a full client — but without session, without tools, witho
 
 ### 4.3 Dual-Mode
 
-Vance can offer both simultaneously:
+Vancetope can offer both simultaneously:
 
 ```
-Vance Brain
+Vancetope Brain
   ├── WebSocket API (full Client Protocol, Sessions, Tools, Streaming)
   │     ├── CLI Client
   │     ├── Desktop Client
@@ -373,7 +373,7 @@ The Lite SDKs only wrap the WebSocket protocol and message types. No UI componen
 ### n8n Node
 
 ```javascript
-// n8n Custom Node: Vance Deep Think
+// n8n Custom Node: Vancetope Deep Think
 const ws = new VanceLiteClient({
   url: 'wss://brain.example.com/api/ws',
   apiKey: 'vance_sk_...',
@@ -399,7 +399,7 @@ return result;
 ### Python Script (Scientist)
 
 ```python
-# Batch import of papers into a Vance project
+# Batch import of papers into a Vancetope project
 from vance_sdk import VanceClient
 
 client = VanceClient(
@@ -445,7 +445,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Trigger Vance Architecture Review
+      - name: Trigger Vancetope Architecture Review
         uses: vance-ai/github-action@v1
         with:
           brain_url: $&#123;{ secrets.VANCE_URL }}
@@ -476,14 +476,14 @@ jobs:
 
 ## 9. Summary
 
-> **Vance is an open platform.**
+> **Vancetope is an open platform.**
 >
 > Anything that speaks WebSocket + JSON is a valid client.
 > Human clients bring UIs and local Tools.
 > Robot clients bring automation and external Tools.
 > MCP Server Mode provides lightweight access without WebSocket.
 >
-> This makes Vance the thinking backend for arbitrary systems.
+> This makes Vancetope the thinking backend for arbitrary systems.
 
 ---
 

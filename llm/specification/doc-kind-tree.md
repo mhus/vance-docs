@@ -1,4 +1,4 @@
-# Vance — Document Kind `tree`
+# Vancetope — Document Kind `tree`
 
 > Specifies the **`tree` payload** for documents that carry a hierarchical, ordered set of items. Builds directly on the `list` schema — same per-item shape, same three on-disk formats — and adds `children`-based nesting.
 > See also: [doc-kind-items](doc-kind-items.md) | [web-ui](web-ui.md)

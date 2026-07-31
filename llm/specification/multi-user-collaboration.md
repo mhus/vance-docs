@@ -1,4 +1,4 @@
-# Vance — Multi-User, Teams & Collaboration
+# Vancetope — Multi-User, Teams & Collaboration
 
 > Defines how Tenants, Teams, Users, and Project Sharing work.
 > Builds upon [architektur-scopes-clients](architektur-scopes-clients.md), extending the Scope hierarchy.

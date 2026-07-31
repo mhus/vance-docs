@@ -1,4 +1,4 @@
-# Vance — Marvin Think Engine
+# Vancetope — Marvin Think Engine
 
 > **Marvin** is the **deep-think** Engine. It builds a
 > dynamic, persistent Task-Tree, where each node is an

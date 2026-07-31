@@ -1,4 +1,4 @@
-# Vance — Document Lock
+# Vancetope — Document Lock
 
 > A soft, voluntary edit protection mechanism per document. Each document carries a `lockedFor: Set<WriterRole>` with the blocked Writer classes (`AI`, `USER`, `KIT`); a write attempt by a blocked class is rejected by the `DocumentService`. The lock is orthogonal to the actual permissions system — it prevents accidents, not malicious access. Any participant can release it at any time.
 >
@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-Vance documents are written by many actors: humans in Cortex / Foot, LLMs via Document-Tools, scripts via `vance.documents.write`, Engines, Kit-Apply during import. The **permissions system** (Tenant/Project membership, Role) remains unaffected — it governs **who is allowed** to access a Document at all. This addresses the orthogonal question: **should a specific Document prevent accidental write access, even if the writer is principally allowed?**
+Vancetope documents are written by many actors: humans in Cortex / Foot, LLMs via Document-Tools, scripts via `vance.documents.write`, Engines, Kit-Apply during import. The **permissions system** (Tenant/Project membership, Role) remains unaffected — it governs **who is allowed** to access a Document at all. This addresses the orthogonal question: **should a specific Document prevent accidental write access, even if the writer is principally allowed?**
 
 Typical triggers:
 
@@ -17,7 +17,7 @@ Typical triggers:
 - **Operator Freeze:** An audit/contract Document should not be accidentally changed by a human; however, Kit-Apply may refresh it if the template has been upstreamed.
 - **Full Freeze:** A note marked as "finished" — no one touches it without explicit unlock.
 
-**Soft Lock:** Any participant (human via UI, LLM via its own tool, Kit-Operator via CLI flag) can release the lock if they make a conscious decision. There is no master override hierarchy, no cryptographic locking. This is intentional — Vance data should remain repairable at all times.
+**Soft Lock:** Any participant (human via UI, LLM via its own tool, Kit-Operator via CLI flag) can release the lock if they make a conscious decision. There is no master override hierarchy, no cryptographic locking. This is intentional — Vancetope data should remain repairable at all times.
 
 ## 2. Data Model
 

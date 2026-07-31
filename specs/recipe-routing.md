@@ -1,5 +1,5 @@
 ---
-title: "Vance — Recipe Routing"
+title: "Vancetope — Recipe Routing"
 parent: Specs
 permalink: /specs/recipe-routing
 ---
@@ -7,7 +7,7 @@ permalink: /specs/recipe-routing
 <!-- AUTO-GENERATED from specification/public/en/recipe-routing.md — do not edit here. -->
 
 ---
-# Vance — Recipe Routing
+# Vancetope — Recipe Routing
 
 > How a Spawn call reaches a specific **Recipe**. The standard trio **eddie / arthur / ford** handles the default path without LLM dispatch; all other Engines are loaded via their Recipes only upon **explicit request**. "Magical" auto-routing from user text occurs exclusively via a deterministic **Trigger-Scan** and an optional, configurable **Fallback-Recipe**.
 >

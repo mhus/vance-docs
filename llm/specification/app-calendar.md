@@ -1,4 +1,4 @@
-# Vance — Application `app: calendar`
+# Vancetope — Application `app: calendar`
 
 > Specifies the **calendar-suite application** — the first reference implementation of the `kind: application` pattern. A folder with `_app.yaml` (`$meta.app: calendar`) becomes a project planning app with one Calendar file per Lane, auto-generated Gantt, and conflict overview.
 > See also: [doc-kind-application](doc-kind-application.md) | [doc-kind-calendar](doc-kind-calendar.md) | [web-ui](web-ui.md)
@@ -289,7 +289,7 @@ Helper components (FolderReader, Expander, Detector, Renderer) are pure-function
 
 ---
 
-## 10. Mapping to other Vance Concepts
+## 10. Mapping to other Vancetope Concepts
 
 - **Single Calendar** (`kind: calendar`, `calendar_create`): the smaller variant. Calendar App scales up when more structure is needed.
 - **`ics_to_calendar` Import**: provides a single `kind: calendar` output. To set up a multi-source sync, import multiple ICS streams into separate files in the App folder.

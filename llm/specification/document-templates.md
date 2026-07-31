@@ -1,4 +1,4 @@
-# Vance — Document Templates
+# Vancetope — Document Templates
 
 > A **Document Template** is a named template from which the web UI generates finished file content when creating a new document. Unlike the previous static Kind stub generator (`buildKindStub` in the frontend), a template is **not** bound to Mime/Kind — type and Kind are derived from the template itself. Some templates allow free choice of filename, while others enforce a fixed name (e.g., `_app.yaml` for Application manifests).
 >

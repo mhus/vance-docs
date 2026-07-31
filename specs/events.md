@@ -1,5 +1,5 @@
 ---
-title: "Vance — Events"
+title: "Vancetope — Events"
 parent: Specs
 permalink: /specs/events
 ---
@@ -7,7 +7,7 @@ permalink: /specs/events
 <!-- AUTO-GENERATED from specification/public/en/events.md — do not edit here. -->
 
 ---
-# Vance — Events
+# Vancetope — Events
 
 > An **Event** is an externally triggerable, REST-accessible trigger that starts a workflow run. Events are stored as YAML documents under `_vance/events/<name>.yaml` in the Document Layer, are resolved via the usual cascade (`Project → _tenant`), and are addressable via a JWT-free endpoint: `GET|POST /brain/{tenant}/event/{project}/{event}`.
 >
@@ -31,7 +31,7 @@ permalink: /specs/events
 | **Payload** | JSON body of a POST call. Passed to the spawned Workflow under `params.payload` — no unpacking, no schema matching. |
 | **runAs** | Identity under which the spawned Workflow Run operates. Defaults to the `createdBy` of the Event-Doc if not set in the YAML. |
 
-**Event ↔ Scheduler ↔ Ursahook:** Three trigger paths in Vance. Scheduler triggers by time, Ursahook by Vance-internal lifecycle event, Event by external HTTP call. All three fire the same `TriggerAction` hierarchy (Recipe / Script / Workflow — see [trigger-actions](/specs/trigger-actions)) through the same `ActionExecutorRegistry`. None carry their own spawn logic — all pass parameters.
+**Event ↔ Scheduler ↔ Ursahook:** Three trigger paths in Vancetope. Scheduler triggers by time, Ursahook by Vancetope-internal lifecycle event, Event by external HTTP call. All three fire the same `TriggerAction` hierarchy (Recipe / Script / Workflow — see [trigger-actions](/specs/trigger-actions)) through the same `ActionExecutorRegistry`. None carry their own spawn logic — all pass parameters.
 
 ---
 

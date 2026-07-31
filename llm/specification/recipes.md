@@ -1,6 +1,6 @@
-# Vance — Recipes
+# Vancetope — Recipes
 
-> A **Recipe** is a named, reusable blueprint for a worker process: Engine + Default-Params + Prompt-Prefix + Tool-Adjustments. Upon spawn (e.g., by Arthur via `process_create`), the Recipe is resolved into a concrete `ThinkProcessDocument`. The separation of Engine ↔ Recipe is the clean two-layer architecture that allows Vance to scale without engine proliferation.
+> A **Recipe** is a named, reusable blueprint for a worker process: Engine + Default-Params + Prompt-Prefix + Tool-Adjustments. Upon spawn (e.g., by Arthur via `process_create`), the Recipe is resolved into a concrete `ThinkProcessDocument`. The separation of Engine ↔ Recipe is the clean two-layer architecture that allows Vancetope to scale without engine proliferation.
 >
 > **Persistence:** Recipes are stored as YAML documents under `recipes/<name>.yaml` in the Document Layer. The cascade lookup `project → _tenant → classpath:vance-defaults/recipes/` uses [`DocumentService.lookupCascade`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) — the same mechanism as Documents/Prompts. There is no longer a separate Mongo collection for Recipes.
 >

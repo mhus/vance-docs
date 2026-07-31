@@ -1,6 +1,6 @@
-# Vance — Audit System
+# Vancetope — Audit System
 
-> Central audit pipeline for Vance Server (Brain + Anus). Producers emit typed audit events; an `AuditService` normalizes, buffers, and fans them out to a configurable list of `AuditConsumer` implementations. Synchronous or asynchronous, switchable at runtime, with a bounded queue + drop counter and guaranteed drain on shutdown.
+> Central audit pipeline for Vancetope Server (Brain + Anus). Producers emit typed audit events; an `AuditService` normalizes, buffers, and fans them out to a configurable list of `AuditConsumer` implementations. Synchronous or asynchronous, switchable at runtime, with a bounded queue + drop counter and guaranteed drain on shutdown.
 >
 > See also: [llm-resource-management](llm-resource-management.md) | [identity-credentials](identity-credentials.md) | [settings-system](settings-credentials.md)
 

@@ -1,4 +1,4 @@
-# Vance Application — `app: wiki`
+# Vancetope Application — `app: wiki`
 
 > Name-addressed link-graph wiki over `kind: workpage` pages, built
 > on the [doc-kind-application](doc-kind-application.md) foundation. Unlike

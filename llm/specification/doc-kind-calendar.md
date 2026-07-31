@@ -1,20 +1,20 @@
-# Vance — Document Kind `calendar`
+# Vancetope — Document Kind `calendar`
 
-> Specifies the **`calendar` payload** for documents that carry a flat list of events — meetings, deadlines, holidays, recurring activities. The renderer is a Vance-internal Vue component (`CalendarView.vue`) with **agenda** (chronological list) and **month** (grid) views. Read-only in v1; edits go through the `Raw` tab.
+> Specifies the **`calendar` payload** for documents that carry a flat list of events — meetings, deadlines, holidays, recurring activities. The renderer is a Vancetope-internal Vue component (`CalendarView.vue`) with **agenda** (chronological list) and **month** (grid) views. Read-only in v1; edits go through the `Raw` tab.
 > See also: [doc-kind-records](doc-kind-records.md) | [doc-kind-diagram](doc-kind-diagram.md) | [web-ui](web-ui.md)
 
 ---
 
 ## 1. Purpose
 
-Use cases: event extraction from emails/notes ("all deadlines from these 12 emails as a Calendar"), workshop plans, release roadmaps, vacation overviews, conference schedules, standup/sprint recurrence, onboarding training sessions. The primary use case is **LLM output** — the Worker reads a source, extracts structured events, and stores them as a Calendar document. Secondary: User imports an `.ics` via `ics_to_calendar` and uses Vance as a bookmark calendar with RAG search.
+Use cases: event extraction from emails/notes ("all deadlines from these 12 emails as a Calendar"), workshop plans, release roadmaps, vacation overviews, conference schedules, standup/sprint recurrence, onboarding training sessions. The primary use case is **LLM output** — the Worker reads a source, extracts structured events, and stores them as a Calendar document. Secondary: User imports an `.ics` via `ics_to_calendar` and uses Vancetope as a bookmark calendar with RAG search.
 
-**Vance is not a Calendar backend** (see `vision.md` §7). We do not provide reminders, push notifications, free/busy calculations, or meeting invite sending. To do that, export to Google/Apple Calendar.
+**Vancetope is not a Calendar backend** (see `vision.md` §7). We do not provide reminders, push notifications, free/busy calculations, or meeting invite sending. To do that, export to Google/Apple Calendar.
 
 Distinctions:
 
 - **records**: tabular data with a fixed schema (one row = one record, one column = one field). Events *could* be modeled as `records`, but date logic, multi-day events, and recurrence expansion do not belong in a generic table renderer. `calendar` is the focused variant.
-- **gantt / plan**: tasks with dependencies, duration, resources, milestones. This belongs to project management — which is explicitly *not* Vance (`vision.md` §7). If someone needs Gantt, they export to MS Project/Linear/GitHub Projects.
+- **gantt / plan**: tasks with dependencies, duration, resources, milestones. This belongs to project management — which is explicitly *not* Vancetope (`vision.md` §7). If someone needs Gantt, they export to MS Project/Linear/GitHub Projects.
 - **mindmap / tree**: hierarchical structures without a timeline.
 - **list**: simple enumerations without timestamps.
 
@@ -39,7 +39,7 @@ Distinctions:
 **What it does not define:**
 
 - Custom `calendar_add_event` / `calendar_remove_event` tools. v1 uses standard document editing. If LLMs struggle with this (e.g., always rewriting the entire document instead of incrementally), a targeted tool will be added in v2.
-- ICS export. If a user wants their Vance calendar in Google Calendar, this will be a separate tool in v2.
+- ICS export. If a user wants their Vancetope calendar in Google Calendar, this will be a separate tool in v2.
 - Reminders / Notifications.
 - Cross-calendar queries ("show me all events in all calendars of this project"). v1 = one document, one view. Aggregated view is v2 if needed.
 - Drag-drop editing.
@@ -236,7 +236,7 @@ Imports an `.ics` file (RFC 5545) into a new `kind: calendar` document.
 
 Parameters:
 - `icsBody` *(string)* — Raw ICS text. Mutually exclusive with `documentRef`.
-- `documentRef` *(string)* — Path or ID of an existing Vance document with an `.ics` body.
+- `documentRef` *(string)* — Path or ID of an existing Vancetope document with an `.ics` body.
 - `title` *(string, optional)* — Calendar title, defaults to "Imported calendar".
 - `outputPath` *(string, optional)* — Path for the new document. Default: `calendars/<slug>-<timestamp>.yaml`.
 - `projectId` *(string, optional)* — Default: active Project.
@@ -245,7 +245,7 @@ Returns: `{ path, eventCount, size, elapsedMs, vanceUri, markdownLink }`.
 
 Parsed fields per `VEVENT`: UID, SUMMARY, DTSTART, DTEND, LOCATION, DESCRIPTION, RRULE, ATTENDEE (with CN preference), CATEGORIES. Ignored: VTIMEZONE blocks, ATTACH, X-WR-* Extensions, ORGANIZER parameters beyond CN, ROLE/PARTSTAT.
 
-DTSTART/DTEND values are normalized to Vance ISO format (`yyyyMMddTHHmmssZ` → `2026-12-31T23:59:59Z`, `;VALUE=DATE` → date-only string with `allDay: true`). TZID parameters are ignored in v1 (time is taken as provided).
+DTSTART/DTEND values are normalized to Vancetope ISO format (`yyyyMMddTHHmmssZ` → `2026-12-31T23:59:59Z`, `;VALUE=DATE` → date-only string with `allDay: true`). TZID parameters are ignored in v1 (time is taken as provided).
 
 ### 6.3 v2 — Planned, not in v1
 
@@ -265,7 +265,7 @@ DTSTART/DTEND values are normalized to Vance ISO format (`yyyyMMddTHHmmssZ` → 
 
 ---
 
-## 8. Mapping to Other Vance Concepts
+## 8. Mapping to Other Vancetope Concepts
 
 - **Memory:** Calendar documents are indexed in the Project RAG (default `ragEnabled: 'auto'` for yaml/json mime). Event summaries are compact enough that the LLM finds the hit in "when was sprint planning again?" searches.
 - **Settings:** No special settings in v1.

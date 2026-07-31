@@ -1,4 +1,4 @@
-# Vance — Document Kind `checklist`
+# Vancetope — Document Kind `checklist`
 
 > Specifies the **`checklist` payload** for documents that carry a flat list of actionable items with per-item status — todos, action items from meetings, review checklists, Recipes, pre-flight checks. Extends the `kind: list` family with a `status` field. Markdown round-trip uses extended GFM checkbox syntax (`- [<char>] text`).
 > See also: [doc-kind-items](doc-kind-items.md) | [doc-kind-records](doc-kind-records.md) | [web-ui](web-ui.md)
@@ -15,7 +15,7 @@ Use cases: personal todo list, action items from meeting notes (`extract_actions
 - Mental Model: A user creating a "Shopping List" file as `list` does not want a status feature; a user creating "Sprint TODOs" as `checklist` does. The Kind makes the intent explicit.
 - Markdown round-trip: `list` writes `- text`, `checklist` writes `- [<char>] text`. Both forms are clean and do not mix.
 
-**Distinction from Project Management:** Vance is a Think Tool, not Asana (`vision.md` §7, CLAUDE.md "What Vance is NOT"). Checklists have **no** due dates, **no** assignees, **no** cross-document aggregation ("all blocked items across all Projects"), **no** notifications. Users who want these features should export to Linear/Jira/Todoist. The `priority` field (high/low) is the only structural dimension besides `status`, because priority filtering in a 50-item list is genuinely useful and does not open a slippery slope to a PM tool.
+**Distinction from Project Management:** Vancetope is a Think Tool, not Asana (`vision.md` §7, CLAUDE.md "What Vancetope is NOT"). Checklists have **no** due dates, **no** assignees, **no** cross-document aggregation ("all blocked items across all Projects"), **no** notifications. Users who want these features should export to Linear/Jira/Todoist. The `priority` field (high/low) is the only structural dimension besides `status`, because priority filtering in a 50-item list is genuinely useful and does not open a slippery slope to a PM tool.
 
 **Design Principle — Status as a Single Character in Markdown.** Extends the GFM checkbox syntax (`- [ ]`/`- [x]`) with additional single-character markers (`[~]`, `[/]`, `[!]`, …). Convention is based on [Obsidian Tasks](https://publish.obsidian.md/tasks/Getting+Started/Statuses), but intentionally diverges in specific places (see Char-Mapping in §2.2). Advantages:
 
@@ -317,7 +317,7 @@ v2 if the use case arises often enough that a dedicated tool saves prompt token 
 
 ---
 
-## 7. Mapping to other Vance Concepts
+## 7. Mapping to other Vancetope Concepts
 
 - **Memory:** Checklist Documents are indexed in the Project RAG (default `ragEnabled: 'auto'` for md/yaml/json mime, see `doc-kind-items.md` assumption). Status and priority fields are compact enough that RAG hits for "what is blocked?" work.
 - **Knowledge Graph:** Items are not nodes in v1. If someone wants "all blocked tasks as subjects of an Insight", that is a separate spec point.

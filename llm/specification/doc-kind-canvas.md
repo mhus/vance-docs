@@ -1,6 +1,6 @@
-# Vance — Document Kind `canvas`
+# Vancetope — Document Kind `canvas`
 
-> First **2D spatial** surface in Vance: an area where notes, referenced
+> First **2D spatial** surface in Vancetope: an area where notes, referenced
 > documents/images, links, and groups can be freely arranged and connected with
 > directed edges — a thinking/arrangement tool (Obsidian Canvas-like), **not**
 > a freehand whiteboard.
@@ -14,7 +14,7 @@
 ## 1. Purpose
 
 A `kind: canvas` is **a surface = a document** that holds a graph of **Nodes**
-(at free `x/y` positions) and **directed Edges**. It is Vance's answer to "I
+(at free `x/y` positions) and **directed Edges**. It is Vancetope's answer to "I
 want to spatially arrange and connect thoughts".
 
 Distinction: For a **linear** rich-text document → `kind: workpage`; for

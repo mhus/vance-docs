@@ -1,4 +1,4 @@
-# Vance — Project Lifecycle
+# Vancetope — Project Lifecycle
 
 > Defines the status set of a Project, Pod ownership, the `bring` / `suspend` / `close` transitions, and the relationship to the Workspace. Complements [workspace-management.md](workspace-management.md) (what happens *within* a Project on disk) and [session-lifecycle.md](session-lifecycle.md) (what runs *within* a Session) — this spec is the overarching framework. Cluster-wide distribution of Projects to Pods (who calls `bring` when on which Pod) is covered in [cluster-project-management.md](../cluster-project-management.md), which sits one layer above.
 
@@ -6,7 +6,7 @@
 
 ## 1. What a Project Is
 
-A Project is the **unit of ownership** in Vance:
+A Project is the **unit of ownership** in Vancetope:
 
 - A Pod owns a Project (Pod affinity via `homeNode`/`claimedAt`)
 - A Project has a Workspace on disk (exactly one RootDir container, see `workspace-management.md`)

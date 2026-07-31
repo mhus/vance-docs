@@ -1,5 +1,5 @@
 ---
-title: "Vance — Jeltz Think Engine"
+title: "Vancetope — Jeltz Think Engine"
 parent: Specs
 permalink: /specs/jeltz-engine
 ---
@@ -7,9 +7,9 @@ permalink: /specs/jeltz-engine
 <!-- AUTO-GENERATED from specification/public/en/jeltz-engine.md — do not edit here. -->
 
 ---
-# Vance — Jeltz Think Engine
+# Vancetope — Jeltz Think Engine
 
-> **Jeltz** is the structured single-shot engine of the Vance engine set — the Vogon Constructor Captain who does nothing without a form. It takes a question and a JSON schema, calls an LLM, validates the response against the schema, and returns the validated JSON as a result. In case of schema violations, it retries up to a configurable upper limit; otherwise, it returns a structured error.
+> **Jeltz** is the structured single-shot engine of the Vancetope engine set — the Vogon Constructor Captain who does nothing without a form. It takes a question and a JSON schema, calls an LLM, validates the response against the schema, and returns the validated JSON as a result. In case of schema violations, it retries up to a configurable upper limit; otherwise, it returns a structured error.
 >
 > See also: [ford-engine](/specs/ford-engine) (single-LLM archetype), [marvin-engine](/specs/marvin-engine) (currently uses a prompt-based variant of the pattern), [think-engines](/specs/think-engines) (registry, lifecycle), [recipes](/specs/recipes)
 

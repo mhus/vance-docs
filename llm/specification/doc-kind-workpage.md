@@ -1,7 +1,7 @@
-# Vance — Document Kind `workpage`
+# Vancetope — Document Kind `workpage`
 
 > Notion-like linear block document. One file = one WorkPage. Markdown superset
-> with ` ```vance-<type> `-fences for special blocks. First block editor in Vance
+> with ` ```vance-<type> `-fences for special blocks. First block editor in Vancetope
 > that is not CodeMirror-based — see [doc-kind-application](doc-kind-application.md)
 > §1 Design Principle 4.
 > See also: [web-ui](web-ui.md) §7, Planning-Track [`kind-workpage`](../../planning/kind-workpage.md).
@@ -10,7 +10,7 @@
 
 ## 1. Purpose
 
-A WorkPage is Vance's answer to "I want a productive, structured
+A WorkPage is Vancetope's answer to "I want a productive, structured
 writing surface where I can freely combine text, todos, embedded data, and markup blocks"
 — what Notion does well. Linear (vertically scrolling),
 not spatial. Not a Miro variant in this kind.
@@ -159,7 +159,7 @@ Required:
 - `link-card`
 - `columns` — 2+ columns, fractional widths, resize by mouse
 - `toc` — Auto-Table-of-Contents from the H1/H2/H3 of the page
-- `embed` — embeds another Vance document inline
+- `embed` — embeds another Vancetope document inline
   (`vance-embed`-fence + `vance:`-URI); refresh-on-hover. Kind-aware
   rendered: structured kinds via their embedded view (records/chart/
   mindmap/…), `text`/`markdown` as **rendered Markdown** (not just a
@@ -196,7 +196,7 @@ package via a kind-renderer-resolver prop — v1 only shows the
 generic card.
 
 Not in v1: synced-blocks, mentions, sub-pages-in-block, external
-embed-blocks (YouTube etc.), inline rendering of embedded Vance-
+embed-blocks (YouTube etc.), inline rendering of embedded Vancetope-
 kinds (card-only).
 
 ### 4.1 Extensibility — Block Extension Registry

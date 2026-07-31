@@ -1,5 +1,5 @@
 ---
-title: "Vance Cortex — Specification"
+title: "Vancetope Cortex — Specification"
 parent: Specs
 permalink: /specs/cortex
 ---
@@ -7,7 +7,7 @@ permalink: /specs/cortex
 <!-- AUTO-GENERATED from specification/public/en/cortex.md — do not edit here. -->
 
 ---
-# Vance Cortex — Specification
+# Vancetope Cortex — Specification
 
 > Status: v1. Binding product spec for the unified Chat + Document + Execute work environment of the web UI. Implementation resides in `client_web/packages/vance-face/src/cortex/` plus the backend under `vance-brain/src/main/java/de/mhus/vance/brain/{python,script}/cortex/`.
 >

@@ -1,4 +1,4 @@
-# Vance — Execution Modes & Trigger
+# Vancetope — Execution Modes & Trigger
 
 > Defines how Think Processes are triggered and how the unified client session model works.
 > Core principle: Everything is a client. Everything runs in a session.

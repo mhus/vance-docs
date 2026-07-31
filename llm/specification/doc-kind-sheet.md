@@ -1,4 +1,4 @@
-# Vance — Document Kind `sheet`
+# Vancetope — Document Kind `sheet`
 
 > Specifies the **`sheet` payload** for documents that carry a 2D table with A1 cell addresses — a table with named columns and numbered rows, sparse cell storage, optional per-cell formatting. Excel-compatible addressing. Formula strings are round-trip stable; evaluation only in v2. Markdown is intentionally **not** supported; only JSON and YAML.
 > See also: [doc-kind-records](doc-kind-records.md) | [doc-kind-graph](doc-kind-graph.md) | [web-ui](web-ui.md)

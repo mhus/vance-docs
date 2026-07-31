@@ -1,4 +1,4 @@
-# Vance — Session Compact (manual)
+# Vancetope — Session Compact (manual)
 
 > "Compact" manually triggers the memory compaction of a Session: older chat turns are folded into an `ARCHIVED_CHAT` summary to reduce the context window — the same mechanism the Engine otherwise runs automatically at its threshold. The action is located in the Session menu of the chat list (`🗜`). It runs **on the process Lane** (serialized with Turns), is owner-only, and a no-op ("nothing left to compact") is a normal result, not an error.
 >

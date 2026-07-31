@@ -1,4 +1,4 @@
-# Vance — Script Engine
+# Vancetope — Script Engine
 
 > A **Script Engine** is the JVM-internal runtime for inline code executed by Tools, Engines, or Recipes. v1 provides **GraalJS as a Library** (JavaScript), encapsulated behind central `ScriptExecutor` services with their own host API, sandbox policy, and resource limits. There are **two** independent implementations — one in the Brain server and one in the Foot client — with different host APIs, because the available tooling differs per side. Other languages (GraalPy) are explicitly not part of v1.
 >

@@ -10,7 +10,7 @@ permalink: /specs/hactar-engine
 # Hactar Engine — Script Executor
 
 > **Status: production (v2.0).** Hactar is the pure script-execution
-> engine in Vance. Authoring of JavaScript orchestrators happens in
+> engine in Vancetope. Authoring of JavaScript orchestrators happens in
 > [Slartibartfast](/specs/slartibartfast-engine) via
 > `outputSchemaType=SCRIPT_JS`; Hactar just loads, validates, and
 > runs the persisted body in a sandboxed [GraalJS context](/specs/script-engine).

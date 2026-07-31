@@ -1,5 +1,5 @@
 ---
-title: "Vance Web-UI — Specification"
+title: "Vancetope Web-UI — Specification"
 parent: Specs
 permalink: /specs/web-ui
 ---
@@ -7,13 +7,13 @@ permalink: /specs/web-ui
 <!-- AUTO-GENERATED from specification/public/en/web-ui.md — do not edit here. -->
 
 ---
-# Vance Web-UI — Specification
+# Vancetope Web-UI — Specification
 
 > Status: v1 Initial Draft. This spec is binding for the development of the Web-UI under `repos/vance/client/` (symlink `client_web/`).
 
 ## 1. Goals and Scope
 
-Vance will receive a browser-based UI as a supplement to the existing CLI clients (`vance-cli` v1, `vance-foot` v2). The Web-UI is a separate client that does **not** aim for feature parity with the CLIs. It uses the existing backend (`vance-brain`) via REST and WebSocket.
+Vancetope will receive a browser-based UI as a supplement to the existing CLI clients (`vance-cli` v1, `vance-foot` v2). The Web-UI is a separate client that does **not** aim for feature parity with the CLIs. It uses the existing backend (`vance-brain`) via REST and WebSocket.
 
 **What the Web-UI is:**
 - A multi-page app set of independent editor/viewer pages (one HTML entry per entity type).
@@ -392,7 +392,7 @@ Status: ✅ = implemented in `src/components/` and re-exported in `index.ts`. �
 | `<VInput>` | ✅ | DaisyUI `input` | Text input with label, help text, error state. Mandatory for all single-line inputs. |
 | `<VTextarea>` | ✅ | DaisyUI `textarea` | Multi-line plain text input. `font-mono` by default. **For structured content (Markdown / JSON / YAML) use `<CodeEditor>`.** |
 | `<CodeEditor mime-type>` | ✅ | CodeMirror 6 | Multi-line editor with syntax highlighting. Language selected via `mime-type`: `text/markdown`, `application/json`, `application/yaml` (plus common aliases). Other mime types fall back to plain text. Line numbers, folding, bracket matching, undo/redo active. Mandatory for all editors that edit code/config/Markdown content — VTextarea remains for pure plain text. |
-| `<MarkdownView source inline>` | ✅ | marked + DOMPurify | Read-only Markdown renderer. GFM-enabled (Tables, Task-Lists, Fenced Code). DOMPurify sanitizes HTML output — mandatory for any user/LLM content that comes into the DOM via `v-html`. `inline`-prop for one-line previews (Chat Bubble, List-Row-Preview). In block mode, a token walker dispatches Vance-specific Fenced Blocks and `vance:`-Markdown links to `<InlineKindBox>`/`<EmbeddedKindBox>` — see [inline-and-embedded-content](/specs/inline-and-embedded-content) §11. |
+| `<MarkdownView source inline>` | ✅ | marked + DOMPurify | Read-only Markdown renderer. GFM-enabled (Tables, Task-Lists, Fenced Code). DOMPurify sanitizes HTML output — mandatory for any user/LLM content that comes into the DOM via `v-html`. `inline`-prop for one-line previews (Chat Bubble, List-Row-Preview). In block mode, a token walker dispatches Vancetope-specific Fenced Blocks and `vance:`-Markdown links to `<InlineKindBox>`/`<EmbeddedKindBox>` — see [inline-and-embedded-content](/specs/inline-and-embedded-content) §11. |
 | `<KindBox>` / `<InlineKindBox>` / `<EmbeddedKindBox>` | ✅ | — | Frame for rich content artifacts. Inline = Fenced-Body with Kind tag (` ```mindmap`, ` ```tree`, ` ```list`, ` ```records`). Embedded = Markdown link with `vance:`-URI to a Document. Both channels use the same registry kind→View. Action buttons: Inline = Download + Raw (Toggle); Embedded = Copy + Open. Full spec: [inline-and-embedded-content](/specs/inline-and-embedded-content). |
 | `<QuestionCanvas>` | ✅ | — | Closed UI unit for ASK_USER-Chat-Messages: question text + option buttons in a card. Dispatch occurs in `<MessageBubble>` via `meta.actionType === 'ASK_USER'` (see [inline-and-embedded-content](/specs/inline-and-embedded-content) §10/§11). |
 | `<VSelect>` | ✅ | DaisyUI `select` | Dropdown with Optgroup support: `options: { value, label, group?, disabled? }[]`. Consecutive options with the same `group` end up under an `<optgroup>`. Generic over the value type (`string \| number`). |

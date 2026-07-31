@@ -1,6 +1,6 @@
-# Vance — Memory & Knowledge Management
+# Vancetope — Memory & Knowledge Management
 
-> Defines how knowledge in Vance is structured, stored, tagged, and made searchable.
+> Defines how knowledge in Vancetope is structured, stored, tagged, and made searchable.
 > See also: [vision](vision.md) | [architecture-scopes-clients](architektur-scopes-clients.md) | [workflows](workflows.md)
 
 ---
@@ -19,7 +19,7 @@ For a real project system, a **Knowledge Management System** is needed as an int
 
 ---
 
-## 2. What Memory in Vance Actually Is
+## 2. What Memory in Vancetope Actually Is
 
 Memory is not just "facts the Brain remembers". It is the entire knowledge accumulated within a Scope. This includes:
 
@@ -391,7 +391,7 @@ Wait — there's a problem here: Think Process "Hypothesis Check" only sees the 
 
 ## 10. Conversation History Compaction
 
-Chat history grows with each turn — in long Sessions, it eventually exceeds the model's context window and drives up token costs. Vance folds older turns into an `ARCHIVED_CHAT` summary and plays this back in every subsequent prompt; the originals remain audit-readable in `chat_messages`, archived via `archivedInMemoryId`.
+Chat history grows with each turn — in long Sessions, it eventually exceeds the model's context window and drives up token costs. Vancetope folds older turns into an `ARCHIVED_CHAT` summary and plays this back in every subsequent prompt; the originals remain audit-readable in `chat_messages`, archived via `archivedInMemoryId`.
 
 Two paths work orthogonally:
 

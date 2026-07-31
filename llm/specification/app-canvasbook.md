@@ -1,4 +1,4 @@
-# Vance Application — `app: canvasbook`
+# Vancetope Application — `app: canvasbook`
 
 > Folder container for multiple `kind: canvas` pages — a "book" of Canvases,
 > built on the [doc-kind-application](doc-kind-application.md) foundation.

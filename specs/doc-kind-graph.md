@@ -1,5 +1,5 @@
 ---
-title: "Vance — Document Kind `graph`"
+title: "Vancetope — Document Kind `graph`"
 parent: Specs
 permalink: /specs/doc-kind-graph
 ---
@@ -7,7 +7,7 @@ permalink: /specs/doc-kind-graph
 <!-- AUTO-GENERATED from specification/public/en/doc-kind-graph.md — do not edit here. -->
 
 ---
-# Vance — Document Kind `graph`
+# Vancetope — Document Kind `graph`
 
 > Specifies the **`graph` payload** for documents that carry a (typically directed) graph: top-level `nodes` and `edges` arrays where edges are first-class entities with their own metadata. Layout matches the convention used by Cytoscape, GraphML/GEXF, vue-flow internally, and the JSON Graph Spec. Markdown is intentionally **not** supported on disk; only JSON and YAML.
 > See also: [doc-kind-records](/specs/doc-kind-records) | [doc-kind-mindmap](/specs/doc-kind-mindmap) | [web-ui](/specs/web-ui)
