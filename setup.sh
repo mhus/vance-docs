@@ -2,7 +2,7 @@
 #
 # Vance first-time setup — the same one-liner style as install.sh.
 #
-#   curl -fsSL https://vance.mhus.de/setup.sh | bash
+#   curl -fsSL https://www.vancetope.com/setup.sh | bash
 #
 # Run this AFTER install.sh. It configures the running stack: tenant, first
 # user and LLM provider. It finds the folder install.sh created (which holds
@@ -13,7 +13,7 @@
 # wizard only writes .env + docker-compose.yml.
 #
 # Pass-through args work too, e.g.:
-#   curl -fsSL https://vance.mhus.de/setup.sh | bash -s -- --sudo "tenant list"
+#   curl -fsSL https://www.vancetope.com/setup.sh | bash -s -- --sudo "tenant list"
 
 set -euo pipefail
 
@@ -42,7 +42,7 @@ find_dir() {
 if ! dir="$(find_dir)"; then
   err "Could not find your Vance folder (with .env + docker-compose.yml)."
   say "Run the installer first:"
-  say "  curl -fsSL https://vance.mhus.de/install.sh | bash"
+  say "  curl -fsSL https://www.vancetope.com/install.sh | bash"
   say "…or run this from that folder (or its parent)."
   exit 1
 fi

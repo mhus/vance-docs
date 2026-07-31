@@ -2,7 +2,7 @@
 #
 # Vance installer — one command, no git, no build tools.
 #
-#   curl -fsSL https://vance.mhus.de/install.sh | bash
+#   curl -fsSL https://www.vancetope.com/install.sh | bash
 #
 # Runs the Vance setup wizard straight from the vancetope-anus Docker image. The
 # wizard scaffolds docker-compose.yml + .env + setup.sh into a target folder;
@@ -81,7 +81,7 @@ say ""
 if ! docker run --rm -it -v "${target_abs}:/data" "$IMAGE" --setup-docker-compose <"$tty_in"; then
   say ""
   say "Setup cancelled — nothing started. Re-run when you're ready:"
-  say "  curl -fsSL https://vance.mhus.de/install.sh | bash"
+  say "  curl -fsSL https://www.vancetope.com/install.sh | bash"
   exit 0
 fi
 
@@ -101,7 +101,7 @@ say "Starting the stack (docker compose up -d)…"
 say ""
 say "${amber}Installed and starting.${z} Now configure your tenant + first user:"
 say ""
-say "  ${b}curl -fsSL https://vance.mhus.de/setup.sh | bash${z}"
+say "  ${b}curl -fsSL https://www.vancetope.com/setup.sh | bash${z}"
 say ""
 url="$(sed -n 's/^VANCE_WEB_PUBLICBASEURL=//p' "$target_abs/.env" | head -n1)"
 say "Afterwards, open ${b}${url:-http://localhost:9999}${z} and log in."

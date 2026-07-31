@@ -2,9 +2,9 @@
 #
 # Vance admin one-shot — run ANY anus command against your running stack.
 #
-#   curl -fsSL https://vance.mhus.de/anus.sh | bash -s -- --sudo "project-kits import -T meridian"
-#   curl -fsSL https://vance.mhus.de/anus.sh | bash -s -- --sudo "tenant list"
-#   curl -fsSL https://vance.mhus.de/anus.sh | bash            # interactive REPL (login)
+#   curl -fsSL https://www.vancetope.com/anus.sh | bash -s -- --sudo "project-kits import -T meridian"
+#   curl -fsSL https://www.vancetope.com/anus.sh | bash -s -- --sudo "tenant list"
+#   curl -fsSL https://www.vancetope.com/anus.sh | bash            # interactive REPL (login)
 #
 # Finds the folder install.sh created (.env + docker-compose.yml), makes sure
 # the stack is up, and runs anus in a throwaway container joined to the compose
@@ -38,7 +38,7 @@ find_dir() {
 
 if ! dir="$(find_dir)"; then
   err "Could not find your Vance folder (with .env + docker-compose.yml)."
-  say "Run the installer first:  curl -fsSL https://vance.mhus.de/install.sh | bash"
+  say "Run the installer first:  curl -fsSL https://www.vancetope.com/install.sh | bash"
   exit 1
 fi
 dir="$(cd "$dir" && pwd)"

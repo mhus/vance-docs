@@ -8,7 +8,7 @@ lang: de
 # Datenschutzerklärung
 {: .no_toc }
 
-Für die Dokumentations-Website <vance.mhus.de>.
+Für die Dokumentations-Website <www.vancetope.com>.
 {: .fs-5 .fw-300 }
 
 ## Inhalt

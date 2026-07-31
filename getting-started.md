@@ -47,10 +47,10 @@ Two commands on a machine with Docker running — no git, no download:
 
 ```bash
 # 1) Install & start the stack (MongoDB + Brain + Web UI)
-curl -fsSL https://vance.mhus.de/install.sh | bash
+curl -fsSL https://www.vancetope.com/install.sh | bash
 
 # 2) Configure it — create a tenant + user and pick an LLM provider
-curl -fsSL https://vance.mhus.de/setup.sh | bash
+curl -fsSL https://www.vancetope.com/setup.sh | bash
 ```
 
 **Step 1** runs the setup wizard straight from the official Docker image (a few
@@ -66,7 +66,7 @@ Then open the URL it prints (a local install defaults to
 {: .note }
 > **Latest vs. a specific version.** By default the stack pulls the `latest`
 > images. To pin a release, set `IMAGE_TAG` on the `bash` side of the pipe —
-> e.g. `curl -fsSL https://vance.mhus.de/install.sh | IMAGE_TAG=0.1.0 bash`. The
+> e.g. `curl -fsSL https://www.vancetope.com/install.sh | IMAGE_TAG=0.1.0 bash`. The
 > wizard writes it into `.env`, so later `docker compose pull && docker compose
 > up -d` stays on that version until you bump it. Available tags are on the
 > [Releases page](https://github.com/mhus/vance/releases).
@@ -76,7 +76,7 @@ Then open the URL it prints (a local install defaults to
 **Step 1** — the installer runs the wizard, then starts the stack:
 
 ```console
-$ curl -fsSL https://vance.mhus.de/install.sh | bash
+$ curl -fsSL https://www.vancetope.com/install.sh | bash
 
 Vancetope — setup
 A workspace for AI. No git, no build tools — just Docker.
@@ -107,13 +107,13 @@ Starting the stack (docker compose up -d)…
  ✔ caddy     Started
 
 Installed and starting. Now configure your tenant + first user:
-  curl -fsSL https://vance.mhus.de/setup.sh | bash
+  curl -fsSL https://www.vancetope.com/setup.sh | bash
 ```
 
 **Step 2** — the setup wizard creates the tenant, first user and LLM provider:
 
 ```console
-$ curl -fsSL https://vance.mhus.de/setup.sh | bash
+$ curl -fsSL https://www.vancetope.com/setup.sh | bash
 Using: ~/.vancetope
 Ensuring the stack is running…  ✔
 Waiting for MongoDB to become ready…  ✔
@@ -277,13 +277,13 @@ packs, settings. To make the catalog of available kits show up in your tenant
 kit repo with the **anus one-shot**:
 
 ```bash
-curl -fsSL https://vance.mhus.de/anus.sh | bash -s -- --sudo "project-kits import -T acme"
+curl -fsSL https://www.vancetope.com/anus.sh | bash -s -- --sudo "project-kits import -T acme"
 ```
 
 Replace `acme` with your tenant name. Check what landed:
 
 ```bash
-curl -fsSL https://vance.mhus.de/anus.sh | bash -s -- --sudo "project-kits show -T acme"
+curl -fsSL https://www.vancetope.com/anus.sh | bash -s -- --sudo "project-kits show -T acme"
 ```
 
 `anus.sh` is the general admin one-shot — it runs any anus command against your

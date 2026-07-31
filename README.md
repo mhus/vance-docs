@@ -1,13 +1,13 @@
 # vance-docs
 
 Source of the public Vancetope documentation. Served via GitHub Pages at
-**https://vance.mhus.de**.
+**https://www.vancetope.com**.
 
 ## Stack
 
 - **Jekyll** (via GitHub Pages, no separate build required)
 - Theme: [`just-the-docs`](https://just-the-docs.com) via `remote_theme`
-- Custom domain: `vance.mhus.de` (see `CNAME`)
+- Custom domain: `www.vancetope.com` (see `CNAME`)
 
 ## Local preview
 
