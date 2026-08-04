@@ -266,7 +266,7 @@ Java needed):
 
 ```bash
 brew install mhus/vancetope/vancetope
-vancetope chat
+vancetope
 ```
 
 ## Install project kits (optional)
@@ -337,7 +337,7 @@ mvn spring-boot:run
 
 # In another terminal:
 cd vance/vance-foot
-java -jar target/vance-foot.jar chat
+java -jar target/vance-foot.jar
 
 # Web UI:
 cd repos/vance/client && pnpm install && pnpm --filter @vance/vance-face dev

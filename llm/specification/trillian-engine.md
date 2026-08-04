@@ -479,8 +479,8 @@ Bundled-Default-Recipes (in the cascade under
 Foot-Start:
 
 ```bash
-java -jar vance-foot.jar chat --recipe trillian       # default-Nature
-java -jar vance-foot.jar chat --recipe trillian-0     # pinned Nature-0
+java -jar vance-foot.jar --recipe trillian       # default-Nature
+java -jar vance-foot.jar --recipe trillian-0     # pinned Nature-0
 ```
 
 Brain-Logs on Bootstrap show identity assignment + Session-Pair:
