@@ -211,10 +211,11 @@ Flags passed when starting `java -jar vance-foot.jar`.
 | `--no-tool-output` | Hide the "tool used" cosmetic block in the chat output. |
 | `--no-markdown` | Print assistant replies verbatim, no markdown rendering. |
 | `--profile <name>` | WebSocket profile sent on connect (server-side routes by profile). |
-| `--name <value>` | Client identifier sent on connect (logs / multi-client routing). |
+| `--name <value>` | Client identifier sent on connect (logs / multi-client routing). Also used as a filter for `-c` (see [Session history](#session-history--multi-terminal) below). |
 | `--agent-file <path>` | Override the agent doc uploaded to the Brain at bootstrap. |
 | `--project <name>` | Set the active project; clears any session-id from config. |
 | `--session <id>` | Resume this exact session. |
+| `-c`, `--continue` | Resume this directory's last session from the local session history. Picks the newest entry; combine with `--name` to filter by client name. Falls back to `--resume --last` when no anchor exists. Mutually exclusive with `--session` / `--resume` / `--last` / `--eddie`. |
 | `--recipe <name>` | Use this recipe as the session-chat orchestrator. |
 | `--resume` | Resume the most recently used session. |
 | `--last` | Same as `--resume`. |
@@ -254,13 +255,14 @@ the local-resource gateway.
 autonomous run is doing, then leave:
 
 ```bash
-java -jar vance-foot.jar --resume
+java -jar vance-foot.jar -c
 > /process-list
 > /process-steer Please summarise what you've learned so far.
 > /quit
 ```
 
-The Brain keeps running. Reattach with `--resume` again any time.
+The Brain keeps running. Reattach with `-c` (or `--resume`) again any
+time.
 
 **Read-only observation.** Connect without exposing local tools (useful
 when watching a session from a machine that shouldn't be on the agent's
@@ -272,6 +274,57 @@ java -jar vance-foot.jar --no-tools --session 0FK…
 
 The Brain treats this client as a viewer; `client_*` tools fail
 fast on the worker side.
+
+## Session history & multi-terminal
+
+Every time Foot bootstraps into a session, it records the session id in
+`.vancetope/session.yaml` (in the working directory). The `-c` /
+`--continue` flag reads this file to resume the last session without
+typing the id.
+
+The file holds a **history of up to 20 sessions**, newest first:
+
+```yaml
+sessions:
+  - sessionId: 0FKabc…
+    projectId: research
+    name: null
+    updatedAt: 1722840001000
+  - sessionId: 0FKdef…
+    projectId: research
+    name: debug-task
+    updatedAt: 1722840000000
+```
+
+This matters when you work with **multiple terminal windows in the same
+directory**. Each terminal bootstraps its own session; instead of
+overwriting a single last-session id, Foot appends to the history. No
+session is lost.
+
+### Resume behaviour
+
+| Command | What happens |
+|---|---|
+| `foot -c` | Picks the newest entry from `session.yaml`. |
+| `foot -c --name=debug-task` | Picks the newest entry whose `name` matches `debug-task`. |
+| `foot -c` (no history) | Falls back to `--resume --last` (asks the Brain for the newest session). |
+| `foot --session 0FK…` | Bypasses the history entirely — resumes that exact session. |
+
+### How entries are updated
+
+- **Bootstrap / reconnect**: Foot upserts the session id (updates
+  `updatedAt` and moves it to the front if it already exists).
+- **Dedup**: Reconnecting the same session updates the existing entry
+  rather than creating a duplicate.
+- **Trim**: When the list exceeds 20 entries, the oldest are dropped.
+- **`--name`**: If `--name` is set at startup, it is stored as metadata
+  on the entry. Use it to label sessions you want to find later.
+
+### Legacy format
+
+Older versions of Foot wrote a single `sessionId` / `projectId` /
+`updatedAt` at the top level. On load, Foot migrates this into a
+single-entry `sessions` list automatically. No manual migration needed.
 
 ## Where to go next
 
