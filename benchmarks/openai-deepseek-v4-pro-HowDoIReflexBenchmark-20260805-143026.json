@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-05T14:30:26.612877Z",
+  "completedAt" : "2026-08-05T14:34:00.375444Z",
+  "modelSlug" : "openai-deepseek-v4-pro",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversAmbiguousMetaphor",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [arthur_action, doc_write] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 5950,
+      "tokensIn" : 48822,
+      "tokensOut" : 240,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 48822
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversComposedUnknown",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired how_do_i tool — discovery reflex worked",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 66801,
+      "tokensIn" : 151256,
+      "tokensOut" : 600,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 151256
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversInventedFeature",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired how_do_i tool — discovery reflex worked",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 12198,
+      "tokensIn" : 74197,
+      "tokensOut" : 544,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 74197
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversJargonRequest",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [doc_find, doc_list, arthur_action, memory_search] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7188,
+      "tokensIn" : 48908,
+      "tokensOut" : 659,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 48908
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversUnknownTerm",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "model didn't call how_do_i but flagged discovery intent in prose (soft pass) — tools called: [doc_find, client_file_find, arthur_action]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 20406,
+      "tokensIn" : 97859,
+      "tokensOut" : 378,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 97859
+    }
+  } ]
+}

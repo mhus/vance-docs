@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-05T14:25:56.930620Z",
+  "completedAt" : "2026-08-05T14:29:14.380192Z",
+  "modelSlug" : "openai-deepseek-v4-pro",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsApplicationKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=application at benchmark/calendar-app/_app.yaml (402 chars); judge: All required keys, lanes, and colors are present and correct.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 19055,
+      "tokensIn" : 112773,
+      "tokensOut" : 635,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 112773
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsChartKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=chart at benchmark/chart-sales.json (382 chars); judge: All required data points are present and correct.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 8162,
+      "tokensIn" : 76937,
+      "tokensOut" : 555,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 76937
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsDiagramKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=diagram at benchmark/diagram-login-flow.md (220 chars); judge: The diagram contains all required nodes in the correct sequence and is syntactically valid.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 10546,
+      "tokensIn" : 103397,
+      "tokensOut" : 552,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 103397
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsGraphKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=graph at benchmark/graph-diamond.json (397 chars); judge: Candidate correctly implements the required diamond graph structure.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 9741,
+      "tokensIn" : 77701,
+      "tokensOut" : 496,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 77701
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsMindmapKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no document of kind=mindmap produced within 120s; kinds in project: [application, chart, diagram, graph]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 36,
+      "elapsedMs" : 104402,
+      "tokensIn" : 251821,
+      "tokensOut" : 3880,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 251821
+    }
+  } ]
+}

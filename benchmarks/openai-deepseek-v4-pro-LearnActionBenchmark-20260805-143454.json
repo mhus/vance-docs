@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-05T14:34:54.763823Z",
+  "completedAt" : "2026-08-05T14:35:08.648582Z",
+  "modelSlug" : "openai-deepseek-v4-pro",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"reason\": \"User explicitly stated a durable team fact — Java 25 + Spring Boot 4 as base stack. Append to fact store.\", \"type\": \"LEARN\", \"scope\": \"fact\", \"content\": \"Team 'platform-core' nutzt Java 25…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 3212,
+      "tokensIn" : 24597,
+      "tokensOut" : 161,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 24597
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\": \"LEARN\", \"reason\": \"User volunteered durable facts about their team and work — worth persisting for future context.\", \"scope\": \"fact\", \"content\": \"Team: 'platform-core'. Arbeitet auf den ms-*…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 6951,
+      "tokensIn" : 24507,
+      "tokensOut" : 122,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 24507
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\"type\": \"LEARN\", \"reason\": \"User wants code blocks at the very top of replies — persona update.\", \"scope\": \"persona\", \"mode\": \"append\", \"content\": \"Code-Blöcke immer direkt am Anfang der Antwort, kei…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 3615,
+      "tokensIn" : 24734,
+      "tokensOut" : 164,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 24734
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"reason\": \"User explicitly requests a complete persona replacement — knappe Stichpunkte, technischer Ton, kein Smalltalk.\", \"type\": \"LEARN\", \"scope\": \"persona\", \"mode\": \"replace\", \"content\": \"Nur kna…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 3801,
+      "tokensIn" : 24662,
+      "tokensOut" : 185,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 24662
+    }
+  } ]
+}
