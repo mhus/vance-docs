@@ -575,117 +575,7 @@ Frankie returns `true` (Default). Its ASSISTANT messages are
 natural language responses — not technical plumbing like with
 Hactar/Slart, which would need to be passed through an `engine-output-translator`.
 
-## 14. Post-Completion Hook (optional, recipe-configured)
-
-Frankie Recipes can declare a **Post-Completion Hook** —
-after a stop signal (Natural Stop or Tool Terminate, depending on
-the trigger), the Engine deterministically spawns a follow-up Process before
-the Worker transitions to IDLE. What this follow-up Process does is
-**purely application-specific** to the referenced Recipe: code review,
-summarize-to-memory, verify-by-test, security-audit, log-to-ticket. The
-Engine itself has no technical opinion on the outcome.
-
-Full design rationale: [planning/frankie-post-completion-hook.md](../../planning/frankie-post-completion-hook.md).
-
-### 14.1 Recipe Schema
-
-```yaml
-# coding.yaml (Example Worker with Code Review Hook)
-postCompletionHook:
-  recipe: code-review        # Follow-up Process Recipe (must be engine=frankie)
-  trigger: naturalStop       # naturalStop | terminate | both
-  maxRounds: 1               # Hard-Cap per Worker Lifetime, default 1, 0 = off
-  goalTemplate: |            # Pebble-Template, optional — Engine provides Default
-    Review the work just finished by a sibling worker.
-    Original task: {{ originalGoal }}
-    Worker's final answer: {{ finalText }}
-    Decide: approve(summary="...") or reopen(reason="...", followUp="...").
-```
-
-Fields:
-
-| Field | Mandatory | Default | Semantics |
-|---|---|---|---|
-| `recipe` | yes | — | Hook Recipe name, cascade-resolved at spawn time |
-| `trigger` | no | `naturalStop` | When the hook fires |
-| `maxRounds` | no | `1` | Round cap per Worker Process; `0` disables |
-| `goalTemplate` | no | Engine default | Pebble Template, compile check during Recipe load |
-
-### 14.2 Gates (all must pass for spawn)
-
-| Gate | Where | Why |
-|---|---|---|
-| Recipe field set | Recipe Load | No hook without config |
-| `goalTemplate` Pebble-valid | Recipe Load | Fail-fast on typo |
-| Trigger matches Stop Path | Engine Runtime | `naturalStop` ≠ `terminate` |
-| `postCompletionHookRounds < maxRounds` | Engine Runtime, atomic | Protection against endless ping-pong |
-| No `ProcessEvent` in the Drain Queue | Engine Runtime | Reentry guard — the current turn might be a reaction to a previous spawn |
-| Hook Recipe exists | Spawn Time | Cascade lookup |
-| Hook Recipe uses Frankie | Spawn Time | v1 constraint |
-| Hook Recipe itself has no `postCompletionHook` | Spawn Time | Transitive loop protection |
-
-If a gate fails, the spawn is silently skipped — the
-Worker closes regularly to IDLE (or DONE on Tool Terminate). An
-Executor failure (spawn pipeline broken) is also swallowed and
-only logs a warning — the hook must not disturb the Worker.
-
-### 14.3 Counter Persistence
-
-`ThinkProcessDocument.postCompletionHookRounds` (int, default 0). The
-counter is **engine-internal state**, not a Recipe param — it survives
-Pod resumes and is atomically incremented via
-`ThinkProcessService.incrementPostCompletionHookRounds()` (Mongo
-`$inc` with `returnNew`) **before** the spawn starts, so
-that a competing retry cannot spawn twice.
-
-### 14.4 Outcome Convention (application-specific)
-
-The Hook Process terminates like any other Frankie Worker — via
-Tool Result Map with `_terminate: true`. Which **additional** fields the
-tool returns (`outcome`, `summary`, `reason`, `followUp`,
-`memoryId`, `findings[]`, …) is **purely application-specific** to the
-Recipe. The Engine passes the complete Tool Result Map unchanged
-into the `ProcessEvent.payload` to the Worker Inbox — the
-Worker LLM interprets it.
-
-Examples (not exhaustive):
-
-| Application | Outcome Fields |
-|---|---|
-| `code-review` | `outcome=approve\|reopen`, `summary`, `reason`, `followUp` |
-| `memory-summarize` | `outcome=stored`, `memoryId`, `chars` |
-| `verify-by-test` | `outcome=pass\|fail`, `testFile`, `failures[]` |
-| `security-audit` | `outcome=clean\|flagged`, `findings[]` |
-
-### 14.5 Bundled Application: `code-review`
-
-Vancetope ships the `code-review` Recipe (`_vance/recipes/code-review.yaml`)
-+ the `code_review_decide` Tool as the first productive Hook application.
-The Recipe has:
-
-- Read-only toolset (`file_read`, `file_grep`, `file_list`; explicitly
-  deferred: `file_edit`, `file_write`, `exec_*`)
-- `code_review_decide(outcome, summary, reason, followUp)` as
-  termination tool
-- `default:fast` as model default
-- A strict `promptPrefix` that limits the reviewer to 1-2 passes
-
-Tenants override by placing their own `code-review.yaml`
-under `_vance/recipes/` in Project or `_tenant` Document Store.
-
-### 14.6 What the Hook Does NOT Do (v1)
-
-- No cross-engine hook (Marvin as Hook Process, Vogon as
-  Hook Process). Cross-engine lifecycle contract is missing.
-- No parallel Hook Processes (`recipe:` is singular). Those
-  who want diversity build a meta-hook Recipe that spawns further
-  via `process_create`.
-- No write permissions to Worker state. Hook Processes only return
-  outcome.
-- No dedicated UI panel. Hook outcomes run through the existing
-  Chat UI as `ProcessEvent` blocks.
-
-## 15. What Frankie CANNOT Do
+## 14. What Frankie CANNOT Do
 
 - **No full Plan Mode** with modes / approval / read-only
   filter — that remains Arthur/Eddie (see [plan-mode.md](plan-mode.md)).
@@ -704,7 +594,7 @@ under `_vance/recipes/` in Project or `_tenant` Document Store.
   `/skill add`. Trigger-based activation as in Ford is
   intentionally not implemented (see §7.2).
 
-## 16. Tests
+## 15. Tests
 
 In `vance-brain/src/test/java/.../frankie/`:
 
@@ -732,7 +622,7 @@ In `vance-brain/src/test/java/.../arthur/`:
 E2E tests per Recipe in `qa/ai-test/` come with the respective
 Recipes — not in this Engine Spec.
 
-## 17. References
+## 16. References
 
 - `instructions/pi-analyse.md` — Pi comparison notes
 - `packages/agent/src/agent-loop.ts` — Pi loop reference

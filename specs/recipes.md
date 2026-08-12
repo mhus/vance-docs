@@ -51,7 +51,6 @@ A Recipe is a YAML file with the following top-level fields. The `name` comes fr
 | `listed` | `boolean` | default `false` | Opt-in for the user-facing Recipe picker (Web-UI Session Start modal). Server additionally hard-filters `internal: true`. Foot still lists all Recipes — this flag only affects discovery clients (see §6e) |
 | `title` | `String` | no | Display name for Recipe picker UIs. Falls back to Recipe `name` if not set |
 | `tags` | `List<String>` | no | Free for discovery (e.g., `[research, code, web]`) |
-| `postCompletionHook` | `Map` | no | Frankie-only. Configures a follow-up Process that is spawned after a worker's stop signal (Review, Summary, Verify, …). Sub-fields: `recipe` (required), `trigger` (`naturalStop`\|`terminate`\|`both`, default `naturalStop`), `maxRounds` (default `1`, `0` disables), `goalTemplate` (Pebble template, optional). Full semantics in [frankie-engine.md §14](/specs/frankie-engine#14-post-completion-hook-optional-recipe-konfiguriert), design rationale in planning/frankie-post-completion-hook.md |
 
 There is **no Mongo collection** for Recipes. Persistence, versioning, and audit come from the Document Layer (soft-delete, `createdBy`, storage backend for inline-vs-blob, etc.).
 
