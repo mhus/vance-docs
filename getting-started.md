@@ -92,7 +92,7 @@ Settings
    1) Default language:     English (en)
    2) Anus login password:  (none — REPL open)
    3) Secret encryption pw: ******** (auto-generated)
-   4) Analysis (Fook):      enabled
+   4) Analysis (Fook):      disabled
    5) Access mode:          local (localhost)
    8) Vancetope port:           http://localhost:9999
    9) Expert mode:          off
