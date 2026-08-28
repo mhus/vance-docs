@@ -9,15 +9,15 @@
 
 `kind: tree` (see [doc-kind-tree](doc-kind-tree.md)) models hierarchical items with an outliner UX. `kind: mindmap` is **the same hierarchy**, but:
 
-- with optional per-node metadata for visual styling (color, icon, link, tags),
+- with optional per-node metadata for visual distinction (color, icon, link, tags),
 - with a **Mindmap renderer** instead of an outliner editor — radial layout starting from the root item.
 
-**Design principle:** The topic text per node and fluid editing are central. The additional fields are **all optional** — a Mindmap Document can consist solely of `text` + `children` and remain fully functional. There are intentionally no mandatory fields beyond `text`.
+**Design Principle:** The topic text per node and fluid editing are central. The additional fields are **all optional** — a Mindmap document can consist solely of `text` + `children` and remain fully functional. There are intentionally no mandatory fields beyond `text`.
 
 Separation from tree:
 
 - **tree** is a textually-structured outliner. Edit-focused.
-- **mindmap** is a visually-structured mindmap. View-focused; in v1, read-only render on a second tab, editing still in the Tree-View.
+- **mindmap** is a visually-structured mindmap. View-focused; in v1, read-only render on a second tab, editing still in the Tree View.
 
 **What this spec defines:**
 - Extended items model (tree fields + optional `color`, `icon`, `link`, `tags`).
@@ -29,7 +29,7 @@ Separation from tree:
 - Free-form node positions (`x`/`y`). Mindmap layouts are automatically calculated from the Tree topology — both `markmap` and `mind-elixir` work this way. Concept-map-like free-positioning would be a separate kind (`graph`).
 - In-place Mindmap editing (dragging & dropping nodes directly in the radial layout). See §6.
 - Mindmap-specific server indexing — items continue to live in the `inlineText` body.
-- Embedded images per node. Intentionally excluded to keep the spec simple — images in mindmaps are rarely the value driver, and hosting (Document attachment vs. remote URL) would be a separate spec step.
+- Embedded images per node. Intentionally excluded to keep the spec simple — images in mindmaps are rarely the value driver, and hosting (document attachment vs. remote URL) would be a separate spec step.
 
 ---
 
@@ -39,20 +39,20 @@ Per item, same base as tree:
 
 | Field      | Type             | Required | Meaning                                                                   |
 |------------|------------------|----------|---------------------------------------------------------------------------|
-| `text`     | `string`         | yes      | Node topic, single- to multi-line.                                        |
+| `text`     | `string`         | yes      | Node topic, single- or multi-line.                                        |
 | `children` | `Item[]`         | no       | Subordinate nodes, recursive. Missing / empty array = leaf.               |
 
 **Mindmap-specific additional fields** (all optional — none are required, a node with only `text` is valid):
 
-| Field        | Type       | Meaning                                                                                       |
+| Field        | Type       | Meaning                                                                                         |
 |--------------|------------|-------------------------------------------------------------------------------------------------|
-| `color`      | `string`   | Line and text color of the node as HTML hex (`#rrggbb` or `#rgb`). Inherited by children if they don't have their own `color`. |
+| `color`      | `string`   | Line and text color of the node as HTML hex (`#rrggbb` or `#rgb`). Inherited by children if they do not have their own `color`. |
 | `background` | `string`   | Background fill of the node bubble as HTML hex.                                                 |
 | `icon`       | `string`   | Glyph before the topic — emoji or short text. A single icon (not an array).                     |
 | `link`       | `string`   | Hyperlink of the node (URL) — opened on click.                                                  |
-| `tags`       | `string[]` | Tag chips on the node. Pure display, no semantic link to Document tags.                         |
+| `tags`       | `string[]` | Tag chips on the node. Pure display, no semantic link to document tags.                         |
 
-**Color format:** Canonical is **HTML hex** — `#rrggbb` (e.g., `#3b82f6`) or as shorthand `#rgb` (e.g., `#39f`). Rationale:
+**Color format:** Canonical is **HTML hex** — `#rrggbb` (e.g., `#3b82f6`) or as a shorthand `#rgb` (e.g., `#39f`). Rationale:
 
 - Unambiguously parseable — no locale, no token resolution, no theme dependency.
 - Round-trip stable without normalization leeway (exactly one string per color).
@@ -63,7 +63,7 @@ When reading, CSS named colors (`red`, `blue`, …) and `rgb(…)`/`hsl(…)` ar
 
 **Forward compatibility:** As with tree, additional, unknown fields are passed through via an `extra` map. Known Mindmap fields live **flat** next to `text`/`children` — the Tree codec does not know them by name but passes them through (see §3.4).
 
-**Markdown limitation:** Markdown can only express `text` + `children`. All Mindmap additional fields are lost during the md round-trip. Those who maintain a Mindmap Document with colors/icons keep it in JSON or YAML — same convention as for tree for multi-field items.
+**Markdown limitation:** Markdown can only express `text` + `children`. All Mindmap additional fields are lost during the md round-trip. Those who maintain a Mindmap document with colors/icons keep it in JSON or YAML — same convention as for tree for multi-field items.
 
 **Canonical form** (JSON):
 
@@ -103,9 +103,9 @@ When reading, CSS named colors (`red`, `blue`, …) and `rgb(…)`/`hsl(…)` ar
 }
 ```
 
-**Header convention:** as in [doc-kind-items §2](doc-kind-items.md#2-items-modell) — both JSON and YAML carry `kind` in a `$meta` mapping at the top level. The `mindmap:` block remains at the body top level (nested object, filtered out in `$meta` anyway).
+**Header convention:** as with [doc-kind-items §2](doc-kind-items.md#2-items-modell) — both JSON and YAML carry `kind` in a `$meta` mapping at the top level. The `mindmap:` block remains at the body top level (nested object, filtered out in `$meta` anyway).
 
-Exactly one top-level item is the canonical Mindmap form (the root item is radially centered). Multiple top-level items are allowed — the renderer treats them as a "Forest" and renders them as parallel trees side-by-side.
+Exactly one top-level item is the canonical Mindmap form (the root item is placed radially in the center). Multiple top-level items are allowed — the renderer treats them as a "Forest" and renders them as parallel trees side-by-side.
 
 ---
 
@@ -127,13 +127,13 @@ mindmap:
 ```
 
 **Reading rules:**
-- Front-Matter like tree (`---`-fences). `mindmap:` block (Mindmap options) is optional and placed under `kind:`.
-- Body: identical to tree — `\s*[-*]\s+`-bullets with 2-space indent, tabs = 4 spaces, skip-level is clamped to the next shallowest.
+- Front-Matter like tree (`---` fences). `mindmap:` block (Mindmap options) is optional and placed under `kind:`.
+- Body: identical to tree — `\s*[-*]\s+` bullets with 2-space indent, tabs = 4 spaces, skip-level is clamped to the next shallowest.
 - **No per-node fields** — Markdown has no syntax for Color/Icon/Link at the bullet level that would be round-trip stable. Documented limitation.
 
 **Writing rules:**
 - Pre-order DFS, identical to tree.
-- Per-node Mindmap fields are **not** written (would be lost on reading — so not included at all).
+- Per-node Mindmap fields are **not** written (would be lost on read — so not included at all).
 - Top-level `mindmap:` block is preserved in the Front-Matter (pass-through like all Front-Matter keys).
 
 ### 3.2 JSON
@@ -174,13 +174,13 @@ items:
         children: []
 ```
 
-Single-Document: Top-level mapping with `$meta: { kind: mindmap }` as the first key, followed by `mindmap:` block and `items` at the same level. Block-style sequences, 2-space indent. No string shorthand for items (same rule as tree — otherwise, the separation of item text vs. sub-item would remain ambiguous).
+Single-Document: Top-level mapping with `$meta: { kind: mindmap }` as the first key, followed by `mindmap:` block and `items` at the same level. Block-style sequences, 2-space indent. No string shorthand for items (same rule as tree — separation of item text vs. sub-item would otherwise remain ambiguous).
 
 ### 3.4 Codec Impact
 
-**Important:** The existing `tree` codec (`treeItemsCodec.ts` + Server `HeaderStrategy`) remains **unchanged**. Mindmap fields automatically pass through `TreeItem.extra: Record<string, unknown>`. The Mindmap View reads them from `extra`, and the Mindmap Edit View (when it arrives) also writes them to `extra`. This means `kind: mindmap` does not require a new codec, no new server mapping — only renderer code in the Web-UI.
+**Important:** The existing `tree` codec (`treeItemsCodec.ts` + Server `HeaderStrategy`) remains **unchanged**. Mindmap fields automatically travel through `TreeItem.extra: Record<string, unknown>`. The Mindmap view reads them from `extra`, and the Mindmap edit view (when it comes) also writes them to `extra`. This means `kind: mindmap` does not require a new codec or a new server mapping — only renderer code in the Web-UI.
 
-Only when the Mindmap-specific fields become first-class in the editor UI (color picker, icon picker), the codec will promote them from `extra` to typed properties on a `MindmapItem` subtype. This is an additive extension, not a breaking change.
+Only when the Mindmap-specific fields become first-class in the editor UI (color picker, icon picker) will the codec promote them from `extra` to typed properties on a `MindmapItem` subtype. This is an additive extension, not a breaking change.
 
 ---
 
@@ -197,26 +197,26 @@ The `mindmap:` top-level block is transparent to the server — like all Front-M
 ### 5.1 Editor Activation
 
 - **`kind === 'mindmap'`** + Format ∈ {md, json, yaml} → three tabs: `Mindmap` (Default) / `Tree` / `Raw`.
-- Otherwise (not a Mindmap Document): unchanged.
+- Otherwise (not a Mindmap document): unchanged.
 
-The `Tree` tab uses **the existing `<TreeView>` component** unchanged — the hierarchy is the same. Per-node Mindmap fields are **not** displayed or edited in v1 in the Tree-View (but they remain round-trip stable via `extra`).
+The `Tree` tab uses **the existing `<TreeView>` component** unchanged — the hierarchy is the same. Per-node Mindmap fields are **not** displayed or edited in v1 in the Tree View (but they remain round-trip stable via `extra`).
 
 The `Mindmap` tab is **read-only render** based on `markmap-lib` + `markmap-view`. Rationale:
 
 - markmap directly accepts our Markdown bullet form — the adapter is trivial.
 - markmap is ~50 KB minified, MIT, actively maintained.
-- Read-only Mindmap covers the viewing use case (brainstorming template, strategy draft), editing remains convenient in the Tree-View.
+- Read-only Mindmap covers the viewing use case (brainstorming template, strategy draft), editing remains convenient in the Tree View.
 
-### 5.2 Feature Scope v1
+### 5.2 Feature Set v1
 
 | Feature                                | v1 | Note |
 |----------------------------------------|----|------|
-| Mindmap render (radial layout)         | ✓  | markmap |
+| Mindmap Render (radial layout)         | ✓  | markmap |
 | Pan / Zoom                             | ✓  | markmap built-in |
 | Expand / Collapse per node             | ✓  | markmap built-in (click on disclosure) |
 | Edit (via Tree tab)                    | ✓  | existing `<TreeView>` |
 | Per-node Color/Icon/Link/Tags          | (◯)| **persisted** (round-trip), but **not editable** and only partially rendered in v1 |
-| In-place edit in Mindmap layout        | ✗  | see §6 |
+| In-Place Edit in Mindmap Layout        | ✗  | see §6 |
 | Custom Theme / direction options       | (◯)| **persisted** in the `mindmap:` block, but UI operation only via Raw in v1 |
 | Forest (multiple roots)                | ✓  | markmap renders multiple top-level bullets side-by-side |
 
@@ -236,13 +236,13 @@ The adapter is a function `treeToMarkmapMarkdown(doc: TreeDocument): string`:
 - Per item: Indent (depth × 2 Spaces) + `- ` + first topic line.
 - If `link` is set: Topic becomes `[<text>](<link>)`.
 - `icon` is prefixed to the topic text (emoji directly, followed by a space).
-- `tags`/`color`/`background` are **not** passed to markmap in v1 (no direct markmap equivalent — color is handled globally via `colorFreezeLevel`, markmap does not have tags render). However, they are in the Document and will be active in a later edit/render iteration.
-- Top-level: `mindmap:` block from the Document is prepended as markmap Front-Matter (`---\nmarkmap:\n  ...\n---`) — `theme`, `direction`, `initialExpandLevel` map 1:1.
+- `tags`/`color`/`background` are **not** passed to markmap in v1 (no direct markmap equivalent — color is global via `colorFreezeLevel`, markmap does not have tags rendering). However, they are in the document and will be active in a later edit/render iteration.
+- Top-level: `mindmap:` block from the document is prepended as markmap Front-Matter (`---\nmarkmap:\n  ...\n---`) — `theme`, `direction`, `initialExpandLevel` map 1:1.
 
 ### 5.5 Visual Conventions
 
 - Mindmap tab fills the editor content completely (no second vertical scrolling — markmap takes 100% height).
-- Pan/Zoom hint subtly in the bottom right ("Mouse wheel zooms, Drag pans") as a small help tooltip.
+- Pan/Zoom hint subtly in the bottom right ("Mouse wheel zooms, drag pans") as a small help tooltip.
 - Default theme aligns with the DaisyUI theme via CSS variables — markmap allows CSS override, so Light/Dark mode follows.
 
 ---
@@ -258,17 +258,17 @@ The adapter is a function `treeToMarkmapMarkdown(doc: TreeDocument): string`:
 - Context menu per node: Color picker, Icon picker, Link editor, Tag editor.
 - Keyboard shortcuts like in the Tree editor (Tab/Shift+Tab/Enter).
 
-mind-elixir has its own data model (`{ topic, id, style, tags, icons, hyperLink, expanded, children }`, plus optional `image` which we don't use); the adapter between our `TreeItem` form and mind-elixir form is 1:1 — all fields defined in §2 map directly.
+mind-elixir has its own data model (`{ topic, id, style, tags, icons, hyperLink, expanded, children }`, plus optional `image` which we do not use); the adapter between our `TreeItem` form and mind-elixir form is 1:1 — all fields defined in §2 map directly.
 
 Migration path: codec remains the same, only `<MindmapView>` is replaced. Tree tab and Raw tab unchanged.
 
 ### 6.2 Active Mindmap Fields in Tree Editor
 
-Per-node Color/Icon/Link/etc. will also be displayed and editable in the Tree-View (inline picker or side panel). This means Mindmap metadata will not only live in the Mindmap tab. This is useful only when real users need it — until then, the Mindmap View is sufficient.
+Per-node Color/Icon/Link/etc. will also be displayed and editable in the Tree View (inline picker or side panel). This means Mindmap metadata will not only live in the Mindmap tab. This is useful only when actual users need it — until then, the Mindmap view is sufficient.
 
 ### 6.3 Mindmap Linker / Cross-Document Linking
 
-Nodes could refer to other Documents in the same Project (`link: doc:<documentId>` or `link: vance:document/<id>`). The renderer resolves this to an app-internal tab open. Requires a convention for `vance:` URLs — a separate spec point.
+Nodes could refer to other documents in the same Project (`link: doc:<documentId>` or `link: vance:document/<id>`). The renderer resolves this to an app-internal tab open. Requires a convention for `vance:` URLs — a separate spec point.
 
 ### 6.4 Persistent Expand/Collapse
 

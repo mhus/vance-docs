@@ -12,11 +12,10 @@
 - **Kanban** = spatial board, focus on column position.
 - **Issues** = item lifecycle: **discussion thread**, **open/closed**, **stable
   number (#42)**, cross-references. No board requirement.
-- **Scrum** = iteration management (deferred, too complex + vision-borderline).
+- **Scrum** = iteration management (deferred, too complex + borderline for vision).
 
-**Fook Synergy (v2):** Vancetope triages bug/feature reports to tickets with [Fook](../fook-service.md).
-An `app: issues` can later become their native local home;
-the data model is prepared for this, but v1 does not build the integration.
+**Fook Synergy (v2):** Vancetope triages bug/feature reports to tickets with [Fook](fook-service.md).
+An `app: issues` can later become their native local home; the data model is prepared for this, but v1 does not build the integration.
 
 ## 2. Folder Layout
 
@@ -31,7 +30,7 @@ issues/backend/
 └── archive/                       ← archived issues (removed from the active tracker)
 ```
 
-- **One Issue = one file** `items/<number>-<slug>.md`. The **number is the stable
+- **An Issue = one file** `items/<number>-<slug>.md`. The **number is the stable
   ID**; the slug is just a hint.
 - **State (open/closed) is a Frontmatter field, not a folder.**
 - **Archived = Location `archive/`, orthogonal to open/closed** (§4).
@@ -39,20 +38,19 @@ issues/backend/
 
 ## 3. Stable Numbers (#42)
 
-Monotonic, never reused. The manifest holds a `nextNumber` counter. On
-creation, `number = max(nextNumber, maxExistingNumber+1)` is reserved
+Monotonic, never reused. The manifest holds a `nextNumber` counter. On creation, `number = max(nextNumber, maxExistingNumber+1)` is reserved
 (self-healing for stale counter); the **unique `(tenant,project,path)` index** is
 the hard guard — if a number collides under concurrency, the service retries
 with the next one. The manifest counter is incremented best-effort (never decremented).
-This makes numbers race-safe + monotonic **without** a separate counter collection.
+Thus, numbers are race-safe + monotonic **without** a separate counter collection.
 Cross-references `#N` refer to the number.
 
 ## 4. Archive
 
 Archiving removes old (mostly closed) issues from the active tracker, **without
 deletion**: the file moves `items/` → `archive/`, **number + state remain** (no
-third state value). The active scan only reads `items/` → archived items fall out of
-lists, counters, and `_index`. A separate "Archived" view lists them;
+third state value). The active scan only reads `items/` → archived items fall out
+of lists, counters, and `_index`. A separate "Archived" view lists them;
 unarchiving brings them back. **Trash remains separate** (archive = keep-away,
 trash = discard). Implementation: pure `newPath` move.
 
@@ -72,12 +70,12 @@ Repro …
 ```
 
 `IssueCodec` owns the schema (Markdown/JSON/YAML). `labels` are mirrored to native
-Doc-tags (filter/search). **Comments are NOT in the Frontmatter** — §6.
+Doc-Tags (filter/search). **Comments are NOT in the Frontmatter** — §6.
 
 ## 6. Comment Thread via DocumentNotes
 
-The discussion thread uses the existing `DocumentNote` subsystem: one comment =
-one note on the issue document (`addNote`/`listNotes`/`deleteNote`), atomic (`$set`/`$unset`
+The discussion thread uses the existing `DocumentNote` subsystem: a comment =
+a note on the issue document (`addNote`/`listNotes`/`deleteNote`), atomic (`$set`/`$unset`
 on `notes.{id}`), **no** full save, **no** archive snapshot. `text`/`userId`/
 `createdAt` per comment, sorted by time. This means the thread requires practically no
 new backend development.
@@ -107,11 +105,11 @@ Mounted via the Kind Registry (`application:issues` → `IssuesAppKind.vue`).
 
 - **Top:** Open / Closed / **Archived** tabs with counters, search, "New issue", Rebuild.
 - **Middle:** Issue list (state dot + #Number + Title + Labels + Assignee),
-  Label filter chips, click → detail.
+  Label filter chips, click → Detail.
 - **Right/Detail:** #Number + State badge, Title, **Close/Reopen**, **Archive/Unarchive**,
   Labels, Assignee, Priority, Body via `WorkPageEditor` (bodyOnly), and the
   **comment thread** (Notes list + input). Debounced Auto-Save.
-- **Live updates** via the `documents` channel. Last-Writer-Wins.
+- **Live updates** via the `documents`-channel. Last-Writer-Wins.
 
 **REST — `IssuesAppController` (`/brain/{tenant}/addon/issues/...`)**: `scan`
 (`state`/`archived`-filter), `issue` GET/POST/PATCH/DELETE, `issue/archive` +
@@ -120,8 +118,8 @@ Mounted via the Kind Registry (`application:issues` → `IssuesAppKind.vue`).
 
 ## 10. Non-Goals (v1)
 
-- **No board** (Kanban's job), **no milestones/sprints**.
+- **No Board** (Kanban's job), **no Milestones/Sprints**.
 - **No Fook integration** (v2, §1).
-- **No reactions, no multiple assignees, no cross-repo refs.**
+- **No Reactions, no multiple Assignees, no cross-repo Refs.**
 - **Numbers monotonic, not reused** — gaps for deleted issues are okay.
-- **No CRDT** — Last-Writer-Wins; comments are atomic (Notes) and can be added without race conditions.
+- **No CRDT** — Last-Writer-Wins; comments are atomic (Notes) and can be added race-free.

@@ -1,5 +1,5 @@
 ---
-title: "Vancetope — Execution Modes & Trigger"
+title: "Vancetope — Execution Modes & Triggers"
 parent: Specs
 permalink: /specs/execution-modes-trigger
 ---
@@ -7,7 +7,7 @@ permalink: /specs/execution-modes-trigger
 <!-- AUTO-GENERATED from specification/public/en/execution-modes-trigger.md — do not edit here. -->
 
 ---
-# Vancetope — Execution Modes & Trigger
+# Vancetope — Execution Modes & Triggers
 
 > Defines how Think Processes are triggered and how the unified client session model works.
 > Core principle: Everything is a client. Everything runs in a session.
@@ -28,14 +28,14 @@ The Brain always follows the same code path: open session → register client's 
 ## 2. Client Types
 
 | Client Type | Human? | Brings Tools? | Session Duration | Typical Use Case |
-|-----------|---------|-------------------|--------------|------------------|
+|-------------|--------|---------------|------------------|------------------|
 | **CLI** | Yes | Yes (Shell, Git, FS, Code Analysis) | Hours | Developer working at terminal |
 | **Desktop** | Yes | Yes (FS, PDF, LaTeX, local scripts) | Hours | Scientist at computer |
-| **Mobile** | Yes | Few (Camera, files) | Minutes | Checking status, approving on the go |
+| **Mobile** | Yes | Few (Camera, Files) | Minutes | Checking status, approving on the go |
 | **Web UI** | Yes | No (but can open session) | Minutes | Browser dashboard, review, light steering |
 | **Cron** | No | No | Minutes | Time-scheduled Think Process continuation |
 | **Webhook** | No | No | Seconds/Minutes | External event triggers action |
-| **Brain Linker** | No | No | Minutes | Internal knowledge graph analysis |
+| **Brain Linker** | No | No | Minutes | Internal Knowledge Graph analysis |
 
 ### What the Brain Sees
 
@@ -61,9 +61,9 @@ session:
 The only architectural difference:
 
 | Aspect | Human Client | System Client |
-|--------|-------------------|--------------|
+|--------|--------------|---------------|
 | `is_human` | true | false |
-| Chat History | Yes (persisted in session) | No |
+| Chat History | Yes (persisted in Session) | No |
 | Approval | Inline — User responds in client | Async — Task becomes `waiting_approval`, Notification |
 | Undo | Yes | No |
 | Interactivity | User can intervene at any time | Runs through until complete/blocked |
@@ -80,7 +80,7 @@ Web UI was previously planned as stateless/REST-only. However, if a user in the 
 
 ```
 Web UI Mode 1: Dashboard (REST only, stateless)
-  → Display Think Process list, read results, browse memory
+  → Display Think Process list, read results, browse Memory
   → No session needed
 
 Web UI Mode 2: Interactive (WebSocket, Session)
@@ -89,7 +89,7 @@ Web UI Mode 2: Interactive (WebSocket, Session)
   → No local tools, but full interaction
 ```
 
-This means: the Web UI is an **optional client**. It can operate as a pure dashboard (not a client) or as an interactive client (with a session). The user decides based on their needs.
+This means: the Web UI is an **optional client**. It can operate as a pure dashboard (no client) or as an interactive client (with session). The user decides based on their needs.
 
 ---
 
@@ -118,7 +118,7 @@ Trigger
   │     → Internal system client connects
   │     → System session is created
   │     → No tools
-  │     → Think Process continuation or workflow start
+  │     → Think Process continue or workflow start
   │     → Session closes after run
   │
   ├── Webhook fires
@@ -132,7 +132,7 @@ Trigger
         → Internal system client connects
         → System session is created
         → No tools
-        → Knowledge graph analysis
+        → Knowledge Graph analysis
         → Session closes after run
 ```
 
@@ -188,10 +188,10 @@ cron_jobs:
 3. Execute action:
    - process_continue: execute next task(s) of the Think Process
    - run_workflow: instantiate and start workflow
-   - brain_linker: run knowledge graph analysis
+   - brain_linker: run Knowledge Graph analysis
 4. If needed:
    - Task requires client tool → Task becomes 'blocked'
-   - Task requires approval → Task becomes 'waiting_approval', Notification
+   - Task requires Approval → Task becomes 'waiting_approval', Notification
 5. Write run log
 6. Close session
 ```
@@ -236,7 +236,7 @@ webhooks:
 ### Flow
 
 ```
-1. HTTP Request comes in
+1. HTTP Request arrives
 2. Validate secret
 3. System client connects, system session is created
 4. Execute configured action
@@ -286,7 +286,7 @@ Visible in the Web UI Dashboard and queryable via CLI: `vance runs --engine tp_1
 >
 > Human clients bring tools and work interactively.
 > System clients bring no tools and run through.
-> Web UI can do both — dashboard without a session or interactive with a session.
+> Web UI can do both — dashboard without session or interactive with session.
 >
 > The Brain has one code path. Always. No special treatment.
 

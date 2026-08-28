@@ -7,26 +7,26 @@
 
 ## 1. Purpose
 
-Use cases: Time-series charts (Line/Area), comparison charts (Bar), distributions (Pie/Donut), correlations (Scatter), financial/OHLC data (Candlestick), density visualizations (Heatmap). Embedded in reports, delivered as Worker output, manually maintained in a Project doc pool.
+Use cases: Time series charts (Line/Area), comparison charts (Bar), distributions (Pie/Donut), correlations (Scatter), financial/OHLC data (Candlestick), density visualizations (Heatmap). Embedded in Reports, delivered as Worker output, manually maintained in a Project doc pool.
 
 Distinctions:
-- **records**: Tabular without visualization. If the table should have a chart, the chart lives as its own `kind: chart` document, which references the records or duplicates the values.
+- **records**: Tabular without visualization. If the table is to receive a chart, the chart lives as its own `kind: chart` document, which references the records or duplicates the values.
 - **sheet**: 2D sheet with formulas, not intended for visualization.
 - **graph**: Nodes + edges, not a numerical data diagram.
 - **data**: Unstructured storage. To get a chart, use **this** Kind and not `data` with an ad-hoc structure.
 
-**Design Principle — One Kind, Many Chart Types.** All data diagrams share the same document shape (axes, series, title, legend). The specific type is a field (`chart.chartType`), not a separate Kind. Rationale: the data model is almost identical across types; a user who switches a Line chart to Bar changes one field — no Kind change, no file change. Established libraries (ECharts, Plotly, Vega) do the same.
+**Design Principle — One Kind, Many Chart Types.** All data diagrams share the same Document Shape (axes, series, title, legend). The specific type is a field (`chart.chartType`), not a separate Kind. Rationale: the data model is almost identical across types; a user who switches a Line chart to Bar changes one field — no Kind change, no file change. Established libraries (ECharts, Plotly, Vega) do the same.
 
 **Design Principle — Lean custom schema, ECharts option as escape hatch.** We define a custom mini-schema (10-12 fields) in `vance-api` that the Vancetope Face renderer maps to an ECharts option. Rationale:
-- Grafana spec is coupled to panel data sources — we have static document content, not a pull query.
-- Vega-Lite is academically clean but too cumbersome for LLM generation (grammar-of-graphics concepts complicate clean YAML generation).
-- Raw ECharts option is too library-specific and verbose (~50 fields); we don't want to rewrite all docs if the library changes.
+- Grafana spec is coupled to panel data sources — we have static Document content, not a pull query.
+- Vega-Lite is academically clean but too cumbersome for LLM generation (Grammar-of-Graphics concepts complicate clean YAML generation).
+- Raw ECharts option is too library-specific and verbose (~50 fields); we don't want to rewrite all Docs if the library changes.
 - Custom schema covers 80% of use cases and is AI-friendly; power users get `echartsOptionOverride` as a deep-merge slot.
 
 **What this spec defines:**
 - Top-level block `chart` with `chartType` and display metadata.
 - Axis model (`xAxis`, `yAxis`).
-- Series model with `chartType` discriminator (document-level; v2 allows per-series override).
+- Series model with `chartType` discriminator (Document-level; v2 allows per-series override).
 - Data point shapes per chart type — a closed table.
 - Format mapping JSON and YAML — no Markdown.
 - Web UI activation with Apache ECharts as renderer.
@@ -34,10 +34,10 @@ Distinctions:
 
 **What it does not define:**
 - Markdown form. Deliberately excluded — chart data as CSV-light would be readable, but axis/series configuration would not. Documents with `kind: chart` + Markdown only get the raw editor.
-- Data source bindings (live-pull from Records, SQL queries, external APIs). v1 is static; documents carry their data inline. Live bindings are §6.
+- Data source bindings (live-pull from Records, SQL queries, external APIs). v1 is static; Documents carry their data inline. Live bindings are §6.
 - Interactive chart features (cross-filter, brush selection, drilldown). v1 is display-only with tooltip + dataZoom for time series.
 - Per-document theming beyond colors per series. Theme comes from the DaisyUI layer.
-- Chart composition (multiple charts in one document). One document = one chart. Multiple charts = multiple documents.
+- Chart composition (multiple charts in one Document). One Document = one chart. Multiple charts = multiple Documents.
 
 ---
 
@@ -51,10 +51,10 @@ Distinctions:
 | `chart`                 | `ChartHeader`                | yes      | Chart metadata (type, title, legend, theme hints).                   |
 | `xAxis`                 | `Axis`                       | no       | X-axis. Default `{ type: 'category' }`. Ignored for pie/donut.       |
 | `yAxis`                 | `Axis`                       | no       | Y-axis. Default `{ type: 'value' }`. Ignored for pie/donut.          |
-| `series`                | `Series[]`                   | yes      | At least one series. Data point shape depends on `chartType`.        |
+| `series`                | `Series[]`                   | yes      | At least one series. Datapoint shape depends on `chartType`.         |
 | `echartsOptionOverride` | `object`                     | no       | Raw ECharts option, deep-merged onto the generated option (escape hatch). |
 
-Unknown top-level keys remain in `doc.extra` and are re-emitted verbatim when writing (analogous to all other Kinds).
+Unknown top-level keys remain in `doc.extra` and are re-emitted verbatim when written (analogous to all other Kinds).
 
 ### 2.2 ChartHeader
 
@@ -75,33 +75,37 @@ Unknown top-level keys remain in `doc.extra` and are re-emitted verbatim when wr
 | `label`      | `string`                                      | no       | Axis label.                                                                            |
 | `min`        | `number`                                      | no       | Forces the lower limit (otherwise auto).                                               |
 | `max`        | `number`                                      | no       | Forces the upper limit (otherwise auto).                                               |
-| `categories` | `string[]`                                    | no       | Only for `type: category` — explicit category order. Otherwise from data points.       |
+| `categories` | `string[]`                                    | (see below) | Only for `type: category` — explicit category order. If not specified, the renderer derives the tick list from the data points of the **first series**. |
 
-`type: time` interprets the X-values of data points as ISO-8601 strings or Unix milliseconds. `type: log` requires positive values; for negative values, a codec warning + fallback to `value`.
+The Axis field list is **closed**: the codec reads only `type`, `label`, `min`, `max`, `categories`. Unknown axis keys do **not** end up in `extra`, but are discarded — an `xAxis.name` or `axisLabel` written out of ECharts habit will thus silently disappear (no codec error, no render). Raw ECharts axis options belong in `echartsOptionOverride`.
+
+`categories` is **required as soon as multiple series on a Category-Axis do not share the same `x` set**: otherwise, the tick list only comes from the first series, and points of later series with a missing `x` there have no slot on the axis and do not render — without a codec error. In that case, list all `x` values of all series in character order and set `stacked: true` so that for each category, a bar spans the full slot width instead of being distributed across all series.
+
+`type: time` interprets the X values of the data points as ISO-8601 strings or Unix milliseconds. `type: log` requires positive values; for negative values, a codec warning + fallback to `value`.
 
 ### 2.4 Series
 
-| Field   | Type                | Required | Meaning                                                                                      |
-|---------|---------------------|----------|------------------------------------------------------------------------------------------------|
-| `name`  | `string`            | **yes**  | Display name in the legend and tooltip. Unique per document.                                   |
-| `color` | `string` (HTML-Hex) | no       | Color of the series. Missing → ECharts theme palette.                                          |
-| `data`  | `DataPoint[]`       | **yes**  | At least one data point. Shape depends on `chart.chartType` — see §2.5.                        |
+| Field   | Type               | Required | Meaning                                                                                      |
+|---------|--------------------|----------|----------------------------------------------------------------------------------------------|
+| `name`  | `string`           | **yes**  | Display name in the legend and tooltip. Unique per Document.                                 |
+| `color` | `string` (HTML-Hex)| no       | Color of the series. Missing → ECharts Theme palette.                                        |
+| `data`  | `DataPoint[]`      | **yes**  | At least one data point. Shape depends on `chart.chartType` — see §2.5.                      |
 
 Per-series override of `chartType` (mixed types like Line-on-Bar) is v2 — see §6.
 
 ### 2.5 Data Point Shapes per Chart Type
 
-| `chartType`     | Object Form                                          | Tuple Form (alternative)            |
+| `chartType`     | Object Form                                          | Tuple Form (alternative)           |
 |-----------------|------------------------------------------------------|------------------------------------|
 | `line` / `bar` / `area` | `{ x: string\|number, y: number }`           | `[x, y]`                           |
-| `scatter`       | `{ x: number, y: number, size?: number }`            | `[x, y]` or `[x, y, size]`       |
+| `scatter`       | `{ x: number, y: number, size?: number }`            | `[x, y]` or `[x, y, size]`         |
 | `pie` / `donut` | `{ name: string, value: number, color?: string }`    | —                                  |
 | `candlestick`   | `{ t: string\|number, o: number, h: number, l: number, c: number, v?: number }` | `[t, o, h, l, c]` or `[t, o, h, l, c, v]` |
-| `heatmap`       | `{ x: string\|number, y: string\|number, v: number }` | `[x, y, v]`                       |
+| `heatmap`       | `{ x: string\|number, y: string\|number, v: number }` | `[x, y, v]`                        |
 
 **Rules:**
 - Both forms are equivalent in the codec. When reading, tuple-form points are internally normalized to object form; when writing, the form in which the data point was received wins (round-trip stable per point). Mixing within a series is allowed.
-- `chartType` and `data` shape must match. Mismatch (e.g., `chartType: candlestick` with `{x, y}` points) → `ChartCodecError("Data shape does not match chartType: <type>")` during parsing.
+- `chartType` and `data` shape must match. Mismatch (e.g., `chartType: candlestick` with `{x, y}` points) → `ChartCodecError("Data shape does not match chartType: <type>")` on parse.
 - `pie`/`donut` have **no** axis semantics; `xAxis`/`yAxis` are ignored (codec drops warnings).
 - For `time` axes: `x`/`t` is an ISO-8601 string (`2024-01-02` or `2024-01-02T15:30:00Z`) or Unix milliseconds (`1704153600000`). Inconsistent types within a series → codec warning, fallback to string sort.
 
@@ -141,7 +145,7 @@ Per-series override of `chartType` (mixed types like Line-on-Bar) is v2 — see 
 }
 ```
 
-**Header Convention per Format:** identical to [doc-kind-graph](doc-kind-graph.md) — both JSON and YAML carry `kind` in a `$meta` mapping at the top level. Structured top-level objects (`chart`, `xAxis`, `yAxis`, `series`) remain outside of `$meta`.
+**Header convention per format:** identical to [doc-kind-graph](doc-kind-graph.md) — both JSON and YAML carry `kind` in a `$meta` mapping at the top level. Structured top-level objects (`chart`, `xAxis`, `yAxis`, `series`) remain outside of `$meta`.
 
 ---
 
@@ -152,12 +156,12 @@ Per-series override of `chartType` (mixed types like Line-on-Bar) is v2 — see 
 See §2.6 for the canonical form.
 
 **Reading Rules:**
-- `kind` from `$meta.kind` (with top-level fallback for legacy documents).
+- `kind` from `$meta.kind` (with top-level fallback for legacy Documents).
 - Top-level keys `chart`, `xAxis?`, `yAxis?`, `series`, `echartsOptionOverride?`. Other keys (except `$meta`) → `doc.extra`.
 - `chart.chartType` is required and must be from the enum; otherwise, a codec error.
 - `series` must be an array of objects with at least one entry. For each series, `name` and `data` are required; entries without them are dropped.
 - Data points: for each series, the shape is validated against `chartType` (see §2.5). Individual malformed points are dropped with a codec warning; the series survives if at least one point remains valid.
-- `echartsOptionOverride` is **not** parsed-validated; whatever is in it is fed directly into ECharts during rendering (`merge` strategy). The document owner is responsible for valid ECharts options.
+- `echartsOptionOverride` is **not** parsed-validated; whatever is in it is fed directly into ECharts during rendering (`merge` strategy). The Document owner is responsible for valid ECharts options.
 
 **Writing Rules:**
 - 2-space indent.
@@ -188,7 +192,7 @@ series:
       - [2024-01-04, 182.15, 183.09, 180.88, 181.91, 71983600]
 ```
 
-Single-document: Top-level mapping with `$meta: { kind: chart }` as the first key, followed by `chart`, `xAxis?`, `yAxis?`, `series`, `echartsOptionOverride?` at the same level. Block style for top-level structures, flow style allowed for compact data points (see example above).
+Single-Document: Top-level mapping with `$meta: { kind: chart }` as the first key, followed by `chart`, `xAxis?`, `yAxis?`, `series`, `echartsOptionOverride?` at the same level. Block style for top-level structures, flow style allowed for compact data points (see example above).
 
 ### 3.3 Markdown
 
@@ -200,7 +204,7 @@ Single-document: Top-level mapping with `$meta: { kind: chart }` as the first ke
 
 Like graph/data/sheet: **no dedicated endpoint**, no server-side chart parser/renderer. Editor loads via `GET /documents/{id}`, parses in the browser, writes back via `PUT /documents/{id}`. `HeaderStrategy` automatically mirrors `kind: chart` to `DocumentDocument.kind`.
 
-Server-side rendering (e.g., PNG export for reports) is not v1 — see §6.
+Server-side rendering (e.g., PNG export for Reports) is not v1 — see §6.
 
 `chart`/`xAxis`/`yAxis`/`series` blocks are transparent to the server; it sees them like all other top-level JSON/YAML keys.
 
@@ -237,46 +241,46 @@ Alternatives considered and rejected:
 
 | Feature                              | v1  | Note |
 |--------------------------------------|-----|------|
-| Render all v1 chart types            | ✓   | line, bar, area, scatter, pie, donut, candlestick, heatmap |
-| Tooltip on hover                     | ✓   | ECharts standard, formatted per chart type |
-| Toggle legend                        | ✓   | Click on legend entry hides series |
-| Pan/Zoom on time axis                | ✓   | `dataZoom` slider below the chart for `xAxis.type === 'time'` |
-| Theme hook to DaisyUI                | ✓   | Background/text from CSS variables |
-| Side panel: Change ChartType         | ✓   | Dropdown in toolbar (line/bar/area/…) — writes `chart.chartType` |
-| Side panel: Title, Legend, Stacked   | ✓   | Inputs in toolbar |
-| Side panel: Change axis type         | ✓   | xAxis/yAxis `type` dropdown |
-| Per-series color picker              | ✓   | HTML5 `<input type="color">` |
-| `echartsOptionOverride` editor       | ✓   | Mini JSON textarea in toolbar (power users) |
-| Edit data points in UI               | ◯   | best-effort: for pie/bar add-row dialog; for time-series editing via Raw tab |
-| Live data binding (Records / SQL)    | ✗   | v2, see §6 |
-| Server-side PNG export               | ✗   | v2 |
-| Cross-chart brush / drilldown        | ✗   | v3 |
+| Render all v1 Chart Types            | ✓   | line, bar, area, scatter, pie, donut, candlestick, heatmap |
+| Tooltip on Hover                     | ✓   | ECharts standard, formatted per chart type |
+| Toggle Legend                        | ✓   | Click on legend entry hides series |
+| Pan/Zoom on Time Axis                | ✓   | `dataZoom` slider below the chart for `xAxis.type === 'time'` |
+| Theme Hook on DaisyUI                | ✓   | Background/text from CSS variables |
+| Side Panel: Change ChartType         | ✓   | Dropdown in toolbar (line/bar/area/…) — writes `chart.chartType` |
+| Side Panel: Title, Legend, Stacked   | ✓   | Inputs in toolbar |
+| Side Panel: Change Axis Type         | ✓   | xAxis/yAxis `type` dropdown |
+| Per-Series Color Picker              | ✓   | HTML5 `<input type="color">` |
+| `echartsOptionOverride` Editor       | ✓   | Mini JSON textarea in toolbar (power users) |
+| Edit Datapoints in UI                | ◯   | best-effort: for pie/bar add-row dialog; for time-series editing via Raw tab |
+| Live Data Binding (Records / SQL)    | ✗   | v2, see §6 |
+| Server-Side PNG Export               | ✗   | v2 |
+| Cross-Chart Brush / Drilldown        | ✗   | v3 |
 
 (◯) = best-effort, not fully as spec'd
 
 ### 5.4 Components
 
 - `<ChartView>` — Top-level. Receives `:doc: ChartDocument`, emits `update:doc`.
-  - Holds a local, mutable copy of `chart`/`xAxis`/`yAxis`/`series`.
+  - Holds local, mutable copy of `chart`/`xAxis`/`yAxis`/`series`.
   - Maps the Vancetope schema → ECharts option via `chartSchemaToEChartsOption(doc)` (pure function in `@vance/shared/chart`).
   - Initializes ECharts in `onMounted`, calls `chart.setOption(option, true)` on schema change, disposes in `onBeforeUnmount`.
-  - Merges `echartsOptionOverride` via `lodash.merge` over the generated option (document override wins).
+  - Merges `echartsOptionOverride` via `lodash.merge` over the generated option (Document override wins).
   - Side panel on the right: global chart properties (Type, Title, Legend, Axes); when a series is selected (click on legend), Color + Name are editable.
   - Toolbar at the top: `+ Datapoint` (for pie/bar), `+ Series`, `Reset Zoom`, hint to Raw tab for complex edits.
 
-- `<ChartTypePicker>` — Dropdown with icon buttons per chart type, switches `chart.chartType`. When switching, data points are validated against the new shape; if it doesn't fit, a warning dialog shows the incompatibility and offers "Discard data, change type" vs. "Cancel".
+- `<ChartTypePicker>` — Dropdown with icon buttons per chart type, switches `chart.chartType`. On change, data points are validated against the new shape; if it doesn't fit, a warning dialog shows the incompatibility and offers "delete data, change type" vs. "cancel".
 
 ### 5.5 Visual Conventions
 
 - Chart container fills editor content to 65 vh / min. 420 px height (analogous to Mindmap/Graph).
 - Default theme: ECharts with dynamically calculated colors from DaisyUI CSS variables — background `hsl(var(--b1))`, text `hsl(var(--bc))`, grid lines `hsl(var(--bc) / 0.1)`.
 - Series default palette: ECharts standard, overridden per series via `color` field.
-- Side panel on the right (or bottom on narrow viewports): properties, structured into sections "Chart", "X-Axis", "Y-Axis", "Series".
+- Side panel on the right (or bottom on narrow viewports): Properties, structured into sections "Chart", "X-Axis", "Y-Axis", "Series".
 - Toolbar at the top: ChartType picker, "Reset Zoom", hint text with cheat sheet for operation.
 
 ### 5.6 Changing Chart Type
 
-Data point shapes differ per chart type (§2.5). When switching via the side panel, `<ChartView>` checks:
+Datapoint shapes differ per chart type (§2.5). When changing via the side panel, `<ChartView>` checks:
 
 1. Are the existing data points **compatible** with the new type?
    - `line` ↔ `bar` ↔ `area` ↔ `scatter` → yes, all share `{x, y}`.
@@ -290,38 +294,38 @@ Data point shapes differ per chart type (§2.5). When switching via the side pan
 
 ### 6.1 Live Data Binding
 
-`series.data` becomes `series.dataRef: { document: <docId>, query: <path> }` — the renderer loads another document (e.g., a `kind: records`) at render time and projects it onto the data points. This allows the chart to live on the source data and not require manual updates when data changes. A separate spec point, as query language (JSONPath? jq subset? Records column selector?) and caching/refresh semantics need to be clarified.
+`series.data` becomes `series.dataRef: { document: <docId>, query: <path> }` — the renderer loads another Document at render time (e.g., a `kind: records`) and projects it onto the data points. This allows the chart to live on the source data and not require manual updates when data changes. A separate spec point, as query language (JSONPath? jq subset? Records column selector?) and caching/refresh semantics need to be clarified.
 
 ### 6.2 Per-Series-ChartType (Mixed Charts)
 
-`series[i].chartType` overrides the document-level `chart.chartType` for that one series. Use case: volume bar below candlestick, line trend over bar comparison. v2 extension; v1 only requires the document-level field because 80% of charts are single-type.
+`series[i].chartType` overrides the Document-level `chart.chartType` for that one series. Use case: volume bar below candlestick, line trend over bar comparison. v2 extension; v1 only requires the Document-level field because 80% of charts are single-type.
 
 ### 6.3 Server-Side Rendering (PNG/SVG Export)
 
-For reports, email embedding, external linking. ECharts can be rendered on the server via Node-Canvas (`echarts-server-renderer` or similar). A separate spec point, as the server pipeline (`vance-brain`) currently has no browser libraries and either a Node sidecar or a JVM-based renderer (JFreeChart?) must be added.
+For Reports, email embedding, external linking. ECharts can be rendered on the server via Node-Canvas (`echarts-server-renderer` or similar). A separate spec point, as the server pipeline (`vance-brain`) currently has no browser libraries, and either a Node sidecar or a JVM-based renderer (JFreeChart?) must be added.
 
 ### 6.4 Additional Chart Types
 
-- **Radar** — same shape change effort as pie/heatmap; will come when a use case arises.
+- **Radar** — same shape change effort as pie/heatmap; comes when a use case arises.
 - **Boxplot** — 5-number summary per data point, ECharts supports it natively.
 - **Treemap** / **Sankey** — tree or node-link structure, different data point shape (recursive / nodes+edges). Worth considering: whether Sankey should rather live in `kind: graph` with a Sankey render variant.
 - **Gauge** / **Funnel** — rare, later.
 
 ### 6.5 Annotations and Markers
 
-`markPoint`/`markLine` on Series — e.g., "Release date as vertical line", "Min/Max marker". ECharts supports this natively; only schema extension in the Vancetope schema is needed.
+`markPoint`/`markLine` on Series — e.g., "release date as vertical line", "min/max markers". ECharts supports this natively; only schema extension in the Vancetope schema is needed.
 
 ### 6.6 Recipe Tool: chart_create
 
-A `chart_create(documentName, chartType, series)` tool for Workers that creates a chart as a document from the Recipe. Today, Workers can do this via `doc_create(kind="chart", …)` with a YAML body, but a typed tool would be more LLM-friendly. Follows the pattern of the existing `doc_create` routine.
+A `chart_create(documentName, chartType, series)` tool for Workers that creates a chart as a Document from the Recipe. Today, Workers can do this via `doc_write(kind="chart", …)` with a YAML body, but a typed tool would be more LLM-friendly. Follows the pattern of existing `doc_write` routine.
 
 ---
 
 ## 7. Open Points
 
-- **Default format when creating:** `.json` or `.yaml`? Suggest YAML — consistent with `data`/`graph`, more compact, reliably generated by LLMs.
-- **Tuple form vs. object form as default for UI insert:** If the user adds a data point via UI, the codec writes object form (more readable). For large datasets (e.g., > 200 points), tuple form would be more compact — UI could automatically switch above a threshold. v1: always object form for UI insert; LLM output with tuple form is preserved.
+- **Default format on creation:** `.json` or `.yaml`? Suggest YAML — consistent with `data`/`graph`, more compact, reliably generated by LLMs.
+- **Tuple form vs. Object form as default for UI insert:** If the user adds a data point via UI, the codec writes object form (more readable). For large datasets (e.g., > 200 points), tuple form would be more compact — UI could automatically switch above a threshold. v1: always object form for UI insert; LLM output with tuple form is preserved.
 - **`echartsOptionOverride` validation:** Raw ECharts options are fed at render time; typos lead to silent render defects, not codec errors. Acceptable as an escape hatch — those who use it know what they are doing. Optional lint warning in the side panel is polish.
-- **Bundle size:** ECharts is tree-shakable with v5 modular import (~600 KB for our chart set) — vs. full build ~1.1 MB. We import modularly (`echarts/core` + specific charts and components). Lazy loading of `<ChartView>` analogous to `<MindmapView>`/`<GraphView>` is v1.
+- **Bundle size:** ECharts tree-shakable with v5 modular import (~600 KB for our chart set) — vs. full build ~1.1 MB. We import modularly (`echarts/core` + specific charts and components). Lazy loading of `<ChartView>` analogous to `<MindmapView>`/`<GraphView>` is v1.
 - **Time format ambiguity:** `2024-01-02` (date-only) vs. `2024-01-02T15:30:00Z` (datetime). ECharts handles both; codec does not normalize. If LLMs mix, the tooltip format string can appear inconsistent — polish point.
-- **Incompatible ChartType change:** Current solution requires "Discard data or cancel". A "Transform data if possible" mode (e.g., line → pie aggregates over X-axis) would be smarter, but this opens up aggregation logic complexity that is not necessary in v1.
+- **Incompatible ChartType change:** Current solution requires "discard data or cancel". A smarter approach would be a "transform data if possible" mode (e.g., line → pie aggregates over X-axis), but this opens up aggregation logic complexity that is not needed in v1.

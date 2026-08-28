@@ -12,11 +12,11 @@
 
 **Problem.** Vancetope needs a clearly defined place that answers "generate a new image":
 
-- Chat user: "Draw me a book cover", "Logo for…", "Sketch of a medieval marketplace".
+- Chat user: "Draw me a book cover", "Logo for …", "Sketch of a medieval marketplace".
 - Magrathea workflows / Marvin plans: one image per chapter, per slide, per asset.
-- Spec/doc pipelines (Hactar): a diagram image for an architecture description.
+- Spec/documentation pipelines (Hactar): a diagram image for an architecture description.
 
-Image generation is a **single-shot process** without multi-turn reasoning, without a tool-use loop, without streaming. A dedicated worker engine with `ThinkProcessDocument` lifecycle, `pendingMessages` inbox, lane lock, and `drainPending` loop would be overkill. The pattern is the same as for [Discovery](how-do-i.md), [Follow-Up](follow-up.md), [Fook](fook-service.md): a Spring `@Service` that calls an external API with setting cascade context.
+Image generation is a **single-shot process** without multi-turn reasoning, without a tool-use loop, without streaming. A dedicated worker engine with `ThinkProcessDocument` lifecycle, `pendingMessages` Inbox, Lane-Lock, and `drainPending` loop would be overkill. The pattern is the same as for [Discovery](how-do-i.md), [Follow-Up](follow-up.md), [Fook](fook-service.md): a Spring `@Service` that calls an external API with a setting cascade context.
 
 **Solution.** Fenchurch is a **system of five collaborating components:**
 
@@ -28,10 +28,10 @@ Image generation is a **single-shot process** without multi-turn reasoning, with
 
 **What it is not:**
 
-- **Not a Worker Engine.** There is no `FenchurchEngine`, no spawn path, no entry in the Session Browser as a separate node. Tool calls appear in the normal tool call history of the caller process.
-- **Not an async Workflow.** Every `image_generate` call blocks the caller process's Lane until bytes are written. Bulk generation runs via Marvin Plans (one WORKER child per image — parallelized across Lanes), not via async jobs in the Service.
+- **Not a worker engine.** There is no `FenchurchEngine`, no spawn path, no entry in the Session Browser as a separate node. Tool calls appear in the normal tool call history of the caller process.
+- **Not an async workflow.** Every `image_generate` call blocks the caller process's Lane until bytes are written. Bulk generation runs via Marvin plans (one WORKER child per image — parallelized across Lanes), not via async jobs in the service.
 - **No Image Edit / Variation / Inpainting v1.** Later tools (`image_edit`, `image_variation`) are planned as separate extensions; the provider interface is designed so they can be added without breaking changes.
-- **No LLM Prompt Refinement Pass.** A second LLM call between user prompt and image provider is intentionally not built in — setting `ai.fenchurch.refine_prompts` is reserved as a placeholder for v2.
+- **No LLM prompt refinement pass.** A second LLM call between user prompt and image provider is intentionally not built in — setting `ai.fenchurch.refine_prompts` is reserved as a placeholder for v2.
 
 ---
 
@@ -96,7 +96,7 @@ Generates an image and writes it to the Document Store.
 
 | Field | Type | Required | Meaning |
 |-------|------|----------|---------|
-| `prompt` | string | ✓ | Description of the image content. Only write style tokens here if no persistent style layer is active (see `image_style_prompt`). |
+| `prompt` | string | ✓ | Description of the image content. Only include style tokens here if no persistent style layer is active (see `image_style_prompt`). |
 | `path` | string | ✗ | Document path. If set: overwrites an existing file (with Document Versioning archiving according to [document-versioning](document-versioning.md)). If empty: `images/<uuid8>-<slug>.png`. |
 | `title` | string | ✗ | Override of the automatically generated title. If neither set nor `ai.fenchurch.auto_title_from_prompt = false`: the `image-title` Recipe call generates it. |
 | `aspectRatio` | enum | ✗ | `1:1` (Default) / `16:9` / `9:16` / `4:3` / `3:4`. Provider validates against the `supportedAspectRatios` list in `ai-models.yaml`. |
@@ -135,7 +135,7 @@ Writes a persistent style prefix to a Scope.
 | Field | Type | Required | Meaning |
 |-------|------|----------|---------|
 | `prefix` | string | ✓ | Style tokens (e.g., `medieval manuscript`, `watercolor, soft tones`). Max 500 characters. Sentinel `__none__` suppresses all outer layers from this Scope. |
-| `scope` | enum | ✗ | `session` (Default) / `project` / `user` / `tenant`. Permission check via `SettingService` — narrower scopes (`session`) are writable without special rights, broader ones require the respective Project/Tenant permission. |
+| `scope` | enum | ✗ | `session` (Default) / `project` / `user` / `tenant`. Permission check via `SettingService` — narrower Scopes (`session`) are writable without special rights, broader ones require the respective Project/Tenant permission. |
 
 **Response (Success):**
 
@@ -143,13 +143,13 @@ Writes a persistent style prefix to a Scope.
 { "scope": "session", "prefix": "watercolor, soft tones" }
 ```
 
-**Response (Permission-Denied / Validation Error):**
+**Response (Permission Denied / Validation Error):**
 
 ```json
 { "error": "permission_denied|invalid_argument", "message": "...", "retryable": false }
 ```
 
-**LLM Contract:** Default scope `session` is intentionally the most local — the LLM may set it without prompting if the user says "remember style X". For `project`/`user`/`tenant`, the Persona's claim is higher; the Engine Manual `image-generation.md` explicitly recommends getting a brief confirmation from the user before the LLM writes to a broader scope.
+**LLM Contract:** Default Scope `session` is intentionally the most local — the LLM may set it without prompting if the user says "remember style X". For `project`/`user`/`tenant`, the Persona requirement is higher; the Engine Manual `image-generation.md` explicitly recommends getting a brief confirmation from the user before the LLM writes to a broader Scope.
 
 ### 3.3 `image_style_get`
 
@@ -167,11 +167,11 @@ or
 { "scope": "session", "prefix": null }
 ```
 
-If the LLM only wants to see *what it has set*, this is the tool. For the merged cascade, there is a second one:
+If the LLM only wants to see *what it has set*, this is the tool. For the merged Cascade, there is a second one:
 
 ### 3.4 `image_style_prompt`
 
-Reads the effective cascade after `__none__` cutoff:
+Reads the effective Cascade after `__none__` cutoff:
 
 ```json
 {
@@ -213,7 +213,7 @@ public void generate(AiImageConfig config, String prompt,
 }
 ```
 
-`AiImageConfig` (Record) carries the typical resolved config: `provider`, `providerInstance`, `modelName`, `apiKey` (plaintext, already decrypted), `baseUrl?`, `aspectRatio`, `timeoutSeconds`. Built in `FenchurchService` via `AiModelResolver` + `ChatBehaviorBuilder.resolveApiKey` / `.resolveBaseUrl` — exactly the helpers the chat stack uses.
+`AiImageConfig` (Record) carries the typical resolved config: `provider`, `providerInstance`, `modelName`, `apiKey` (plaintext, already decrypted), `baseUrl?`, `aspectRatio`, `timeoutSeconds`. Built in `FenchurchService` via `AiModelResolver` + `ChatBehaviorBuilder.resolveApiKey` / `.resolveBaseUrl` — exactly the helpers used by the chat stack.
 
 ### 4.2 `ImageDestinationStream`
 
@@ -247,7 +247,7 @@ Both set `maxRetries = 0` on the langchain4j builder; retry logic belongs to the
 
 ## 5. Style Cascade
 
-`FenchurchStyleService` implements a **concatenative cascade** across four Scopes — unlike the "innermost wins" default cascade mode of `SettingService`. Rationale: Style builds additively; a Tenant default like "clean, professional" should still apply if the user also sets "watercolor" as a Persona default.
+`FenchurchStyleService` implements a **concatenative cascade** across four Scopes — unlike the "innermost wins" default cascade mode of `SettingService`. Rationale: Style builds additively; a Tenant default like "clean, professional" should still apply if the user additionally sets "watercolor" as a Persona default.
 
 **Scope Mapping to `SettingService`:**
 
@@ -258,7 +258,7 @@ Both set `maxRetries = 0` on the langchain4j builder; retry logic belongs to the
 | `project` | `SCOPE_PROJECT`, Project name = current Project name |
 | `session` | `SCOPE_THINK_PROCESS`, Process ID = current Process ID |
 
-**Setting Key:** `ai.fenchurch.style_prefix` (uniform for all scopes).
+**Setting Key:** `ai.fenchurch.style_prefix` (uniform for all Scopes).
 
 **Composition Rule:**
 
@@ -290,7 +290,7 @@ The `project` layer cut off the cascade from above; `session` is within and rema
 
 ## 6. Title Generation
 
-If the caller provides neither `title` nor `path` and `ai.fenchurch.auto_title_from_prompt = true` (Default), the service calls the internal Recipe `image-title` via [LightLlmService](light-llm-service.md) before the actual image provider call. This call is negligible compared to the image call (seconds to minutes) (~1-2 s).
+If the caller provides neither `title` nor `path` and `ai.fenchurch.auto_title_from_prompt = true` (Default), the service calls the internal Recipe `image-title` via [LightLlmService](light-llm-service.md) before the actual Image Provider call. This call is negligible (~1-2 s) compared to the Image call (seconds to minutes).
 
 **Recipe `_vance/recipes/image-title.yaml`:**
 
@@ -301,7 +301,7 @@ If the caller provides neither `title` nor `path` and `ai.fenchurch.auto_title_f
 - `params.temperature: 0.2` (deterministic)
 - `promptPrefix`: Pebble template with variable `{{ prompt }}`. Requires JSON `{title, slug}` with constraints:
   - `title`: 2-6 words, Title Case, max 80 characters
-  - `slug`: lowercase kebab-case ASCII, 1-30 characters, without leading/trailing hyphen
+  - `slug`: lowercase kebab-case ASCII, 1-30 characters, no leading/trailing hyphen
 
 In case of `LightLlmException` (schema failure, provider down), the service falls back to slug `"image"` and logs `INFO`. The image is still generated — title generation failure is never fatal.
 
@@ -313,9 +313,9 @@ In case of `LightLlmException` (schema failure, provider down), the service fall
 
 **Default Path:** `images/<uuid8>-<slug>.png` — `uuid8` is the first 8-character prefix of a freshly generated UUID. Sufficient for practical uniqueness (≈4 billion combinations per slug variant) without unwieldy long paths.
 
-**Caller-supplied path:** used verbatim; an already existing file is **overwritten**. The normal Document Versioning mechanism archives the previous version (see [document-versioning](document-versioning.md)) — image documents are not excluded from archiving, as rollback for AI generation is explicitly desired.
+**Caller-supplied path:** used verbatim; an already existing file is **overwritten**. The normal Document Versioning mechanism archives the previous version (see [document-versioning](document-versioning.md)) — Image Documents are not excluded from archiving, as rollback for AI generation is explicitly desired.
 
-**Path Validation** occurs in `DocumentService` — no path traversal outside the Project scope, no specific extension is enforced (provider delivers PNG by default, this is convention, not a service check).
+**Path Validation** occurs in `DocumentService` — no path traversal outside the Project Scope, no specific extension is enforced (provider delivers PNG by default, this is convention, not a service check).
 
 **Document Metadata on `DocumentDocument`** (set by `DocumentImageDestinationStream`):
 
@@ -393,7 +393,7 @@ ai.alias.default.image:       gemini:gemini-2.5-flash-image
 ai.alias.default.image-high:  openai:gpt-image-1
 ```
 
-The cascade resolution runs through the existing [`AiModelResolver`](llm-resource-management.md) — the resolver knows no image special case, the alias mechanism works for arbitrary keys.
+Cascade resolution runs through the existing [`AiModelResolver`](llm-resource-management.md) — the resolver knows no image special case, the alias mechanism works for arbitrary keys.
 
 ---
 
@@ -414,7 +414,7 @@ Append-only Collection `image_call_records`:
 | `qualityTier` | `standard` / `hd` |
 | `outcome` | `success` / `timeout` / `provider_error` / `quota_exceeded` / `content_policy` / `cancelled` (fixed vocabulary, Prometheus-cardinality-safe) |
 | `at` | wall-clock start of the call |
-| `durationMs` | duration including provider + network |
+| `durationMs` | Duration including provider + network |
 
 Indices: `(tenantId, at)`, `(tenantId, accountId, at)`, `(tenantId, projectId, at)`. Retention is not implemented in v1 — cleanup is an operational task.
 
@@ -432,7 +432,7 @@ if !verdict.allowed: throw FenchurchException(QUOTA_EXCEEDED, verdict.message)
 
 If a limit is set, it is counted **tenant-wide**: `countByTenantIdAndAtGreaterThanEqual(tenantId, startOfDay)` or `startOfMonth`. If the measured count `>= limit`: `Verdict(false, "daily"|"monthly", message)`.
 
-**More granular Per-Account Buckets** are v1.1 (separate story). This means: a user who sets a strict `daily_images = 10` setting in the `_user_<self>` scope caps the entire tenant to 10 calls/day while active. Bug workaround: users with their own limits should choose realistic tenant-wide appropriate numbers.
+**More granular per-account buckets** are v1.1 (separate story). This means: a user who sets a strict `daily_images = 10` setting in the `_user_<self>` scope caps the entire tenant to 10 calls/day while active. Bug workaround: users with their own limits should choose realistic tenant-wide appropriate numbers.
 
 ### 9.3 Metrics
 
@@ -458,7 +458,7 @@ Before the first tick, an initial `WAITING` without a timestamp is pushed (so th
 
 The channel is **ephemeral** (`PROCESS_PROGRESS` convention, see [user-progress-channel](user-progress-channel.md)) — no entry in conversation history, no persistence.
 
-If the caller does not provide a `processId` (e.g., REST call without process context), the heartbeat is completely omitted — no silent failure.
+If the caller does not provide a `processId` (e.g., REST call without process context), the heartbeat is entirely omitted — no silent failure.
 
 ---
 
@@ -467,7 +467,7 @@ If the caller does not provide a `processId` (e.g., REST call without process co
 | Key | Type | Default | Cascade |
 |-----|------|---------|---------|
 | `ai.fenchurch.enabled` | boolean | `true` | Tenant → System |
-| `ai.fenchurch.timeout` | int (sec) | from `ImageModelInfo.timeoutSeconds`, otherwise 360 | Process → Project → User → Tenant |
+| `ai.fenchurch.timeout` | int (sec) | from `ImageModelInfo.timeoutSeconds`, else 360 | Process → Project → User → Tenant |
 | `ai.fenchurch.default_aspect_ratio` | string | `1:1` | Process → Project → User → Tenant |
 | `ai.fenchurch.heartbeat_interval_sec` | int | 30 | Tenant |
 | `ai.fenchurch.daily_images` | long | 0 (= unlimited) | Process → User → Project → Tenant |
@@ -479,7 +479,7 @@ If the caller does not provide a `processId` (e.g., REST call without process co
 **Setting Forms** under `_vance/setting_forms/`:
 
 - `fenchurch.yaml` — Admin tab for configuration settings (enabled, defaults, quotas, timeout, heartbeat).
-- `fenchurch-style.yaml` — slim form only for `style_prefix`, reused in every scope editor (Workspace, Project, User Memory).
+- `fenchurch-style.yaml` — slim form only for `style_prefix`, reusable in every scope editor (Workspace, Project, User Memory).
 
 ---
 
@@ -492,8 +492,8 @@ All Fenchurch-specific errors are thrown as `FenchurchException(Reason, message)
 | `QUOTA_EXCEEDED` | `quota_exceeded` | `false` | Daily/monthly limit reached. LLM should inform user about limit, possibly ask admin. |
 | `PROVIDER_ERROR` | `provider_error` | `true` | Generic provider 5xx / SDK exception. LLM can retry 1-2 times, then try another alias. |
 | `TIMEOUT` | `timeout` | `true` | Provider exceeded `timeoutSeconds`. LLM can retry with `default:image` (fast) or simplify prompt. |
-| `CONTENT_POLICY` | `content_policy` | `false` | Provider rejected prompt (persons, brands, NSFW). LLM must rephrase, **not** retry verbatim. |
-| `CANCELLED` | `cancelled` | `false` | Process suspended / user cancellation mid-call. Caller lifecycle decides. |
+| `CONTENT_POLICY` | `content_policy` | `false` | Provider rejected prompt (people, brands, NSFW). LLM must rephrase, **not** retry verbatim. |
+| `CANCELLED` | `cancelled` | `false` | Process suspended / user abort mid-call. Caller lifecycle decides. |
 | `PROMPT_TOO_LONG` | `prompt_too_long` | `false` | Effective prompt (style + worker) > `maxPromptChars` of the model. LLM shortens or sets `__none__`. |
 | `UNSUPPORTED_ASPECT_RATIO` | `unsupported_aspect_ratio` | `false` | Aspect not in `supportedAspectRatios`. LLM chooses another. |
 | `DISABLED` | `disabled` | `false` | `ai.fenchurch.enabled = false` in scope. Hard stop. |
@@ -510,7 +510,7 @@ Provider error classification: the service inspects the exception message lowerc
 
 - Tool contract with examples for all four tools.
 - Style layer explanation: when `image_style_set` with default scope `session`, when broader.
-- Aspect ratio cheatsheet (use case → ratio).
+- Aspect ratio cheatsheet (Use Case → Ratio).
 - Latency expectations (fast 3-10 s, quality 15 s - 5 min).
 - Anti-patterns: style tokens in prompt AND layer, aspect ratio in prompt text, loop generation for "better" image, PII/brands in prompts.
 - Error mapping with user-facing reactions.
@@ -519,8 +519,8 @@ YAML frontmatter `triggers:` contains German and English keywords (Bild erzeugen
 
 **Hooks in Engine Prompts** that point to `manual_read('image-generation')`:
 
-- `arthur-prompt.md` — dedicated "Generating images" block between "Saving files" and "Inbox vs. chat".
-- `eddie-prompt.md` — German "Bilder generieren" block at the same point.
+- `arthur-prompt.md` — dedicated block "Generating images" between "Saving files" and "Inbox vs. chat".
+- `eddie-prompt.md` — German block "Bilder generieren" at the same point.
 - `ford-prompt.md` — entry in the existing `embed-*` list, with explicit note "different problem from `embed-images`".
 
 Marvin Worker Prompts do **not** get the hook — Marvin spawns Workers via Recipes; the Recipes (e.g., `creative_writer.yaml` or similar) decide themselves whether the Worker LLM should access the manual. Generic Worker system remains lean.
@@ -533,30 +533,30 @@ Explicitly excluded from scope to clarify expectations:
 
 - **`image_edit(path, prompt, mask?)`** — Inpainting / Masking. Separate tool later; `ModelCapability.IMAGE_EDIT` will then be added, the `AiImageModelProvider` interface will get a second method. No anticipation in v1 code.
 - **`image_variation(path, prompt)`** — Reference image conditioning. Same extension pattern.
-- **`n_images > 1`** per tool call. Bulk generation runs via Marvin Plans (one WORKER child per image, parallelized across Lanes).
+- **`n_images > 1`** per tool call. Bulk generation runs via Marvin plans (one WORKER child per image, parallelized across Lanes).
 - **Self-hosted Image Providers** (Stable Diffusion via vLLM/ComfyUI/Automatic1111). Provider interface is open for extension, no provider in v1.
 - **LLM Prompt Refinement Pass** between worker prompt and image provider. Setting `ai.fenchurch.refine_prompts` is a reserved placeholder.
 - **History Mining for Style.** Style layer is explicit — user or LLM (via tool) sets it. No automatic extraction from last turns.
 - **Style Presets** (`logo`, `book-cover`, `diagram` as named bundles). v1 only free text.
-- **Embedding Models in `ai-models.yaml`** with `kind: embedding`. Embedding remains external for now; a potential refactor is a separate story.
-- **Central `ProgressTickerService`** for Long-Running Operations. Fenchurch uses inline heartbeats; refactor once a second consumer (codegen long-run, workflow external wait) wants to share the pattern.
+- **Embedding Models in `ai-models.yaml`** with `kind: embedding`. Embedding remains external for now; any eventual refactor is a separate story.
+- **Central `ProgressTickerService`** for long-running operations. Fenchurch uses inline heartbeats; refactor once a second consumer (codegen long-run, workflow external wait) wants to share the pattern.
 - **Per-Account Quota Buckets.** v1 counts tenant-wide; per-account math comes with the general quota refactor.
-- **Hard-Cap on simultaneous Fenchurch calls per Pod.** Lane lock per Process serializes sufficiently for v1; a pod-wide semaphore with setting `ai.fenchurch.max_concurrent_per_pod` is possible as a later extension.
+- **Hard-cap on concurrent Fenchurch calls per Pod.** Lane-lock per Process serializes sufficiently for v1; a pod-wide semaphore with setting `ai.fenchurch.max_concurrent_per_pod` is possible as a later extension.
 
 ---
 
 ## 15. Status & Phased Rollout
 
 | Phase | Result | Status |
-|-------|----------|--------|
-| **F1** | Provider Abstraction: `AiImageModelProvider`, `AiImageService`, `AiImageConfig`, `ImageDestinationStream` + `DocumentImageDestinationStream`, `DocumentService.createOrReplaceBinary`, `ModelCatalog` extension (`kind: image`, `ImageModelInfo`, `lookupImage` / `listAllImages`) | completed |
-| **F2** | Concrete Providers: `OpenAiImageProvider` + `GeminiImageProvider` (langchain4j `OpenAiImageModel` / `GoogleAiGeminiImageModel`) | completed |
-| **F3** | Service Layer: `FenchurchStyleService`, `ImageCallRecord` + Repository + `ImageCallTracker`, `FenchurchService`, Recipe `image-title.yaml`, Tools `image_generate` / `image_style_set` / `image_style_get` / `image_style_prompt` | completed |
-| **F4** | UX & Discovery: Setting Forms `fenchurch.yaml` + `fenchurch-style.yaml`, Engine Manual `image-generation.md`, Hooks in Arthur/Eddie/Ford Prompts, Engine Catalog `engines.md` clarified | completed |
-| **F5** | Spec (this doc), opt-in E2E test in `qa/ai-test/` against real provider API | Spec completed; E2E open (requires API key setup) |
+|-------|--------|--------|
+| **F1** | Provider Abstraction: `AiImageModelProvider`, `AiImageService`, `AiImageConfig`, `ImageDestinationStream` + `DocumentImageDestinationStream`, `DocumentService.createOrReplaceBinary`, `ModelCatalog` extension (`kind: image`, `ImageModelInfo`, `lookupImage` / `listAllImages`) | done |
+| **F2** | Concrete Providers: `OpenAiImageProvider` + `GeminiImageProvider` (langchain4j `OpenAiImageModel` / `GoogleAiGeminiImageModel`) | done |
+| **F3** | Service Layer: `FenchurchStyleService`, `ImageCallRecord` + Repository + `ImageCallTracker`, `FenchurchService`, Recipe `image-title.yaml`, Tools `image_generate` / `image_style_set` / `image_style_get` / `image_style_prompt` | done |
+| **F4** | UX & Discovery: Setting Forms `fenchurch.yaml` + `fenchurch-style.yaml`, Engine Manual `image-generation.md`, Hooks in Arthur/Eddie/Ford Prompts, Engine Catalog `engines.md` refined | done |
+| **F5** | Spec (this doc), opt-in E2E test in `qa/ai-test/` against real provider API | Spec done; E2E open (needs API key setup) |
 | **F6** *(v1.1+)* | Bulk optimizations, per-account quota buckets, central `ProgressTickerService`, optional self-hosted provider | open |
 
-**Tests:** 112 Unit tests green; `BundledSettingFormsTest` validates the two forms; `ModelCatalogTest` pins the bundled image models (`gpt-image-1`, `gemini-2.5-flash-image`, `imagen-3.0-generate-002`).
+**Tests:** 112 unit tests green; `BundledSettingFormsTest` validates the two forms; `ModelCatalogTest` pins the bundled image models (`gpt-image-1`, `gemini-2.5-flash-image`, `imagen-3.0-generate-002`).
 
 ---
 
@@ -571,6 +571,6 @@ Recorded for future spec readers:
 - **Default Scope `session` for `image_style_set`** — safest default, no spillover. Broader scopes via permission check of the `SettingService` layer.
 - **Title Generation via LightLlm, not Engine Worker** — Recipe `image-title` is `internal: true`, costs a small extra call (~1-2 s, negligible relative to the image call). Toggle via `ai.fenchurch.auto_title_from_prompt`.
 - **Quota: dedicated `ImageCallTracker`, not generic `AiCallTracker`** — Image calls are per-image, not per-token. Generic tracker is a separate refactor story.
-- **`kind: chat | image` Discriminator in `ai-models.yaml`** — disjoint lookups, no pollution of the chat model picker by image entries.
-- **`ImageDestinationStream` as write target abstraction** — Providers know no Document model. On `close()`, everything commits in a single `DocumentService.createOrReplaceBinary` call.
+- **`kind: chat | image` discriminator in `ai-models.yaml`** — disjoint lookups, no pollution of the chat model picker by image entries.
+- **`ImageDestinationStream` as write target abstraction** — providers know no Document model. On `close()`, commit everything in a single `DocumentService.createOrReplaceBinary` call.
 - **Engine Hook only in user-facing Engines (Arthur, Eddie, Ford)** — Worker Recipes link manuals themselves via `manualPaths`, no mandatory hook in the generic Marvin Worker system.

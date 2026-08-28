@@ -1,6 +1,6 @@
 # Vancetope — Multi-User, Teams & Collaboration
 
-> Defines how Tenants, Teams, Users, and Project Sharing work.
+> Defines how Tenants, Teams, Users, and Project sharing work.
 > Builds upon [architektur-scopes-clients](architektur-scopes-clients.md), extending the Scope hierarchy.
 > Status: Concept — not in v1, but data model prepared from the start.
 
@@ -46,7 +46,7 @@ created_at: 2026-04-23
 | Isolation | Complete — no cross-Tenant access, no shared data |
 | Billing | Billing at Tenant level |
 | Admin | Tenant has at least one admin who manages Teams and Users |
-| v1 | Implicit default Tenant. `tenant_id` field exists everywhere, set to Default |
+| v1 | Implicit default Tenant. `tenant_id` field exists everywhere, set to default |
 
 ### 2.2 Team
 
@@ -143,9 +143,9 @@ Instead: **Parallel work on different Think-Processes** within the same Project.
 | **Parallel Think-Processes** | Mike works on Think-Process A, Sarah on Think-Process B — simultaneously, in the same Project |
 | **Shared Memory** | Results from Think-Process A are visible to Think-Process B (Project Scope) |
 | **Shared Knowledge Graph** | Insights and Relations are visible across Projects |
-| **Think-Process Ownership** | Think-Processes have an Owner; others can read them, but only the Owner (or Admin) can modify them |
+| **Think-Process Ownership** | Think-Processes have an Owner; others can read them, but only the Owner (or Admin) can change them |
 | **Review & Approval** | A User can review and approve another's results |
-| **Activity Feed** | Everyone sees what happens in the Project (new Think-Processes, results, insights) |
+| **Activity Feed** | Everyone sees what's happening in the Project (new Think-Processes, results, Insights) |
 
 ### 3.3 Access Matrix
 
@@ -154,8 +154,8 @@ Instead: **Parallel work on different Think-Processes** within the same Project.
 | View Project | yes | yes | yes | yes | yes | yes |
 | Create Think-Process | yes | yes | yes | no | yes | no |
 | Edit own Think-Process | yes | yes | yes | no | yes | no |
-| Edit others' Think-Process | yes | yes | no | no | no | no |
-| Read others' Think-Process | yes | yes | yes | yes | yes | yes |
+| Edit other's Think-Process | yes | yes | no | no | no | no |
+| Read other's Think-Process | yes | yes | yes | yes | yes | yes |
 | Add Memory | yes | yes | yes | no | yes | no |
 | Read Memory | yes | yes | yes | yes | yes | yes |
 | Create Relations | yes | yes | yes | no | yes | no |
@@ -298,14 +298,14 @@ db.activities     // New Activity Feed
 
 - Each User has their own WebSocket connection
 - Brain can broadcast Notifications to all Project members
-- Activity Events are pushed via Project Channel
-- Think-Process Lock Events are sent to all Project Sessions
+- Activity events are pushed via Project channel
+- Think-Process lock events are sent to all Project Sessions
 
 ---
 
 ## 7. Implementation Phases
 
-The Multi-User concept will be introduced incrementally:
+The multi-user concept will be introduced incrementally:
 
 ### v1: Single-User (Implicit)
 - [ ] `tenant_id`, `team_id`, `user_id` fields exist everywhere
@@ -331,7 +331,7 @@ The Multi-User concept will be introduced incrementally:
 ### v4: Collaboration
 - [ ] Parallel Sessions in the same Project
 - [ ] Cross-Think-Process visibility in the Project
-- [ ] Auto-Promotion strategies
+- [ ] Auto-promotion strategies
 - [ ] Notifications (Push, Email)
 - [ ] Review & Approval workflows
 - [ ] Brain Linker finds cross-User connections
@@ -342,9 +342,9 @@ The Multi-User concept will be introduced incrementally:
 
 1. **Shared LLM Keys vs. User Keys:** Does the Team use common API keys (simpler, Tenant pays), or does each User bring their own (cheaper for Tenant, more complex)?
 
-2. **Think-Process Locking Granularity:** Locking at the Think-Process level is probably sufficient. But what if two Users want to edit different sub-trees of the same Think-Process? For now: not allowed. Later: Sub-Tree locking as an extension.
+2. **Think-Process Locking Granularity:** Locking at the Think-Process level is probably sufficient. But what if two Users want to edit different sub-trees of the same Think-Process? For now: not allowed. Later: sub-tree locking as an extension.
 
-3. **Permissions Model:** RBAC is sufficient for the beginning. Long-term, possibly ABAC (Attribute-Based Access Control) for finer rules like "Viewer may see Insights but no Claims".
+3. **Permissions Model:** RBAC is sufficient for the beginning. Long-term, possibly ABAC (Attribute-Based Access Control) for finer rules like "Viewer can see Insights but no Claims".
 
 4. **Data Residency:** Relevant for Enterprise Tenants — where is the data located? MongoDB Atlas regions? Self-hosted option?
 

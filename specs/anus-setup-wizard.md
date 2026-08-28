@@ -16,15 +16,15 @@ permalink: /specs/anus-setup-wizard
 
 ## 1. Purpose
 
-Production bootstrap of a Vancetope stack without `init-settings.yaml` secret knowledge and without Acme demo data. Specific use case: Start Docker-Compose stack (Brain runs with `vance.bootstrap.acme=false`), then **once** start an Anus one-shot container with `--setup` — the operator clicks through tenant + user + provider + serper, writes everything, and the container exits.
+Production bootstrap of a Vancetope stack without `init-settings.yaml` secret knowledge and without Acme demo data. Specific use case: start Docker Compose stack (Brain runs with `vance.bootstrap.acme=false`), then **once** start an Anus one-shot container with `--setup` — the operator clicks through tenant + user + provider + serper, writes everything, and the container exits.
 
 **Distinction from existing paths:**
 
 | Path | When | What |
 |---|---|---|
-| `BootstrapBrainService` (Brain) | every Brain boot | Idempotent Acme demo Tenant (`vance.bootstrap.acme=true`, Default), for local development |
+| `BootstrapBrainService` (Brain) | every Brain boot | Idempotent Acme demo Tenant (`vance.bootstrap.acme=true`, default), for local development |
 | `InitSettingsLoader` (Brain) | every Brain boot | Reads `confidential/init-settings.yaml` and writes Provider Keys / Aliases / Research to existing Tenants |
-| `anus --sudo "<cmd>"` | unattended Ops script | Execute individual shell commands (`tenant list`, `user create …`) headlessly |
+| `anus --sudo "<cmd>"` | unattended Ops script | Execute individual shell commands (`tenant list`, `user create …`) headless |
 | `anus --setup` | **First-Boot Production** | Guided wizard, writes Tenant + User + Provider + Research in one flow |
 
 The wizard **does not replace** the `init-settings.yaml` path — both serve the same settings store. The wizard is only the human-driven initial setup path; `init-settings.yaml` remains for replays after Mongo wipe and for automated deployments.
@@ -37,7 +37,7 @@ The wizard **does not replace** the `init-settings.yaml` path — both serve the
 anus --setup
 ```
 
-Argv parsing happens in `VanceAnusApplication.main` **before** Spring Boot — otherwise, Spring Shell's `NonInteractiveShellRunner` would interpret `--setup` as a shell command and fail. Order:
+Argv parsing happens in `VanceAnusApplication.main` **before** Spring Boot — otherwise Spring Shell's `NonInteractiveShellRunner` would interpret `--setup` as a shell command and fail. Order:
 
 1. `SudoBootstrap.parse(args)` — strips `--sudo`/`--sudo=` pairs (see `--sudo` path).
 2. `SetupBootstrap.parse(remaining)` — strips `--setup` flags, sets `setupMode = true`.
@@ -74,9 +74,9 @@ main()
 
 ## 4. Flow
 
-### 4.1 Overview First
+### 4.1 Overview first
 
-Immediately upon startup, the wizard outputs the **complete Tenant + User structure** (System Tenant `_vance` hidden, Service Accounts shown under Users in the Tenant listing for completeness, but filtered during later User selection).
+Immediately upon startup, the wizard outputs the **complete Tenant + User structure** (System Tenant `_vance` hidden, service accounts shown under Users in the Tenant listing for completeness, but filtered during later User selection).
 
 ```
 Vancetope Setup
@@ -96,8 +96,8 @@ The value in parentheses after the Tenant title is `ai.default.provider` (Settin
 Select tenant [1-N], c) Create new, q) Quit: _
 ```
 
-- Number → Selection, loads `tenantTitle` + Provider defaults from settings.
-- `c` → Sub-Wizard: Tenant Name (lowercase, `_vance` reserved), Tenant Title. `tenantCreated = true`.
+- Number → selection, loads `tenantTitle` + Provider defaults from settings.
+- `c` → sub-wizard: Tenant Name (lowercase, `_vance` reserved), Tenant Title. `tenantCreated = true`.
 - `q` → exit without writing.
 
 If there are no Tenants, the wizard jumps directly into the Create path — the selection question is omitted.
@@ -111,7 +111,7 @@ Users in tenant 'acme':
 Select user [1-N], c) Create new, q) Quit: _
 ```
 
-Service Accounts (name starts with `_`) are filtered. If there are no regular Users: direct Create sub-wizard. For Create: Login Name, Title (Default = Login), Email (optional), Password (mandatory, confirmation, masked input).
+Service accounts (name starts with `_`) are filtered. If no regular users: direct Create sub-wizard. For Create: Login Name, Title (default = Login), Email (optional), Password (mandatory, confirmation, masked input).
 
 ### 4.4 Setup Menu
 
@@ -135,13 +135,13 @@ Edit [1-10], s) Save, q) Quit: _
 Edit rules:
 - **Tenant Name (1)** and **User Name (3)** are immutable — to change them, restart the wizard.
 - **Tenant Title (2)** is editable; for an existing Tenant with a changed title, Save calls `tenantService.update`.
-- **User Title (4)** / **User Email (5)** set `userFieldsChanged = true` for existing Users, so Save calls `userService.update(...)`.
+- **User Title (4)** / **User Email (5)** set `userFieldsChanged = true` for existing users, so Save calls `userService.update(...)`.
 - **AI Provider (6)** opens sub-selection. On change, `aiModel` is reset to the Provider default **and** `aiApiKey` / `embeddingApiKey` are cleared — the existing key does not match the new Provider.
 - **AI Model (7)** is free input (operator's responsibility to know which models the Provider has).
 - **AI API Key (8)** / **Embedding Key (9)** / **Serper Key (10)** are masked input. Leaving blank means:
-  - for **new Tenant**: `(not set)` — Save validates: no Save without a chat key.
+  - for **new Tenant**: `(not set)` — Save validates: no Save without chat key.
   - for **existing Tenant**: `(keep existing)` — Save does not overwrite, because PASSWORD settings are never decrypted for display (security decision: too much exposure for too little convenience).
-- **`s` Save** → Validation + Save (see §5).
+- **`s` Save** → validation + Save (see §5).
 - **`q` Quit** → exit without writing, with message `Setup cancelled. No changes written.`.
 
 ### 4.5 Provider Preset
@@ -154,7 +154,7 @@ Supported in v1: **Gemini**, **OpenAI**, **Anthropic**. Each preset bundles:
 | OpenAI | `openai` | `gpt-4o` | openai (self, reused chat key) |
 | Anthropic | `anthropic` | `claude-sonnet-4-5` | `embedded` (in-process E5, keyless) |
 
-**Deliberately excluded:** Ollama (needs `baseUrl`, not in preset schema), Cortecs, MLX local server — these continue to run via `init-settings.yaml` templates under `confidential/init-settings-*.yaml`.
+**Deliberately excluded:** Ollama (needs `baseUrl`, not in preset schema), Cortecs, MLX local server — these continue to be configured via `init-settings.yaml` templates under `confidential/init-settings-*.yaml`.
 
 ---
 
@@ -163,7 +163,7 @@ Supported in v1: **Gemini**, **OpenAI**, **Anthropic**. Each preset bundles:
 After `s) Save`, the wizard writes strictly sequentially:
 
 1. **Tenant.** If `tenantCreated` → `tenantService.ensure(name, title)` (incl. JWT key provisioning). Otherwise, if title changed → `tenantService.update`.
-2. **`_tenant` Project.** Always `homeBootstrapService.ensureTenantProject(tenantId)`. Background: for Tenants other than `acme`, Brain only lazily creates `_tenant` on first login (`AccessController`). Since the wizard then writes settings under `SCOPE_PROJECT` + `_tenant`, the project must exist.
+2. **`_tenant` Project.** Always `homeBootstrapService.ensureTenantProject(tenantId)`. Background: for Tenants other than `acme`, Brain otherwise creates `_tenant` lazily on first login (`AccessController`). Since the wizard then writes settings under `SCOPE_PROJECT` + `_tenant`, the project must exist.
 3. **User.** If `userCreated` → `passwordService.hash` + `userService.create`. Otherwise, if `userFieldsChanged` → `userService.update(title, email, …)`.
 4. **AI Provider Settings.** Written under `SCOPE_PROJECT` / `_tenant`:
    - `ai.default.provider` = `<preset.settingsId>`
@@ -172,14 +172,24 @@ After `s) Save`, the wizard writes strictly sequentially:
    - `ai.provider.<provider>.apiKey` = encrypted (only if key was set)
    - `ai.embedding.provider` = `<preset.settingsId>` (if `supportsEmbedding`) or `embedded`
    - `ai.embedding.apiKey` = encrypted (`embeddingApiKey` if set, otherwise `aiApiKey` as reuse)
-5. **Research Bundle.** Only if `serperKey` was set. Writes the complete block from `init-settings.yaml`:
-   - `research.endpoint.serper-main.{protocol,baseUrl,apiKey,enabled}` + `research.default.web=serper-main`
-   - keyless Providers with `enabled=true` as default/fallback endpoints:
-     - `wiki-de` (wikipedia) → `research.fallback.web` + `research.default.encyclopedia`
-     - `hn-algolia` (hackernews) → `research.default.news`
-     - `openlib` (openlibrary) → `research.default.book`
-     - `openalex` (openalex) → `research.default.academic`
-     - `arxiv` (arxiv) → `research.fallback.academic`
+5. **Research Bundle.** Two halves, and they are deliberately independent
+   of each other — previously, the entire block depended on the Serper key,
+   so an installation without a Serper account received **no** search source
+   at all, not even the keyless ones.
+
+   The endpoints are **documents** under `_vance/config/research/<id>.yaml` in the
+   `_tenant` project (see [zarniwoop-service](/specs/zarniwoop-service) §8.1),
+   the routing remains a setting — there, the key names a modality. Nothing is
+   overwritten: a source file edited by the operator survives a re-run.
+
+   - **always**, keyless: `wiki-de` (wikipedia) → `research.fallback.web` +
+     `research.default.encyclopedia`; `hn-algolia` (hackernews) →
+     `research.default.news`; `openlib` (openlibrary) →
+     `research.default.book`; `openalex` → `research.default.academic`;
+     `arxiv` → `research.fallback.academic`
+   - **only with `serperKey`**: `serper-main` with `apiKey: "{noop}<key>"` +
+     `research.default.web=serper-main`. The `{noop}` in the file indicates
+     that this is a value and not an unresolved reference.
 
 **Idempotence.** Re-running with the same inputs overwrites with identical values — `settingService.set(...)` is an upsert. Existing Tenants/Users are not "created" again (wizard remembers `created` flag per selection path).
 
@@ -191,18 +201,18 @@ After `s) Save`, the wizard writes strictly sequentially:
 
 - **API keys are never read back from settings.** The wizard shows `(keep existing)` for existing keys and only overwrites on explicit input. Rationale: a decrypt-and-redisplay (even masked by length) would trigger the plaintext path more often than necessary — and the wizard typically runs interactively on a terminal that has history scroll and screenshare.
 - **Password input** (User password, all API keys, Serper) goes through `LineReader.readLine(prompt, '*')` — JLine echoes `*` per character, the plaintext never goes into the terminal history.
-- **Reserved Names.** Tenant name `_vance` and User names with `_` prefix are explicitly rejected in the Create path — System Tenant and Service Accounts have their own, non-interactive provisioning paths.
+- **Reserved Names.** Tenant name `_vance` and User names with `_` prefix are explicitly rejected in the Create path — system Tenant and service accounts have their own, non-interactive provisioning paths.
 
 ---
 
-## 7. What the Wizard DOES NOT Do
+## 7. What the Wizard DOES NOT do
 
-- **No multi-Tenant provisioning in one run.** Exactly one Tenant + one User per wizard run. To provision multiple Tenants, run the wizard multiple times.
-- **No complete Settings UI.** The wizard only writes the Provider default + Research Bundle. Per-User settings, Recipes, OAuth Providers, Memory Hints, Quotas — these belong in the Web UI / Setting Forms.
+- **No multi-Tenant provisioning in one run.** Exactly one Tenant + one User per wizard run. To create multiple Tenants, run the wizard multiple times.
+- **No complete Settings UI.** The wizard only writes the Provider default + Research Bundle. Per-user settings, Recipes, OAuth Providers, Memory Hints, Quotas — these belong in the Web UI / Setting Forms.
 - **No multi-Provider combinations.** Exactly one Chat Provider + its Embedding path. Mixed setups (Gemini Chat + OpenAI Embedding) are done via the Web UI after the initial setup.
-- **No Project Create.** Tenant + `_tenant` are sufficient for boot. Regular Projects are created by the User via the Web UI afterwards, Catalog Kits via [Project Kits Catalog](/specs/project-kits-catalog).
-- **No update of existing API keys via value comparison.** If the operator types nothing, nothing changes. If they type something, it is re-encrypted and saved — even if the plaintext is coincidentally identical to the existing one (wizard cannot check this, see §6).
-- **No OAuth Provider setup.** OAuth configuration (Provider document in the `_tenant` project + Client Secret) remains manual — the wizard is built for API key-based Cloud LLMs, OAuth is a separate code path with its own UI.
+- **No Project Create.** Tenant + `_tenant` are sufficient for boot. Regular projects are then created by the user via the Web UI, Catalog Kits via [Project Kits Catalog](/specs/project-kits-catalog).
+- **No update of existing API keys via value comparison.** If the operator types nothing, nothing changes. If they type something, it is re-encrypted and saved — even if the plaintext happens to be identical to the existing one (wizard cannot check this, see §6).
+- **No OAuth Provider setup.** OAuth configuration (Provider document in the `_tenant` project + client secret) remains manual — the wizard is built for API key-based cloud LLMs, OAuth is a separate code path with its own UI.
 - **No Reset.** To undo a setup, use `anus tenant delete <name>` (via `--sudo` or interactively).
 
 ---
@@ -229,7 +239,7 @@ cd vance/vance-anus
 java -jar target/vance-anus.jar --setup
 ```
 
-**Logging:** `anus.sudo.arm` Audit Row on start, per-settings update via `AuditService.settingsUpdate`. Stdout shows a save summary (`+ tenant created`, `~ AI defaults written (Gemini / gemini-2.5-flash)`, `+ Serper key written, research stack enabled`).
+**Logging:** `anus.sudo.arm` Audit row on start, per-settings update via `AuditService.settingsUpdate`. Stdout shows a save summary (`+ tenant created`, `~ AI defaults written (Gemini / gemini-2.5-flash)`, `+ Serper key written, research stack enabled`).
 
 ---
 
@@ -245,4 +255,4 @@ java -jar target/vance-anus.jar --setup
 | `SetupBootstrapTest` (Parser) | implemented |
 | Wizard Integration Tests (Service Wirings) | open, on demand |
 | Ollama / Cortecs / local Provider Presets | deliberately excluded — `init-settings-*.yaml` remains the path |
-| OAuth Provider step in Wizard | open, separate UI |
+| OAuth Provider step in Wizard | open, own UI |

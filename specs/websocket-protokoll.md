@@ -9,25 +9,25 @@ permalink: /specs/websocket-protokoll
 ---
 # Vancetope — WebSocket Protocol
 
-> Chat-Frame Wire-Format (`WebSocketEnvelope`) between local clients (CLI, Desktop, Mobile) and the Vancetope Brain. **This document describes only the inner frame** — the outer multi-channel envelope, endpoint topology, and cross-pod routing are in [live-ws](/specs/live-ws). Frames, as described here, are the `payload` field of the `LiveEnvelope` with `channel="session"`.
+> Chat frame wire format (`WebSocketEnvelope`) between local clients (CLI, Desktop, Mobile) and the Vancetope Brain. **This document describes only the inner frame** — the outer multi-channel envelope, endpoint topology, and cross-pod routing are in [live-ws](/specs/live-ws). Frames, as described here, are the `payload` field of the `LiveEnvelope` with `channel="session"`.
 > See also: [live-ws](/specs/live-ws) (multi-channel wrapper, endpoints, cross-pod tunnel), [architektur-scopes-clients](/specs/architektur-scopes-clients) (Sessions, Client Model), [client-protokoll-erweiterbarkeit](/specs/client-protokoll-erweiterbarkeit) (external clients, Robot, MCP), java-cli-modulstruktur §2.1 (where message classes reside), [identity-credentials](/specs/identity-credentials) (Accounts, OAuth2 → JWT).
-> Status: v1 production (Live-WS refactor 06/2026 wraps the format described here into the `LiveEnvelope.session` channel — the inner frame remains unchanged).
+> Status: v1 in production (Live-WS refactor 06/2026 wraps the format described here into the `LiveEnvelope.session` channel — the inner frame remains unchanged).
 
 ---
 
-## 1. Fundamentals
+## 1. Basics
 
 ### Connection
 
 - Transport: WebSocket (text frames, JSON payload)
-- Default URL: `ws://host:port/brain/{tenant}/ws` or `wss://...` in Production. The Tenant is in the path so the AccessFilter can cross-check path-tenant against JWT-tenant.
+- Default URL: `ws://host:port/brain/{tenant}/ws` or `wss://...` in production. The Tenant is in the path so the AccessFilter can cross-check path-Tenant against JWT-Tenant.
 - Encoding: UTF-8
 - Every frame on this endpoint is a [`LiveEnvelope`](/specs/live-ws) `{channel, sessionId, payload}`; everything described below in this document is the form of the **`payload`** field when `channel="session"`.
-- A WebSocket connection can be bound to a maximum of one Session; the binding happens explicitly via `session-create` / `session-resume` after the handshake (see [architektur-scopes-clients](/specs/architektur-scopes-clients) §2). A Session has a maximum of 1 active connection **per User** — with `SessionDocument.allowMultipleClients=true`, connections from different Users coexist in the same Roster (see multi-user-sessions). The Mongo bind remains single-binding; secondary participants only exist in the in-memory `SessionConnectionRegistry`.
+- A WebSocket connection can be bound to a maximum of one Session; the binding happens explicitly via `session-create` / `session-resume` after the handshake (see [architektur-scopes-clients](/specs/architektur-scopes-clients) §2). A Session has a maximum of 1 active connection **per user** — with `SessionDocument.allowMultipleClients=true`, connections from different users coexist in the same Roster (see multi-user-sessions). The Mongo bind remains single-binding; secondary participants only exist in the in-memory `SessionConnectionRegistry`.
 
 ### Naming Convention
 
-In contrast to the nimbus protocol, **fully spelled-out keys** are used. Performance is not critical here (personal Think Tool, tens of connections), while readability in logs, generated TypeScript, and protocol debugging is gained.
+In contrast to the nimbus protocol, **full-word keys** are used. Performance is not critical here (personal Think Tool, double-digit connection count), while readability in logs, generated TypeScript, and protocol debugging is gained.
 
 - **lowerCamelCase** for all field names
 - English terms
@@ -37,7 +37,7 @@ In contrast to the nimbus protocol, **fully spelled-out keys** are used. Perform
 
 ### Envelope
 
-Every message follows a unified envelope:
+Every message follows a uniform envelope:
 
 ```json
 {
@@ -57,7 +57,7 @@ Every message follows a unified envelope:
 
 **Rules:**
 
-- A message without an expected response can omit `id` (fire-and-forget, e.g., status broadcast from server)
+- A message without an expected response can omit `id` (fire-and-forget, e.g., status broadcast from the server)
 - A response must set `replyTo`
 - `id` and `replyTo` are not set simultaneously on the same message (either request or response — not both)
 - The combination of Connection + `id` must be unique within a Session
@@ -83,6 +83,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 X-Vancetope-Profile: foot
 X-Vancetope-Client-Version: 0.1.0
 X-Vancetope-Client-Name: mikes-laptop
+X-Vancetope-Client-Context: {"os":"macos","arch":"aarch64","shell":"/bin/sh","cwd":"/home/mike/proj","sandboxEnabled":true,"timezone":"Europe/Berlin"}
 Sec-WebSocket-Key: ...
 Sec-WebSocket-Version: 13
 ```
@@ -92,28 +93,31 @@ Sec-WebSocket-Version: 13
 | `Authorization: Bearer <jwt>` | yes | Signed JWT, at least `sub` and `exp` claims |
 | `X-Vancetope-Profile` | no (default `web`) | Open string, shape `^[a-z][a-z0-9_-]{0,31}$` |
 | `X-Vancetope-Client-Version` | yes | SemVer of the client, for compatibility checks |
-| `X-Vancetope-Client-Name` | no | Optional client identifier (logs/UI) |
+| `X-Vancetope-Client-Name` | no | Optional client identifier (Logs/UI) |
+| `X-Vancetope-Client-Context` | no | JSON-`ClientContext` (client platform) — see below |
 
 Headers and query parameters are equivalent — browser clients cannot set custom headers on the WS upgrade and use `?profile=`, `?clientVersion=`, `?name=` as a fallback.
 
-**Profile is an open string, not an Enum.** The server only checks the format. Identity is not validated — what happens with an unknown profile name is solely decided by the Recipe Resolver. The canonical values are maintained in `de.mhus.vance.api.ws.Profiles` as string constants; full form and extensibility see [client-protokoll-erweiterbarkeit](/specs/client-protokoll-erweiterbarkeit) §2.1a.
+**`X-Vancetope-Client-Context` — Platform info for exec-capable clients.** CLI clients (`vance-foot`) place a JSON-serialized `de.mhus.vance.api.ws.ClientContext` (`os` / `arch` / `shell` / `cwd` / `sandboxEnabled` / `timezone`) on this header during upgrade. The server parses it into the `ConnectionContext` (handshake-final, like the identity); a missing or malformed value is ignored and **never** aborts the handshake. Purpose: Engines inject a dynamic `## Environment` system block for Turns with a bound client connection, so the LLM generates its `client_exec_run`/`client_file_*` calls in the correct command dialect (POSIX `sh` vs. Windows `cmd.exe`) instead of assuming bash. **Ephemeral, not a setting** — this info is per connection, changes per start (cwd, Sandbox toggle), and is missing for headless turns; the persistent `display.timezone` setting remains the source of truth for the date, the `timezone` field here is only carried along (v1 unused). Browsers do not send this header — they do not drive `client_exec_run`.
+
+**Profile is an open string, not an Enum.** The server only checks the format. Identity is not validated — what happens with an unknown profile name is solely decided by the Recipe resolver. Canonical values are maintained in `de.mhus.vance.api.ws.Profiles` as string constants; full form and extensibility see [client-protokoll-erweiterbarkeit](/specs/client-protokoll-erweiterbarkeit) §2.1a.
 
 **Canonical values:**
 
 | Value | Meaning | Local Tools |
 |-------|---------|-------------|
 | `foot` | Java CLI (`vance-foot`, Picocli + JLine) | Full (Shell, Filesystem) |
-| `web` | Browser UI (`@vance/vance-face`, Chat Editor) — Wire-Default | None — Web clients do not register `client-tool-*` |
+| `web` | Browser UI (`@vance/vance-face`, Chat Editor) — Wire Default | None — Web clients do not register `client-tool-*` |
 | `mobile` | PWA / Native App (later) | Restricted |
-| `daemon` | Reserved name for `vance-foot -d` headless mode (planned). Currently no special effect | — |
+| `daemon` | Reserved name for `vance-foot -d` Headless mode (planned). Currently no special effect | — |
 
-The Web UI is a **restricted** WebSocket client: The **Chat Editor** connects via WS (live stream + steering), all other editors remain REST-only (see `web-ui.md` §3-§4). Web clients **must not** use `client-tool-register`/`client-tool-invoke`/`client-tool-result` — Workspace Tools are exclusively `foot` concern.
+The Web UI is a **restricted** WebSocket client: The **Chat Editor** connects via WS (Live Stream + Steering), all other editors remain REST-only (see `web-ui.md` §3-§4). Web clients **must not** use `client-tool-register`/`client-tool-invoke`/`client-tool-result` — Workspace tools are exclusively `foot` concern.
 
-Which set of Tools/Manuals/Prompts is attached to a conversation is decided by the **Recipe Profile Block** ([recipes](/specs/recipes) §6a) — Profile is the discriminator for this block.
+Which set of Tools/Manuals/Prompts is attached to a conversation is decided by the **Recipe Profile Block** ([recipes](/specs/recipes) §6a) — Profile is the discriminator for this block here.
 
 ### JWT Claims
 
-The server validates the signature and `exp` (expiration time). The following are read:
+The server validates signature and `exp` (expiration time). The following are read:
 
 | Claim | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -121,10 +125,10 @@ The server validates the signature and `exp` (expiration time). The following ar
 | `exp` | number | yes | Expiration time (Unix seconds) |
 | `iat` | number | no | Issued at time |
 | `iss` | string | no | Issuer; checked if configured server-side |
-| `name` | string | no | Display name of the user |
+| `name` | string | no | User's display name |
 | `tid` | string | no | Tenant ID (`tnt_...`). Ignored in v1; mandatory in v2+ |
 
-The JWT carries **only** identity. Profile, client version, and client name reside in the handshake headers (or URL query) because they vary per connection and are not part of the identity. Session binding is no longer a handshake concern — it happens explicitly via `session-create` / `session-resume` on the open WebSocket connection.
+The JWT carries **only** identity. Profile, Client Version, and Client Name reside in the handshake headers (or URL query), because they vary per connection and are not part of the identity. Session binding is no longer a handshake concern — it happens explicitly via `session-create` / `session-resume` on the open WebSocket connection.
 
 ### Handshake Errors
 
@@ -206,7 +210,7 @@ Keeps the connection alive and measures latency.
 
 - Client sends `ping` every `server.pingInterval` seconds (from `welcome`)
 - If no `ping` is received for longer than `pingInterval + 10s`, the server closes the connection
-- The client can roughly calculate the one-way latency from `serverTimestamp - clientTimestamp`
+- The client can roughly calculate one-way latency from `serverTimestamp - clientTimestamp`
 - `pong` is purely an ACK — the server can also derive session activity from other messages, but must answer every `ping`
 
 ---
@@ -262,7 +266,7 @@ General error message (if a request fails and there is no type-specific `*Respon
 
 ### 5.1 Session Bind Errors (`session-create` / `session-resume` / `session-bootstrap`)
 
-A Session is associated with a **maximum of 1 active connection** (§1). The bind operations follow a unified error table that the client evaluates for UI display (e.g., "Session occupied" indicator in the picker):
+A Session is assigned to a **maximum of 1 active connection** (§1). The bind operations follow a uniform error table, which the client evaluates for UI display (e.g., "Session occupied" indicator in the picker):
 
 | `errorCode` | Meaning | When |
 |---|---|---|
@@ -270,19 +274,19 @@ A Session is associated with a **maximum of 1 active connection** (§1). The bin
 | **403** | Foreign Session | JWT valid, but the referenced session belongs to another user or tenant |
 | **404** | Not Found / Closed | Session does not exist or is not in `OPEN` status (e.g., after `logout`) |
 | **409** | Already Bound | Session exists and belongs to the user, but is currently bound to another WS connection ("occupied") |
-| **409** | Profile Mismatch | Session was created with a different connection profile than the current connection carries — see below |
+| **409** | Profile Mismatch | Session was created with a different Connection Profile than the current connection carries — see below |
 
-**Profile Mismatch (409):** Sessions are bound to the Profile with which they were created — a Foot Session cannot be resumed by a Web client, and vice versa. Reason: Tools/Manuals/Prompt defaults were resolved by the Profile Block when the session processes were spawned; a cross-profile resume would offer the new client tools it cannot host (Foot tools on Web client → failing tool calls). The auto-resume logic in `session-bootstrap` (no explicit `sessionId`) automatically filters out mismatched sessions; the explicit resume path returns 409. The error message names both profile values (`'foot'` vs. `'web'`) so clients can build a clear UI message.
+**Profile Mismatch (409):** Sessions are bound to the Profile with which they were created — a Foot Session cannot be resumed by a Web client, and vice versa. Reason: Tools/Manuals/Prompt Defaults were resolved by the Profile Block during the spawn of the Session Processes; a cross-profile resume would offer the new client tools it cannot host (Foot tools on Web client → failing Tool Calls). The auto-resume logic in `session-bootstrap` (no explicit `sessionId`) automatically filters out mismatched Sessions; the explicit resume path returns 409. The error message names both Profile values (`'foot'` vs. `'web'`) so clients can build a clear UI message.
 
-The client can, **before** a bind attempt, use `session-list` (see `SessionSummary.bound` and `SessionSummary.profile`) to determine if a session is occupied or profile-incompatible, and let the user choose without a round-trip error. The bind attempt itself remains the only authoritative source — race conditions between `session-list` and `session-resume` are possible and will be clearly visible via the 409 path.
+The client can detect whether a Session is occupied or profile-incompatible **before** a bind attempt via `session-list` (see `SessionSummary.bound` and `SessionSummary.profile`), and spare the user the choice without a round-trip error. The bind attempt itself remains the only authoritative source — race conditions between `session-list` and `session-resume` are possible and become clearly visible via the 409 path.
 
-`session-unbind` (Client → Server) explicitly releases the binding without closing the session — intended for web tabs that leave their chat without ending the session. Simply closing the WS connection leads to a delayed server-side cleanup; an immediate resume in another tab after tab close might encounter 409 until the cleanup takes effect.
+`session-unbind` (Client → Server) explicitly releases the binding without closing the Session — intended for web tabs that leave their chat without ending the session. Simply closing the WS connection leads to a delayed server-side cleanup; an immediate resume in another tab after tab close may encounter 409 until cleanup takes effect.
 
 ---
 
 ## 6. Type Catalog (Current)
 
-Source of truth: `vance-api/src/main/java/de/mhus/vance.api.ws/MessageType.java`. This table is maintained when new frames are added; in case of drift, the code takes precedence.
+Source of truth: `vance-api/src/main/java/de/mhus/vance.api.ws.MessageType.java`. This table is maintained when new frames are added; in case of drift, the code wins.
 
 **Connection Lifecycle**
 
@@ -299,22 +303,22 @@ Source of truth: `vance-api/src/main/java/de/mhus/vance.api.ws/MessageType.java`
 | Type | Direction | Purpose |
 |------|-----------|---------|
 | `session-create` | Client → Server | Create a new Session in a Project and bind it to the connection |
-| `session-resume` | Client → Server | Bind own or shared Session to the connection (see §5.1). Shared sessions (`allowMultipleClients=true`) allow the non-owner to join as a secondary participant — Mongo bind remains with the owner. |
-| `session-unbind` | Client → Server | Release the binding of the Session to the current connection without closing the Session |
-| `session-bootstrap` | Client → Server | Compound command: `session-create` OR `session-resume` + optional Process spawns + optional initial message in a single frame |
-| `session-list` | Client → Server | List sessions in the Tenant (own + all `allowMultipleClients=true`; `SessionSummary` with `bound` and `userId` fields, see §5.1) |
-| `session-metadata-patch` | Client → Server | Owner-only metadata patch (title, icon, tags, pin, **`allowMultipleClients`** for multi-user toggle). Reply is the refreshed `SessionMetadataDto`. |
-| `session-roster` | Server → Client | Push: current multi-user roster of the bound session. Payload: `SessionRosterData { sessionId, participants: [{ editorId, userId, displayName }] }`. Pushed to all connections of the session after each roster mutation (Join/Leave/Bind escalation). Spec: multi-user-sessions §6. |
-| `session-who` | Client → Server | On-demand roster lookup with reply `SessionRosterData`. Drives `/who` slash command and initial baseline on client attach (race-free against async push). |
-| `project-list` | Client → Server | List projects in the Tenant (optionally filtered by a project group) |
-| `projectgroup-list` | Client → Server | List project groups in the Tenant |
+| `session-resume` | Client → Server | Bind own or shared Session to the connection (see §5.1). Shared Sessions (`allowMultipleClients=true`) allow the non-owner to join as a secondary participant — Mongo bind remains with the owner. |
+| `session-unbind` | Client → Server | Unbind the Session from the current connection without closing the Session |
+| `session-bootstrap` | Client → Server | Compound command: `session-create` OR `session-resume` + optional Process Spawns + optional Initial Message in a single frame |
+| `session-list` | Client → Server | List Sessions in the Tenant (own + all `allowMultipleClients=true`; `SessionSummary` with `bound` and `userId` fields, see §5.1) |
+| `session-metadata-patch` | Client → Server | Owner-only Metadata Patch (Title, Icon, Tags, Pin, **`allowMultipleClients`** for multi-user toggle). Reply is the refreshed `SessionMetadataDto`. |
+| `session-roster` | Server → Client | Push: current multi-user Roster of the bound Session. Payload: `SessionRosterData { sessionId, participants: [{ editorId, userId, displayName }] }`. Pushed to all connections of the Session after each Roster mutation (Join/Leave/Bind escalation). Spec: multi-user-sessions §6. |
+| `session-who` | Client → Server | On-demand Roster lookup with `SessionRosterData` reply. Drives `/who` slash command and initial baseline on client attach (race-free against async push). |
+| `project-list` | Client → Server | List Projects in the Tenant (optionally filtered by a Project Group) |
+| `projectgroup-list` | Client → Server | List Project Groups in the Tenant |
 
 **Think Process Control**
 
 | Type | Direction | Purpose |
 |------|-----------|---------|
-| `process-create` | Client → Server | Create a new Think Process in the bound Session (by Recipe or Engine name) |
-| `process-steer` | Client → Server | User input / steering to a running Think Process — **this is the chat send path** |
+| `process-create` | Client → Server | Create a new Think Process in the bound Session (per Recipe or Engine Name) |
+| `process-steer` | Client → Server | User input / Steering to a running Think Process — **this is the chat send path** |
 | `process-list` | Client → Server | List Think Processes of the bound Session |
 | `process-compact` | Client → Server | Manually trigger memory compaction for a Think Process |
 | `process-skill` | Client → Server | Activate / deactivate / list Skills on a Think Process |
@@ -324,25 +328,25 @@ Source of truth: `vance-api/src/main/java/de/mhus/vance.api.ws/MessageType.java`
 | Type | Direction | Purpose |
 |------|-----------|---------|
 | `chat-message-stream-chunk` | Server → Client | Optimistic streaming chunk of an Assistant response. Replaced by the corresponding `chat-message-appended`. Payload: `ChatMessageChunkData` |
-| `chat-message-appended` | Server → Client | Authoritative persist confirmation — a `ChatMessageDocument` has been written. Payload: `ChatMessageAppendedData` with multi-user fields: `senderUserId` (nullable, USER-Turn-Author), `senderDisplayName` (nullable, captured), `addressedToAgent` (Default `true`; `false` marks background turns that did not wake the Agent — see multi-user-sessions §2) as well as `thinking` (nullable): the raw narration of the model (verbatim, including `<think>…</think>` / Harmony-`analysis`-markup), which is streamed live but not part of the final `content` — verbatim encapsulated and persisted per turn so the user can read it. The Web UI shows it as an expandable "Thoughts" area (see [llm-resource-management](/specs/llm-resource-management) §4.1). Frame is fanned out to all connections of the session in multi-user sessions; in solo sessions, the user echo variant is suppressed as before. |
+| `chat-message-appended` | Server → Client | Authoritative persist confirmation — a `ChatMessageDocument` has been written. Payload: `ChatMessageAppendedData` with multi-user fields: `senderUserId` (nullable, USER Turn Author), `senderDisplayName` (nullable, captured), `addressedToAgent` (Default `true`; `false` marks background Turns that did not wake the Agent — see multi-user-sessions §2) as well as `thinking` (nullable): the raw narration of the model (verbatim, including `<think>…</think>` / Harmony `analysis` markup), which is streamed live but is not part of the final `content` — verbatim encapsulated and persisted per Turn so the user can review it. The Web UI shows it as an expandable "Thoughts" area (see [llm-resource-management](/specs/llm-resource-management) §4.1). Frame is fanned out to all connections of the Session in multi-user Sessions; in solo Sessions, the user echo variant is suppressed as before. |
 
-**User Progress Side-Channel**
+**User Progress Side Channel**
 
 | Type | Direction | Purpose |
 |------|-----------|---------|
 | `process-progress` | Server → Client | Live status updates from running Processes (variants `metrics` / `plan` / `status`). Completely separate from the chat stream, not in conversation history. Spec: `user-progress-channel.md` |
 
-**Document Invalidation Side-Channel**
+**Document Invalidation Side Channel**
 
 | Type | Direction | Purpose |
 |------|-----------|---------|
-| `document-invalidate` | Server → Client | A server-side tool (`doc_write` / `doc_edit` / `doc_append` / `doc_replace_lines` / `doc_note_*`) has mutated a document of the bound session. Payload: `DocumentInvalidateNotification { documentId, path, kind: "body"\|"notes" }`. Cortex tabs react with a refresh (3-way merge for dirty buffer). Cross-pod path without Redis dependency, firing in parallel to the `documents-channel`-`changed`-push. Plan: `planning/cortex-document-invalidation.md` |
+| `document-invalidate` | Server → Client | A server-side Tool (`doc_write` / `doc_edit` / `doc_append` / `doc_replace_lines` / `doc_note_*`) has mutated a document of the bound Session. Payload: `DocumentInvalidateNotification { documentId, path, kind: "body"\|"notes" }`. Cortex tabs react with a refresh (3-way merge for dirty buffer). Cross-pod path without Redis dependency, which fires in parallel to the `documents-channel`-`changed` push. Plan: `planning/cortex-document-invalidation.md` |
 
 **Inbox Subsystem**
 
 | Type | Direction | Purpose |
 |------|-----------|---------|
-| `inbox-list` / `inbox-item` / `inbox-answer` / `inbox-delegate` / `inbox-archive` / `inbox-dismiss` | Client → Server | CRUD and lifecycle operations on user interaction items |
+| `inbox-list` / `inbox-item` / `inbox-answer` / `inbox-delegate` / `inbox-archive` / `inbox-dismiss` | Client → Server | CRUD and lifecycle operations on User Interaction Items |
 | `inbox-item-added` / `inbox-item-updated` | Server → Client | Push notification for Inbox mutations |
 | `inbox-pending-summary` | Server → Client | Welcome-time overview of pending items |
 
@@ -356,7 +360,7 @@ Spec: `user-interaction.md`.
 | `client-tool-invoke` | Server → Client | Brain calls a client-registered Tool |
 | `client-tool-result` | Client → Server | Result of a `client-tool-invoke` |
 
-**Web clients do not send any of these three frames** (see §2). The Web UI is a view consumer, not a tool provider.
+**Web clients do not send these three frames** (see §2). The Web UI is a view consumer, not a tool provider.
 
 ---
 
@@ -369,7 +373,7 @@ Will be specified in later revisions of this document as soon as the respective 
 - **Session Switch:** `session-switch-project`, `session-switch-engine`
 - **Approval Flow:** `approval-request`, `approval-decision` (separate from Inbox path)
 
-The corresponding message classes will be implemented in the `vance-api` module (package `de.mhus.vance.api.ws`) as POJOs with Jackson annotations, typed IDs (`SessionId`, `ThinkProcessId` etc.) and JSpecify `@Nullable` marking where fields may be omitted. See java-cli-modulstruktur §2.1.
+The corresponding message classes will be implemented in the `vance-api` module (package `de.mhus.vance.api.ws`) as POJOs with Jackson annotations, typed IDs (`SessionId`, `ThinkProcessId` etc.) and JSpecify `@Nullable` marking where fields may be missing. See java-cli-modulstruktur §2.1.
 
 **Removed from outlook** (are implemented today): Streaming (`chat-message-stream-chunk` + `chat-message-appended`), User Steering (`process-steer`), Tool Roundtrips (`client-tool-*`), Live Progress (`process-progress`).
 
@@ -379,7 +383,7 @@ The corresponding message classes will be implemented in the `vance-api` module 
 
 `server.protocolVersion` is an **integer** that is incremented by 1 for incompatible changes. Backward-compatible extensions (new `type` values, new optional fields) do **not** increment the version.
 
-The client checks in the `welcome` message whether `protocolVersion` matches its expected versions and otherwise disconnects with a clear error message ("Server protocol version X, client expects Y").
+The client checks in the `welcome` message whether `protocolVersion` matches its expected versions and otherwise disconnects with a descriptive error message ("Server protocol version X, client expects Y").
 
 ---
 

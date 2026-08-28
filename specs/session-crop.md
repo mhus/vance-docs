@@ -10,12 +10,13 @@ permalink: /specs/session-crop
 # Vancetope — Session Modify / Crop
 
 > "Crop" removes messages from a Session's **memory** without deleting them.
-> The user can remove individual turns in the middle or "crop from here"
-> (this message and all subsequent ones) — and restore everything at any time.
-> Removed messages remain in the database (auditable) but are invisible to the AI:
-> out of every LLM replay, compaction, recompaction, and history search path,
-> and out of the chat history. The action is located in the Session menu of the
-> chat list (`✂`) and opens a modal — the target Session does not need to be open.
+> The user can remove individual turns in the middle or "crop from here" (this
+> message and all subsequent ones) — and restore everything at any time.
+> Removed messages remain in the database (auditable) but are invisible to the
+> AI: out of every LLM replay, compaction, recompaction, and history search
+> path, and out of the chat history. The action is located in the Session menu
+> of the chat list (`✂`) and opens a modal — the target Session does not need
+> to be open.
 >
 > See also: [session-lifecycle](/specs/session-lifecycle) | [session-duplicate](/specs/session-duplicate) | [memory-compaction](/specs/memory-compaction) | [websocket-protokoll](/specs/websocket-protokoll)
 
@@ -29,13 +30,13 @@ permalink: /specs/session-crop
 
 - `ChatMessageDocument.KIND_REMOVED = "removed"` + helper `isRemoved()` —
   parallel to `KIND_INTERIM`/`isInterim()`.
-- **No new DB field.** Since `ChatMessageDto.meta` already goes to the client,
+- **No new DB field.** Since `ChatMessageDto.meta` goes to the client anyway,
   the Crop UI sees the state (`meta.kind === 'removed'`) without DTO changes.
 - Only the marker changes — `content`, `role`, `tags`, timestamps remain
-  untouched. Reversible: removing the marker = message back in memory.
+  untouched. Reversible: removing the marker returns the message to memory.
 
 Distinction from other exclusion mechanisms: `archivedInMemoryId`
-(Compaction) folds messages into a Summary; `STRENGTH:*` tags are a
+(Compaction) folds messages into a summary; `STRENGTH:*` tags are a
 soft filter. "Removed" is the **explicit user decision** "this does not
 belong in memory".
 
@@ -78,7 +79,7 @@ belong in memory".
 via a confirmation dialog before opening the modal (consistent with the Compact
 action, see [session-compact](/specs/session-compact) §4). Opens `SessionCropModal` (Host:
 `PickerView`): list of all messages with a checkbox per turn, `✂` button "crop
-from here", live preview (removed = struck through/red, restored = green),
+from here", live preview (removed = struck-through/red, restored = green),
 batch apply with change counter. Persisted only on "Apply" (Diff → `remove`/`restore`),
 before that purely local and discardable.
 
@@ -87,9 +88,9 @@ before that purely local and discardable.
 - No WS live notification to a currently open chat view of the same
   Session: anyone with the chat open in parallel will only see the removal
   after reload/reconnect. (The REST and Resume paths are consistent; only the
-  ongoing live stream is not retroactively cleaned up.)
+  ongoing live stream is not retrospectively cleaned up.)
 - Cropping affects the `chat` process of the Session (the user conversation).
   Worker sub-processes do not have their own Crop interface.
-- No cascade to already generated Compaction Summaries: a Summary that
+- No cascade to already generated Compaction summaries: a summary that
   summarized a message later removed will not be recomputed.
   New Compactions will consider the removed status.

@@ -1,6 +1,6 @@
 # Vancetope — Script Engine
 
-> A **Script Engine** is the JVM-internal runtime for inline code executed by Tools, Engines, or Recipes. v1 provides **GraalJS as a Library** (JavaScript), encapsulated behind central `ScriptExecutor` services with their own host API, sandbox policy, and resource limits. There are **two** independent implementations — one in the Brain server and one in the Foot client — with different host APIs, because the available tooling differs per side. Other languages (GraalPy) are explicitly not part of v1.
+> A **Script Engine** is the JVM-internal runtime for inline code that tools, Engines, or Recipes execute. v1 provides **GraalJS as a library** (JavaScript), encapsulated behind central `ScriptExecutor` services with their own host API, sandbox policy, and resource limits. There are **two** independent implementations—one in the Brain server and one in the Foot client—with different host APIs because the available tooling differs per side. Other languages (GraalPy) are explicitly not part of v1.
 >
 > See also: [server-tools](server-tools.md) | [think-engines](think-engines.md) | [llm-resource-management](llm-resource-management.md) | [mcp-tool-routing](mcp-tool-routing.md)
 
@@ -14,28 +14,28 @@
 | **Script Context** | `org.graalvm.polyglot.Context` built per run. Carries sandbox policy, resource limits, host bindings. Closed after each run. |
 | **Host API** | Java object injected into the Context, through which scripts gain controlled access to Brain or Foot functions. The surface differs per side. |
 | **Script Source** | The executed code string. v1: JavaScript only. Persistence is the responsibility of the caller (Tool definition, Document, Recipe). |
-| **ScriptExecutor (Brain)** | Spring Bean in `vance-brain`. Sole entry point for **server-side** script runs. Host API: `vance.*` (Tools, Process-Spawn, Context, Log). |
-| **ClientScriptExecutor (Foot)** | Spring Bean in `vance-foot`. Sole entry point for **client-side** script runs, triggered by the Brain via remote tool call. Host API: `client.*` (local client tooling only). |
+| **ScriptExecutor (Brain)** | Spring bean in `vance-brain`. Sole entry point for **server-side** script runs. Host API: `vance.*` (Tools, Process-Spawn, Context, Log). |
+| **ClientScriptExecutor (Foot)** | Spring bean in `vance-foot`. Sole entry point for **client-side** script runs, triggered by the Brain via remote tool call. Host API: `client.*` (local client tooling only). |
 
 ### 1.1 Two Engines, Two Surfaces
 
-The two executors already exist today as `JsEngine` (`vance-brain/.../tools/js/JsEngine.java`) and `ClientJsEngine` (`vance-foot/.../tools/js/ClientJsEngine.java`). Both will be migrated to the new setup as part of this spec. They share the GraalJS library and the sandbox/limits convention, but **not** the host API:
+The two executors already exist today as `JsEngine` (`vance-brain/.../tools/js/JsEngine.java`) and `ClientJsEngine` (`vance-foot/.../tools/js/ClientJsEngine.java`). Both will be migrated to the new setup as part of this spec. They share the GraalJS library and the sandbox/limits convention, but **not** the Host API:
 
 | Aspect | Brain (`ScriptExecutor`) | Foot (`ClientScriptExecutor`) |
 |---|---|---|
 | Host API Namespace | `vance.*` | `client.*` |
-| Tool Surface | Server Tool Cascade (`vance.tools.call`) — can also address **Client Tools** via the Tool Dispatcher, because the Brain knows the routing | Only **locally registered Client Tools** (e.g., `client_exec_run`, file tools). **Never** Server Tools, because the Foot knows none. |
+| Tool Surface | Server Tool Cascade (`vance.tools.call`) — can also address **Client Tools** via the Tool Dispatcher because the Brain knows the routing | Only **locally registered Client Tools** (e.g., `client_exec_run`, file tools). **Never** Server Tools, because the Foot knows none. |
 | Process Surface | `vance.process.spawn`, `vance.process.sendEvent` | — (Client knows no Think Processes) |
 | Context Info | Tenant/Project/Session/Process | Foot Identity (foot-id, optional Session hint), no Process ID |
 | Module Loading | v1: off, **v2 open** (server environment in Docker image controllable — module paths, whitelist, etc., conceivable) | v1+v2: **permanently off** (user machine, no defined module path) |
-| Call Trigger | Engine/Recipe/Tool call in the Brain | Remote Tool call from the Brain via WebSocket (see [mcp-tool-routing](mcp-tool-routing.md)) |
+| Call Trigger | Engine/Recipe/Tool Call in the Brain | Remote Tool Call from the Brain via WebSocket (see [mcp-tool-routing](mcp-tool-routing.md)) |
 | Code Isolation | Fresh Context per run | Fresh Context per run |
 
 The separation is **strict**: no common Maven module, no common interface. The spec defines conventions that apply to both sides; the code is independent per module (according to CLAUDE.md rule: `vance-foot` must not depend on `vance-shared`/`vance-brain`, and `vance-api` must not carry Polyglot dependencies).
 
-**Distinction from Built-in Tools:** Tools like `web_search` are pure Java code with a tool interface — no script engine. The Script Engine is only used where caller code is to be executed (Brain: `JavaScriptTool` for LLM-driven computations; Foot: `ClientJavaScriptTool` for local scripts triggered remotely by the Brain).
+**Delimitation from Built-in Tools:** Tools like `web_search` are pure Java code with a Tool interface—not a Script Engine. The Script Engine is only used where caller code is to be executed (Brain: `JavaScriptTool` for LLM-driven computations; Foot: `ClientJavaScriptTool` for local scripts that the Brain triggers remotely).
 
-**No `ScriptEngineManager` bridge (JSR-223).** The engine is instantiated directly via the Polyglot API. This makes its behavior independent of which engines are reported as services in the JDK classpath. This applies to both Brain **and** Foot.
+**No `ScriptEngineManager` bridge (JSR-223).** The Engine is instantiated directly via the Polyglot API. This makes its behavior independent of which Engines are reported as services in the JDK classpath. This applies to both Brain **and** Foot.
 
 ---
 
@@ -43,7 +43,7 @@ The separation is **strict**: no common Maven module, no common interface. The s
 
 ### 2.1 Dependency
 
-GraalJS as a Maven library. Centrally managed in the `dependencyManagement` section of the Workbench parent POM (`repos/vance/server/pom.xml`):
+GraalJS as a Maven library. Centrally managed in the Workbench parent POM (`repos/vance/server/pom.xml`) in `dependencyManagement`:
 
 ```xml
 <dependency>
@@ -58,9 +58,9 @@ GraalJS as a Maven library. Centrally managed in the `dependencyManagement` sect
 </dependency>
 ```
 
-`vance-brain` **and** `vance-foot` pull the dependencies; `vance-api`/`vance-shared` **do not**. Versions come from the `graaljs.version` property in the parent POM — Brain and Foot must not allow the version to diverge.
+`vance-brain` **and** `vance-foot` pull the dependencies; `vance-api`/`vance-shared` **do not**. Versions come from the `graaljs.version` property in the parent POM—Brain and Foot must not allow the version to diverge.
 
-**No** Rhino, **no** Nashorn, **no** `js-scriptengine` (JSR-223 adapter). On both sides. The current try-and-fallback paths (`tryGraal()` / `tryRhino()`) in `JsEngine` and `ClientJsEngine` are removed without replacement — the library is either there or the build is broken.
+**No** Rhino, **no** Nashorn, **no** `js-scriptengine` (JSR-223 adapter). On both sides. The current probe-and-fallback paths (`tryGraal()` / `tryRhino()`) in `JsEngine` and `ClientJsEngine` are removed without replacement—the library is either there or the build is broken.
 
 ### 2.2 Engine Singleton
 
@@ -76,13 +76,13 @@ public class ScriptEngineConfig {
 }
 ```
 
-**One** `Engine` instance per JVM. Engines are expensive (compiler setup), contexts are cheap — so share the engine, new context per run. Brain JVM and Foot JVM each have their own `Engine` Bean (separate Spring context, separate `@Configuration` class per module) — as the JVMs run separately.
+**One** `Engine` instance per JVM. Engines are expensive (compiler setup), Contexts are cheap—so share the Engine, new Context per run. Brain JVM and Foot JVM each have their own `Engine` bean (separate Spring context, separate `@Configuration` class per module)—the JVMs run separately.
 
 ### 2.3 Runtime Assumptions
 
-- Runs on Stock-OpenJDK 25 (standard deploy) — **interpreted mode**, no Graal JIT, significantly slower than on GraalVM. This is accepted; scripts are not a hot path.
-- Also runs on GraalVM — then automatically with JIT.
-- Potentially runs under `native-image` — explicit goal, but no CI gate in v1. If native-image ever becomes mandatory, reflection hints for the Host API must be provided in `META-INF/native-image/`.
+- Runs on Stock OpenJDK 25 (standard deploy)—**interpreted mode**, no Graal JIT, significantly slower than on GraalVM. This is accepted; scripts are not a hot path.
+- Also runs on GraalVM—then automatically with JIT.
+- Potentially runs under `native-image`—explicit goal, but no CI gate in v1. If native-image ever becomes mandatory, reflection hints for the Host API must be provided in `META-INF/native-image/`.
 
 ---
 
@@ -104,7 +104,7 @@ HostAccess hostAccess = HostAccess.newBuilder()
     .build();
 ```
 
-**Allow-list, not allow-all.** Only methods annotated with `@HostAccess.Export` are callable from JS. This makes the `vance.*` surface the only official bridge.
+**Allow-list, not allow-all.** Only methods with `@HostAccess.Export` are callable from JS. Thus, the `vance.*` surface is the only official bridge.
 
 ### 3.2 Context Builder
 
@@ -124,7 +124,7 @@ Context ctx = Context.newBuilder("js")
     .build();
 ```
 
-All dangerous features are explicitly disabled. If a future use case requires an extension (e.g., `IOAccess` for read-only access to a workspace path), the policy in `ScriptExecutor` will be extended in *one* place — not per caller.
+All dangerous features explicitly disabled. If a future use case requires an extension (e.g., `IOAccess` for read-only access to a workspace path), the policy will be extended in `ScriptExecutor` at *one* place—not per caller.
 
 ### 3.3 Resource Limits
 
@@ -134,9 +134,9 @@ ResourceLimits limits = ResourceLimits.newBuilder()
     .build();
 ```
 
-Additionally, a hard wall-clock timeout via an external watchdog: call in an `ExecutorService.submit(...)` with `future.get(timeout)`; on timeout, `ctx.close(true)` (cancel-running).
+Additionally, a hard wall-clock timeout via external watchdog: call in an `ExecutorService.submit(...)` with `future.get(timeout)`; on timeout `ctx.close(true)` (cancel-running).
 
-**No** Heap limit in v1 (GraalJS does not expose this without a Sandbox License). If this becomes an issue: separate spec extension.
+**No** heap limit in v1 (GraalJS does not expose this without a Sandbox License). If this becomes an issue: separate spec extension.
 
 ### 3.4 Lifecycle per Run
 
@@ -146,11 +146,11 @@ Additionally, a hard wall-clock timeout via an external watchdog: call in an `Ex
 4. `ctx.eval(source)` in the watchdog future
 5. `ctx.close()` in the `finally` block
 
-No context pooling, no re-use. Everything new per run — prevents cross-run leaks (`globalThis` mutations, compromised prototypes, etc.).
+No Context pooling, no re-use. Everything new per run—prevents cross-run leaks (`globalThis` mutations, compromised prototypes, etc.).
 
 ### 3.5 Script Header — Per-Script Overrides
 
-Each script source may provide a **JSDoc block comment** at the beginning, in which the author declares the runtime parameters of their script. The `ScriptHeaderParser` reads **exactly one** block — the first one — and ignores everything after it. This ensures that knowledge like "this script needs 10 minutes and calls `doc_create`" lives with the code, instead of being gathered from separate frontmatter sources.
+Every script source may provide a **JSDoc block comment** at the beginning, in which the author declares the runtime parameters of their script. The `ScriptHeaderParser` reads **exactly one** block—the first one—and ignores everything after it. This ensures that knowledge like "this script needs 10 minutes and calls `doc_write`" lives with the code, instead of being gathered from separate frontmatter sources.
 
 ```js
 /**
@@ -160,8 +160,8 @@ Each script source may provide a **JSDoc block comment** at the beginning, in wh
  * @version     1.2.0
  * @timeout     30m
  * @statements  500k
- * @requiresTools  process_run, doc_create
- * @allowTools     process_run, doc_create, doc_read
+ * @requiresTools  process_spawn, doc_write
+ * @allowTools     process_spawn, doc_write, doc_read
  */
 (function () {
     // …
@@ -174,20 +174,22 @@ Each script source may provide a **JSDoc block comment** at the beginning, in wh
 |---|---|---|
 | `@timeout` | Duration (`30s`, `10m`, `1h`, bare number = seconds) | Wall-clock timeout for this run. Clamped against `vance.script.timeout.max`. |
 | `@statements` | Count (`100k`, `5M`, `1_000_000`) | GraalJS `ResourceLimits.statementLimit`. Clamped against `vance.script.statements.max`. |
-| `@maxResultNodes` | Count (`100k`, `5M`, `1_000_000`) | Upper limit for the number of array elements + object members materialized from the script's return value. Protects against OOM from a huge return array during result marshalling; `ScriptExecutionException(RESOURCE_EXHAUSTED)` on exceeding. Clamped against `vance.script.result.max`. The associated recursion depth (`vance.script.result.maxDepth`, default 64) additionally catches cyclic return values (`a.self=a`) before the stack overflows. |
-| `@allowTools` | Comma- or whitespace-separated tool names | Whitelist for `vance.tools.call`. The executor intersects this with the `effectiveAllowedTools` of the calling Process — the narrower list wins. |
-| `@requiresTools` | Comma- or whitespace-separated tool names | Pre-flight check: all tools declared here must be in the effective allow set, otherwise `ScriptExecutionException(MISSING_CAPABILITY)` **before** evaluation. |
+| `@maxResultNodes` | Count (`100k`, `5M`, `1_000_000`) | Upper limit for the number of array elements + object members materialized from the script's return value. Protects against OOM during result marshalling due to a huge return array; `ScriptExecutionException(RESOURCE_EXHAUSTED)` on exceeding. Clamped against `vance.script.result.max`. The associated recursion depth (`vance.script.result.maxDepth`, default 64) additionally catches cyclic return values (`a.self=a`) before the stack overflows. |
+| `@allowTools` | Comma- or whitespace-separated tool names | Whitelist for `vance.tools.call`. The Executor intersects this with the `effectiveAllowedTools` of the calling Process—the narrower list wins. |
+| `@requiresTools` | Comma- or whitespace-separated tool names | Pre-flight check: all tools declared here must be in the effective allow set, otherwise `ScriptExecutionException(MISSING_CAPABILITY)` **before** eval. |
 | `@description` | Free text until end of line | Cortex editor list, audit. |
 | `@version` | Semver string | Cortex diff display, audit. |
 
-Deliberately **not** in v1: `@require`/`@import` (external libs — sandbox hole), `@fixture` (dry-run input for Deep-Thought, comes with the engine), `@maxSpawnDepth`/`@deterministic`/`@author`/`@retries` (all v2+). Phase 4 (`specification/skills.md` §13.4) has the roadmap slot for this.
+**`@server` is not a parser tag.** The Cortex toolbar decides based on a worthless `@server` line in the header whether to offer "▶ Run JS" and "✨ Update" at all ([cortex.md](cortex.md) §5.1)—since frontend JS also resides in the same editor, the file extension is no longer proof. The `ScriptHeaderParser` does **not** know the tag, and `scripts/execute` does not check it: enforcing it here would break all existing scripts (Guards, Kit scripts, `hactar_run`, Scheduler do not carry it). Because `TAG_PATTERN` requires a value, the worthless line silently passes through—no Unknown-tag warning. Anyone including the tag here must clarify both: optional values in the parser **and** the migration of existing scripts.
+
+Consciously **not** in v1: `@require`/`@import` (external libs—sandbox hole), `@fixture` (Dry-Run input for Deep-Thought, comes with the Engine), `@maxSpawnDepth`/`@deterministic`/`@author`/`@retries` (all v2+). Phase 4 (`specification/skills.md` §13.4) has the roadmap slot for this.
 
 #### 3.5.2 Parser Rules
 
-- **First block wins.** Only the first `/** … */` block above the first executable statement is read. Multiple header blocks = warning log + only use the first; later blocks are regular documentation.
+- **First block wins.** Only the first `/** … */` block above the first executable statement is read. Multiple header blocks = warning log + only use the first; subsequent blocks are regular documentation.
 - **Tag format:** `^\s*\*?\s*@(\w+)\s+(.+?)\s*$` per line. Leading `*` (JSDoc continuation) is removed before matching.
-- **Unknown Tags:** warn-log with `tag, value, scriptName`. No exception — the author learns from the warning, the script continues with defaults.
-- **Malformed Value:** (`@timeout abc`, `@statements -1`) → `ScriptExecutionException(INVALID_HEADER, "tag=… value=… reason=…")` **before** evaluation.
+- **Unknown Tags:** warn-log with `tag, value, scriptName`. No exception—the author learns from the warning, the script continues with defaults.
+- **Malformed Value:** (`@timeout abc`, `@statements -1`) → `ScriptExecutionException(INVALID_HEADER, "tag=… value=… reason=…")` **before** Eval.
 - **Multiple identical tags:** last value wins + warn-log. Avoids silent inconsistencies.
 
 #### 3.5.3 Duration Format
@@ -213,13 +215,15 @@ effective = clamp(
 )
 ```
 
-Header value above `settings.max` is clamped to `settings.max` + warn-log with original and clamped value. Header value below `settings.min` is clamped similarly. Caller (e.g., `SkillScriptTool`) passes the caller-supplied value; this is ONLY a fallback if the header says nothing.
+Header value above `settings.max` is clamped to `settings.max` + warn-log with original and clamped value. Header value below `settings.min` is clamped similarly. Caller (e.g., `SkillScriptTool`) passes on the Caller-Supplied value; this is ONLY a fallback if the header says nothing.
 
 #### 3.5.6 Effective Tool Allow List
 
 `effectiveAllow = process.allowedTools ∩ (header.allowTools ?? process.allowedTools)`
 
-A header can only **restrict**, not extend. The `ContextToolsApi` passed to the script sees the intersected list. Tool calls to disallowed names throw `ToolException("not allowed: <name>")` as usual.
+A header can only **restrict**, not extend. The `ContextToolsApi` passed to the script sees the intersected list. Tool calls to disallowed names throw `ToolException("not allowed: <name>")` as usual. An empty `allowedTools` means **unrestricted**, not "nothing allowed".
+
+Orthogonal to this is the **Scope Level** of the run: in `TRIGGER_SCOPED` runs (Scheduler, Hook, Event), all `@SpawnTool`-marked tools—`process_spawn`, `workflow_start`, the `scheduler_*`/`event_*`/`hook_*` families—are rejected regardless of the Allow Set. Full list and reasoning in `trigger-actions.md` §8.
 
 #### 3.5.7 application.yaml Configuration
 
@@ -227,39 +231,39 @@ A header can only **restrict**, not extend. The `ContextToolsApi` passed to the 
 vance:
   script:
     timeout:
-      default: 30s          # if neither header nor caller param says anything
+      default: 30s          # if neither Header nor Caller-Param says anything
       min:     1s
-      max:     1h           # hard cap, header value above will be clamped
+      max:     1h           # hard cap, Header value above is clamped
     statements:
       default: 1_000_000
       min:     1000
       max:     100_000_000
     result:                   # Result marshalling limits (return value)
-      default: 1_000_000      # Node cap (array elements + object members), @maxResultNodes-Default
+      default: 1_000_000      # Node cap (array elements + object members), @maxResultNodes-default
       min:     1000
-      max:     100_000_000    # hard cap, header value above will be clamped
+      max:     100_000_000    # hard cap, Header value above is clamped
       maxDepth: 64            # recursion depth during marshalling; catches cyclic return values
     capabilities:
       enforceRequires: true # @requiresTools check on load — if false,
                             # defer to runtime ToolException
 ```
 
-Settings are overridable per-Tenant via `SettingService` under the keys `vance.script.timeout.default`, `vance.script.timeout.max`, `vance.script.statements.default`, `vance.script.statements.max`, `vance.script.result.default`, `vance.script.result.max`, `vance.script.result.maxDepth`. This allows a Tenant admin to set strict caps without recompilation.
+Settings are overridable per-Tenant via `SettingService` under the keys `vance.script.timeout.default`, `vance.script.timeout.max`, `vance.script.statements.default`, `vance.script.statements.max`, `vance.script.result.default`, `vance.script.result.max`, `vance.script.result.maxDepth`. This allows a Tenant Admin to set tight caps without recompiling.
 
-> **Not covered (conscious residual):** These limits only throttle **result marshalling**. Memory allocated by a script **during execution** (`new Array(2**30).fill(0)`, `"x".repeat(2e9)`) cannot be capped per-context by the GraalJS **Community** runtime — a true heap cap requires the GraalVM Enterprise option `sandbox.MaxHeapMemory` or script execution in an isolated worker process (`-Xmx`). Until then, in-execution heap DoS remains an open hardening point (`planning/reviews/hactar-jeltz-script.md`).
+> **Not covered (conscious residual):** These limits only throttle **result marshalling**. Memory that a script allocates **during execution** (`new Array(2**30).fill(0)`, `"x".repeat(2e9)`) cannot be capped per-Context by the GraalJS **Community** runtime—a true heap cap requires the GraalVM Enterprise option `sandbox.MaxHeapMemory` or script execution in an isolated worker process (`-Xmx`). Until then, in-execution heap DoS remains an open hardening point (`planning/reviews/hactar-jeltz-script.md`).
 
 #### 3.5.8 Error Classes
 
 Supplement `ScriptExecutionException.ErrorClass`:
 
-- `INVALID_HEADER` — Parser found a malformed tag value. Message specifies tag + value + reason.
-- `MISSING_CAPABILITY` — `@requiresTools` declares tools not in the effective allow set. Message lists missing names. Throws **before** evaluation, no token consumption for a script that cannot run anyway.
+- `INVALID_HEADER` — Parser found a malformed tag value. Message names tag + value + reason.
+- `MISSING_CAPABILITY` — `@requiresTools` declares tools that are not in the effective Allow Set. Message lists the missing names. Throws **before** Eval, no token consumption for a script that cannot run anyway.
 
 `HOST_EXCEPTION` / `GUEST_EXCEPTION` / `RESOURCE_EXHAUSTED` / `TIMEOUT` / `CANCELLED` remain unchanged.
 
 #### 3.5.9 What happens without a Header
 
-The header is **optional**. A script without a header receives the entire default chain: Caller param > Settings default > Code default. Existing callers (`JavaScriptTool`, `SkillScriptTool`, `ScriptedToolFactory`, `ScriptActionExecutor` — which also runs Ursahook scripts) do not need to change anything.
+Header is **optional**. A script without a header gets the entire default chain: Caller-Param > Settings-Default > Code-Default. Existing callers (`JavaScriptTool`, `SkillScriptTool`, `ScriptedToolFactory`, `ScriptActionExecutor`—which also runs Ursahook scripts) do not need to change anything.
 
 ---
 
@@ -270,16 +274,16 @@ The surface differs per side (see §1.1). Both follow the same principles: **Jav
 ### 4a. Brain — `vance.*`
 
 ```js
-// Tools — calls the same Tool Dispatcher as LLM tool calls
+// Tools — calls the same Tool Dispatcher as LLM Tool Calls
 const result = vance.tools.call("web_search", { query: "graaljs sandboxing" });
 
-// Tool Discovery — what can this script call? (effective allow list
-// of the bound Process minus trigger-scoped denials)
+// Tool Discovery — what can this script call? (effective Allow List
+// of the bound Process minus trigger-scoped Denials)
 vance.tools.list();            // string[] — sorted tool names
 vance.tools.has("file_write"); // boolean — single check
 
 // File Adapter — ergonomic, capability-checked wrappers over the
-// file_*-WorkTarget-Tools (dispatch to the active WorkTarget of the Process).
+// file_*-WorkTarget tools (dispatch to the active WorkTarget of the Process).
 if (vance.files.isEnabled()) {          // = tools.has("file_read")
   const text = vance.files.read("data.csv");  // → content string (null if missing)
   const full = vance.files.readRaw("data.csv"); // → full file_read result map
@@ -288,13 +292,24 @@ if (vance.files.isEnabled()) {          // = tools.has("file_read")
 }
 // read/write/list throw ScriptHostException if isEnabled() is false —
 // no silent no-op. vance.files does NOT bypass the restriction: if the
-// file_*-tools are missing from the Process's allow set, the adapter remains deactivated.
+// file_*-tools are missing from the Process's Allow Set, the adapter remains deactivated.
 
-// Process Spawn — thin wrapper over tools.call("process_create", ...)
+// Process Spawn — thin wrapper over tools.call("process_spawn", ...)
 const handle = vance.process.spawn({ recipe: "analyze", task: "..." });
+
+// Magrathea — start is a wrapper over tools.call("workflow_start", …),
+// `name` goes through the _vance/workflows/-cascade, `path` starts exactly
+// this document in its own project (workflows.md §8.8).
+const run = vance.workflow.start({
+  path: "workflows/helloworld.yaml", params: { ticket: "T-42" }
+});
+vance.workflow.status(run.workflowRunId);  // Snapshot from the Journal
+                                           // projection, null if unknown
+vance.workflow.current;                    // its own run — only in
+                                           // script_task, otherwise null. Read-only.
 // Note: sendEvent is not in the API in v1 — there is currently no suitable
-// tool for it. To send events to sibling processes, call the respective
-// tool directly via vance.tools.call(...).
+// tool for it. Anyone wanting to send events to sibling processes calls
+// the respective tool directly via vance.tools.call(...).
 
 // Read-only Scope Info
 vance.context.tenantId;     // String
@@ -302,7 +317,7 @@ vance.context.projectId;    // String
 vance.context.sessionId;    // String, possibly null
 vance.context.processId;    // String — the Process that triggered the run
 
-// Structured Logging — lands in the Process Log, not stdout
+// Structured Logging — lands in the Process Log, not in stdout
 vance.log.info("step done", { count: 3 });
 ```
 
@@ -312,24 +327,26 @@ vance.log.info("step done", { count: 3 });
 
 - No direct Mongo access (no `vance.mongo`, no `*Repository` bindings).
 - No service bean access (no Spring bean lookups via script).
-- No filesystem (`vance.fs` subsystem is a v2 topic, once workspace tools are final).
+- No filesystem (`vance.fs` subsystem is a v2 topic, once Workspace tools are final).
 - No HTTP surface beyond what tools can already do.
 - No WebSocket sending from the script.
 
-If a script needs functionality not present in this surface: **build a Tool** (Built-in or Server Tool), do not extend the surface. The gate is intentionally narrow.
+If a script needs functionality that does not exist in this surface: **build a tool** (Built-in or Server Tool), do not extend the surface. The gate is intentionally narrow.
+
+The exception is narrowly defined and must be justified each time: a surface only gets something that **should not** be a tool. `vance.settings`/`vance.secret` read values that an LLM must not see; `vance.workflow.status` provides a run snapshot that an agent, according to the `plans`-manual, explicitly *should not* poll—a tool would be precisely the invitation to do so. Everything an LLM should also be allowed to do remains a tool and is at most wrapped by the surface (`vance.process.spawn`, `vance.workflow.start`, `vance.files.*`); this ensures that the Allow Set, quotas, and the trigger-scoped Spawn block apply unchanged.
 
 **Permission/Quota Path**
 
-`vance.tools.call(...)` delegates to the same `ToolDispatcher` used by the LLM tool loop. This automatically applies:
+`vance.tools.call(...)` delegates to the same `ToolDispatcher` that the LLM Tool Loop uses. This automatically applies:
 
 - Tool resolution by the Server Tool Cascade (Project → `_tenant` → Built-in)
 - `enabled`/`primary` flags
-- Recipe restrictions (`allowedTools…` list of the parent Process)
+- Recipe restrictions (`allowedTools…` list of the Parent Process)
 - Quota buckets from [llm-resource-management](llm-resource-management.md)
 - Tenant isolation
-- **Client Tool Routing** via WebSocket (see [mcp-tool-routing](mcp-tool-routing.md)) — the script does not need to know if a tool runs locally in the Brain or remotely in the Foot
+- **Client Tool Routing** via WebSocket (see [mcp-tool-routing](mcp-tool-routing.md))—the script does not need to know whether a tool runs locally in the Brain or remotely in the Foot
 
-Thus, a script can do **nothing** that the executing Process could not also do in the LLM tool loop.
+Thus, a script can do **nothing** that the executing Process could not also do in the LLM Tool Loop.
 
 ### 4b. Foot — `client.*`
 
@@ -340,7 +357,7 @@ client.tools.call("client_file_read", { path: "/tmp/foo.txt" });
 
 // Read-only Foot Identity
 client.context.footId;       // String — who this Foot is
-client.context.sessionId;    // String, possibly null — Session hint from Brain call
+client.context.sessionId;    // String, possibly null — Session hint from the Brain call
 client.context.requestId;    // String — unique ID of the remote call, for logging correlation
 
 // Logging — lands in the Foot Log and is mirrored back to the Brain Process via WebSocket
@@ -352,26 +369,26 @@ client.log.info("script step", { handled: 7 });
 **Surface Restriction — strict:**
 
 - **Only local Client Tools** are visible. The `ClientToolService` in the Foot knows its own tools (`client_exec_run`, `client_file_*`, `client_javascript`, …). This list is the sole source for `client.tools.call`.
-- **No** Server Tools, **no** Process surface, **no** Recipes. The Foot simply does not know these concepts and should not "invent" them through script code.
-- Script runs in the context of a Brain-triggered remote tool call. `client.context.requestId` is the key by which the Brain associates the result with the original tool call.
+- **No** Server Tools, **no** Process Surface, **no** Recipes. The Foot simply does not know these concepts and should not "invent" them through script code.
+- Script runs in the context of a Brain-triggered remote tool call. `client.context.requestId` is the key with which the Brain associates the result with the original tool call.
 
 **What the Foot API does NOT do (v1+v2):**
 
 - No WebSocket direct access (no `client.brain.send(...)`). Communication occurs exclusively via tool calls and tool results.
-- No module loading. On user machines, there is no reliable module path — the surface remains a flat source permanently.
+- No module loading. On user machines, there is no reliable module path—the surface remains a flat source permanently.
 - No direct service bean access in the Foot.
 
 ### 4c. Error Mapping (both sides)
 
-- Java exception in host method → JS `Error` with `name` = Java class simple name, `message` = `getMessage()`. Stacktrace is **not** exposed in JS.
-- JS exception (uncaught) → Executor catches `PolyglotException`, wraps in `ScriptExecutionException` with `errorClass` (`HOST_EXCEPTION`, `GUEST_EXCEPTION`, `RESOURCE_EXHAUSTED`, `TIMEOUT`, `CANCELLED`).
-- Caller (`JavaScriptTool` in Brain or `ClientJavaScriptTool` in Foot) decides how to pass the exception to the LLM or to the tool result.
+- Java Exception in Host method → JS `Error` with `name` = Java class simple name, `message` = `getMessage()`. Stacktrace is **not** exposed in JS.
+- JS Exception (uncaught) → Executor catches `PolyglotException`, wraps in `ScriptExecutionException` with `errorClass` (`HOST_EXCEPTION`, `GUEST_EXCEPTION`, `RESOURCE_EXHAUSTED`, `TIMEOUT`, `CANCELLED`).
+- Caller (`JavaScriptTool` in Brain or `ClientJavaScriptTool` in Foot) decides how to pass the Exception to the LLM or to the Tool Result.
 
 ---
 
 ## 5. Call Site
 
-Two independent services — no common interface, because `vance-foot` must not depend on `vance-brain`/`vance-shared` and `vance-api` must not carry Polyglot dependencies. The contracts are **structurally parallel**, but explained separately:
+Two independent services—no common interface, because `vance-foot` must not depend on `vance-brain`/`vance-shared` and `vance-api` must not carry Polyglot dependencies. The contracts are **structurally parallel**, but explained separately:
 
 ### 5a. Brain — `ScriptExecutor`
 
@@ -383,13 +400,13 @@ public interface ScriptExecutor {
 public record ScriptRequest(
     String language,            // "js" — others are rejected in v1
     String code,
-    @Nullable String sourceName, // for stack traces, default "<run>"
+    @Nullable String sourceName, // for stacktraces, default "<run>"
     ExecutionContext executionContext,
     Duration timeout            // default from Settings
 ) {}
 
 public record ScriptResult(
-    @Nullable Object value,     // null if script returns no value
+    @Nullable Object value,     // null if script yields no value
     Duration duration,
     long statementsExecuted     // from ResourceLimits, if available
 ) {}
@@ -397,9 +414,9 @@ public record ScriptResult(
 
 - Located in `vance-brain` under `de.mhus.vance.brain.script` (finalize path during implementation). Replaces `JsEngine`.
 - **Sole entry point** in the Brain. No one except `ScriptExecutor` builds `Context`/`Engine` objects.
-- `ExecutionContext` carries Tenant/Project/Session/Process plus quota bucket. Mandatory parameter — no default construction without scope.
+- `ExecutionContext` carries Tenant/Project/Session/Process plus quota bucket. Mandatory parameter—no default construction without scope.
 - Settings for limits (statement limit, default timeout) via [settings-system](settings-system.md), scope cascade. Defaults in code.
-- `language != "js"` → `IllegalArgumentException`. Jumping-off point for later GraalPy extension; deliberately restrictive in v1.
+- `language != "js"` → `IllegalArgumentException`. Jumping-off point for later GraalPy extension; consciously restrictive in v1.
 
 ### 5b. Foot — `ClientScriptExecutor`
 
@@ -425,15 +442,15 @@ public record ClientScriptResult(
 
 - Located in `vance-foot` under `de.mhus.vance.foot.script`. Replaces `ClientJsEngine`.
 - **Sole entry point** in the Foot.
-- `ClientExecutionContext` carries only Foot-relevant fields — no Tenant, no Project, no quota bucket. These concepts belong to the Brain.
-- The executor is called exclusively by the `ClientJavaScriptTool`, which in turn is triggered by the Brain via WebSocket tool routing (see [mcp-tool-routing](mcp-tool-routing.md)).
+- `ClientExecutionContext` carries only Foot-relevant fields—no Tenant, no Project, no quota bucket. These concepts belong to the Brain.
+- The Executor is called exclusively by `ClientJavaScriptTool`, which in turn is triggered by the Brain via WebSocket tool routing (see [mcp-tool-routing](mcp-tool-routing.md)).
 - `language != "js"` → `IllegalArgumentException`.
 
-**Note on code duplication:** The two records and service classes are structurally similar but deliberately separate. A common module would violate the dependency rules from CLAUDE.md. The duplication is manageable (~50 lines) and stable — changes to Brain-specific concepts (quotas, scope) do **not** affect the Foot.
+**Note on code duplication:** The two records and service classes are structurally similar but intentionally separate. A common module would violate the dependency rules from CLAUDE.md. The duplication is manageable (~50 lines) and stable—changes to Brain-specific concepts (quotas, scope) do **not** affect the Foot.
 
 ### 5c. Script Source: Inline String vs. File
 
-Primary input is **always** a string (`ScriptRequest.code`). This keeps the sandbox tight (`IOAccess` does not need to be opened) and the caller identity for "who can read which file" remains in the Java code, not in the Polyglot context.
+Primary input is **always** a string (`ScriptRequest.code`). This keeps the sandbox tight (`IOAccess` does not need to be opened) and the caller identity for "who can read which file" remains in the Java code, not in the Polyglot Context.
 
 **Brain Convenience.** The Brain `ScriptExecutor` gets a second method for file loading:
 
@@ -444,14 +461,14 @@ default ScriptResult runFile(Path path, ExecutionContext ctx, Duration timeout) 
 }
 ```
 
-- Pure convenience: reads the file with JVM permissions and delegates to `run(...)`.
-- `sourceName = path.toString()` → stack traces carry the actual path.
-- No new code path, no second eval variant. In particular, **no** GraalJS `Source`-from-`File` branch — the Polyglot context only sees strings.
+- Pure convenience: reads the file with JVM rights and delegates to `run(...)`.
+- `sourceName = path.toString()` → stacktraces carry the actual path.
+- No new code path, no second eval variant. In particular, **no** GraalJS `Source`-from-`File` branch—the Polyglot Context only sees strings.
 - The caller is responsible for ensuring that the path may be read (e.g., only from a whitelisted directory in the Docker image, once §8 v2 opens that up). The method does not validate.
 
-**Source caching** is explicitly out-of-scope. If the same script runs repeatedly and parsing latency is measured, we will build a separate `CompiledScript` concept later — but only when a concrete use case demands it.
+**Source caching** is explicitly out-of-scope. If the same script runs repeatedly and parsing latency is measured, we will build a separate `CompiledScript` concept later—but only when a concrete use case demands it.
 
-**Foot.** `ClientScriptExecutor` gets **no** file variant. Foot scripts come exclusively as a string from the remote tool call from the Brain — there is no trustworthy Foot path. If a Foot script wants to read files, it does so via a Client Tool (`client_file_read`), not via the script loader.
+**Foot.** `ClientScriptExecutor` gets **no** file variant. Foot scripts come exclusively as a string from the remote tool call from the Brain—there is no trustworthy Foot path. If a Foot script wants to read files, it does so via a Client Tool (`client_file_read`), not via the Script Loader.
 
 ---
 
@@ -459,12 +476,12 @@ default ScriptResult runFile(Path path, ExecutionContext ctx, Duration timeout) 
 
 ### 6a. Brain — `JavaScriptTool`
 
-Existing build (`vance-brain/.../tools/js/JavaScriptTool.java`), will be moved to the `ScriptExecutor`.
+Existing build (`vance-brain/.../tools/js/JavaScriptTool.java`), will be migrated to `ScriptExecutor`.
 
 - Tool schema unchanged: `{ "code": "...", "timeoutMs": 5000 }` (or similar).
 - Tool implementation now only calls `scriptExecutor.run(...)` with the current `ExecutionContext`.
 - No more dedicated `ScriptEngine`/Polyglot code in the tool, no more `JsEngine` singleton.
-- Tool result contains `value` (made JSON-serializable — complex objects via `JSON.stringify` convention in the script or mapper in the tool) and error info.
+- Tool Result contains `value` (made JSON-serializable—complex objects via `JSON.stringify` convention in the script or mapper in the tool) and error info.
 
 ### 6b. Foot — `ClientJavaScriptTool`
 
@@ -473,22 +490,22 @@ New (or refactor of the existing Foot-side JS tool path, which currently uses `C
 - Registered via `ClientToolService` and reported to the Brain at bootstrap (Tool Inventory Sync, see [mcp-tool-routing](mcp-tool-routing.md)).
 - Tool schema analogous to Brain: `{ "code": "...", "timeoutMs": 5000 }`.
 - Implementation calls `clientScriptExecutor.run(...)` with the `ClientExecutionContext` from the remote call.
-- Tool result is returned to the Brain via the WebSocket tool response — the Brain maps it into the `vance.tools.call` result path or the LLM tool loop.
+- Tool Result is passed back to the Brain via the WebSocket tool response—the Brain maps it into the `vance.tools.call` result path or the LLM Tool Loop.
 - No dedicated Polyglot code, no more `ClientJsEngine` singleton.
 
 ### 6c. Cleanup
 
-`JsEngine` and `ClientJsEngine` classes will be **deleted** with the implementation of this spec. They no longer have a raison d'être alongside the executors — simultaneous co-existence is explicitly not intended.
+`JsEngine` and `ClientJsEngine` classes will be **deleted** with the implementation of this spec. They no longer have a raison d'être alongside the executors—simultaneous co-existence is explicitly not intended.
 
 ---
 
 ## 7. Unit Tests
 
-Mandatory tests that will be delivered with the implementation. **Both sides** get their test suite — Brain tests in `vance-brain/src/test/java/de/mhus/vance/brain/script/`, Foot tests in `vance-foot/src/test/java/de.mhus.vance.foot.script/`. Structures 7.1–7.7 apply to **both** suites; Foot-specific deviations are added in §7.8.
+Mandatory tests that will be delivered with the implementation. **Both sides** get their test suite—Brain tests in `vance-brain/src/test/java/de/mhus/vance/brain/script/`, Foot tests in `vance-foot/src/test/java/de.mhus.vance.foot.script/`. Structures 7.1–7.7 apply to **both** suites; Foot-specific deviations are added in §7.8.
 
 ### 7.1 Executor Test (happy paths)
 
-- `run_returnsPrimitiveValue` — `return 42;` results in `ScriptResult.value == 42`.
+- `run_returnsPrimitiveValue` — `42;` results in `ScriptResult.value == 42` (value of the last expression; a top-level `return` would be a SyntaxError).
 - `run_returnsString` — String roundtrip.
 - `run_returnsNullForVoidScript` — Script without return value.
 - `run_executesMultipleStatements` — Variables, loops, normal JS.
@@ -500,7 +517,7 @@ Mandatory tests that will be delivered with the implementation. **Both sides** g
 - `run_deniesFileIo` — Attempting `java.io.File` access fails.
 - `run_deniesThreadCreation` — `new Thread(...)` or worker constructs are blocked.
 - `run_deniesProcessExec` — `Java.type('java.lang.Runtime').getRuntime().exec(...)` throws.
-- `run_deniesReflection` — Access to `Class` object of a host object fails.
+- `run_deniesReflection` — Access to `Class` object of a Host object fails.
 - `run_deniesEnvAccess` — `process.env`-like accesses are not present or return empty.
 
 ### 7.3 Resource Limit Tests
@@ -514,11 +531,11 @@ Mandatory tests that will be delivered with the implementation. **Both sides** g
 Brain (`vance.*`):
 
 - `vanceContext_isReadable` — `vance.context.tenantId` returns the value from `ExecutionContext`.
-- `vanceContext_isReadOnly` — Assignment `vance.context.tenantId = 'x'` throws (or no-op, depending on GraalJS strict mode — test fixes desired behavior).
-- `vanceTools_call_dispatchesToToolDispatcher` — Mock dispatcher; verifies that tool call was forwarded with correct `ExecutionContext`, **never** with script-passed Tenant/Project values.
+- `vanceContext_isReadOnly` — Assignment `vance.context.tenantId = 'x'` throws (or no-op, depending on GraalJS strict mode—test fixes desired behavior).
+- `vanceTools_call_dispatchesToToolDispatcher` — Mock dispatcher; verifies that tool call was passed with correct `ExecutionContext`, **never** with script-provided Tenant/Project values.
 - `vanceTools_call_returnsToolResult` — Roundtrip of a `Map<String,Object>` response as a JS object.
 - `vanceTools_call_unknownTool_throwsInJs` — Missing tool is converted to JS `Error`, caught with `try/catch`.
-- `vanceTools_call_respectsRecipeRestrictions` — Tool blocked by recipe filter also throws via script (mock dispatcher reports block).
+- `vanceTools_call_respectsRecipeRestrictions` — Tool blocked by the Recipe filter also throws via script (mock dispatcher reports block).
 - `vanceProcess_spawn_dispatchesToProcessService` — Analogous mock setup for `process.spawn`.
 - `vanceLog_info_writesToProcessLogger` — Mock logger receives entry with correct Process context.
 
@@ -534,38 +551,38 @@ Foot (`client.*`):
 ### 7.5 Cross-Run Isolation
 
 - `run_doesNotShareGlobalsBetweenRuns` — first run sets `globalThis.foo = 1`, second run sees `typeof globalThis.foo === 'undefined'`.
-- `run_doesNotShareHostBindingsBetweenRuns` — first run tries to overwrite `vance`, second run has the original `vance`.
+- `run_doesNotShareHostBindingsBetweenRuns` — first run attempts to overwrite `vance`, second run has the original `vance`.
 
 ### 7.6 Error Mapping
 
 - `run_javaException_inHostMethod_isMappedToJsError` — Mock tool throws `RuntimeException`, JS sees `Error` with expected `message`, **no** stacktrace.
 - `run_uncaughtJsError_isWrapped` — `throw new Error("boom")` becomes `ScriptExecutionException(GUEST_EXCEPTION)`.
 
-### 7.7 What is Not Tested
+### 7.7 What is not tested
 
-Performance benchmarks, heap leak stress, native-image compatibility — deliberately out-of-scope for the v1 test suite. Native-image smoke test, if any, will be set up separately as a CI gate.
+Performance benchmarks, heap leak stress, native-image compatibility—consciously out-of-scope for the v1 test suite. Native-image smoke test, if any, will be set up separately as a CI gate.
 
-Tests may reuse the `Engine` singleton from the Spring context (test class with `@SpringBootTest` or explicitly built engine in `@BeforeAll`). A fresh `Executor.run` call per test method (just like in production).
+Tests may reuse the `Engine` singleton from the Spring context (test class with `@SpringBootTest` or explicitly built Engine in `@BeforeAll`). A fresh `Executor.run` call per test method (just like in production).
 
-### 7.8 Foot-Specific Tests
+### 7.8 Foot-specific Tests
 
 In addition to §7.1–§7.7:
 
 - `clientExecutor_rejectsServerToolNames` — Calling `client.tools.call("web_search", …)` (a known server tool) fails because the Foot does not know this tool locally. Prevents someone from "accidentally" expecting server surface in client scripts.
-- `clientExecutor_doesNotPersistAcrossRequests` — two consecutive remote calls with different `requestId`s see a fresh context (analogous to §7.5, but explicitly for the remote call path).
+- `clientExecutor_doesNotPersistAcrossRequests` — two consecutive remote calls with different `requestId`s see a fresh Context (analogous to §7.5, but explicitly for the remote call path).
 
 ---
 
-## 8. Deliberately NOT in v1
+## 8. Consciously NOT in v1
 
 - **GraalPy** — separate spec, once a concrete Python-only tool need exists. Surface (`vance.*` / `client.*`) would then be language-agnostic.
-- **Module Loading** (`import` from filesystem, `require`, npm resolver) — everything in the script is a flat source. **v2 Option for the Brain:** once the Brain runs in a Docker image, the filesystem environment is controlled enough to allow a limited module loader surface (e.g., reading from an `/opt/vance/scripts/` directory with a whitelist). The Foot does **not** get this — on user machines, there is no reliable path.
-- **Persistent Script Sessions** — no resuming a context across runs. If state is needed, it is explicitly persisted via Tools/Documents.
+- **Module Loading** (`import` from filesystem, `require`, npm resolver) — everything in the script is a flat source. **v2 option for the Brain:** once the Brain runs in a Docker image, the filesystem environment is controlled enough to allow a limited module loader surface (e.g., reading from an `/opt/vance/scripts/` directory with a whitelist). The Foot does **not** get this—on user machines, there is no reliable path.
+- **Persistent Script Sessions** — no resuming a context across runs. Anyone needing state persists it explicitly via Tools/Documents.
 - **Streaming Output** from the script — return value is a single result. Logging via `vance.log` / `client.log` is a side effect.
 - **Heap Limits / Sandbox License Features** — would require GraalVM Sandbox License, not for v1.
 - **Direct Mongo/Service Bean Access** — only via the `vance.*` / `client.*` gate.
 - **JSR-223 Bridge** — no `ScriptEngineManager` path.
-- **Shared Script Module between Brain and Foot** — deliberately kept separate (see §5).
+- **Shared Script Module between Brain and Foot** — consciously kept separate (see §5).
 
 ---
 

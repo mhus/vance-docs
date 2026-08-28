@@ -36,7 +36,7 @@ Hactar's non-responsibilities:
 
 - **No LLM-authoring.** Hactar makes zero LLM calls during a run.
   All validation calls happen via `HactarService` (deep-validate
-  uses `LightLlmService` with the `script-review` recipe — Hactar
+  uses `LightLlmService` with the `script-review` Recipe — Hactar
   itself doesn't drive the LLM dialog).
 - **No recovery loop.** Any failure (load miss, validation reject,
   executor exception, script throw) is terminal. The caller's next
@@ -74,7 +74,7 @@ Otherwise LOADING transitions directly to EXECUTING.
 ### 2.2 VALIDATING (opt-in)
 
 `ValidatingPhase` calls `HactarService.deepValidate(...)` — runs
-a `LightLlmService` call with the bundled `script-review` recipe.
+a `LightLlmService` call with the bundled `script-review` Recipe.
 The LLM reviews the script for semantic / logic / API-misuse
 issues. On reject → FAILED with the LLM issues merged into
 `state.validationIssues`.
@@ -150,10 +150,10 @@ Hactar runs are spawnable from multiple surfaces:
 
 | Trigger | Path |
 |---|---|
-| Direct `process_create` | `process_create(recipe="hactar-run", params={scriptRef, …})` |
-| `hactar_run` tool | convenience wrapper around the `process_create` call above |
+| Direct `process_spawn` | `process_spawn(recipe="hactar-run", params={scriptRef, …})` |
+| `hactar_run` tool | convenience wrapper around the `process_spawn` call above |
 | Scheduler | `_vance/scheduler/<name>.yaml` with `recipe: hactar-run` + `params.scriptRef: "<path>"` |
-| Slart self-execute | `slart-and-run` recipe → Slart writes SCRIPT_JS → Slart's EXECUTING spawns Hactar via `JsScriptArchitect.directExecutionSpawn` |
+| Slart self-execute | `slart-and-run` Recipe → Slart writes SCRIPT_JS → Slart's EXECUTING spawns Hactar via `JsScriptArchitect.directExecutionSpawn` |
 | Cortex Run-Button (`▶ Run JS`) | bypasses Hactar (uses `ScriptCortexExecutionService` directly) — Hactar's role here is covered by the same `ScriptExecutor`; the Cortex path skips the LOADING/VALIDATING ceremony because the body is already in the editor |
 
 ## 6. HactarService — Shared Validation Surface
@@ -167,7 +167,7 @@ the single owner of "is this script valid?". Two methods:
   `JsScriptArchitect.validateDraftShape`, and Cortex's
   `POST /scripts/validate`.
 - `deepValidate(...)` → LLM semantic review via
-  `LightLlmService` + bundled `script-review` recipe. Used by
+  `LightLlmService` + bundled `script-review` Recipe. Used by
   Hactar's optional VALIDATING phase and Cortex's
   `POST /scripts/validate-deep`.
 

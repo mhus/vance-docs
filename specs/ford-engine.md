@@ -9,7 +9,7 @@ permalink: /specs/ford-engine
 ---
 # Vancetope — Ford Think Engine
 
-> **Ford** is the full-fledged single-LLM engine — the Guide's field researcher. Quick response, no frills, knows where its towel is: It receives a user message, calls an LLM (with tools, memory access, RAG/Knowledge-Graph), and writes the answer to the chat. **No workflow properties** — no orchestration of sub-processes, no task tree, no phase gates. Default worker for all orchestrator engines (Arthur/Marvin/Vogon/Zaphod) and also directly usable when no workflow is needed.
+> **Ford** is the full-fledged single-LLM engine — the Guide's Field Researcher. Quick response, no frills, knows where its towel is: It receives a user message, calls an LLM (with tools, memory access, RAG/Knowledge-Graph), and writes the answer to the chat. **No workflow properties** — no orchestration of sub-processes, no task tree, no phase gates. Default worker for all orchestrator engines (Arthur/Marvin/Vogon/Zaphod) and also directly usable when no workflow is needed.
 > See also: [arthur-engine](/specs/arthur-engine) (Framework API that Ford implements), [think-engines](/specs/think-engines) (Registry, Lifecycle)
 
 ---
@@ -21,7 +21,7 @@ Ford is the **single-LLM engine** in the Vancetope engine set: one turn = one LL
 - **Generalist Worker** for the orchestrator engines. Arthur, Marvin, Vogon, and Zaphod spawn Ford Recipes (`analyze`, `quick-lookup`, `web-research`, `code-read`, `marvin-worker`, …) for the operational individual tasks that arise in the respective workflow.
 - **Direct Top-Level Chat** for Sessions that do not require a workflow — short research, quick information, tool-driven lookups. In these cases, Ford is the Session Engine, and no orchestrator is in between.
 
-Historically, Ford was also the **Walking Skeleton** for the Think Engine framework: Registry discovery, auto-start on Session-Create, Pending-Queue, Lane-Turn, `ThinkEngineContext`, LLM call, `ChatApi`, WebSocket streaming, Suspend/Resume — everything was first validated end-to-end with Ford. This function remains as a side effect but is no longer the primary reason for its existence.
+Historically, Ford was also the **Walking Skeleton** for the Think Engine Framework: Registry discovery, auto-start on Session creation, Pending-Queue, Lane-Turn, `ThinkEngineContext`, LLM call, `ChatApi`, WebSocket streaming, Suspend/Resume — everything was first validated end-to-end with Ford. This function remains as a side effect but is no longer the primary reason for its existence.
 
 ---
 
@@ -35,7 +35,7 @@ Ford has **no workflow properties**. What a turn does not include:
 - **No multi-head consultation.** No parallel Personas on the same question. Zaphod does that.
 - **No foreground/background logic at the Session level.** If Ford is top-level, it is the only process in the Session.
 
-> Memory access (RAG, Knowledge-Graph, Project documents) and Tools are **allowed** and configured via Recipe — Ford is no longer a "dumb" LLM wrapper. What distinguishes it from Arthur is the absence of orchestration and persistent task structure, not the inability to consult external data.
+> Memory access (RAG, Knowledge-Graph, Project documents) and Tools are **allowed** and configured via Recipe — Ford is no longer a "dumb" LLM wrapper. What distinguishes it from Arthur is the absence of orchestration and persistent task structure, not the ability to consult external data.
 
 ---
 
@@ -44,7 +44,7 @@ Ford has **no workflow properties**. What a turn does not include:
 A Lane-Turn does exactly this:
 
 1. `context.drainPending()` → typically a `UserChatInput`.
-2. `context.chat().history()` → read the chat history of its own process / session.
+2. `context.chat().history()` → reads the chat history of its own Process / Session.
 3. System prompt from the current Recipe (e.g., `analyze`, `web-research`, `marvin-worker`).
 4. Optional memory consultation via Recipe configuration: RAG query over Project/Session memory, Knowledge-Graph lookup, Project documents. Results are appended to the prompt as context.
 5. `context.aiModelService().createChat(...)` → Default LLM via settings cascade. Recipe parameters can override the model.
@@ -57,17 +57,17 @@ Other `SteerMessage` variants (`ProcessEvent`, `ToolResult`, `ExternalCommand`) 
 
 ---
 
-## 4. Detailed Lifecycle Behavior
+## 4. Lifecycle Behavior in Detail
 
 | Method | Behavior |
 |---------|-----------|
 | `start(process, ctx)` | Writes a short greeting `ChatMessage.assistant` (e.g., "Ford here. Ask me anything."). Status → `ready`. No LLM call. |
 | `resume(process, ctx)` | Drains the queue. If empty, immediately returns to `ready` (no turn). If not empty, executes a turn as with `steer`. |
-| `suspend(process, ctx)` | No cleanup. Chat history is persistent anyway. Status is set to `suspended` by the Brain. |
+| `suspend(process, ctx)` | No cleanup. Chat history is already persistent. Status is set to `suspended` by the Brain. |
 | `steer(process, ctx, msg)` | Core routine: drain, LLM call, Assistant response (see §3). |
 | `stop(process, ctx)` | No cleanup. Status → `stopped`. |
 
-Ford **never** reaches `done` (just like Arthur) and does not use `blocked` either — it has no approval workflow. Actual status set: `ready` · `running` · `suspended` · `stopped` · `stale`.
+Ford **never** reaches `done` (just like Arthur). The turn ends via natural stop (Assistant message without tool call); `awaiting_user_input` is derived from the role: as a **Worker** (parent present), Ford then goes to `idle` (the parent can steer again), as **Primary** (no parent) to `blocked` (waiting for the next user message). A maxIter runaway (Cap 100) or LLM collapse closes a worker terminally (`incomplete`). Terminal contract details: [structured-engine-output §3](/specs/structured-engine-output).
 
 Ford is `asyncSteer = false` — the default. `process_steer` blocks the calling Lane until Ford's turn is complete and returns the reply as `newMessages`. This is exactly what Arthur and other orchestrators expect.
 
@@ -84,9 +84,9 @@ Ford has two productive uses:
 - **Vogon** → spawns phase-specific Ford Recipes (one per phase).
 - **Zaphod** → spawns Ford Recipes per head (with per-head Persona append).
 
-**As a Top-Level Engine without Workflow:** Sessions where no orchestrator, no task tree, and no phases are needed — typical for quick research, tool-driven lookups, and simple chat tasks with Memory/RAG context.
+**As a Top-Level Engine without Workflow:** Sessions where no orchestrator, no task tree, and no phases are needed — typical for quick research, tool-driven lookups, and simple chat tasks with memory/RAG context.
 
-Ford itself knows nothing of these constellations — it simply does "one question → one answer" with a tool loop and optional Memory context. Which tools are allowed, which system prompt, which Persona, which Memory sources — all are Recipe matters.
+Ford itself knows nothing of these constellations — it simply does "one question → one answer" with a tool loop and optional memory context. Which tools are allowed, which system prompt, which Persona, which memory sources — all are Recipe matters.
 
 ---
 
@@ -98,18 +98,18 @@ When Ford runs in a real CLI session, the following paths are proven functional:
 - [x] `SessionService.create(type=INTERACTIVE)` atomically creates Session + Process.
 - [x] CLI connects via WebSocket, handshake including client fingerprint.
 - [x] `process-steer` command atomically lands in `ThinkProcessDocument.pendingMessages`.
-- [x] Lane scheduler starts Turn → Status `running` → Engine-Steer → Status `ready`.
-- [x] `ThinkEngineContext` is freshly built per Turn, all sub-APIs accessible.
+- [x] Lane scheduler starts turn → Status `running` → Engine steer → Status `ready`.
+- [x] `ThinkEngineContext` is freshly built per turn, all sub-APIs accessible.
 - [x] `AiChat` provider delivers a functional client (settings cascade, trace logging).
-- [x] `ChatMessageService` writes/reads to MongoDB in order.
+- [x] `ChatMessageService` writes/reads in MongoDB in order.
 - [x] `ClientEventPublisher.publish(CHAT_MESSAGE_STREAM_CHUNK)` lands live at the client.
 - [x] Client disconnect → Session/Process `suspended`. Reconnect → resume.
 
-This is the **foundation plate**. Arthur (Tools + Orchestration), Marvin (Tree-Runner), Vogon (Strategy), Zaphod (Multi-Head) stand on it.
+This is the **foundation plate**. On it stand Arthur (Tools + Orchestration), Marvin (Tree-Runner), Vogon (Strategy), Zaphod (Multi-Head).
 
 ---
 
-## 7. Transition to Arthur (Historical)
+## 7. Transition to Arthur (historical)
 
 As long as Arthur was not ready, **Ford was the default** for Interactive Sessions. With Arthur becoming production-ready, this default was changed — Arthur takes over Sessions that require orchestration. However, Ford remains available both as a worker engine in the pool **and** as a top-level engine for Sessions without workflow requirements (see §5).
 
@@ -117,6 +117,6 @@ As long as Arthur was not ready, **Ford was the default** for Interactive Sessio
 
 ## 8. Open Points
 
-- **LLM Error Handling.** If the LLM call fails (quota, network, over-limit), Ford writes an Error-`ChatMessage.system` and returns to `ready`. Detailed semantics (retry vs. fail-fast, user communication) will be defined with the first implementation.
-- **Memory Compaction.** First implementation exists (`MemoryCompactionService` triggers via Token-Estimate). Path validation still needs to be part of the test plan.
-- **Validator Loop.** Currently pattern-based (intent-without-action, data-relay-gap). Structured JSON output validator like Marvin's `marvin-worker` is Recipe-specific, not an Engine concept.
+- **LLM Error Handling.** If the LLM call fails (quota, network, over-limit), Ford writes an error `ChatMessage.system` and returns to `ready`. Detailed semantics (retry vs. fail-fast, user communication) will be determined with the first implementation.
+- **Memory Compaction.** First implementation exists (`MemoryCompactionService` triggers via Token-Estimate). Validation of the path still needs to be part of the test plan.
+- **Validator Loop.** Today pattern-based (intent-without-action, data-relay-gap). Structured JSON output validator like Marvin's `marvin-worker` is Recipe-specific, not an Engine concept.

@@ -14,14 +14,14 @@
 web UI**. Instead of writing a mobile client from scratch, a Capacitor
 wrapper loads the existing `vance-face` website per account in an
 isolated WKWebView. Multi-identity, native bridges (Share, Voice, Push,
-Files, Camera, …), and security-specific affordances (PIN/Biometric-Lock)
+Files, Camera, …) and security-specific affordances (PIN/Biometric-Lock)
 reside in the wrapper; the editor logic remains in the unchanged Vue website.
 
 **What Facelift is:**
 
 - A thin native wrapper (iOS, later Android) around the existing
   Vue web UI stack. A single code path for editor features —
-  browser, Facelift, future desktop wrapper share the same
+  Browser, Facelift, future desktop wrapper share the same
   `vance-face` bundle files.
 - A replacement for the React Native skeleton under
   `client_web/packages/vance-fingers/`. Fingers will no longer
@@ -34,7 +34,7 @@ reside in the wrapper; the editor logic remains in the unchanged Vue website.
 
 - No editor reimplementation. The website remains the source of truth;
   the wrapper does **nothing** with Chat / Inbox / Documents / … itself.
-- No offline mode. WebView has internet or displays the website's error page.
+- No offline mode. WebView has internet or shows the website's error page.
 - No Auth stack in the wrapper. Login happens in the website; the
   wrapper knows brain URLs + optional display names + (for Phase 2
   via Share Extension) a bearer token mirrored from login.
@@ -68,12 +68,12 @@ Vue Router 4 + Tailwind). Bundle: only the Picker/Manage/Lock UI.
 - `src/accounts/accountStore.ts` — Persistent account list in
   `@capacitor/preferences`. `Account = { id (UUID), faceUrl,
   displayName, createdAt, lastUsedAt }` — `faceUrl` is the URL of the
-  `vance-face` deployment; the Brain is same-origin accessible via `/brain/*`
+  `vance-face` deployment; the Brain is same-origin via `/brain/*`
   proxy within it. Auto-activation on add.
 - `src/lock/lockStore.ts` — PIN hash + salt in Preferences,
   Unlocked flag in-memory (§7).
 - `src/views/ShellView.vue` — Host for the native per-account
-  WKWebView. Persistent header (account switcher + Home + Reload
+  WKWebView. Persistent header (Account Switcher + Home + Reload
   + Manage); native WebView fills the rest (`VanceAccountWebView`
   plugin).
 - `ios-template/` — committed source files for native iOS setup,
@@ -94,7 +94,7 @@ Vue Router 4 + Tailwind). Bundle: only the Picker/Manage/Lock UI.
 
 ### 2.2 `@vance/facelift-account-webview` — the Custom Plugin
 
-Workspace-internal Capacitor plugin (Swift + TS-Proxy + .podspec).
+Workspace-internal Capacitor plugin (Swift + TS-proxy + .podspec).
 Responsible for:
 
 - **Multi-Identity WebView Hosting:** one WKWebView per account with
@@ -103,20 +103,20 @@ Responsible for:
   users on the same Brain origin (§3.1).
 - **JS Bridge** (see §3.3) — Capacitor plugin methods for the
   wrapper Vue code, plus WKScriptMessageHandler for the website.
-- **WKNavigationDelegate** for `vance-facelift://` URL scheme
+- **WKNavigationDelegate** for `vance-facelift://`-URL-scheme
   capture (§4).
-- **UA Suffix Injection** (§5).
-- **Bridge User Script Injection** (§3.3).
-- **Biometric API** (`LAContext` wrapper) — no external plugin,
+- **UA-Suffix-Injection** (§5).
+- **Bridge-User-Script-Injection** (§3.3).
+- **Biometric-API** (`LAContext`-wrapper) — no external plugin,
   ~30 LoC Swift.
-- **App Group File IO** for the Share Extension (§8).
+- **App-Group-File-IO** for the Share Extension (§8).
 
 `Sources/VanceAccountWebViewPlugin/VanceAccountWebViewPlugin.swift`
 is the only Swift file. Pod is named `VanceFaceliftAccountWebview`
 (Cocoapods naming convention; not to be confused with `vance-facelift`
 as a URL scheme).
 
-### 2.3 Dependency Rules (Strict)
+### 2.3 Dependency Rules (strict)
 
 | Package | May depend on |
 |---|---|
@@ -160,15 +160,15 @@ to live.
 
 ### 3.2 Geometry
 
-Wrapper header (Vue, in the Capacitor main WebView) persistently
-sits on top. The plugin places the account WebView **below** the
+Wrapper header (Vue, in the Capacitor main WebView) remains persistently
+on top. The plugin places the Account WebView **below** the
 header. `ShellView.vue` measures the header height via `ResizeObserver` +
 `window.resize` and calls `setBounds(...)` through.
 
 iOS Capacitor config: `contentInset: 'never'` so that CSS y=0 coincides
-with UIKit y=0 — otherwise the native WebView overlaps the header
+with UIKit y=0 — otherwise the native WebView overlays the header
 by the safe-area-top height. JS floor 110pt in `currentBounds()` as
-a cold-start defensive (env(safe-area-inset-top) can return 0 in the very first
+cold-start defensive (env(safe-area-inset-top) can return 0 in the very first
 frame).
 
 ### 3.3 The `window.vanceFacelift`-Bridge
@@ -197,23 +197,23 @@ Swift dispatches by `action` field.
 - The bridge is **only available in Facelift**. `@vance/shared`'s
   `isFacelift()` (User-Agent match) is the gate — if `false`,
   `window.vanceFacelift` is undefined.
-- Bridge extensions are **additive**: new actions without
-  schema bump are allowed, as long as existing calls continue to work.
+- Extensions to the bridge are **additive**: new actions without
+  schema bump are allowed, as long as existing calls continue to run.
 
-## 4. `vance-facelift://`-URL Scheme
+## 4. `vance-facelift://`-URL-Scheme
 
 Registered in `Info.plist` via `CFBundleURLTypes`. WebView
 navigation to `vance-facelift://<action>[?params]` is intercepted
 by the plugin's WKNavigationDelegate, canceled, and emitted as a
 `urlOpen` event to JS. `ShellView.vue` listens + routes.
 
-**v1 Actions (host segment is the action name):**
+**v1-Actions (host segment is the action name):**
 
 | URL | Effect in Wrapper |
 |---|---|
 | `vance-facelift://back-to-picker` | Native WebView `dismiss()`, Router → `/manage`. |
 | `vance-facelift://add-account` | dismiss, Router → `/add`. |
-| `vance-facelift://switch-account` | Open bottom sheet (account switcher). |
+| `vance-facelift://switch-account` | Open bottom sheet (Account Switcher). |
 
 **Contract:**
 
@@ -257,9 +257,9 @@ export function requestAddAccount(): void;
 ## 6. `/config.json` — Brain Runtime Configuration
 
 Statically delivered under `vance-face`'s nginx root as
-`/config.json`. Pod entrypoint overwrites with Pod env values at
-container start (no Vite `VITE_*` variable pattern — image remains
-deployment-agnostic).
+`/config.json`. Pod entrypoint overwrites with Pod environment
+values during container startup (no Vite `VITE_*` variable pattern —
+image remains deployment-agnostic).
 
 **Schema (v1):**
 
@@ -287,20 +287,20 @@ deployment-agnostic).
 - Wrapper `verifyVanceUrl(url)` in `facelift-bridge/src/accounts/
   verifyVanceUrl.ts` — before `addAccount()` + on faceUrl edit calls
   `CapacitorHttp.get(<url>/config.json)`, checks `product === "vance"`.
-  Prevents typos like `https://google.de` from being saved. **Does not
-  exclude intentional fraud** (any server can deliver a matching file) —
-  this is accepted.
+  Prevents typos like `https://google.de` from being saved.
+  **Does not exclude intentional fraud** (any server can
+  deliver a matching file) — this is accepted.
 
 `vance-face`'s Vite dev server proxy to `/brain/*` is hardcoded to
-`http://localhost:9990` (no build-time env var). In production, face
-is same-origin-served by brain; if the two are ever separated, the
-Brain URL will move into `/config.json` (schema extension, loader
-refactor — Phase 2).
+`http://localhost:9990` (no build-time env var). In
+production, face is same-origin-served by brain; if the two
+are ever separated, the Brain URL moves into `/config.json`
+(schema extension, loader refactor — Phase 2).
 
 ## 7. PIN + Biometric Lock
 
 Mandatory lock before each wrapper boot. Vue routes with
-`meta.skipLockGuard !== true` are blocked by the router's `beforeEach`
+`meta.skipLockGuard !== true` are blocked by the Router `beforeEach`
 as long as `isUnlocked() === false`.
 
 **Persistence (`facelift-bridge/src/lock/lockStore.ts`):**
@@ -310,7 +310,7 @@ as long as `isUnlocked() === false`.
 - `vance.lock.biometricEnabled` (`"true"` / `"false"`)
 
 All in `@capacitor/preferences` = iOS `UserDefaults`. **Wipes on
-App uninstallation** (unlike Keychain — intentionally, so a
+App uninstallation** (unlike Keychain — intentionally, so that a
 reinstallation lands on the setup page and not in a PIN
 lock loop without a reset button).
 
@@ -329,11 +329,11 @@ on the next cold start.
 
 - `/lock/unlock` → PIN pad. On correct PIN:
   `markUnlockedByBiometric()` or `verifyPin()` set
-  `unlockedInMemory = true`, router jumps to `next` query or `/`.
+  `unlockedInMemory = true`, Router jumps to `next` query or `/`.
 - If `isBiometricEnabled()`: `onMounted` immediately triggers
-  `tryBiometricUnlock()` → on success, proceeds without PIN.
+  `tryBiometricUnlock()` → on success, bypasses PIN.
 
-**Biometric API:** thin wrapper around plugin methods
+**Biometric-API:** thin wrapper around plugin methods
 `isBiometricAvailable()` + `authenticateBiometric({reason})`.
 Native implementation via `LAContext.evaluatePolicy(.deviceOwner-
 AuthenticationWithBiometrics, …)`. **No** external
@@ -377,10 +377,10 @@ POST /brain/{tenant}/share/inbox
 Authorization: Bearer <token>
 Content-Type: application/json
 Body: InboxShareRequest  { projectName, title?, body?, sharedUrl? }
-→ 201 InboxItemDto
+→ 201 MaximegalonDto
 ```
 
-Creates an Inbox Item with `type=OUTPUT_TEXT`, `requires-
+Creates an Inbox item with `type=OUTPUT_TEXT`, `requires-
 Action=false`, tags `share` + `project:<name>`, payload with
 `source=share-extension`. User processes further in the Inbox editor.
 
@@ -428,7 +428,7 @@ cap-add-ios.sh`).
 
 `vance-face` and `vance-brain` have **no** Facelift-specific
 build path. The website is deployed as usual (`wb build face`,
-Docker image); the wrapper loads it at runtime per account.
+Docker image); wrapper loads it at runtime per account.
 
 ## 12. What Facelift Does NOT Do (v1)
 
@@ -439,16 +439,16 @@ build ad-hoc.
 - **No browser mode.** The WebView is limited to the Brain origin of
   the respective account URL; navigations are not further
   filtered (Vancetope Brain is the trusted source).
-  Hard origin lock + external link to Safari is Phase 2 (cf.
+  Hard-origin lock + external link to Safari is Phase 2 (cf.
   planning, if needed).
 - **No Push Notifications.** APNs setup + server dispatcher are
   Phase 4 (planning/vance-facelift-share-extension.md noted).
 - **No Universal Links.** `vance-facelift://` is sufficient for in-app
   + cross-app triggers. Universal Links (`https://eddie.mhus.de/...`
-  opens the app) will come when Brain delivers Apple site association.
+  opens the app) come when Brain delivers Apple Site Association.
 - **No iCloud Sync of the account list.** App uninstallation =
   account list gone. Re-entry accepted.
-- **No Voice / STT, no Camera plugin in the wrapper.** The existing
+- **No Voice / STT, no Camera Plugin in the wrapper.** The existing
   browser file inputs in `vance-face` (Documents upload, Chat
   attach) open the iOS system picker — which offers Photo Library +
   Take Photo + Files app anyway. Capacitor plugins are only
@@ -461,7 +461,7 @@ build ad-hoc.
 ## 13. Reference
 
 - `planning/vance-facelift.md` — Architecture decisions (MPA-vs-
-  SPA-Shell, Wrapper-vs-Native, Bridge model)
+  SPA-shell, wrapper-vs-native, bridge model)
 - `planning/vance-facelift-share-extension.md` — Status + steps for
   the Share Extension after Dev Program activation
 - `planning/vance-facelift-device-deploy.md` — Personal Team

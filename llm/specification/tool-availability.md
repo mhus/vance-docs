@@ -1,6 +1,6 @@
 # Vancetope — Tool Availability
 
-> Model for the **health status of tools** at runtime: when a tool is usable, when it is not, for how long, and why. This is the state layer on which the Agrajag service engine (see [agrajag-engine](agrajag-engine.md)) operates. This spec exclusively defines the **data model** and the **read/write paths** — diagnostic logic belongs in agrajag-engine.md.
+> Model for the **health status of tools** at runtime: when a tool is usable, when it is not, for how long, and why. This is the state layer on which the Agrajag Service Engine (see [agrajag-engine](agrajag-engine.md)) operates. This spec exclusively defines the **data model** and the **read/write paths** — diagnostic logic belongs in agrajag-engine.md.
 
 ---
 
@@ -8,9 +8,9 @@
 
 Today's tool layer only knows "tool call succeeded" vs. "tool call threw an exception". This leads to three recurring pains:
 
-1. **Client tools disappear with the client.** If a Foot client disconnects via WebSocket, `client_file_read` & Co. are gone. The LLM continues to call them, receiving `Unknown tool: client_file_read` — misleading, because the tool is not unknown, but temporarily unreachable.
+1. **Client tools disappear with the client.** If a Foot client disconnects via WebSocket, `client_file_read` & co. are gone. The LLM continues to call them, receiving `Unknown tool: client_file_read` in return — misleading, because the tool is not unknown, but temporarily unreachable.
 2. **External services are unreliable.** MCP servers, external HTTP APIs (Jira, Confluence, GitHub) experience outages, rate limits, expired tokens. Today, every call fails with the same generic `ToolException` — the LLM cannot distinguish between "wait 30 s and try again" and "the tool has been broken for 2 h, plan without it".
-3. **User permission ≠ tool problem.** If User A does not have write permissions, a 403 is returned. This is not a tool malfunction, but a configuration issue. It must not contaminate the tool's health state and must not trigger an expensive LLM-driven diagnosis every time.
+3. **User permission ≠ tool problem.** If User A does not have write permissions, a 403 is returned. This is not a tool malfunction, but a configuration issue. It should not contaminate the tool's health state and should not trigger an expensive LLM-driven diagnosis every time.
 
 This spec defines the state that allows all three cases to be cleanly mapped.
 
@@ -25,8 +25,8 @@ Status             OK ⇄ DEGRADED ⇄ DOWN          (whether the tool is usable
                                 ↘
                                   expectedRecoveryAt → automatic RETESTING
 
-Cooldown           a TTL per error signature      (whether to ask Agrajag again)
-                   orthogonal to status
+Cooldown           one TTL per error signature    (whether we ask Agrajag again)
+                   orthogonal to Status
 
 Scope              SESSION / USER / PROJECT / TENANT / GLOBAL
                    who is affected
@@ -36,7 +36,7 @@ Scope              SESSION / USER / PROJECT / TENANT / GLOBAL
 **Cooldown** says: if a specific error occurs, should we diagnose again or is direct reflection to the LLM sufficient.
 **Scope** says: does this affect this Session, this User, this Project, or the whole world.
 
-Status and Cooldown are independent. A tool can have `status=OK` *and* simultaneously a `cooldown(USER_PERMISSION, 24h)` for User Alice — the LLM gets the tool listed, calls it, backend responds 403, tool result flows back, no Agrajag spawn.
+Status and Cooldown are independent. A tool can have `status=OK` *and* simultaneously a `cooldown(USER_PERMISSION, 24h)` for User Alice — the LLM gets the tool listed, calls it, the backend responds 403, the tool result flows back, no Agrajag spawn.
 
 ---
 
@@ -66,7 +66,7 @@ Agrajag's output. Determines if and how the Health Doc entry is updated.
 | `INTERMITTENT` | Sporadic — sometimes it works, sometimes it doesn't | Yes, `status=DEGRADED`, short `expectedRecoveryAt` | optional |
 | `WORKING` | Probe succeeded — tool is OK | Clears old DOWN entry | — |
 
-The classification is **the vocabulary between Agrajag and the Tool Health Doc** — it is also what is available in the history array for future diagnoses.
+The classification is **the vocabulary between Agrajag and Tool Health Doc** — it is also what is available in the History array for future diagnoses.
 
 ---
 
@@ -77,28 +77,28 @@ Tool health is not universal — different tools are affected in different scope
 ```
 SESSION   (sessionId, toolName)        Foot-bind-state (client_*-Tools)
    ↓
-USER      (userId,  toolName)          User-specific Credentials/Token
+USER      (userId,  toolName)          User-specific credentials/tokens
    ↓
-PROJECT   (projectId, toolName)        MCP server, Project Workspace Tools
+PROJECT   (projectId, toolName)        MCP server, project workspace tools
    ↓
-TENANT    (tenantId,  toolName)        Tenant-wide Auth/Quota problems
+TENANT    (tenantId,  toolName)        Tenant-wide auth/quota problems
    ↓
 GLOBAL    (toolName)                   "Jira Cloud has outage" — all Tenants
    ↓
 default   OK
 ```
 
-The narrowest existing entry wins. When writing, the writer (system code or Agrajag) selects the appropriate scope:
+The narrowest existing entry wins. When writing, the writer (system code or Agrajag) selects the appropriate Scope:
 
 | Tool Class | Typical Scope for Status Updates |
 |---|---|
 | `client_*` (Foot, IDE-Bridge) | SESSION |
 | MCP Tools | PROJECT |
-| External Service Tools (Jira, GitHub) with User Tokens | USER (for token problems) or PROJECT (for service outage) |
+| External Service Tools (Jira, GitHub) with user tokens | USER (for token problems) or PROJECT (for service outage) |
 | Service Outage of a public API | GLOBAL |
-| Tenant-wide configured Tools | TENANT |
+| Tenant-wide configured tools | TENANT |
 
-**Cross-scope combinations are allowed.** Example: Jira Cloud has a global outage (`GLOBAL: status=DOWN`) → the LLM sees the tool as unavailable. Additionally, User Alice already has a cooldown due to 403 (`USER, cooldown(USER_PERMISSION)`). Both entries remain independently side-by-side; the manifest render shows the narrower DOWN.
+**Cross-scope combinations are allowed.** Example: Jira Cloud has a global outage (`GLOBAL: status=DOWN`) → the LLM sees the tool as unavailable. Additionally, User Alice already has a cooldown due to 403 (`USER, cooldown(USER_PERMISSION)`). Both entries remain independently side-by-side, the manifest render shows the narrower DOWN.
 
 ---
 
@@ -166,7 +166,7 @@ Doc-Key:    (scope, scopeId|null, toolName)
 
 `(toolName, scope, scopeId, userId?, errorSignature)`
 
-- `errorSignature` is a **stable short string** from the dispatch — typically HTTP status + exception class (e.g., `"http-403"`, `"timeout-30s"`, `"connect-refused"`). Defined by the `AgrajagChecker` from the specific error.
+- `errorSignature` is a **stable short string** from the Dispatch — typically HTTP status + exception class (e.g., `"http-403"`, `"timeout-30s"`, `"connect-refused"`). Defined by the `AgrajagChecker` from the specific error.
 - `userId` is only set if the cooldown is user-specific (typically for `USER_PERMISSION`). Otherwise null = scope-wide.
 - Bob is never stopped by Alice's `USER_PERMISSION` cooldown — the keys differ.
 
@@ -177,17 +177,17 @@ Doc-Key:    (scope, scopeId|null, toolName)
 | `USER_PERMISSION` | 24 h | constant (rarely changes) |
 | `USER_INPUT` | 5 min | constant |
 | `USER_SPECIFIC_TECHNICAL` | 15 min | × 2 up to max 24 h |
-| `TECHNICALLY_BROKEN` | coupled to `expectedRecoveryAt` | determined from history via Agrajag |
+| `TECHNICALLY_BROKEN` | coupled to `expectedRecoveryAt` | determined from History via Agrajag |
 | `INTERMITTENT` | 30 s | × 4 up to max 2 h |
 | `WORKING` | clears all entries | — |
 
-During the coalescing check (Agrajag queue) and the cooldown check, the values from the doc are authoritative — defaults are only set on the first entry.
+During the coalescing check (Agrajag queue) and the cooldown check, the values from the Doc are authoritative — defaults are only set on the first entry.
 
 ### Auto-Clear on Success
 
 Every successful tool call automatically clears:
 - the `cooldowns[]` entry with matching `errorSignature` + `userId` (if userId == current user), and
-- if `status != OK` and the successful call matches the narrowest appropriate scope entry → `status=OK`, history push with `WORKING`.
+- if `status != OK` and the successful call matches the narrowest appropriate scope entry → `status=OK`, History push with `WORKING`.
 
 This allows the system to self-correct without active polling cron.
 
@@ -198,9 +198,9 @@ This allows the system to self-correct without active polling cron.
 | Path | API | What can be written | When |
 |---|---|---|---|
 | **System Code (synchronous)** | `ToolHealthService` (Java) — `markUnavailable(scope, key, code, since)`, `markAvailable(...)`, `markIntermittent(...)` | `status` + History push | Binary events: Foot disconnect, MCP connection close, OOM-killed subprocess |
-| **AgrajagChecker (sync, no LLM)** | `ToolHealthService.setCooldown(scope, key, signature, classification, duration)` | only `cooldowns[]` | For clearly classifiable tool errors (e.g., `http-403`) — even if no Agrajag spawn occurs |
+| **AgrajagChecker (sync, no LLM)** | `ToolHealthService.setCooldown(scope, key, signature, classification, duration)` | `cooldowns[]` only | For clearly classifiable tool errors (e.g., `http-403`) — even if no Agrajag spawn occurs |
 | **AgrajagEngine (async, LLM)** | Special tools `tool_health_set_unavailable`, `tool_health_set_available`, `tool_health_set_cooldown`, `tool_health_clear` | `status`, `cooldowns[]`, History — everything | After diagnosis turn |
-| **Successful Tool Call** | Pre-Hook in `ToolDispatcher` | Auto-clear `cooldowns[]` entry + potentially `status=OK` | On every successful call |
+| **Successful Tool Call** | Pre-Hook in `ToolDispatcher` | Auto-clear `cooldowns[]` entry + optionally `status=OK` | On every successful call |
 
 The LLM-facing tools (Agrajag variant) carry the audience markers from §8 — other engines cannot call them.
 
@@ -226,17 +226,17 @@ agrajag:
   ...
 ```
 
-The Manifest Builder filters tools with `requiresEngineRoles` — only engines with the matching role see them. Thus, `tool_health_set_unavailable` is invisible to Arthur; even if the LLM were to try to call it, it does not exist in the manifest.
+Manifest Builder filters tools with `requiresEngineRoles` — only engines with a matching role see them. Thus, `tool_health_set_unavailable` is invisible to Arthur; even if the LLM were to try to call it, it does not exist in the manifest.
 
-Additionally: Agrajag has a strict engine-internal rule — in a probe turn, **only** `SAFE_PROBE` tools may be called. `tool_probe_as_user` and `tool_probe_as_system` (see [agrajag-engine §6](agrajag-engine.md)) in turn check whether the target tool is `SAFE_PROBE` or at least read-only configurable.
+Plus: Agrajag has a strict engine-internal rule — in a Probe turn, **only** `SAFE_PROBE` tools may be called. `tool_probe_as_user` and `tool_probe_as_system` (see [agrajag-engine §6](agrajag-engine.md)) in turn check whether the target tool is `SAFE_PROBE` or at least read-only configurable.
 
-The role concept is generic — Frankie (Repair) will later have `roles: [tool-health-writer, repair-actor]`, Prak (Audit) `roles: [audit-reader]`, etc.
+The role concept is generic — Frankie (Repair) will later have `roles: [tool-health-writer, repair-actor]`, Prak (Audit) `roles: [audit-reader]` etc.
 
 ---
 
 ## 9. Read Path: Manifest Annotation
 
-During the Tool Manifest build for a specific turn, the builder looks up the cascade for each tool:
+During the Tool Manifest build for a specific turn, the Builder traverses the cascade for each tool:
 
 ```
 toolHealthLookup(toolName, sessionId, userId, projectId, tenantId)
@@ -256,19 +256,41 @@ Cooldown entries do **not** flow into the manifest annotation — the LLM should
 
 ---
 
-## 10. What This Spec Does Not Govern
+## 9a. Admin Interface
 
-- **Diagnosis Logic:** how Agrajag decides which class an error falls into. See [agrajag-engine](agrajag-engine.md).
+Two REST endpoints under `/brain/{tenant}/admin/` (Tenant-`ADMIN`-gated):
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /tool-health?scope=&scopeId=` | all records of a `(scope, scopeId)` tuple, `activeCooldowns` filtered to those not yet expired |
+| `POST /tool-health/clear-cooldown` | deletes **one** cooldown; `scope`/`scopeId`/`toolName`/`errorSignature` are mandatory |
+
+The `errorSignature` is mandatory and not derivable: cooldowns are managed per error type (§6), a 404 and a timeout are two entries under the same subject. To clear, one must read first.
+
+Additionally, two views in `insights.html`:
+
+- **Tools** — Health column per tool, expandable to cooldowns. The join is over the tool name and therefore only shows records for which a tool of the same name exists.
+- **Health** — the same records **health-first**, i.e., without tool join, plus scope switcher (`PROJECT` / `TENANT`). This is the only interface that reaches cooldowns on subjects that are not tools: `centauri:<instance>` ([centauri-service](centauri-service.md)) and `research:<instance>:<MODALITY>` ([zarniwoop-service](zarniwoop-service.md)) — both write to `PROJECT`. A badge marks the origin (tool / feed source / search provider).
+
+The Research tab additionally shows the cooldown of a search instance at the location where the instance is, including a Clear button. For this, `ZarniwoopInsightsDto` carries, in addition to signature and expiration time, the **Subject** (`activeCooldownSubject`) — an instance serves multiple modalities and each has its own record; the subject cannot be reconstructed from the instance ID alone.
+
+Not in v1: Resetting status (`DOWN → OK`) via REST. The gate is the cooldown, not the status — a `DOWN` record without an active cooldown blocks nothing and remains as diagnostic history. If the status truly needs to be rewritten, use the Agrajag tools from §7.
+
+---
+
+## 10. What this Spec Does Not Govern
+
+- **Diagnostic Logic:** how Agrajag decides which class an error falls into. See [agrajag-engine](agrajag-engine.md).
 - **Pattern Matching in the Checker:** which HTTP statuses / exception classes map to which code. The rule table is stored as YAML in the Document Cascade (`_vance/agrajag/error-patterns.yaml`) and is Tenant-/Project-tunable — see [agrajag-engine §4.2](agrajag-engine.md).
 - **Probe Tool Implementation:** how `tool_probe_as_user` internally assumes a user identity. [agrajag-engine §6](agrajag-engine.md) + [identity-credentials](identity-credentials.md).
-- **History Retention:** Ring buffer size for `history[]` is engine default, can be tunable via tenant setting.
-- **Admin UI for Tool Health:** Browser page for manual clear/override — comes after v1, not in this spec.
+- **History Retention:** Ring buffer size for `history[]` is engine default, can be tunable via Tenant setting.
+- **Override of Provider Gates:** the ability to completely enable and disable a search/feed instance is a matter of the respective gate spec, not the health state. Clearing a cooldown is in §9a.
 
 ---
 
 ## 11. Relation to Other Specs
 
-- [agrajag-engine](agrajag-engine.md) — Diagnosis engine that operates on this state. Defines AgrajagChecker (sync) + AgrajagEngine (async) + Queue + Probe Tools.
+- [agrajag-engine](agrajag-engine.md) — Diagnostic engine that operates on this state. Defines AgrajagChecker (sync) + AgrajagEngine (async) + Queue + Probe Tools.
 - [think-engines §7b](think-engines.md) — Service Engine topology, Engine roles concept.
 - [recipes §6a](recipes.md) — Recipe Profiles already feed `allowedToolsRemove`. Health annotation is an additional orthogonal layer above the allow list.
 - [mcp-tool-routing](mcp-tool-routing.md) — MCP connection close is a standard trigger for system path writing (§7).

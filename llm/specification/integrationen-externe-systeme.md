@@ -10,18 +10,18 @@
 
 **Vancetope is a thinking system, not a productivity suite.**
 
-Vancetope does not rebuild:
-- No document editor (for that there's Google Docs, Notion, Obsidian)
-- No project management tool (for that there's Jira, Linear, Things)
-- No file storage (for that there's Google Drive, Dropbox)
-- No reference management (for that there's Zotero, Mendeley)
-- No chat/messaging (for that there's Slack, Teams)
+Vancetope does not replicate:
+- No document editor (for that, there's Google Docs, Notion, Obsidian)
+- No project management tool (for that, there's Jira, Linear, Things)
+- No file storage (for that, there's Google Drive, Dropbox)
+- No reference management (for that, there's Zotero, Mendeley)
+- No chat/messaging (for that, there's Slack, Teams)
 
 Instead: **Vancetope integrates with these tools** and uses them as data sources and action targets.
 
 ---
 
-## 2. What Vancetope Does Itself vs. What Stays External
+## 2. What Vancetope does vs. what remains external
 
 | Function | Vancetope | External | Rationale |
 |----------|-------|--------|-----------|
@@ -32,11 +32,11 @@ Instead: **Vancetope integrates with these tools** and uses them as data sources
 | **Store Documents** | References + Metadata + Cache | Original remains external | Vancetope is not the master for files |
 | **Edit Documents** | No | Google Docs, Notion, Obsidian | Vancetope can generate drafts, editing is external |
 | **Todo Lists (manual)** | No | Things, Todoist, Jira | Vancetope has task trees, not manual todos |
-| **Project Management** | No | Jira, Linear | Vancetope plans thinking processes, not sprints |
+| **Project Management** | No | Jira, Linear | Vancetope plans Think Processes, not sprints |
 | **Reference Management** | No | Zotero, Mendeley, BibTeX | Vancetope reads and understands papers, but does not manage a library |
 | **Code Management** | No | Git, GitHub | CLI client can operate Git |
 | **Communication** | Notifications only | Slack, Email, Teams | Vancetope informs, does not chat |
-| **Calendar** | No | Google Calendar | Potentially Trigger: "Deadline in 3 days" |
+| **Calendar** | No | Google Calendar | Potentially triggers: "Deadline in 3 days" |
 
 ---
 
@@ -77,7 +77,7 @@ External Source ← Vancetope reads on demand → Cache + Entity Reference → R
 - Vancetope only keeps a reference + cache
 - On access: fresh data from the source
 - Sync strategy: periodic, on-access, or webhook
-- Good for: Google Drive, Confluence, Git Repos (living documents)
+- Good for: Google Drive, Confluence, Git repos (living documents)
 
 ### 3.3 Connector Architecture
 
@@ -109,7 +109,7 @@ External Source ← Vancetope reads on demand → Cache + Entity Reference → R
 
 ### 3.4 Connector Types
 
-| Connector | Source | Auth | Sync | What Vancetope Sees |
+| Connector | Source | Auth | Sync | What Vancetope sees |
 |-----------|--------|------|------|----------------|
 | **Google Drive** | Folders/files in Drive | OAuth2 | Webhook + periodic | Documents, Sheets, Slides as text |
 | **Zotero** | Library, Collections | API Key | Periodic | Papers with metadata (author, year, abstract, tags) |
@@ -150,7 +150,7 @@ auto_relations:
 status: active                        # active | paused | error
 ```
 
-### 3.6 What Happens During Sync
+### 3.6 What happens during Sync
 
 ```
 1. Connector scans source
@@ -183,13 +183,13 @@ Vancetope doesn't just read — it can also write to external systems:
 | Action | System | Example |
 |--------|--------|---------|
 | **Create Document** | Google Docs, Obsidian | Create Think Process result as a draft in Google Docs |
-| **Create Issue** | Jira, Linear, GitHub | Generate a ticket from a task result |
+| **Create Issue** | Jira, Linear, GitHub | Generate a ticket from a Task result |
 | **Send Message** | Slack, Email | Notification when Think Process is complete |
 | **Save File** | Google Drive, local FS | Export result documents |
-| **Create Note** | Obsidian, Notion | Create an insight as a note in Obsidian Vault |
+| **Create Note** | Obsidian, Notion | Create an Insight as a note in Obsidian Vault |
 | **Add Reference** | Zotero, BibTeX | Add a found paper to the library |
 
-These actions are **Tools** that the Brain or the Client can execute:
+These actions are **Tools** that the Brain or the client can execute:
 - Remote Tools (Google Docs, Jira, Slack) → Brain executes
 - Local Tools (Obsidian Vault, local FS) → Client executes
 
@@ -197,18 +197,18 @@ These actions are **Tools** that the Brain or the Client can execute:
 
 ## 5. Manual Todo Lists
 
-### 5.1 Does Vancetope Need Its Own Todos?
+### 5.1 Does Vancetope need its own Todos?
 
-**No — but Vancetope can create and track todos in external systems.**
+**No — but Vancetope can create and track Todos in external systems.**
 
 The difference:
 - **Think Process Tasks** are thinking tasks that the Brain executes. Not manual.
-- **Manual Todos** are tasks for humans: "Write email", "Prepare for meeting". These belong in Things, Todoist, Jira.
+- **Manual Todos** are tasks for humans: "Write email", "Prepare meeting". These belong in Things, Todoist, Jira.
 
 What Vancetope can do:
-- Derive a todo for the user from a Think Process result and write it to the external system
-- Read the status of external todos (via Connector) and consider them in the context of a Think Process
-- Recognize "Blockers": Think Process waits for a manual todo before it can proceed
+- Derive a Todo for the user from a Think Process result and write it to the external system
+- Read the status of external Todos (via Connector) and consider it in the context of a Think Process
+- Recognize "Blockers": Think Process waits for a manual Todo before it can continue
 
 ### 5.2 Integration Pattern
 
@@ -220,7 +220,7 @@ Think Process Task "Identify next steps"
       - Todoist Task: "Contact supervisor" (via Todoist Connector)
   → Think Process Task is marked as "blocked"
       blocked_by: [jira_issue_123, todoist_task_456]
-  → When external todos are completed → Connector reports status
+  → When external Todos are completed → Connector reports status
   → Think Process can continue
 ```
 
@@ -228,7 +228,7 @@ Think Process Task "Identify next steps"
 
 ## 6. Document Editing
 
-### 6.1 Vancetope Creates, External Edits
+### 6.1 Vancetope creates, external edits
 
 Vancetope can **create** documents (Think Process output: draft of a paper, an analysis, a story). But editing happens externally:
 
@@ -263,7 +263,7 @@ Many of the integrations mentioned above already exist as **MCP Servers**:
 - GitHub MCP
 - Obsidian MCP
 
-Instead of building a separate connector for each service, Vancetope could use MCP as a universal integration protocol:
+Instead of building a separate Connector for each service, Vancetope could use MCP as a universal integration protocol:
 
 ```
 Vancetope Brain
@@ -284,12 +284,12 @@ Vancetope Brain
 ### Disadvantages
 - MCP is optimized for tool calls, not for bulk sync
 - No native webhook/polling support
-- Potentially a hybrid approach needed: MCP for single actions, custom connectors for sync
+- Potentially a hybrid approach needed: MCP for single actions, custom Connectors for sync
 
 ### Recommendation
 - **MCP for actions** (create issue, send message, read file)
-- **Custom connectors for sync** (periodic scan, webhook listener, bulk import)
-- **MCP as a tool layer for Think Processes** (Think Process has access to MCP tools: "Search in Google Drive")
+- **Custom Connectors for sync** (periodic scan, webhook listener, bulk import)
+- **MCP as a Tool Layer for Think Processes** (Think Process has access to MCP tools: "Search in Google Drive")
 
 ---
 
@@ -331,11 +331,11 @@ Vancetope Brain
 | Phase | What | When |
 |-------|-----|------|
 | **v1** | Manual import (upload), local filesystem via CLI client | Phase 3 (Memory) |
-| **v1.5** | MCP Client in the Brain — Think Processes can use MCP tools | Phase 5 |
-| **v2** | First sync connectors: Google Drive, Obsidian Vault | Phase 6+ |
-| **v2** | Export actions: Create document in Google Docs, Jira issue | Phase 6+ |
-| **v3** | Further connectors: Zotero, Confluence, Notion, Slack, BibTeX | Phase 8+ |
-| **v3** | Webhook listener for live sync | Phase 8+ |
+| **v1.5** | MCP Client in the Brain — Think Processes can use MCP Tools | Phase 5 |
+| **v2** | First Sync Connectors: Google Drive, Obsidian Vault | Phase 6+ |
+| **v2** | Export actions: Create document in Google Docs, Jira Issue | Phase 6+ |
+| **v3** | Further Connectors: Zotero, Confluence, Notion, Slack, BibTeX | Phase 8+ |
+| **v3** | Webhook Listener for live sync | Phase 8+ |
 | **v4** | External Todo Tracking (blocked_by external tasks) | Phase 10+ |
 
 ---

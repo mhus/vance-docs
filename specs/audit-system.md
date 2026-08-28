@@ -11,40 +11,40 @@ permalink: /specs/audit-system
 
 > Central audit pipeline for Vancetope Server (Brain + Anus). Producers emit typed audit events; an `AuditService` normalizes, buffers, and fans them out to a configurable list of `AuditConsumer` implementations. Synchronous or asynchronous, switchable at runtime, with a bounded queue + drop counter and guaranteed drain on shutdown.
 >
-> See also: [llm-resource-management](/specs/llm-resource-management) | [identity-credentials](/specs/identity-credentials) | settings-system
+> See also: [llm-resource-management](/specs/llm-resource-management) | [identity-credentials](/specs/identity-credentials) | [settings-system](/specs/settings-system)
 
 ---
 
 ## 1. Purpose & Scope
 
-**Problem.** Various parts of the system already emit, or will want to emit, operations that are relevant for security and compliance review:
+**Problem.** Various parts of the system already emit, or will need to emit, operations that are relevant for security and compliance review:
 
 - Login/Logout, failed authentication attempts, token refresh
 - Settings changes (Vault crypto, model aliases, bootstrap flags)
 - Project/Tenant lifecycle (Create, Delete, Owner change)
 - Permission grants & denies, role changes
-- Vault access (PASSWORD setting decrypt, Keystore read)
+- Vault access (PASSWORD-Setting decrypt, Keystore-Read)
 - Kit Install/Update/Apply, code execution (scripts, tool calls with Exec)
 - Service account operations
 
-Currently, there is no unified collection point — anyone who wants to audit writes directly to the log or nothing at all. This is:
+Currently, there is no unified collection point — those who want to audit either write directly to the log or nothing at all. This is:
 
 - **Inconsistent** — Loggers have different levels and filters, schema varies per caller.
 - **Not aggregatable** — no central filtering, no common sink for SIEM integration.
 - **Prone to loss on shutdown** — async loggers drop buffers without drain guarantee.
 
-**Solution.** A `@Service` in `vance-shared` that clearly separates the two layers:
+**Solution.** An `@Service` in `vance-shared` that clearly separates the two layers:
 
 1. **Producer → AuditService:** typed DTO, fire-and-forget.
 2. **AuditService → AuditConsumer(s):** central fan-out, bounded queue, lifecycle management.
 
-Consumer implementations are interchangeable. For v1, there is **NoopAuditConsumer** (effectively: empty consumer list — no separate no-op bean needed) and an optional **LogAuditConsumer**. Later consumers (Mongo-Sink, SIEM-Forwarder, Webhook) will implement the same interface — no code changes to the service.
+Consumer implementations are interchangeable. For v1, there is **NoopAuditConsumer** (effectively: an empty consumer list — no separate no-op bean needed) and an optional **LogAuditConsumer**. Later consumers (Mongo-Sink, SIEM-Forwarder, Webhook) implement the same interface — no code changes to the service.
 
 **What it is not:**
 
-- **Not a logger replacement.** Loggers retain their purpose (debugging, operator visibility). Audit is *what happened, who did it, with what outcome* — not *which code path was traversed*.
-- **No persistence in v1.** The default consumer is Noop; `LogAuditConsumer` is opt-in. A Mongo consumer with retention policy is in scope for later, not for the initial implementation.
-- **Not a real-time alerting engine.** Audit is a collection point + fan-out — alerting builds on top of it, not within the service itself.
+- **Not a logger replacement.** Loggers retain their purpose (debugging, operator visibility). Audit is *what happened, who did it, with what outcome* — not *which code path was executed*.
+- **No persistence in v1.** The default consumer is Noop; `LogAuditConsumer` is opt-in. A Mongo consumer with a retention policy is in scope for later, not for the initial implementation.
+- **No real-time alerting engine.** Audit is a collection point + fan-out — alerting builds on top of it, not within the service itself.
 - **No event versioning API.** The DTO has a generic `details` map; we will introduce strict schema versions when a consumer requires it.
 
 ---
@@ -99,7 +99,7 @@ public class AuditEventDto {
 }
 ```
 
-**Naming convention for `action`:** dotted, lowercase, verb-last. Examples:
+**Naming Convention for `action`:** dotted, lowercase, verb-last. Examples:
 
 | action | severity | outcome | target |
 |---|---|---|---|
@@ -116,7 +116,7 @@ public class AuditEventDto {
 
 **`target` format:** `<kind>:<identifier>`. Kinds: `user`, `setting`, `project`, `tenant`, `session`, `kit`, `tool`, `role`, `keystore-entry`. Comma-separated if multiple targets are relevant.
 
-**`details` map:** use sparingly — keep it JSON-serializable. Example `settings.update`:
+**`details` Map:** use sparingly — keep it JSON-serializable. Example `settings.update`:
 
 ```java
 details = Map.of(
@@ -183,9 +183,9 @@ public class AuditService {
 }
 ```
 
-**The constructor collects all `AuditConsumer` beans** from the Spring context via `List<AuditConsumer>` injection. At runtime, additional consumers can be added via `addConsumer(...)` — e.g., a test, a per-Tenant webhook, an on-demand activated sink. The list is a `CopyOnWriteArrayList`, iteration is safe against modification during dispatch.
+**Constructor collects all `AuditConsumer` beans** from the Spring context via `List<AuditConsumer>` injection. At runtime, additional consumers can be added via `addConsumer(...)` — e.g., a test, a per-Tenant webhook, an on-demand activated sink. The list is a `CopyOnWriteArrayList`, iteration is safe against modification during dispatch.
 
-**Specialized methods instead of DTO building at the caller.** Convention: for **every** producing call site, there is a dedicated method on `AuditService` that builds the `AuditEventDto` internally. Caller code remains a single line (`auditService.authLoginSuccess(tenant, user)`), action vocabulary and severity choice are centralized. New producers add a new method instead of directly using the builder.
+**Specialized methods instead of DTO-building at the caller.** Convention: for **every** producing call site, there is a dedicated method on `AuditService` that builds the `AuditEventDto` internally. Caller code remains a single line (`auditService.authLoginSuccess(tenant, user)`), action vocabulary and severity choice are centralized. New producers add a new method instead of directly using the builder.
 
 ---
 
@@ -194,15 +194,15 @@ public class AuditService {
 | Mode | Behavior | When to use |
 |---|---|---|
 | `SYNC` | Caller thread dispatches inline. Producer bears full consumer cost. | Anus (short CLI sessions, no worker overhead, guaranteed flush before prompt return), tests, diagnostic phase with heavy consumers. |
-| `ASYNC` | Event lands in bounded queue, a dedicated worker thread (`vance-audit-worker`, daemon) dispatches. | Brain (long-running, producer latency must not be blocked by consumer I/O). |
+| `ASYNC` | Event lands in bounded Queue, a dedicated worker thread (`vance-audit-worker`, daemon) dispatches. | Brain (long-running, producer latency must not be blocked by consumer I/O). |
 
-**Boot Sequence:** The service **always** starts in `SYNC`. In `@PostConstruct`, it switches to the configured mode. This ensures that events emitted by other `@PostConstruct` methods during bean wiring are guaranteed to pass through — even if the worker is not yet running.
+**Boot Sequence:** The service **always** starts in `SYNC`. In `@PostConstruct`, it switches to the configured mode. This ensures that events emitted during bean wiring by other `@PostConstruct` methods are guaranteed to pass through — even if the worker is not yet running.
 
 **Shutdown Sequence (`@PreDestroy`):**
 
 1. Call `setMode(SYNC)` — flips the flag (new records go directly), then drains the existing queue on the caller thread.
 2. `worker.shutdown()` + `awaitTermination(drainTimeoutMs)` — waits for any ongoing dispatch in the worker.
-3. Belt-and-suspenders: clear the queue again (in case a producer offered an event in the race window between flag flip and queue drain).
+3. Belt-and-suspenders: drain the queue once more (in case a producer offered an event in the race window between flag flip and queue drain).
 
 This prevents event loss — modulo hard-killing the JVM.
 
@@ -210,12 +210,12 @@ This prevents event loss — modulo hard-killing the JVM.
 
 ```
 synchronized(modeLock) {
-    mode = SYNC          // 1. Flip the flag — new producers go directly
-    while (poll() != null) dispatch(event)   // 2. Drain the queue on the caller thread
+    mode = SYNC          // 1. Flip flag — new producers go directly
+    while (poll() != null) dispatch(event)   // 2. Drain queue on caller thread
 }
 ```
 
-Ordering is preserved *within a producer thread*; *between* different producer threads, audit ordering is generally not guaranteed (applies to SYNC and ASYNC alike — wall-clock on `timestamp` remains the anchor).
+Ordering is preserved *within a producer thread*; *between* different producer threads, audit ordering is generally not guaranteed (applies to SYNC and ASYNC alike — Wall-Clock on `timestamp` remains the anchor).
 
 **Runtime Switch `SYNC → ASYNC`:** Start worker (if not already active), flip flag. Trivial operation.
 
@@ -230,13 +230,13 @@ The async queue is **bounded** (default 10,000, configurable via `vance.audit.qu
 - Counter `vance.audit.dropped` is incremented (Micrometer, via MetricService).
 - WARN log with `action` and `actor` for forensics.
 
-**Default 10,000 is sufficient** in practice, far exceeding typical burst lengths. If events are regularly dropped, there is either a runaway producer (bug) or a consumer that is too slow (Mongo with fsync on every write, webhook without batching). Both are separate discussions, not a matter of queue size tuning.
+**Default 10,000 is sufficient** in practice, far exceeding typical burst lengths. If events are regularly dropped, it indicates either a runaway producer (bug) or a much too slow consumer (Mongo with fsync on every write, webhook without batching). Both are separate discussions, not queue size tuning.
 
 **Deliberately not implemented:**
 
 - Block-on-Full: would make audit a critical path.
 - Spill-to-Disk: persistence is a consumer concern (see future Mongo consumer), not a service concern.
-- Drop-Oldest instead of Drop-Newest: with a full queue, both are bad choices — we opt for the simpler variant.
+- Drop-Oldest instead of Drop-Newest: with a full queue, both are poor choices — we opt for the simpler variant.
 
 ---
 
@@ -244,7 +244,7 @@ The async queue is **bounded** (default 10,000, configurable via `vance.audit.qu
 
 ### 6.1 Default: Empty (Noop)
 
-If neither `LogAuditConsumer` is enabled nor external `AuditConsumer` beans are present in the context, the consumer list is empty. `record()` only writes the metrics counters — no I/O, no log. This is v1's "the default does nothing."
+If neither `LogAuditConsumer` is enabled nor external `AuditConsumer` beans are present in the context, the consumer list is empty. `record()` only writes metric counters — no I/O, no log. This is v1's "the default does nothing".
 
 (An explicit `NoopAuditConsumer` bean was **deliberately** not created — the empty list is semantically identical and saves a class.)
 
@@ -268,7 +268,7 @@ AUDIT ts=2026-05-27T19:42:17.293Z action=auth.login severity=INFO outcome=succes
       message="login via password" details={ip=10.0.1.4, ua="Mozilla/5.0…"}
 ```
 
-For stable action vocabulary phases or dev environments. **Default off in Production**, to prevent immature action names from flooding the log.
+For stable action vocabulary phases or dev environments. **Default off in production**, to prevent immature action names from flooding the log.
 
 ### 6.3 Planned Consumers (not in v1)
 
@@ -276,7 +276,7 @@ For stable action vocabulary phases or dev environments. **Default off in Produc
 |---|---|---|
 | `MongoAuditConsumer` | `audit_log` Collection in MongoDB | With retention TTL, indexed on `tenantId`, `actor`, `action`, `timestamp`. Webview-capable. |
 | `WebhookAuditConsumer` | HTTPS-POST to external endpoint | Per-Tenant config, batch + retry, HMAC signature. SIEM integration. |
-| `JsonlAuditConsumer` | Rotating `.jsonl` file on disk | For air-gapped deployments without external backend. |
+| `JsonlAuditConsumer` | Rotating `.jsonl` file on disk | For air-gapped deployments without an external backend. |
 
 All implement the same interface. Order of registration determines dispatch order (irrelevant, as consumers are independent of each other).
 
@@ -289,7 +289,7 @@ vance:
   audit:
     mode: async              # sync | async — Mode after @PostConstruct
     queueSize: 10000         # bounded; drop + counter when full
-    drainTimeoutMs: 5000     # @PreDestroy drain budget
+    drainTimeoutMs: 5000     # @PreDestroy-Drain-Budget
     consumers:
       log:
         enabled: false       # Enable LogAuditConsumer
@@ -344,17 +344,17 @@ auditService.llmLightCall(tenantId, projectId,
 - Write a dedicated method on `AuditService` (one method per call site).
 - The method builds the `AuditEventDto` internally — no `Builder` calls in service code.
 - `action` follows the dotted convention, severity belongs to the action definition (not the caller).
-- **Do not** expose sensitive values (passwords, tokens, plaintext secrets) in `details`/`message`.
-- For "actor"-missing sites (e.g., bootstrap calls without SecurityContext): `actor=null` — separate PR to plumb SecurityContext.
+- Do **not** expose sensitive values (passwords, tokens, plaintext secrets) in `details`/`message`.
+- For "actor"-missing sites (e.g., bootstrap calls without SecurityContext): `actor=null` — a separate PR for SecurityContext plumbing.
 
 ---
 
-## 10. What is deliberately excluded (v1)
+## 10. What is deliberately out of scope (v1)
 
-- **Async persistence with at-least-once guarantee.** Hard crash losses are accepted; those who do not accept this should write a synchronous consumer.
-- **Per-event filtering in the service.** Filtering is a consumer concern — if `LogAuditConsumer` should only log CRITICAL events, it checks that itself. Generic service-level filtering will only be added if multiple consumers require the same filtering behavior.
+- **Async persistence with at-least-once guarantee.** Hard-crash losses are accepted; those who do not accept this should write a synchronous consumer.
+- **Per-event filtering in the service.** Filtering is a consumer concern — if `LogAuditConsumer` should only log CRITICAL, it checks that itself. Generic service-level filtering will only come when multiple consumers require the same filtering behavior.
 - **Action schema registry.** Action names are free strings with a convention; no compile-time enumeration. If the action list becomes stable, a registry with lookup for documentation/tooling can be added later.
-- **Multi-consumer routing/topics.** There is a flat list, no pub-sub with subscriptions. If Consumer X only wants `auth.*`, it filters itself.
+- **Multi-consumer routing/topics.** There is a flat list, no Pub-Sub with subscriptions. If Consumer X only wants `auth.*`, it filters itself.
 - **Async worker pool > 1.** A single thread is sufficient for realistic volumes. More workers introduce ordering breaks between producers and are not worth the cost/benefit.
 
 ---
@@ -377,26 +377,26 @@ Available (as of 2026-05-28):
 |---|---|---|
 | Brain Login (success) | `AccessController.createToken` | `authLoginSuccess` |
 | Brain Login (failure) | `AccessController.rejectLogin` (Helper for all 9 reject paths) | `authLoginFailure` |
-| Brain Token Refresh | `AccessController.refreshToken` | `authTokenRefresh` |
+| Brain Token-Refresh | `AccessController.refreshToken` | `authTokenRefresh` |
 | Brain Logout | `AccessController.logout` | `authLogout` |
-| Anus Shell Login | `anus/AccessService.login` | `anusLoginSuccess`/`anusLoginFailure` |
-| Anus Shell Logout | `anus/AccessService.logout` | `authLogout` (with null-Tenant) |
-| Settings Write | `SettingService.set` (central funnel — all typed setters route here including `setEncryptedPassword`) | `settingsUpdate` |
-| Vault Decrypt | `SettingService.getDecryptedPassword` | `settingsPasswordRead` |
-| Project Create | `ProjectService.create` (shared layer — Brain + Anus + Bootstrap use the same path) | `projectCreate` |
-| Project Close | `ProjectService.close` | `projectClose` |
-| LLM Engine Call | `EngineChatFactory.applyDefaults` Trace-Writer-Lambda — fires for **every** roundtrip (success + error via `resp==null`), regardless of `ctx.traceLlm()` | `llmEngineCall` |
-| LLM Light Call | `LightLlmServiceImpl.buildChatModel` Trace-Writer-Lambda — same mechanism, `recipe.name()` as target | `llmLightCall` |
+| Anus Shell-Login | `anus/AccessService.login` | `anusLoginSuccess`/`anusLoginFailure` |
+| Anus Shell-Logout | `anus/AccessService.logout` | `authLogout` (with null-Tenant) |
+| Settings-Write | `SettingService.set` (central funnel — all typed setters route here including `setEncryptedPassword`) | `settingsUpdate` |
+| Vault-Decrypt | `SettingService.getDecryptedPassword` | `settingsPasswordRead` |
+| Project-Create | `ProjectService.create` (shared layer — Brain + Anus + Bootstrap use the same path) | `projectCreate` |
+| Project-Close | `ProjectService.close` | `projectClose` |
+| LLM Engine-Call | `EngineChatFactory.applyDefaults` Trace-Writer-Lambda — fires for **every** roundtrip (success + error via `resp==null`), regardless of `ctx.traceLlm()` | `llmEngineCall` |
+| LLM Light-Call | `LightLlmServiceImpl.buildChatModel` Trace-Writer-Lambda — same mechanism, `recipe.name()` as target | `llmLightCall` |
 
 **Coverage (488 vance-shared + 2007 vance-brain + 44 vance-anus Tests green):**
-- `AuditServiceTest` (21 Tests): generic path + each specialized method + SYNC/ASYNC Dispatch, mode switch + queue drain, shutdown drain, drop-on-full, consumer exception isolation, empty-list noop, default-fill timestamp/severity.
-- Producer tests (`AccessControllerTest`, `AccessServiceTest` (Anus), `LightLlmServiceImplTest`) — constructor extension considered; tests green.
+- `AuditServiceTest` (21 Tests): generic path + each specialized method + SYNC/ASYNC Dispatch, Mode-Switch + Queue-Drain, Shutdown-Drain, Drop-on-Full, Consumer-Exception-Isolation, Empty-List-Noop, Default-Fill timestamp/severity.
+- Producer Tests (`AccessControllerTest`, `AccessServiceTest` (Anus), `LightLlmServiceImplTest`) — constructor extension considered; tests green.
 
 **Open for later PRs:**
 
-- **Actor Plumbing.** `SettingService` and `ProjectService.create/close` call Audit with `actor=null` — the current User is not available in the shared layer. SecurityContext propagation is a separate PR.
-- **MongoAuditConsumer.** Persistent Sink with TTL index. Only then is a webview editor worthwhile.
-- **Webview** in Brain (editor "audit") — filter/search on the Mongo sink.
-- **Permission Audit.** `PermissionService.check` does not emit anything yet. If audit is added there, naming `permission.check` + outcome=denied/granted.
-- **Kit Lifecycle Audit.** `kit.install/update/apply/export` — analogous to Project.
-- **OAuth Audit.** Connect/disconnect/refresh paths in `OAuthController` / `OAuthTokenRefresher`.
+- **Actor-Plumbing.** `SettingService` and `ProjectService.create/close` call Audit with `actor=null` — the current User is not available in the shared layer. SecurityContext-Propagation is a separate PR.
+- **MongoAuditConsumer.** Persistent Sink with TTL index. Only then is a Webview editor worthwhile.
+- **Webview** in Brain (editor "audit") — Filter/Search on the Mongo-Sink.
+- **Permission-Audit.** `PermissionService.check` does not emit anything yet. If Audit is added there, naming `permission.check` + outcome=denied/granted.
+- **Kit-Lifecycle-Audit.** `kit.install/update/apply/export` — analogous to Project.
+- **OAuth-Audit.** Connect/disconnect/refresh paths in `OAuthController` / `OAuthTokenRefresher`.

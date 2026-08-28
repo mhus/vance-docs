@@ -1,5 +1,5 @@
 ---
-title: "Vancetope — MCP & Tool Routing"
+title: "Vancetope — MCP & Tool-Routing"
 parent: Specs
 permalink: /specs/mcp-tool-routing
 ---
@@ -7,7 +7,7 @@ permalink: /specs/mcp-tool-routing
 <!-- AUTO-GENERATED from specification/public/en/mcp-tool-routing.md — do not edit here. -->
 
 ---
-# Vancetope — MCP & Tool Routing
+# Vancetope — MCP & Tool-Routing
 
 > Defines where MCP tools reside (server vs. client), how routing works, and what happens when no client is present.
 > See also: [vision](/specs/vision) | [architecture-scopes-clients](/specs/architektur-scopes-clients) | [integrations-external-systems](/specs/integrationen-externe-systeme)
@@ -16,7 +16,7 @@ permalink: /specs/mcp-tool-routing
 
 ## 1. The Problem
 
-A Task requires a Tool. Where does the Tool run?
+A Task needs a Tool. Where does the Tool run?
 
 | Situation | Example | Where must it run? |
 |-----------|---------|--------------------|
@@ -24,7 +24,7 @@ A Task requires a Tool. Where does the Tool run?
 | User works on desktop | "Read the file ~/papers/review.pdf" | **Client** — file is local |
 | Tool exists only on the server | "Search the web" (API key on server) | **Server** |
 | Tool exists only on the client | "Read my Obsidian Vault" (local) | **Client** |
-| Tool exists on both sides | "Search Google Drive" (OAuth possible on both sides) | **Either** — but Server is more robust |
+| Tool exists on both sides | "Search in Google Drive" (OAuth possible on both sides) | **Either** — but Server is more robust |
 
 ---
 
@@ -115,7 +115,7 @@ tools:
     location: both                  # Server and Client can do this
     mcp_server: google-drive-mcp
     prefer: server                  # For 'both': which side is preferred?
-    description: "Searches Google Drive"
+    description: "Searches in Google Drive"
 
   - name: shell_execute
     location: client
@@ -152,7 +152,7 @@ Task needs Tool X
   │
   ├── Location = client?
   │     ├── Client connected?
-  │     │     → Tool-Request via WebSocket to Client
+  │     │     → Tool Request via WebSocket to Client
   │     │     → Client executes, sends Result back
   │     └── Client NOT connected?
   │           → Task is marked as 'blocked'
@@ -175,11 +175,11 @@ Task needs Tool X
 
 This is the core: **what happens when the Brain operates autonomously and needs a Client Tool?**
 
-This case occurs particularly in **Autonomous Sessions** (see execution-and-persistence §3.2) — by definition, no client is present to execute `location: client` tools. The strategies below apply there regularly; in Interactive Sessions, they apply only as long as the client is temporarily disconnected.
+This case occurs particularly in **Autonomous Sessions** (see execution-and-persistence §3.2) — by definition, no client is present to execute `location: client` tools. The strategies below apply regularly there; in Interactive Sessions, they apply only as long as the client is temporarily disconnected.
 
 | Strategy | Behavior | Configurable via |
 |----------|----------|------------------|
-| **block** | Task becomes `blocked`, waits for Client | Default for `location: client` |
+| **block** | Task is `blocked`, waits for Client | Default for `location: client` |
 | **skip** | Task is skipped, next Task | Think-Process-Setting |
 | **fallback** | Uses Server alternative if available | Tool-Config `fallback_tool` |
 | **queue** | Task goes into a "pending-client" Queue | Default for autonomous operation |
@@ -329,7 +329,7 @@ Tasks requiring Client Tools:
 
 ## 8. Think-Process Tool Configuration
 
-Per Think Process, it can be configured which Tools are available:
+Per Think-Process, available Tools can be configured:
 
 ```yaml
 engine:
@@ -340,7 +340,7 @@ engine:
     auto_fallback: true    # Fall back to Server alternative if Client is offline
 ```
 
-This prevents a Think Process from having unnecessary Tools (e.g., an analysis Think Process does not need `shell_execute`) and makes the LLM Toolset more focused per Think Process.
+This prevents a Think-Process from having unnecessary Tools (e.g., an analysis Think-Process doesn't need `shell_execute`) and makes the LLM Toolset more focused per Think-Process.
 
 ---
 

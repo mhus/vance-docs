@@ -9,10 +9,10 @@ permalink: /specs/project-kits-catalog
 ---
 # Vancetope — Project Kits Catalog
 
-> A tenant-wide catalog of pre-configured Kits, serving as a selection list
-> during Project creation. This document complements [kits.md](/specs/kits) (what a Kit is
+> Tenant-wide catalog of pre-configured Kits, serving as a selection list
+> during Project creation. Supplements [kits.md](/specs/kits) (what a Kit is
 > and how it is installed) by addressing the question "which Kits are
-> suggested to the user when creating a Project?".
+> actually suggested to the user when creating a Project?".
 >
 > See also: [kits](/specs/kits) | [project-lifecycle](/specs/project-lifecycle) |
 > [architektur-scopes-clients](/specs/architektur-scopes-clients)
@@ -21,37 +21,37 @@ permalink: /specs/project-kits-catalog
 
 ## 1. Purpose
 
-Vancetope uses the Kit system from [kits.md](/specs/kits) — bundles of
-Documents/Settings/Tools imported into a Project from a Git repo. When creating
-a new Project, users should be able to install *one* of these Kits directly
-without needing to know the Git URL.
+Vancetope has the Kit system from [kits.md](/specs/kits) — bundles of
+Documents/Settings/Tools that are imported into a Project from a Git repo.
+When creating a new Project, users should be able to directly
+install *one* of these Kits without needing to know the Git URL.
 
-The **Project Kits Catalog** is a tenant-curated list of named Kit sources. It has
-three consumers:
+The **Project-Kits-Catalog** is the list of named Kit sources curated by the Tenant.
+It has three consumers:
 
-- **Web UI** displays it as a dropdown in the Project Create dialog.
+- **Web-UI** displays it as a dropdown in the Project-Create dialog.
 - **Foot CLI** accepts `--kit <name>` with `project create`.
 - **Eddie** can select a Kit name when creating a Sub-Project and read the list
-  via a Tool to match a user request ("Software Project") to a suitable entry.
+  via a Tool to match a suitable entry to the user's request ("Software Project").
 
 What is *not* part of the Catalog: auto-discovery of arbitrary Git URLs,
-Kit repository browsing, version tracking per Kit. If a non-listed Kit is
-needed, it is installed manually after Project creation via
-`kit install <url>` (see [kits.md](/specs/kits) §6.1).
+Kit repository browsing, version tracking per Kit. To use an unlisted Kit,
+install it manually after Project creation via `kit install <url>`
+(see [kits.md](/specs/kits) §6.1).
 
 ---
 
 ## 2. Storage Location
 
-Exactly **one** Catalog file per Tenant as a Document in the `_tenant` Project:
+For each Tenant, **exactly one** Catalog file as a Document in the `_tenant` Project:
 
 ```
 tenant=<tenantName>, project=_tenant, path=config/project-kits.yaml
 ```
 
 **No Cascade.** Unlike Recipes/Settings/Skills, the Catalog is *not*
-merged across tenants. During Project creation, the new Project does not
-yet exist — there is no meaningful Project Scope for a cascade, and the
+merged across Tenants. During Project creation, the new Project does not
+yet exist — there is no meaningful Project Scope for a Cascade, and the
 Tenant Admin should be able to curate autonomously.
 
 The **System Tenant `_tenant`** is the source for new Tenants (see §5);
@@ -62,7 +62,7 @@ otherwise, each Tenant Admin configures their Catalog autonomously.
 ## 3. Format
 
 ```yaml
-# config/project-kits.yaml (in the tenant's _tenant project)
+# config/project-kits.yaml (in the Tenant's _tenant Project)
 version: 1
 kits:
   - name: base/research
@@ -84,9 +84,9 @@ kits:
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `version` | Int | yes | Catalog schema version. Currently `1`. |
-| `kits[].name` | String | yes | Catalog lookup key, unique within the file. **May contain `/`** as a free string — the Catalog code does not parse it as a path. Clients may group visually but are not required to. |
+| `kits[].name` | String | yes | Catalog lookup key, unique within the file. **May contain `/`** as a free string — the Catalog code does not parse this as a path. Clients may group visually but are not required to. |
 | `kits[].title` | String | yes | Display name for UI/CLI. |
-| `kits[].description` | String | no | One-sentence description, used as tooltip/subtitle in Web UI. |
+| `kits[].description` | String | no | One-sentence description, used as tooltip/subtitle in Web-UI. |
 | `kits[].git.url` | String | yes | Git repo URL (HTTPS/SSH). |
 | `kits[].git.subPath` | String | no | Path within the repo, if mono-repo. Empty = repo root. |
 | `kits[].git.ref` | String | no | Branch/Tag/SHA. Default `main`. |
@@ -94,8 +94,8 @@ kits:
 The Catalog `name` is only a lookup key; the *actual* Kit has its own name
 from `kit.yaml#name` (see [kits.md](/specs/kits) §3.1). Both do not have to
 match — the Catalog can offer the same Kit multiple times with different
-refs (`base/dev/java`, `base/dev/java-experimental`), both pointing to the
-same `kit.yaml#name`.
+Refs (`base/dev/java`, `base/dev/java-experimental`), both pointing to
+the same `kit.yaml#name`.
 
 **Validation on write:** `name` uniqueness, `git.url` non-empty, `version`
 known. If violated, the service throws `IllegalArgumentException`, Anus
@@ -123,7 +123,7 @@ public interface ProjectKitsCatalogService {
 ```
 
 Data sovereignty: this service is the **only** access to
-`config/project-kits.yaml`. Web/Foot/Eddie paths all go through it.
+`config/project-kits.yaml`. Web-/Foot-/Eddie-paths all go through it.
 
 ### 4.2. REST + WS
 
@@ -131,7 +131,7 @@ Data sovereignty: this service is the **only** access to
 - **WS**: `LIST_PROJECT_KITS` Request → `PROJECT_KITS_LIST` Response
 
 Both deliver the same DTO. Auth: Tenant membership is sufficient — the
-Catalog is not sensitive, it lists public Git URLs.
+Catalog is not sensitive; it lists public Git URLs.
 
 ### 4.3. Eddie Tool
 
@@ -145,15 +145,15 @@ Without Git details, so the LLM does not pull URL spam into the context.
 If Eddie is to install a Kit, it passes the `name` string to
 `project_create`; this performs the Git lookup internally.
 
-Eddie also calls `project_create(tenantId, name, ..., kitName?)`
-with the chosen Catalog name. This is an additional optional
-parameter to the existing Tool, not a new Tool.
+Eddie additionally calls `project_create(tenantId, name, ..., kitName?)`
+with the chosen Catalog name. This is an additional optional parameter
+to the existing Tool, not a new Tool.
 
-**No Jeltz needed.** Eddie is in the LLM loop and can evaluate the list in the
-same turn. If the user says "software development project", Eddie sees the
-`kit_list` response and selects `base/dev/java` itself. A specialized
-Jeltz Recipe would only be useful if a **non-LLM caller** needed the
-matching — this use case is not present in v1.
+**No Jeltz needed.** Eddie is in the LLM loop and can evaluate the list
+in the same turn. If the user says "Software development project", Eddie
+sees the `kit_list` response and selects `base/dev/java` itself. A
+specialized Jeltz Recipe would only be useful if a **non-LLM-caller**
+needed the matching — this use case is not present in v1.
 
 ---
 
@@ -167,12 +167,12 @@ source: tenant=_tenant,  project=_tenant, path=config/project-kits.yaml
 target: tenant=<new>, project=_tenant, path=config/project-kits.yaml
 ```
 
-If the source is missing (fresh setup, Anus not yet run): do not create a
-file, the new Tenant's Catalog is empty. Foot default is "no Kit", Web
+If the source is missing (fresh setup, Anus not yet run): do not create
+a file; the new Tenant's Catalog is empty. Foot default is "no Kit", Web
 default is the `none` option, Eddie reports "no Kits configured".
 
 What is *not* copied: Kit contents themselves — the Catalog is only the
-*list*, not the Kits. Kit contents only land in the target project during
+*list*, not the Kits. Kit contents only land in the target Project during
 `kit install` / Project creation.
 
 ---
@@ -188,16 +188,16 @@ vance project create --name <n> [--title <t>] [--group <g>] [--kit <name>]
 - Without `--kit` → no Kit installation.
 - `--kit <name>` → after successful Project creation, the Kit from the
   Catalog entry is installed (existing `kit install` path,
-  [kits.md](/specs/kits) §6.1, using `git.url`/`git.subPath`/`git.ref` from the
-  entry).
+  [kits.md](/specs/kits) §6.1, using `git.url`/`git.subPath`/`git.ref` from
+  the entry).
 
 If `<name>` is not in the Catalog: Foot reports "kit '<name>' not in
-catalog" with a list of known names, Project is **not** created
-(no half-finished state).
+catalog" with a list of known names; Project is **not** created (no
+half-finished state).
 
-### 6.2. Web UI
+### 6.2. Web-UI
 
-Project Create dialog in `vance-face` shows dropdown:
+Project-Create dialog in `vance-face` shows dropdown:
 
 - First option: "No Kit" (implicit, not from YAML).
 - Other options: Catalog entries, rendered as `title`. Subtitle =
@@ -205,14 +205,14 @@ Project Create dialog in `vance-face` shows dropdown:
 
 On submit: `POST /brain/{tenant}/projects` with `kitName` field (or
 `null` for "no kit"). Backend installs Kit **synchronously** — Web waits
-for response before the editor opens. On Kit install error: Project
-remains created, UI shows warning "Project created, kit install failed:
-<reason>" (unlike Foot, because Web is already in the navigation flow
-and the Project visibly exists).
+for a response before the editor opens. In case of a Kit install error:
+Project remains created, UI shows Warning "Project created, kit install
+failed: <reason>" (unlike Foot, because Web is already in the navigation
+flow and the Project visibly exists).
 
 ### 6.3. Eddie (Sub-Project Creation)
 
-Eddie can create a Sub-Project at user request:
+Eddie can create a Sub-Project at the user's request:
 
 1. User: "create a Java project"
 2. Eddie calls `kit_list()` → sees `base/dev/java`
@@ -229,12 +229,12 @@ without a Kit and informs the user.
 ### 7.1. Source Repo Convention
 
 Source: a Git repo with a `kits/` subfolder. Each direct subdirectory
-under `kits/` is a Kit source (= has its own `kit.yaml`). Optionally,
+under `kits/` is a Kit source (i.e., has its own `kit.yaml`). Optionally,
 a `kits/catalog.yaml` can be located in the repo root with Title/Description
 overrides per Kit:
 
 ```yaml
-# kits/catalog.yaml in the source repo
+# kits/catalog.yaml in the Source Repo
 overrides:
   research:                        # = subdir-name
     name: base/research            # Catalog lookup name (default: subdir)
@@ -287,7 +287,7 @@ without writing.
 8. `--dry-run` → output diff, end.
 9. Otherwise: `ProjectKitsCatalogService.save(...)`.
 
-**Recommended first call** (System Tenant bootstrap):
+**Recommended initial call** (System Tenant bootstrap):
 
 ```
 anus project-kits update --tenant _tenant --mode overwrite
@@ -301,15 +301,15 @@ new Tenants upon creation (§5).
 ## 8. What is NOT in v1
 
 - **Auto-Refresh** of the Catalog from Git. Updates are manual via Anus.
-- **Per-Catalog-Git-Auth.** The source repo is cloned with the default Git setup
-  of the Brain Pod (SSH key or anonymous). Anus cannot authorize private
+- **Per-Catalog-Git-Auth.** The source repo is cloned with the Brain Pod's
+  default Git setup (SSH key or anonymous). Anus cannot authorize private
   repos in v1.
 - **Kit Versioning in the Catalog.** `git.ref` points to a branch or
-  tag — for reproducibility, pin a tag. No lockfile, no
-  "last installed commit" per Catalog entry.
-- **Catalog Editor in the Web UI.** Maintenance is done via Anus. If this
+  tag — for reproducibility, pin a tag. No lockfile, no "last installed
+  commit" per Catalog entry.
+- **Catalog Editor in the Web-UI.** Maintenance is done via Anus. If this
   comes later: separate plan.
-- **Inherits in the Catalog.** Catalog entries are flat, they refer to
+- **Inherits in the Catalog.** Catalog entries are flat; they refer to
   a Kit. Inherits live in the `kit.yaml` of the Kit repo (see
   [kits.md](/specs/kits) §5).
 
@@ -317,9 +317,9 @@ new Tenants upon creation (§5).
 
 ## 9. Prerequisites
 
-- [kits.md](/specs/kits) §6.1 (`kit install` pipeline) — Project Create
+- [kits.md](/specs/kits) §6.1 (`kit install` pipeline) — Project-Create
   integration builds upon this.
-- [project-lifecycle.md](/specs/project-lifecycle) — Project Create path,
+- [project-lifecycle.md](/specs/project-lifecycle) — Project-Create path,
   status set.
 - `DocumentService` for `config/project-kits.yaml` in the `_tenant` Project.
 - `TenantService.create(...)` hook for bootstrap copy (§5).
@@ -331,7 +331,7 @@ new Tenants upon creation (§5).
 
 - [kits](/specs/kits) — What a Kit is, install pipeline, manifest, apply,
   export.
-- [project-lifecycle](/specs/project-lifecycle) — Project Create path,
+- [project-lifecycle](/specs/project-lifecycle) — Project-Create path,
   status set, Pod ownership.
 - [architektur-scopes-clients](/specs/architektur-scopes-clients) — Tenant /
   Project-Group / Project / Session / Think-Process.

@@ -1,27 +1,27 @@
 # Vancetope — Identity, Credentials & Tool-Auth
 
 > Defines the unified account model, how credentials work, and why everything is tied to an account.
-> Core principle: User and Service Account are the same. Every client logs in. Credentials are tied to the account.
-> See also: [multi-user-collaboration](multi-user-collaboration.md) | [mcp-tool-routing](mcp-tool-routing.md) | [execution-modes-trigger](execution-modes-trigger.md) | [client-protokoll-erweiterbarkeit](client-protokoll-erweiterbarkeit.md)
+> Core principle: User and Service-Account are the same. Every client logs in. Credentials are tied to the account.
+> See also: [multi-user-collaboration](multi-user-collaboration.md) | [mcp-tool-routing](mcp-tool-routing.md) | [execution-modes-trigger](execution-modes-trigger.md) | [client-protocol-extensibility](client-protokoll-erweiterbarkeit.md)
 
 ---
 
 ## 1. An Account Model
 
-There is no separation between User and Service Account. Both are an **Account** with a flag:
+There is no separation between User and Service-Account. Both are an **Account** with a flag:
 
 ```yaml
 account:
   id: acc_mike
   tenant_id: tenant_acme
   name: "Mike Hummel"
-  is_human: true                  # true = human, false = service/bot
+  is_human: true                  # true = Human, false = Service/Bot
   auth:
     type: oauth2                  # oauth2 | api_key
     # Human: OAuth2-Login (Google, GitHub, etc.)
     # Service: API-Key
     api_key: null                 # only if is_human=false
-  email: mike@acme.org            # optional, may be null for services
+  email: mike@acme.org            # optional, may be null for Services
   teams: [team_nlp_research]
   preferences:
     default_llm: claude-sonnet
@@ -54,7 +54,7 @@ account:
 
 ### Why one model instead of two
 
-- **Same Permissions Logic** — no special cases for "Service Account can do X but User can do Y"
+- **Same Permissions Logic** — no special cases for "Service-Account can do X but User can do Y"
 - **Same Credential Logic** — Jira token works the same, whether human or bot
 - **Same API** — `GET /api/accounts` returns everything, `?is_human=false` filters for bots
 - **One Code Path** — aligns with the principle "everything is a client, everything has a Session"
@@ -66,7 +66,7 @@ account:
 | Login | OAuth2 / Password | API-Key |
 | Chat Capability | Yes | No (no human to respond) |
 | Approval Capability | Yes (inline) | No (Tasks are blocked, Notification to creator) |
-| Can create other Accounts | Yes (if Admin) | No |
+| Can create other accounts | Yes (if Admin) | No |
 | Has `created_by` | No (self-registered) | Yes (a human created it) |
 | Notifications | Push, Email | Webhook-Callback, or to `created_by` |
 
@@ -97,9 +97,9 @@ Client connects
 
 ---
 
-## 3. Credentials per Account
+## 3. Credentials on the Account
 
-Each Account has its own Credentials for external services:
+Every Account has its own Credentials for external services:
 
 ```yaml
 # MongoDB Collection: credentials
@@ -124,13 +124,13 @@ credential:
 When the Brain needs a Credential, it searches along the chain:
 
 ```
-1. Account of the current Session User → personal Credential
+1. Account of the current Session-User → personal Credential
 2. Team-Level Credential (shared within the team)
 3. Tenant-Level Credential (organization-wide)
 4. Nothing? → Task blocked, Notification
 ```
 
-Team and Tenant Credentials are Credentials tied to a special Account (e.g., `acc_team_nlp` or `acc_tenant_acme_shared`), not to an individual human.
+Team and Tenant-Credentials are Credentials tied to a special Account (e.g., `acc_team_nlp` or `acc_tenant_acme_shared`), not to an individual human.
 
 ---
 
@@ -152,15 +152,15 @@ cron_job:
 
 What happens:
 1. Scheduler fires
-2. System Client connects **as acc_mike**
+2. System-Client connects **as acc_mike**
 3. Session is created with `account_id: acc_mike`
 4. Brain has access to Mike's Credentials
 5. Tasks can use Mike's Jira token, Google Drive, etc.
 6. Run-Log documents: "Cron cron_eng12_daily, runs_as acc_mike"
 
-If Mike wants to delegate the Cron Job to his Service Account:
+If Mike wants to delegate the Cron Job to his Service-Account:
 ```yaml
-  runs_as: acc_github_ci          # Service Account's Credentials instead of Mike's
+  runs_as: acc_github_ci          # Service-Account's Credentials instead of Mike's
 ```
 
 ---
@@ -198,9 +198,9 @@ vance integrations revoke jira
   → Warning: "3 Cron Jobs use this Credential"
 ```
 
-### For Service Accounts
+### For Service-Accounts
 
-Service Accounts receive Credentials manually:
+Service-Accounts receive Credentials manually:
 
 ```
 vance accounts create-service "GitHub CI Bot" --team engineering
@@ -211,7 +211,7 @@ vance accounts add-credential acc_github_ci --service jira --type api_key
   → Stored encrypted
 ```
 
-Alternatively: Service Account inherits Team/Tenant Credentials and does not need its own.
+Alternatively: Service-Account inherits Team/Tenant-Credentials and doesn't need its own.
 
 ### OAuth Tools — Implemented Status
 
@@ -221,30 +221,30 @@ Workspace, GitHub, arbitrary OIDC providers) follows a
 
 1. **Provider-Config** (Bean type + Endpoints + Scopes + `clientId`)
    is stored as a YAML document `oauth/<providerId>.yaml` in the
-   `_tenant` Project. Tenant Admin maintains it via the Web UI
+   `_tenant` Project. The Tenant-Admin maintains it via the Web UI
    ("OAuth Providers") or directly on the document.
 2. **Client-Secret** (the OAuth app secret at the provider) is stored as a
    Tenant-`PASSWORD`-Setting `oauth.<providerId>.client_secret`,
    AES-256-GCM-encrypted. **Never** in the YAML body.
 3. **User-Tokens** (Access + Refresh + Metadata) are stored per
    `(tenant, user, providerId)` as User-`PASSWORD`-Settings under
-   `oauth.<providerId>.*`. Users manage them themselves via the Web UI
+   `oauth.<providerId>.*`. The User manages them via the Web UI
    ("Connected Accounts") through the browser OAuth dance.
 
 **Bean Architecture:** An `OAuthProvider` interface (`typeId`,
 `buildAuthorizeUri`, `exchangeCode`, `refresh`) plus three Bean types
-that cover the spectrum — `OidcProvider` (discovery-driven,
+that cover the spectrum — `OidcProvider` (Discovery-driven,
 covers Keycloak/Okta/Auth0/Microsoft/Google), `GenericOAuth2Provider`
-(standard RFC-6749 with manual endpoints, for GitHub and generic
-SaaS) plus quirk subclasses per provider with non-standard responses
-(Slack v2, Atlassian-`cloud_id`, Google's
+(Standard RFC-6749 with manual endpoints, for GitHub and generic
+SaaS) plus quirk subclasses per provider with non-standard
+responses (Slack v2, Atlassian-`cloud_id`, Google's
 `access_type=offline`).
 
 **Auto-Refresh:** Tool-Configs reference the Access-Token via
 `{{secret:user:oauth.<providerId>.access_token}}`. The
 `SettingsSecretResolver` routes this variant through the
 `OAuthTokenRefresher`, which reads `expires_at` and refreshes the token 60s before
-expiration. A per-`(tenant, user, providerId)`-lock prevents
+expiration. A per-`(tenant, user, providerId)`-Lock prevents
 parallel Tool-Calls from triggering multiple refreshes (Slack
 invalidates the old Refresh-Token after use — a race condition
 would cause all subsequent calls to 401). Refresh-Failure → specific
@@ -259,7 +259,7 @@ is also a future iteration.
 **Implementation Documentation:** [`readme/tool-oauth.md`](../../readme/tool-oauth.md)
 with an end-to-end example (register Slack app → Provider-Config →
 User-Connect → Tool-Call with Auto-Refresh).
-**Planning Documentation:** [`planning/tool-oauth.md`](../../planning/tool-oauth.md)
+**Planning Documentation:** [`planning/tool-oauth.md`](../../planning/archive/tool-oauth.md)
 with architectural decisions, sequence of steps, effort.
 
 ---
@@ -275,7 +275,7 @@ All Credential data is encrypted at-rest. The Brain decrypts only at the moment 
 | MongoDB CSFLE | Medium | Field-level Encryption |
 | AWS KMS / GCP KMS | Medium | Cloud-native, Audit-Trail |
 
-**v1:** AES-256 with Environment Key. Later Vault integration.
+**v1:** AES-256 with Environment-Key. Later Vault integration.
 
 ---
 
@@ -286,11 +286,11 @@ Human:
   1. User registers (or is invited)
   2. Account created: is_human=true
   3. User connects Integrations (OAuth-Flows)
-  4. User may create Service Accounts
-  5. User creates Cron Jobs (runs_as: own Account or Service Account)
+  4. User may create Service-Accounts
+  5. User creates Cron Jobs (runs_as: own Account or Service-Account)
 
 Service:
-  1. Human creates Service Account: is_human=false
+  1. Human creates Service-Account: is_human=false
   2. API-Key is generated
   3. Credentials are added manually (or inherits Team/Tenant)
   4. External Robot uses API-Key to connect
@@ -306,7 +306,7 @@ Human is deactivated:
   → Projects/Think Processes remain (ownership can be transferred)
   → Warning: "5 Cron Jobs and 2 Webhooks are affected"
 
-Service Account is deleted:
+Service-Account is deleted:
   → Same logic
   → created_by User is notified
 ```
@@ -332,4 +332,4 @@ One model. One code path. No special cases.
 
 ---
 
-*See also: [multi-user-collaboration](multi-user-collaboration.md) | [mcp-tool-routing](mcp-tool-routing.md) | [execution-modes-trigger](execution-modes-trigger.md) | [client-protokoll-erweiterbarkeit](client-protokoll-erweiterbarkeit.md)*
+*See also: [multi-user-collaboration](multi-user-collaboration.md) | [mcp-tool-routing](mcp-tool-routing.md) | [execution-modes-trigger](execution-modes-trigger.md) | [client-protocol-extensibility](client-protokoll-erweiterbarkeit.md)*

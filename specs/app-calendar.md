@@ -9,7 +9,7 @@ permalink: /specs/app-calendar
 ---
 # Vancetope — Application `app: calendar`
 
-> Specifies the **calendar-suite application** — the first reference implementation of the `kind: application` pattern. A folder with `_app.yaml` (`$meta.app: calendar`) becomes a project planning app with one Calendar file per Lane, auto-generated Gantt, and conflict overview.
+> Specifies the **calendar-suite application** — the first Reference Implementation of the `kind: application` pattern. A folder with `_app.yaml` (`$meta.app: calendar`) becomes a project planning app with one Calendar file per Lane, auto-generated Gantt, and conflict overview.
 > See also: [doc-kind-application](/specs/doc-kind-application) | [doc-kind-calendar](/specs/doc-kind-calendar) | [web-ui](/specs/web-ui)
 
 ---
@@ -31,11 +31,11 @@ Distinctions from **Single-Calendar (`kind: calendar`)**:
 | Gantt desired? | Yes → App (generated for free). No → either is sufficient. |
 | Conflict detection across files? | Yes → App. No → Single Calendar. |
 | Lanes / Phases / Teams? | Yes → App. No → Single Calendar. |
-| Quick-capture of a single appointment? | Single Calendar (App is overkill). |
+| Quick capture of a single appointment? | Single Calendar (App is overkill). |
 
 **Design Principle — Calendar remains Source, Gantt+Conflicts are derived.** The user always edits `*.yaml` Calendar files. `_gantt.md` and `_conflicts.yaml` are system output and are overwritten with every `app_rebuild`. To move Gantt bars, change the source Calendar.
 
-**Design Principle — One file per Lane, one Lane per aspect.** Users who collect all events in one file have modeled the App incorrectly. This leads to diff noise, RAG chunks that are too large, and multi-user edits becoming a conflict hell. Lanes via subfolders provide free structuring.
+**Design Principle — One file per Lane, one Lane per aspect.** If you collect all events in one file, you have modeled the App incorrectly. This creates diff noise, RAG chunks that are too large, and multi-user edits become a conflict hell. Lanes via subfolders provide free structuring.
 
 ---
 
@@ -60,7 +60,7 @@ calendars/                    ← suite folder (path freely selectable)
 | File              | Status      | Content                                                 |
 |-------------------|-------------|---------------------------------------------------------|
 | `_app.yaml`       | source      | App manifest (see §3)                                   |
-| `_gantt.md`       | generated   | Mermaid Gantt Document (`kind: diagram`)                |
+| `_gantt.md`       | generated   | Mermaid-Gantt-Document (`kind: diagram`)                |
 | `_conflicts.yaml` | generated   | Conflict table (`kind: records`)                        |
 | `_info.yaml`      | source      | Optional, lane-local override (see §3.4)                |
 
@@ -68,7 +68,7 @@ All other `.yaml` files in the folder are interpreted as `kind: calendar`.
 
 ### 2.2 Configurable Output Paths
 
-`_app.yaml > calendar.gantt.outputPath` and `_app.yaml > calendar.conflicts.outputPath` allow overrides. Default: `_gantt.md` and `_conflicts.yaml` respectively. If you want the generated artifacts elsewhere (e.g., `exports/q3-gantt.md`), you can set this.
+`_app.yaml > calendar.gantt.outputPath` and `_app.yaml > calendar.conflicts.outputPath` allow overrides. Default: `_gantt.md` and `_conflicts.yaml` respectively. If you want the Generated Artifacts elsewhere (e.g., `exports/q3-gantt.md`), you can set this.
 
 ---
 
@@ -161,13 +161,13 @@ Use case: Kits that provide a pre-configured Lane can keep their settings with t
 
 ## 4. Generated Artifacts
 
-### 4.1 `_gantt.md` — Mermaid Gantt
+### 4.1 `_gantt.md` — Mermaid-Gantt
 
-Format: `kind: diagram` Markdown document with a `mermaid` fence. Rendered as SVG by the Web-UI renderer.
+Format: `kind: diagram` Markdown document with a `mermaid`-fence. Rendered as SVG by the Web-UI renderer.
 
-Mapping `CalendarEvent` → Mermaid Task:
+Mapping `CalendarEvent` → Mermaid-Task:
 
-| Event Property | Gantt Output |
+| Event-Property | Gantt-Output |
 |---|---|
 | `title` | Task Name (with escape pass) |
 | `start` (Date-only) | Task Start (`YYYY-MM-DD`) |
@@ -185,33 +185,33 @@ Format: `kind: records` with a fixed schema:
 
 | Column           | Meaning                                          |
 |------------------|--------------------------------------------------|
-| `title_a`        | Title of the first conflicting event             |
-| `lane_a`         | Lane of the first event                          |
-| `source_a`       | Path of the first source Calendar                |
-| `title_b`, `lane_b`, `source_b` | Analogous for the second event |
-| `overlap_start`  | Start of overlap (ISO-DateTime)                  |
-| `overlap_end`    | End of overlap (ISO-DateTime)                    |
+| `title_a`        | Title of the first conflicting Event             |
+| `lane_a`         | Lane of the first Event                          |
+| `source_a`       | Path of the first Source-Calendar                |
+| `title_b`, `lane_b`, `source_b` | Analogous for the second Event |
+| `overlap_start`  | Start of the overlap (ISO-DateTime)              |
+| `overlap_end`    | End of the overlap (ISO-DateTime)                |
 
-Conflict definition: two events whose `[start, end]` range overlap. Back-to-back appointments (10-11 + 11-12) are not a conflict. Point events (`end == null`) only conflict if another event encloses the point in time.
+Conflict definition: two Events whose `[start, end]` range overlap. Back-to-back appointments (10-11 + 11-12) are not a conflict. Point-Events (`end == null`) only conflict if another Event encloses the time point.
 
-Filters from `conflicts` config:
+Filters from `conflicts`-Config:
 
-- **`ignoreWithinTags`**: two events that **both** carry at least one of these tags are not considered a conflict (typically `[private]` → two vacations overlap without noise).
-- **`ignoreAllDayOverlapsBetweenLanes`**: two `allDay` events in **different** Lanes overlap without conflict (e.g., Design vacation vs. Backend release day).
+- **`ignoreWithinTags`**: two Events that **both** carry at least one of these tags are not considered a conflict (typically `[private]` → two vacations overlap without noise).
+- **`ignoreAllDayOverlapsBetweenLanes`**: two `allDay`-Events in **different** Lanes overlap without conflict (e.g., Design vacation vs. Backend release day).
 
 ---
 
 ## 5. Recurrence Handling
 
-Recurring Events (`recurrence: <RRULE>`) are **not** expanded in the Gantt (default `includeRecurring: false`) — the Gantt should show Milestones, not 60 Standup bars.
+Recurring Events (`recurrence: <RRULE>`) are **not** expanded in the Gantt (Default `includeRecurring: false`) — the Gantt should show Milestones, not 60 Standup bars.
 
-For conflict detection, recurrence rules are **expanded** (otherwise a weekly colliding appointment would never appear).
+For Conflict Detection, Recurrence Rules are **expanded** (otherwise a weekly colliding appointment would never appear).
 
 Supported RRULE subset (same as [`doc-kind-calendar`](/specs/doc-kind-calendar) §5):
 
 `FREQ=DAILY|WEEKLY|MONTHLY|YEARLY`, `INTERVAL`, `BYDAY` (WEEKLY only), `UNTIL`, `COUNT`.
 
-Hard caps: 2,000 iterations per event, 500 output occurrences per event. This prevents an invalid endless recurrence rule from hanging the refresh pipeline.
+Hard-Caps: 2,000 iterations per Event, 500 output occurrences per Event. Prevents an invalid endless recurrence rule from hanging the refresh pipeline.
 
 ---
 
@@ -225,17 +225,17 @@ Generic — calls `CalendarsApplication.refresh()`. Writes `_gantt.md` + `_confl
 
 ### 6.2 `calendar_aggregate(folder, from?, to?, lanes?, tags?, expandRecurring?)`
 
-Read-only Query. Returns sorted event list with `sourcePath` + `lane`. Default window: 7 days before today to 30 days after today.
+Read-only Query. Returns sorted Event list with `sourcePath` + `lane`. Default window: 7 days before today to 30 days after today.
 
-Use case: "What do I have next week?", "Which Milestones in Q3?", "Which events in Lane backend?".
+Use case: "What do I have next week?", "Which Milestones in Q3?", "Which Events in Lane backend?".
 
 ### 6.3 `calendar_conflicts(folder, from?, to?, projectId?)`
 
-Thin Wrapper for `CalendarsApplication.refreshConflicts()`. Only writes `_conflicts.yaml`. Use case: targeted check after an edit, without touching the Gantt.
+Thin Wrapper on `CalendarsApplication.refreshConflicts()`. Writes only `_conflicts.yaml`. Use case: targeted check after an edit, without touching the Gantt.
 
 ### 6.4 `gantt_from_calendars(folder, from?, to?, projectId?)`
 
-Thin Wrapper for `CalendarsApplication.refreshGantt()`. Only writes `_gantt.md`. Use case: Tag filter / Section order changed, conflicts not relevant.
+Thin Wrapper on `CalendarsApplication.refreshGantt()`. Writes only `_gantt.md`. Use case: Tag filter / Section order changed, conflicts not relevant.
 
 ---
 
@@ -246,7 +246,7 @@ Thin Wrapper for `CalendarsApplication.refreshGantt()`. Only writes `_gantt.md`.
 - `_app.yaml` is opened with the standard YAML code editor.
 - `_gantt.md` renders with the `kind: diagram` Mermaid renderer (no new code).
 - `_conflicts.yaml` renders with the `kind: records` Records view (no new code).
-- No special App card, no folder headers, no refresh button.
+- No special App card, no folder headers, no Refresh button.
 
 ### 7.2 v2 — planned
 
@@ -281,9 +281,9 @@ de.mhus.vance.brain.tools.calendar/
 └── CalendarsAppConfig            (typed view of config.calendar)
 ```
 
-Helper components (FolderReader, Expander, Detector, Renderer) are pure-function or Spring Beans without state — all individually unit-tested.
+Helper components (FolderReader, Expander, Detector, Renderer) are pure-function or Spring-Beans without state — all individually Unit-tested.
 
-`CalendarsApplication` is the service class that wires all helpers into the refresh pipeline. It is the only place where `DocumentService.create`/`update` is written against — the tools do not write themselves.
+`CalendarsApplication` is the service class that wires all helpers to the refresh pipeline. It is the only place where `DocumentService.create`/`update` is written against — the Tools do not write themselves.
 
 ---
 
@@ -293,8 +293,8 @@ Helper components (FolderReader, Expander, Detector, Renderer) are pure-function
 - **Lane files in the root instead of a subfolder.** Works (they get Lane `default`), but misses the point of the App.
 - **Manual edits to `_gantt.md` / `_conflicts.yaml`.** These will be overwritten. Edit the source Calendar + `app_rebuild`.
 - **Recurring Standups as a Calendar file with permanent visibility in the Gantt.** Default is `includeRecurring: false` — good.
-- **App refresh after every single change.** Costs little, but once at the end of a session is sufficient.
-- **Multiple Apps nested in one folder** (e.g., Calendar App within Calendar App). Folder discovery searches for the next `_app.yaml` and stops — sub-Apps are technically not allowed.
+- **App refresh after every single change.** Costs little, but once at the end of a session is enough.
+- **Multiple Apps nested in one folder** (e.g., Calendar App within Calendar App). Folder discovery searches for the next `_app.yaml` and stops — Sub-Apps are technically not allowed.
 
 ---
 
@@ -303,5 +303,5 @@ Helper components (FolderReader, Expander, Detector, Renderer) are pure-function
 - **Single Calendar** (`kind: calendar`, `calendar_create`): the smaller variant. Calendar App scales up when more structure is needed.
 - **`ics_to_calendar` Import**: provides a single `kind: calendar` output. To set up a multi-source sync, import multiple ICS streams into separate files in the App folder.
 - **`calendar_export_ics` Export**: operates on a single Calendar file. Aggregate export across the entire App would be v2.
-- **Kits**: a "Sprint Planning Kit" can provide a ready-made Calendar App (manifest with default Lanes + empty `*.yaml` files). User installs Kit, fills in events, rebuilds.
-- **Marvin-Worker**: a Slart-generated Recipe can produce a complete Calendar App in one run — write manifest, create Lanes, insert events, rebuild. Use case: "Create a Q3 plan with standard sprint phases".
+- **Kits**: a "Sprint Planning Kit" can provide a ready-made Calendar App (manifest with default Lanes + empty `*.yaml` files). The user installs the Kit, fills in Events, rebuilds.
+- **Marvin-Worker**: a Slart-generated Recipe can produce a complete Calendar App in one run — write manifest, create Lanes, insert Events, rebuild. Use case: "Create a Q3 plan with standard sprint phases".

@@ -1,6 +1,6 @@
 # Vancetope — Help System
 
-> A **generic help subsystem** delivers Markdown/text help content from the Brain to the Web UI (and potentially other clients). Content resides as static resources in the Brain, delivered via a single REST endpoint with **language fallback to English**. The Web UI (e.g., the Recipes editor) loads individual help files on demand and renders them in the right panel.
+> A **generic help subsystem** delivers Markdown/text help content from the Brain to the web UI (and other clients, prospectively). Content resides as static resources in the Brain, delivered via a single REST endpoint with **language fallback to English**. The web UI (e.g., the Recipes editor) loads individual help files on demand and renders them in the right panel.
 > See also: [web-ui](web-ui.md) | [recipes](recipes.md)
 
 ---
@@ -10,7 +10,7 @@
 Web UI editors require context-sensitive help — a field reference for YAML editors, how-tos for workflows, a glossary for terms. This content should be:
 
 - **Maintainable in the backend** (no frontend rebuild for documentation updates of a single resource).
-- **Multilingual**, allowing growth without creating every file per language.
+- **Multilingual**, able to grow without creating every file per language.
 - **Format-flexible**: primarily Markdown, but HTML, Plain Text, or JSON are also possible.
 - **Generically reusable** for any future client (Web UI, Mobile, Electron) — no editor-specific API.
 
@@ -33,7 +33,7 @@ vance-brain/src/main/resources/help/
 
 **Rules:**
 - **`en` is mandatory** for every resource. Other languages are optional translations.
-- Paths may only contain `[A-Za-z0-9._-]` and `/`. No `..`, no absolute paths — the loader rejects them with a 400.
+- Paths may only contain `[A-Za-z0-9._-]` and `/`. No `..`, no absolute paths — the loader rejects them with 400.
 - File extension controls the `Content-Type` of the response: `.md` → `text/markdown`, `.txt` → `text/plain`, `.html` → `text/html`, `.json` → `application/json`. Unknown extensions: `application/octet-stream`.
 
 ---
@@ -61,7 +61,7 @@ GET /brain/{tenant}/help/{lang}/{*path}
 
 **Response Headers:**
 - `Content-Type` by extension (see above).
-- `Cache-Control: max-age=300` — Help content changes only via deploy; short browser caching is sufficient.
+- `Cache-Control: max-age=300` — Help content changes only via deploy, short browser caching is sufficient.
 
 **Errors:**
 
@@ -71,7 +71,7 @@ GET /brain/{tenant}/help/{lang}/{*path}
 | 400 | Lang or Path invalid (see regexes) |
 | 401 | JWT missing or invalid |
 | 403 | Tenant in Path does not match JWT `tid` |
-| 404 | Neither `{lang}` nor `en` has the resource |
+| 404 | Neither `{lang}` nor `en` have the resource |
 
 ---
 
@@ -104,18 +104,18 @@ help.error.value;     // string | null
 
 1. **English file first** — `resources/help/en/<topic>.md`. Other languages follow optionally.
 2. **Naming:** kebab-case, descriptive for the respective UI context (`recipe-field-docs.md`, not `help1.md`).
-3. **Tone:** factual, concise, "like a field manual" — not marketing text. Field references with type + default + 1-line explanation per field; deeper context only if it cannot be understood without reading the source code.
-4. **No external images/assets.** If necessary, they belong in the same `help/` subtree and are referenced via relative paths.
-5. **If content is very editor-specific**, keep it maintainable alongside the editor — clearly document the link structure in the MD so that the relationship remains understandable in case of spec drift.
+3. **Tone:** factual, concise, "like a field manual" — no marketing text. Field references with type + default + 1-line explanation per field; deeper context only if it cannot be understood without reading the source code.
+4. **No external images/assets.** If necessary, they belong in the same `help/` subtree and reference via relative paths.
+5. **If content is very editor-specific**, keep it maintainable alongside the editor — clearly document the link structure in the MD so that the relationship remains traceable in case of spec drift.
 
 ---
 
 ## 6. What the Help System IS NOT
 
 - **Not a CMS function** — no UI for editing help content at runtime. To change help, modify the resource and deploy.
-- **Not a Tenant/Project variant** — help is global. Behavior adjustments per Tenant belong in Settings/Recipes.
+- **No Tenant/Project variant** — help is global. Behavior adjustments per Tenant belong in Settings/Recipes.
 - **Not a templating engine** — content is delivered 1:1. Variable substitution (e.g., `{{tenant}}`) is done by the client, if necessary.
-- **No search, no index** — this will come only when the need is real. For now: known path, known topic.
+- **No search, no index** — will only come when the need is real. For now: known path, known topic.
 
 ---
 

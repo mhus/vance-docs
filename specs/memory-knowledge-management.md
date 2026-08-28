@@ -9,8 +9,8 @@ permalink: /specs/memory-knowledge-management
 ---
 # Vancetope — Memory & Knowledge Management
 
-> Defines how knowledge in Vancetope is structured, stored, tagged, and made searchable.
-> See also: [vision](/specs/vision) | [architecture-scopes-clients](/specs/architektur-scopes-clients) | [workflows](/specs/workflows)
+> Defines how knowledge is structured, stored, tagged, and made searchable in Vancetope.
+> See also: [vision](/specs/vision) | architecture-scopes-clients | [workflows](/specs/workflows)
 
 ---
 
@@ -18,17 +18,17 @@ permalink: /specs/memory-knowledge-management
 
 The Memory model from brainstorming think flow and the prototype is too simplistic:
 - Flat list of strings (`GlobalMemoryService`)
-- No file reference — only text
+- No file reference — text only
 - No structure — no folders, no files, no context
 - No tagging — not filterable, not categorizable
 - No RAG — not semantically searchable
 - No Scope isolation — everything is global or nothing
 
-For a real project system, a **Knowledge Management System** is needed as an integral part of the Brain.
+A real project system requires a **Knowledge Management System** as an integral part of the Brain.
 
 ---
 
-## 2. What Memory in Vancetope Actually Is
+## 2. What Memory Actually Is in Vancetope
 
 Memory is not just "facts the Brain remembers". It is the entire knowledge accumulated within a Scope. This includes:
 
@@ -100,10 +100,10 @@ Project: Literature Review
   │     ├── Hypothesis 1.md
   │     └── Contradictions.md
   └── Results/
-        ├── Think-Process: Paper Analysis/
+        ├── Think Process: Paper Analysis/
         │     ├── Extraction Vaswani.md
         │     └── Extraction Flash Attention.md
-        └── Think-Process: Hypothesis Check/
+        └── Think Process: Hypothesis Check/
               └── Counterarguments.md
 ```
 
@@ -116,9 +116,9 @@ Tags:
   #attention          → Topic
   #efficiency         → Topic
   #foundational       → Category
-  #hypothesis         → Document type
+  #hypothesis         → Document Type
   #contradiction      → Status
-  #unread             → Workflow status
+  #unread             → Workflow Status
   #high-relevance     → Rating
   #thinkProcess:tp_12      → automatically set for Think Process result
   #2017               → Year
@@ -163,7 +163,7 @@ A Think Process does NOT see:
 Documents can be moved between Scopes:
 - **Promote:** Think Process result → Project Memory (if it's relevant across projects)
 - **Demote:** Project document → Think Process-specific (if it only applies to one Think Process)
-- **Auto-Promote:** Certain Tags trigger automatic promotion (e.g., `#project-relevant`)
+- **Auto-Promote:** Certain tags trigger automatic promotion (e.g., `#project-relevant`)
 
 ---
 
@@ -171,7 +171,7 @@ Documents can be moved between Scopes:
 
 ### 5.1 Basic Principle
 
-Every Document is indexed into a **VectorStore** upon creation/update. The VectorStore is Scope-aware — queries are executed against the correct Scope area.
+Every document is indexed into a **VectorStore** upon creation/update. The VectorStore is Scope-aware — queries are executed against the correct Scope area.
 
 ### 5.2 Indexing Pipeline
 
@@ -191,7 +191,7 @@ Document created/updated
 
 ### 5.3 Scope-aware RAG Query
 
-When a Think Process performs a RAG Query:
+When a Think Process makes a RAG query:
 
 ```
 Query: "What do we know about Sparse Attention scalability?"
@@ -210,9 +210,9 @@ Scope: Think Process tp_12, Session sess_7, Project proj_5, Group grp_1
     Group Memory:         Weight 0.3
 ```
 
-### 5.4 Tag Filters in RAG
+### 5.4 Tag Filter in RAG
 
-RAG Queries can additionally be filtered by Tags:
+RAG queries can additionally be filtered by tags:
 
 ```
 Query: "Scalability"
@@ -237,7 +237,7 @@ Tags: [#efficiency, #benchmark]
 |--------|-----|--------|
 | **MongoDB Atlas Vector Search** | Same DB as rest, no extra service | Less mature than specialized solutions |
 | **Qdrant** | Performant, good filters, Open Source | Additional service |
-| **pgvector (PostgreSQL)** | Proven, SQL queries | Second DB besides MongoDB |
+| **pgvector (PostgreSQL)** | Proven, SQL queries | Second DB next to MongoDB |
 | **Embedded (In-Memory)** | Simple for v1 | Does not scale |
 
 **Recommendation:** MongoDB Atlas Vector Search for v1 — one service, one DB, all-in-one. Migrate to Qdrant if performance needs grow. langchain4j abstracts the VectorStore via `EmbeddingStore` anyway.
@@ -266,12 +266,12 @@ On Think Process Start:
   → Prepare RAG index for this Scope
 
 On Task Execution:
-  → RAG Query against Scope cascade
-  → Result is automatically saved as a Document
+  → RAG query against Scope cascade
+  → Result is automatically saved as a document
   → Auto-tagging based on node type (extract→#extraction, verify→#verification)
 
 On Task Change:
-  → Mark affected result Documents as #stale
+  → Mark affected result documents as #stale
   → Re-index after new execution
 ```
 
@@ -299,13 +299,13 @@ Each Task node can reference **Input Documents**:
 - id: extract_paper_1
   goal: "Extract core theses"
   input_docs: [doc_abc123]         # Explicit reference
-  input_query: "Sparse Attention"  # Or RAG Query
-  input_tags: [#unread, #attention] # Or Tag filter
+  input_query: "Sparse Attention"  # Or RAG query
+  input_tags: [#unread, #attention] # Or tag filter
 ```
 
 ### 7.2 Output Memory
 
-Each Task result is automatically saved as a Document:
+Each Task result is automatically saved as a document:
 
 ```yaml
 id: doc_result_node_7_1
@@ -386,13 +386,13 @@ Wait — there's a problem here: Think Process "Hypothesis Check" only sees the 
 
 ## 9. Open Questions
 
-1. **Automatic vs. Manual Promotion:** Should Think Process results automatically flow into Project Memory, or must the User explicitly do so? Automatic = less friction, but risk of noise. Manual = cleaner, but more work.
+1. **Automatic vs. Manual Promotion:** Should Think Process results automatically flow into Project Memory, or must the user explicitly do so? Automatic = less friction, but risk of noise. Manual = cleaner, but more work.
 
 2. **Cross-Think-Process Visibility:** Should Think Processes within the same Project see the results of other Think Processes? This would weaken Scope isolation but is often useful. Possible solution: opt-in via Think Process Config.
 
-3. **Versioning:** If a Document is updated (e.g., after a Task re-run), should old versions be retained? Important for traceability, but costs storage.
+3. **Versioning:** If a document is updated (e.g., after a Task re-run), should the old version be retained? Important for traceability, but costs storage.
 
-4. **Embedding Costs:** Every Document is embedded. With many PDFs, this can become expensive. Strategy: embed only relevant chunks? Or lazy embedding on first query?
+4. **Embedding Costs:** Every document is embedded. For many PDFs, this can be expensive. Strategy: embed only relevant chunks? Or lazy embedding on first query?
 
 5. **File Size Limits:** Large PDFs (100+ pages) must be handled differently than short notes. Define chunking strategy per type.
 
@@ -404,17 +404,17 @@ Chat history grows with each turn — in long Sessions, it eventually exceeds th
 
 Two paths work orthogonally:
 
-- **Sliding-Window Path** — automatically at the start of a turn if `tokensIn / contextWindow` exceeds a threshold (`compactionSoftThreshold` / `HardThreshold` / `EmergencyThreshold`). Strength-aware selection: PINNED messages survive every stage.
+- **Sliding-Window Path** — automatically at turn start if `tokensIn / contextWindow` exceeds a threshold (`compactionSoftThreshold` / `HardThreshold` / `EmergencyThreshold`). Strength-aware selection: PINNED messages survive every stage.
 - **Range-Recompaction Path** — semantic, at the Plan-Completion-Hook. Compresses a user-confirmed time range (sub-topic completion) and writes a visible Topic-Stitch.
 
 Both write the same `ARCHIVED_CHAT` Memory format; `markArchived` is idempotent.
 
-`MemoryContextLoader.composeBlock(...)` re-injects the currently active summary as a `## Earlier Conversation (compacted)` block into every prompt — without replay, compaction would be *de-facto forgetting*. Workers with `parentProcessId != null` additionally receive a `## Parent Context` block; same-project Workers inherit the Parent-Summary, cross-project Workers only the Parent-Identity (Confidential-Boundary).
+`MemoryContextLoader.composeBlock(...)` re-injects the currently active summary as an `## Earlier Conversation (compacted)` block into every prompt — without replay, compaction would be *de-facto forgetting*. Workers with `parentProcessId != null` additionally receive an `## Parent Context` block; same-project Workers inherit the Parent-Summary, cross-project Workers only the Parent-Identity (Confidential-Boundary).
 
-The first USER message per Process is automatically tagged with `STRENGTH:pinned` (`ChatMessageService.maybeAutoPinOriginalTask`), so that the original instruction survives every compaction stage, including EMERGENCY.
+The first USER message per Process is automatically tagged with `STRENGTH:pinned` (`ChatMessageService.maybeAutoPinOriginalTask`), ensuring the original instruction survives every compaction stage, including EMERGENCY.
 
 **Full spec with data model, selector table, pinned convention, Engine participation list, and tunables**: [memory-compaction](/specs/memory-compaction). Range path details: [plan-mode](/specs/plan-mode) §15 and `planning/topic-recompaction.md`.
 
 ---
 
-*See also: [vision](/specs/vision) | [architektur-scopes-clients](/specs/architektur-scopes-clients) | [workflows](/specs/workflows) | brainstorming think flow | [plan-mode](/specs/plan-mode)*
+*See also: [vision](/specs/vision) | architecture-scopes-clients | [workflows](/specs/workflows) | brainstorming think flow | [plan-mode](/specs/plan-mode)*

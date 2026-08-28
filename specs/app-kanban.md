@@ -48,7 +48,7 @@ Markdown is the primary mime type — cards have prose bodies. YAML and JSON are
 ```markdown
 ---
 kind: card
-title: Login-Flow implementieren
+title: Implement Login Flow
 priority: high
 assignee: alice
 labels: auth, sprint-q3
@@ -57,13 +57,13 @@ estimate: 5
 blocked: false
 ---
 
-Email + Passwort, JWT-basiert.
+Email + password, JWT-based.
 
-## Akzeptanzkriterien
-- [x] Registrierung
+## Acceptance Criteria
+- [x] Registration
 - [ ] Login
 - [ ] Logout
-- [ ] Password-Reset
+- [ ] Password Reset
 ```
 
 | Field | Type | Notes |
@@ -203,7 +203,7 @@ A folder cannot be both `app: calendar` and `app: kanban`. Each app folder hosts
 
 Kanban gets a dedicated interactive editor in the web UI, mounted by the **shared Cortex / Notepad shell** via the kind-registry. The kanban addon's `./register` federation expose registers an `application:kanban` kind whose `view` is `KanbanAppKind.vue` — a thin wrapper that adapts the kind-registry mount contract (single `document` prop) to the existing `KanbanBoard.vue`'s `(projectId, folder, title)` interface.
 
-**Routing:** clicking an `_app.yaml` file in the file tree opens it as a regular tab in `cortex.html?doc=…/_app.yaml` (or `notepad.html?…`). `docTypeRegistry.resolveBinding` sees `kind: application`, reads the `app:` discriminator from the manifest headers, calls `resolveKind('application:kanban')`, and mounts `KanbanAppKind` immersively (sidebar / tab strip / shell toolbar suppressed in App view-mode; see [doc-kind-application](/specs/doc-kind-application) §7.2). The earlier dedicated `app.html` MPA entry + `AppEditor.vue` dispatcher are gone.
+**Routing:** clicking an `_app.yaml` file in the file tree opens it as a regular tab in `/cortex?doc=…/_app.yaml` (or `/cortex?…`). `docTypeRegistry.resolveBinding` sees `kind: application`, reads the `app:` discriminator from the manifest headers, calls `resolveKind('application:kanban')`, and mounts `KanbanAppKind` immersively (sidebar / tab strip / shell toolbar suppressed in App view-mode; see [doc-kind-application](/specs/doc-kind-application) §7.2). The earlier dedicated `app.html` MPA entry + `AppEditor.vue` dispatcher are gone.
 
 **Board view (`KanbanBoard.vue`):**
 - Horizontal scroll, one column per `KanbanColumnView`. Card sort = priority desc → dueDate asc → title asc.
@@ -221,7 +221,7 @@ Kanban gets a dedicated interactive editor in the web UI, mounted by the **share
 - **Color** is the document-level accent (`DocumentDocument.color`, the 12-value `AccentColor` palette — *not* card front-matter). The panel uses the shared `VColorPicker`; the value rides the same debounced patch as a `color`/`clearColor` field and is applied server-side via the atomic `DocumentService.setColor`/`clearColor` (the content merge preserves it). On the wire it is the enum *name* string, because the addon's TS generator doesn't emit cross-package imports for the `vance-api` enum.
 - The body is edited in a roomy modal via the shared `WorkPageEditor` (`bodyOnly`). The modal runs the editor with `autoSaveMs=0` and drives saving through the panel's single debounced save loop (pulls the latest markdown via `editorRef.save()` on each flush) — no local buffer, no "Save to persist" step. GFM checkboxes in the body feed the board's subtask progress badge.
 - The content editor wires the block-editor's compose callbacks (`runCompose`/`pollCompose`/`cancelCompose` → the shared `@vance/shared` compose helpers, plus the host-injected `compose-output-component`), so `/compose` blocks run inside a card just like in the workbook. Relative `vance:` paths resolve against the card's app folder; runs bind to the active cortex session when present.
-- A save-status indicator (`Bearbeitet… / Speichern… / Gespeichert / error`) sits in the panel header and the content modal footer. Delete action remains explicit (confirm dialog).
+- A save-status indicator (`Editing… / Saving… / Saved / error`) sits in the panel header and the content modal footer. Delete action remains explicit (confirm dialog).
 - The client never serializes the card — the body markdown is sent as `{ body }` and the server merges it into the card's front-matter via `CardCodec`.
 
 **REST surface — `KanbanBoardController`:**

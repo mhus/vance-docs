@@ -19,19 +19,19 @@ provides context to the LLM ("you are currently working in the Study Workbook wi
 
 Workbook is the second concrete App after Kanban — same pattern, different
 domain. Workflows: "create a Workbook for the WS26 semester with
-Pages for each lecture", "add a Page for the
-new exam to the Study Workbook", "show me all Pages in the Study Workbook with open
-Todos".
+Pages for each lecture," "add a Page for the
+new exam to the Study Workbook," "show me all Pages in the Study Workbook with open
+Todos."
 
 ---
 
 ## 2. Folder Layout
 
 ```
-studium-ws26/                      ← Workbook-Folder
+studium-ws26/                      ← Workbook Folder
 ├── _app.yaml                      ← Manifest (kind: application, app: workbook)
 ├── _index.md                      ← auto-generated (kind: workpage, list of all Pages)
-├── ueberblick.workpage.md           ← Landing-Page
+├── ueberblick.workpage.md           ← Landing Page
 ├── lernplan.workpage.md
 ├── noten.workpage.md
 └── klausuren/                     ← Section = Sub-Folder
@@ -40,8 +40,8 @@ studium-ws26/                      ← Workbook-Folder
 ```
 
 **Page Discovery**: every `*.workpage.md` (or more generally: every Document with
-`$meta.kind: workpage`) in the Workbook-Folder or a Sub-Folder is a
-Page. System files (`_<...>`) are ignored.
+`$meta.kind: workpage`) in the Workbook Folder or a Sub-Folder is a
+Page. System Files (`_<...>`) are ignored.
 
 **Section Convention**: Sub-Folder = Section. Section Name = Folder Name.
 Deeper than two levels is allowed but not recommended — the index groups
@@ -63,7 +63,7 @@ $meta:
   kind: application
   app: workbook
 title: "Studium WS 2026"
-description: "Notes, Exam Schedule, Grade Overview"
+description: "Notes, exam schedule, grade overview"
 
 workbook:
   landingPage: "ueberblick.workpage.md"   # optional — Default Page on Open
@@ -110,7 +110,7 @@ body: "This Page is rewritten on every `app_rebuild` — edits here will be lost
 
 ## Pages
 
-- [Overview](ueberblick.workpage.md) — Landing-Page
+- [Overview](ueberblick.workpage.md) — Landing Page
 - [Study Plan](lernplan.workpage.md)
 - [Grade Overview](noten.workpage.md)
 
@@ -134,7 +134,7 @@ Section sorting: alphabetically by Section Name.
 | `app_rebuild` | Regenerates `_index.md` **and** executes the declared Page Rebuild Scripts (§5.1). | `WorkbookApplication.refresh` |
 
 `workbook_page_create` is convenience — you achieve the same result
-with `workpage_create(path="studium-ws26/new-page", …)` plus
+with `workpage_create(path="studium-ws26/neue-page", …)` plus
 `app_rebuild("studium-ws26")`.
 
 ### 5.1 Rebuild Scripts (`$meta.rebuildScripts`)
@@ -154,12 +154,12 @@ title: "Grades"
 ---
 ```
 
-Each script runs server-side (synchronous, `vance.documents.*` on Tenant/
-Project Scope, 30 s, via `WorkbookScriptService`). A failing script
-is logged + skipped (does not block the rest of the Rebuild); `refresh`
+Each script runs server-side (synchronous, `vance.documents.*` on tenant/
+project Scope, 30 s, via `WorkbookScriptService`). A failing script
+is logged + skipped (does not block the rest of the rebuild); `refresh`
 counts `scriptsRun`/`scriptsFailed` in the artifact stats. This allows
-derived files (Charts, Aggregates) of an entire Workbook to be
-recalculated in one action. No fallback: without `rebuildScripts`, only the Index Rebuild runs.
+derived files (charts, aggregates) of an entire Workbook to be
+recalculated in one action. No fallback: without `rebuildScripts`, only the index rebuild runs.
 
 ---
 
@@ -186,7 +186,7 @@ Read `manual_read('workpage-blocks')` for the full block grammar.
 ### 7.1 Mount in Cortex
 
 Kind registration as `application:workbook`. Mount via
-`WorkbookAppKind.vue` (in the `vance-addon-brain-workbook` addon):
+`WorkbookAppKind.vue` (in the Addon `vance-addon-brain-workbook`):
 
 - Reads the `_app.yaml` manifest from the `document` prop.
 - Scans `<folder>/**/*.workpage.md` via the addon's own REST API.
@@ -202,10 +202,10 @@ a productive working environment with an active editor in the main area.
     "Add page" + "Rebuild index" buttons.
   - Search Input: Substring filter over title + Section
     (case-insensitive, client-side).
-  - Index entry with `⌂` icon (if `_index.md` exists).
+  - Index entry with `⌂`-icon (if `_index.md` exists).
   - Section Header per Sub-Folder + Page list below.
     Page Icon (Emoji from Frontmatter) appears before the title.
-  - Landing Page additionally gets a 📌 marker on the right.
+  - Landing Page additionally gets a 📌-marker on the right.
 - **Main Area**: renders the currently selected Page directly with
   `WorkPageEditor`. Auto-Save (debounced ~2s) + WS-based Self-Write-Quiet-
   Window (3s) against cursor reset by own echoes. Page switch flushes
@@ -216,7 +216,7 @@ a productive working environment with an active editor in the main area.
 
 ### 7.3 Page Management
 
-Per Page (right-click or ⋯ button on hover):
+Per Page (right-click or ⋯-button on hover):
 
 - **Rename / Move…** — Modal with Title Input + Section Autocomplete.
   Title Change only patches the Frontmatter; Section Change is a
@@ -225,14 +225,14 @@ Per Page (right-click or ⋯ button on hover):
   opens directly.
 - **Pin/Unpin as landing page** — patches `workbook.landingPage` in the
   `_app.yaml` manifest.
-- **Delete** — with Confirm dialog; goes to Project Trash (recoverable),
+- **Delete** — with Confirm dialog; lands in Project Trash (recoverable),
   not Hard-Delete.
 
-Sections (right-click or ⋯ button on Section label):
+Sections (right-click or ⋯-button on Section label):
 
 - **Rename section…** — Inline Edit, server batches a Path Move for
   each Page in the Section. Empty Sections disappear automatically
-  (they exist only as Path-Prefix, not a first-class entity).
+  (they exist only as Path Prefix, not a first-class entity).
   Top-Level (`Pages`) is not a menu target.
 
 ### 7.4 Drag-and-Drop Reorder
@@ -241,8 +241,8 @@ Native HTML5 D&D on the Page Row. Drop Zones:
 
 - **In the same Section** — Insert Indicator (blue line) top/bottom
   depending on Y-position; persisted via `POST /addon/workbook/reorder`
-  with `orderedIds[]`, Server writes `sortIndex: 10, 20, 30, …` into the
-  Frontmatter of all affected Pages.
+  with `orderedIds[]`, Server writes `sortIndex: 10, 20, 30, …` into
+  the Frontmatter of all affected Pages.
 - **On a Page in a different Section** — first Path Move via
   `PUT /page/{id}` with `section`, then Reorder of the target Section.
 - **On the Section Label itself** — Move to the end of this Section.
@@ -252,7 +252,7 @@ order; null = sorted by title.
 
 ### 7.5 REST-API
 
-Own endpoints under the Addon Prefix:
+Own endpoints under the Addon prefix:
 
 | Endpoint | Purpose |
 |---|---|
@@ -283,31 +283,31 @@ The Workbook Addon passes several callbacks to the `WorkPageEditor`
 
 | Prop | Task |
 |---|---|
-| `currentProjectId` | Default project for `vance:` URIs without Authority |
-| `resolveImageSrc(uri)` | `vance:` → HTTP URL for `<img src>` (per-URI cached) |
+| `currentProjectId` | Default project for `vance:`-URIs without Authority |
+| `resolveImageSrc(uri)` | `vance:` → HTTP-URL for `<img src>` (per-URI cached) |
 | `resolveEmbedDoc(uri)` | `vance:` → `{ id, path, title, kind, mimeType }` for Embed-NodeView |
-| `uploadImage(file)` | File upload to `<folder>/assets/`, return `vance:` URI |
+| `uploadImage(file)` | File upload to `<folder>/assets/`, return `vance:`-URI |
 | `openAssetPicker()` | Slash-`/image` opens 3-Tab Picker |
-| `openLinkPicker()` | Bubble-Menu Link Button opens 2-Tab Picker |
+| `openLinkPicker()` | Bubble-Menu Link-Button opens the 2-Tab `VLinkPicker` (shared, `@vance/components`) |
 | `openEmbedPicker()` | Slash-`/embed` opens 1-Tab Doc-Picker |
-| `openLink(href,newTab)` | Cmd+Click routing; vance: → cortex `?doc=` |
+| `openLink(href,newTab)` | Cmd+Click-Routing; vance: → cortex `?doc=` |
 | `suppressFloating` | reactive true → all BubbleMenus off (Picker open) |
 
 Thus, the Block Editor knows neither REST nor the `_tenant` project
 nor Cortex's URL scheme. Cross-Project-Links use the
-`?projectId={target}` query parameter + remove `sessionId`.
+`?projectId={target}`-Query-Param + remove `sessionId`.
 
 ### 7.7 Live-Watch
 
-Standard folder-prefix subscription on `<folder>/`. Remote Doc Changes
-reload the tree. Self-Writes (Auto-Save of the active Page) are suppressed
-via the `lastSelfWriteAt` map, so that the own echo does not
+Standard Folder-Prefix-Subscription on `<folder>/`. Remote Doc Changes
+reload the Tree. Self-Writes (Auto-Save of the active Page) are
+suppressed via the `lastSelfWriteAt`-Map, so the own echo does not
 rebuild the ProseMirror-Doc → Cursor Reset.
 
-Embedded Documents (`vance-embed` block) are **not** part of the
-Workbook subscription — they can point across the project and
-would break the subscription list. Instead, each Embed
-has a Refresh button on hover for manual reload.
+Embedded Documents (`vance-embed`-Block) are **not** part of the
+Workbook Subscription — they can point across the project and
+would break the Subscription list. Instead, each Embed
+has a Refresh Button on hover for manual reload.
 
 ---
 
@@ -325,8 +325,8 @@ has a Refresh button on hover for manual reload.
 ## 9. Anti-Patterns
 
 - **Hand-Edits to `_index.md`** — will be overwritten on the next `app_rebuild`.
-- **Sub-Workbooks** — do not place an `_app.yaml` in a Section folder. One
-  Workbook per tree root.
+- **Sub-Workbooks** — do not place an `_app.yaml` in a Section Folder. One
+  Workbook per Tree Root.
 - **Workbook without Pages** — if only one Page exists, you don't need a
   Workbook; use the Page directly.
 

@@ -9,7 +9,7 @@ permalink: /specs/image-manipulation
 ---
 # Vancetope — Image Manipulation Tools
 
-> Pure-Java image processing on existing Document assets. Complements [Fenchurch](/specs/fenchurch-service): where Fenchurch creates a **new** image, these tools manipulate an **existing** one. Implemented as `ImageManipulationService` + tool-set in `vance-brain`, parallel to Fenchurch's structure, but without an LLM/provider layer — all processing runs locally in the Pod using the [Scrimage](https://sksamuel.github.io/scrimage/)-Library.
+> Pure-Java image processing on existing Document assets. Complements [Fenchurch](/specs/fenchurch-service): where Fenchurch creates a **new** image, these tools manipulate an **existing** one. Implemented as an `ImageManipulationService` + tool-set in `vance-brain`, parallel to Fenchurch's structure, but without an LLM/provider layer — all processing runs locally in the Pod using the [Scrimage](https://sksamuel.github.io/scrimage/)-Library.
 >
 > Seven tools are in the default tool inventory of every Engine: `image_crop`, `image_resize`, `image_rotate`, `image_flip`, `image_adjust`, `image_filter`, `image_auto_enhance`. The write target is always a Document path — overwriting automatically triggers Document versioning, so each manipulation leaves a recoverable previous version.
 >
@@ -21,27 +21,27 @@ permalink: /specs/image-manipulation
 
 **Problem.** Fenchurch delivers fresh images. Once they are in the Document Store, Vancetope needs an equally clean path to **edit** them — deterministically, quickly, without external API calls, and without the LLM having to write Python code or use an external tool. Typical cases:
 
-- Chat user: "Crop the image to the top-left quadrant", "Make it black and white", "Enlarge it to 1920×1080".
-- Magrathea workflows: Normalize image assets (generate thumbnails, uniform aspect ratio) before they go into the final document.
-- Document pipelines: Auto-enhance scanned photos, rotate by EXIF hint, filter pass for style consistency.
+- Chat User: "Crop the image to the top-left quadrant", "Make it black and white", "Enlarge it to 1920x1080".
+- Magrathea Workflows: Normalize image assets (generate thumbnails, uniform aspect ratio) before they go into the final document.
+- Document Pipelines: Auto-enhance scanned photos, rotate by EXIF hint, filter pass for style consistency.
 
-Image manipulation, just like image generation, is **a single-shot process** without multi-turn reasoning. A Worker Engine would be overkill. The pattern exactly follows Fenchurch's architecture: a Spring `@Service` called by a Tool class, sync, blocking, with heartbeats via [PROCESS_PROGRESS](/specs/user-progress-channel) for longer operations.
+Image manipulation, just like image generation, is **a single-shot process** without multi-turn reasoning. A Worker Engine would be overkill. The pattern exactly follows Fenchurch's architecture: a Spring `@Service` called by a Tool class, synchronous, blocking, with heartbeats via [PROCESS_PROGRESS](/specs/user-progress-channel) for longer operations.
 
 **Solution.** Three building blocks:
 
-- `ImageManipulationService` — the single entry point. One method per tool. Handles Load → Op → Write including quota-light (counter), limit check, format inference, heartbeats.
+- `ImageManipulationService` — the single entry point. One method per tool. Handles Load → Op → Write, including quota-light (counter), limit check, format inference, heartbeats.
 - `ImageManipulationTools` — seven Tool classes, each a thin wrapper around a service method (same style as `ImageGenerateTool`).
 - Manuals (to follow after implementation) — explain to the LLM *when* which tool applies and *which* parameters are useful.
 
 **What it is not:**
 
 - **Not a new image generator.** If nothing exists, the LLM calls `image_generate` (Fenchurch). These tools require a Document path as input.
-- **No WebP/HEIC support.** Pure Java via `javax.imageio` — PNG, JPEG, GIF, BMP. WebP would mean `scrimage-webp` with libwebp-JNI; this is **explicitly excluded** on Day 1 because it binds the Pod image to glibc and does not justify the build complexity. WebP input will be rejected with a clear `format_unsupported` error.
-- **No AI enhancement / upscaling / restoration.** Auto-enhance is classic (histogram stretch + gamma + saturation), not ML. If true AI upscaling is desired later, it will come as a separate tool (`image_enhance_ai`) with a provider call — separate cost class, separate quota.
+- **No WebP/HEIC support.** Pure Java via `javax.imageio` — PNG, JPEG, GIF, BMP. WebP would mean `scrimage-webp` with libwebp-JNI; this is **explicitly excluded** on Day 1 because it binds the Pod image to glibc and does not justify the build complexity. WebP input is rejected with a clear `format_unsupported` error.
+- **No AI enhancement / upscaling / restoration.** Auto-enhance is classic (histogram stretch + gamma + saturation), not ML. If real AI upscaling is desired later, it will come as a separate tool (`image_enhance_ai`) with a Provider call — separate cost class, separate quota.
 - **No inpainting / outpainting / variation.** This conceptually belongs to Fenchurch (see §1 there — reserved as an extension path).
-- **No batch tool.** Multiple manipulations in one call → multiple tool calls. Marvin / Magrathea parallelize via Lanes, not via collective APIs.
+- **No batch tool.** Multiple manipulations in one call → multiple Tool calls. Marvin / Magrathea parallelize via Lanes, not via collective APIs.
 - **No format conversion as a separate tool.** Output format follows input. To convert JPEG → PNG, generate it anew (Fenchurch) or copy via `document_copy`.
-- **No watermark / annotation v1.** Easily retrofittable with Scrimage; still not in the v1 inventory.
+- **No Watermark / Annotation v1.** Easily retrofittable with Scrimage; still not in the v1 inventory.
 
 ---
 
@@ -85,7 +85,7 @@ Image manipulation, just like image generation, is **a single-shot process** wit
           previous version is in document_archives.
 ```
 
-Pure Java, no provider layer. There is no `ImageManipulationProvider` because there is no provider choice — Scrimage is the only implementation. If the feature ever needs more filters, they will be added as methods to the service, not as a new provider.
+Pure Java, no provider layer. There is no `ImageManipulationProvider` because there is no provider choice — Scrimage is the only implementation. If the feature needs more filters, they will be added as methods to the service, not as a new provider.
 
 ---
 
@@ -109,18 +109,18 @@ Exactly two artifacts in `vance-brain/pom.xml`:
 **Explicitly excluded:**
 
 - `scrimage-webp` — brings libwebp as a JNI binary. No need for v1, would bind Pod build image to glibc.
-- `scrimage-formats-extra` — brings additional readers we don't need.
+- `scrimage-formats-extra` — brings additional readers that we do not need.
 - `scrimage-scala_*` — Scala module; we are Pure-Java.
 
-Reason in one sentence: **Pod images remain glibc-free and native-lib-free**. If WebP ever becomes a need, it will be a conscious step with discussion about the base image, not a drive-by.
+Reason in one sentence: **Pod images remain glibc-free and native-lib-free**. If WebP becomes a need at some point, it will be a conscious step with a discussion about the base image, not a drive-by.
 
-Scrimage-`core` since Major Version 4 is pure Java, no Scala runtime in the classpath. The `ImmutableImage` API fits the Vancetope pattern *load → transform → write* — each operation returns a new `ImmutableImage`, no hidden mutation on a shared `BufferedImage` instance.
+Scrimage `core` since Major Version 4 is pure Java, no Scala runtime in the classpath. The `ImmutableImage` API fits the Vancetope pattern *load → transform → write* — each operation returns a new `ImmutableImage`, no hidden mutation on a shared `BufferedImage` instance.
 
 ---
 
 ## 4. Tool API
 
-All seven tools are in the default tool inventory, without a Recipe whitelist.
+All seven tools are in the default tool inventory, without Recipe whitelisting.
 
 Common fields that every tool has:
 
@@ -180,11 +180,11 @@ Changes dimensions. Five modes.
 
 Mode behavior:
 
-- `exact` — `image.scaleTo(w, h)`. Distorts if aspect ratio doesn't match.
+- `exact` — `image.scaleTo(w, h)`. Distorts if aspect ratio does not match.
 - `width` — Scales to `width`, height proportional. `image.scaleToWidth(w)`.
 - `height` — Scales to `height`, width proportional. `image.scaleToHeight(h)`.
 - `cover` — Fills the box, crops overflow. `image.cover(w, h)`.
-- `contain` — Fits into the box, pads with `background`. `image.fit(w, h, Color)`.
+- `contain` — Fits into the box, padded with `background`. `image.fit(w, h, Color)`.
 
 Both output dimensions are checked against `image.tools.max_dimension` (Default 8192).
 
@@ -194,7 +194,7 @@ Rotation by any angle.
 
 | Field | Type | Required | Meaning |
 |-------|------|----------|---------|
-| `degrees` | number | ✓ | Rotation angle clockwise. Allowed: any value; for `90`/`180`/`270` the service uses `image.rotateLeft()`/`.rotateRight()`/`.flip()` combinations (lossless), for other angles `image.rotate(Radians.fromDegrees(d), background)`. |
+| `degrees` | number | ✓ | Rotation angle clockwise. Allowed: any value; for `90`/`180`/`270`, the service uses `image.rotateLeft()`/`.rotateRight()`/`.flip()` combinations (lossless), for other angles `image.rotate(Radians.fromDegrees(d), background)`. |
 | `background` | string | ✗ | Background color for the area created by rotation. Default `#00000000` (transparent for PNG, white for JPEG). |
 
 ### 4.4 `image_flip`
@@ -265,17 +265,17 @@ Classic auto-levels chain, deterministic, without external calls. Sequence of st
 1. **Build histogram** for all three RGB channels separately, 256 bins.
 2. **Percentile clip** — for each channel, find the lower and upper `0.5 %` pixel volume. These values are `low`/`high`.
 3. **Linear stretch** per channel: `out = clamp((in - low) * 255 / (high - low), 0, 255)`. If `high - low < 8` (extremely flat channel, e.g., monochrome background): skip for this channel, otherwise posterization artifacts may occur.
-4. **Gamma correction** `0.95` — slightly brighter in the midtones, compensates for perception after the stretch.
+4. **Gamma Correction** `0.95` — slightly brighter in the midtones, compensates for perception after the stretch.
 5. **Saturation +10 %** via HSB conversion. Limited to `1.0`.
 
-Implementation: not Scrimage-Composite (Scrimage has **no** auto-levels), but histogram code on `BufferedImage` (via `ImmutableImage.awt()`) + `image.filter(new BrightnessFilter(...))` etc. for the sub-steps.
+Implementation: not Scrimage composite (Scrimage has **no** auto-levels), but histogram code on `BufferedImage` (via `ImmutableImage.awt()`) + `image.filter(new BrightnessFilter(...))` etc. for the sub-steps.
 
-This chain is intentionally conservative — it improves dull images, largely leaving good images alone. More aggressive pipelines (auto-WB, auto-exposure) are v2 material.
+This chain is intentionally conservative — it improves dull images, largely leaving good images untouched. More aggressive pipelines (auto-WB, auto-exposure) are v2 material.
 
 **Settings** (Cascade `tenant → project`, read per call):
 
 | Setting | Default | Meaning |
-|---------|---------|---------|
+|---------|---------|-----------|
 | `image.tools.auto_enhance.percentile_clip` | `0.005` | Percentile value for lows/highs. `0.0` = exact min/max (risky for spikes), `0.02` = aggressive. |
 | `image.tools.auto_enhance.gamma` | `0.95` | Gamma factor after stretch. `1.0` effectively disables. |
 | `image.tools.auto_enhance.saturation_boost` | `0.10` | Saturation boost. `0.0` disables. |
@@ -288,7 +288,7 @@ A Tenant setting `… = 0.0` is just as valid as an override pipeline with more 
 
 **Output format follows input format.** A `cat.png` remains PNG, a `photo.jpeg` remains JPEG. Reason: no tool should change the MIME as a side effect (Document renderer, RAG index, RSS sniffer, etc. depend on the MIME).
 
-JPEG quality: fixed `0.92` (Scrimage `JpegWriter().withCompression(92)`). Configurable v2.
+JPEG quality: fixed `0.92` (Scrimage `JpegWriter().withCompression(92)`). Configurable in v2.
 
 PNG encoding: PNG with alpha preservation. Scrimage `PngWriter` default.
 
@@ -313,7 +313,7 @@ Cascade: `tenant → project`. Project setting may be stricter than Tenant, but 
 
 Exceeding a limit → `limit_exceeded` error with the specific limit in the `message`.
 
-Background: a single 30000×30000 PNG can consume several GB as an uncompressed pixel buffer and kill the Pod heap. The limits are not for user harassment but for Pod stability.
+Background: a single 30000x30000 PNG can consume several GB as an uncompressed pixel buffer and kill the Pod heap. The limits are not for user harassment but for Pod stability.
 
 ---
 
@@ -388,17 +388,17 @@ public class ImageCropTool implements VanceTool {
 }
 ```
 
-DTOs (`CropRequest`, `ResizeRequest`, …) are records in the same package; they are **not** in `vance-api` because they are only internal tool argument shapes and do not run over the WS protocol.
+DTOs (`CropRequest`, `ResizeRequest`, …) are records in the same package; they are **not** in `vance-api` because they are only internal Tool argument shapes and do not run over the WS protocol.
 
-`ImageManipulationService` calls `DocumentService` (data sovereignty over Documents) and `StorageService` (indirectly via `DocumentService`). No direct Mongo access. Document versioning automatically comes via the `createOrReplaceBinary` path — the service here does not need to know about it.
+`ImageManipulationService` calls `DocumentService` (data sovereignty over Documents) and `StorageService` (indirectly via `DocumentService`). No direct Mongo access. Document versioning comes automatically via the `createOrReplaceBinary` path — the service here does not need to know about it.
 
 ---
 
 ## 10. Heartbeats
 
-Operations under ~500 ms are the rule (Crop, Flip, Adjust, small Resize). Resize to 8000×8000, Gaussian Blur with `radius=30`, rotation by non-right angles: up to ~5 s.
+Operations under ~500 ms are the rule (Crop, Flip, Adjust, small Resize). Resize to 8000x8000, Gaussian Blur with `radius=30`, rotation by non-right angles: up to ~5 s.
 
-Threshold for heartbeat emission: Operation starts → `ProgressEmitter.emitStatus(WAITING, "<opName> image …")` directly. If not finished after 2 s: another status heartbeat every 2 s. Exactly like [Fenchurch](/specs/fenchurch-service) §10 — the Web UI renders the spinner without the Tool Result needing to be complete.
+Threshold for heartbeat emission: operation starts → `ProgressEmitter.emitStatus(WAITING, "<opName> image …")` directly. If not finished after 2 s: another status heartbeat every 2 s. Exactly like [Fenchurch](/specs/fenchurch-service) §10 — the Web UI renders the spinner without the Tool Result needing to be complete.
 
 ---
 
@@ -406,10 +406,10 @@ Threshold for heartbeat emission: Operation starts → `ProgressEmitter.emitStat
 
 Exactly two meters (see `MetricService` Convention in CLAUDE.md):
 
-- **`vance.image.tools.calls`** — Counter. Tags: `tool` (e.g., `image_crop`, `image_filter:blur_gaussian` — for `image_filter` the filter name is appended as a suffix with `:`, low-cardinality because enum), `outcome` (`success`, `format_unsupported`, `parameter_invalid`, `not_an_image`, `source_not_found`, `limit_exceeded`, `target_blocked`, `processing_error`).
+- **`vance.image.tools.calls`** — Counter. Tags: `tool` (e.g., `image_crop`, `image_filter:blur_gaussian` — for `image_filter`, the filter name is appended as a suffix with `:`, low-cardinality because enum), `outcome` (`success`, `format_unsupported`, `parameter_invalid`, `not_an_image`, `source_not_found`, `limit_exceeded`, `target_blocked`, `processing_error`).
 - **`vance.image.tools.duration`** — Timer. Tag: `tool` (same schema as above). Ends on every outcome, not just success.
 
-No paths, no Document IDs, no User IDs as tags — cardinality explosion. If someone wants to see the volume per Project, the aggregation layer (Grafana, custom pipeline) will add that retrospectively.
+No paths, no Document IDs, no User IDs as tags — cardinality explosion. If someone wants to see the volume per Project, the aggregation layer (Grafana, custom pipeline) will append that retroactively.
 
 ---
 
@@ -426,7 +426,7 @@ No paths, no Document IDs, no User IDs as tags — cardinality explosion. If som
 | `image.tools.auto_enhance.gamma` | double | `0.95` | See §5. |
 | `image.tools.auto_enhance.saturation_boost` | double | `0.10` | See §5. |
 
-Setting form under `_vance/setting_forms/image-tools.yaml` (form engine like Fenchurch settings — same style as [setting-forms](/specs/setting-forms)).
+Setting form under `_vance/setting_forms/image-tools.yaml` (Form Engine like Fenchurch settings — same style as [setting-forms](/specs/setting-forms)).
 
 ---
 
@@ -438,9 +438,9 @@ The tools need Manuals — concise, loaded explanations of *when* which call is 
 - **Detail Manuals** per logical group:
   - `image-geometry.md` — `image_crop`, `image_resize`, `image_rotate`, `image_flip`. With concrete examples for aspect ratio concerns, `cover` vs. `contain`, EXIF rotation caveats.
   - `image-color.md` — `image_adjust`, `image_auto_enhance`. With hints on when `image_auto_enhance` is sufficient and when manual adjustment is better.
-  - `image-filter.md` — `image_filter`. With filter table (effect + sensible parameter ranges) and anti-examples ("do not use `sepia` for pure black and white conversion — use `grayscale`").
+  - `image-filter.md` — `image_filter`. With filter table (effect + sensible parameter ranges) and anti-examples ("do not use `sepia` for pure black-and-white conversion — use `grayscale`").
 
-Prompt hooks in the Engine prompts (Arthur, Eddie, Ford) will then be one per detail manual; the routing manual itself does not need to be referenced in the prompt, as `manual_read('image-geometry')` is directly addressable. Discovery (`how_do_i`) finds the manuals automatically.
+Prompt hooks in the Engine prompts (Arthur, Eddie, Ford) will then be one per detail manual; the Routing Manual itself does not need to be referenced in the prompt, as `manual_read('image-geometry')` is directly addressable. Discovery (`how_do_i`) finds the Manuals automatically.
 
 Manuals will be written **after** the tools are implemented — otherwise, we document behavior that might change during the build.
 
@@ -451,17 +451,17 @@ Manuals will be written **after** the tools are implemented — otherwise, we do
 What is **not** in v1 (with a one-sentence justification to clarify if it's parked or discarded):
 
 - **WebP / HEIC / SVG / TIFF Read+Write** — parked, will only come with real demand and accepted native-lib footprint.
-- **Watermark / Text Overlay** — parked, easily retrofittable with Scrimage, but no urgent use case.
-- **Composite (combining multiple images)** — parked; Vancetope workflows currently do not produce a need for combining.
-- **AI Enhancement / Upscaling / Restoration** — deliberately separated; its own tool family with provider call, its own quota.
-- **Batch operations in one call** — discarded; multiple tool calls in sequence are the correct granularity from an LLM perspective.
-- **Auto-EXIF Rotation on Read** — parked; if Foot/Web users upload photos, this might change. Currently, we rely on the Document path without rotation magic.
+- **Watermark / Text-Overlay** — parked, easily retrofittable with Scrimage, but no urgent use case.
+- **Composite (combining multiple images)** — parked; Vancetope workflows currently do not produce a collective need.
+- **AI-Enhancement / Upscaling / Restoration** — deliberately separated; its own tool family with provider call, its own quota.
+- **Batch operations in one call** — discarded; multiple Tool calls in sequence are the correct granularity from an LLM perspective.
+- **Auto-EXIF-Rotation on Read** — parked; if Foot/Web users provide photo uploads, this might change. Currently, we rely on the Document path without rotation magic.
 - **Format Convert as a separate tool** — discarded; output follows input, conversion happens via regenerate (Fenchurch) or `document_copy`.
 
 ---
 
 ## 15. Open Points
 
-- **EXIF preservation.** Scrimage does not guarantee EXIF preservation during roundtrip. Irrelevant for purely generated images, relevant for user uploads. A concrete decision will be made when the first user photo goes through the system.
+- **EXIF preservation.** Scrimage does not guarantee EXIF preservation during roundtrip. Irrelevant for purely generated images, relevant for user uploads. A concrete decision will come when the first user photo goes through the system.
 - **Animated GIFs.** Scrimage only processes the first frame. Output is static. If this becomes an issue: `scrimage-formats-extra` or custom loop logic later. Day 1: first frame, documented in the Manual.
-- **Color Space.** We assume sRGB. Adobe RGB or ProPhoto images are rendered without conversion (Scrimage default). No practical problem so far.
+- **Color Space.** We assume sRGB. Adobe-RGB or ProPhoto images are rendered without conversion (Scrimage default). No practical problem so far.

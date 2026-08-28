@@ -24,7 +24,7 @@ Distinctions:
 - **mindmap**: special case of tree with a different renderer.
 - **graph**: nodes + free edges between them, directed or not. Layout is calculated by the editor (or fixed by the user via drag).
 
-**Design Principle:** Node IDs and edge structure are central. Edges are **first-class entities** at the top level (not as a sub-field of a node) — same convention as Cytoscape, vue-flow, GraphML. This allows clean encapsulation of edge metadata (label, color, later style/weight), and multi-graphs and self-loops can be naturally represented in the schema. Visual metadata (`label`, `color`, `position`) are all optional — a graph with only `nodes: [{ id }]` is valid.
+**Design Principle:** Node IDs and edge structure are central. Edges are **first-class entities** at the top level (not as a sub-field on the node) — same convention as Cytoscape, vue-flow, GraphML. This allows clean encapsulation of edge metadata (label, color, later style/weight), and multi-graphs and self-loops can be naturally represented in the schema. Visual metadata (`label`, `color`, `position`) are all optional — a graph with only `nodes: [{ id }]` is valid.
 
 **What this spec defines:**
 - Node model (id, label?, color?, position?).
@@ -35,9 +35,9 @@ Distinctions:
 - Backward compatibility rule for legacy Documents with `node.edges: string[]`.
 
 **What it does not define:**
-- Markdown form. Deliberately excluded — edges + position tuples + color in CSV-light would be unreadable and fragile for round-tripping. Markdown bodies with `kind: graph` fall back to the raw editor.
+- Markdown form. Intentionally excluded — edges + position tuples + color in CSV-light would be unreadable and fragile for round-trips. Markdown bodies with `kind: graph` fall back to the raw editor.
 - Per-edge metadata (label, color, style). Edges are pure ID references in v1. Extensible, see §6.
-- Per-edge direction. Direction is document-level (`graph.directed`), applies uniformly to all edges. Mixed-direction graphs are rare enough that v1 does not pay the complexity for them.
+- Per-edge direction. Direction is document-level (`graph.directed`), applies uniformly to all edges. Mixed-direction graphs are rare enough that v1 does not pay complexity for them.
 - Graph algorithms (shortest path, cycle detection, etc.). Pure data/edit layer; analysis is a separate spec item.
 
 ---
@@ -50,29 +50,29 @@ Distinctions:
 |------------|--------------------------------|----------|---------------------------------------------------------------------------|
 | `id`       | `string`                       | **yes**  | Unique, stable identifier. Multiple occurrences are an error.             |
 | `label`    | `string`                       | no       | Display name. If missing, the editor renders the `id`.                    |
-| `color`    | `string` (HTML-Hex)            | no       | Node background/border. Format as in mindmap (`#rrggbb`/`#rgb`).          |
-| `position` | `{ x: number, y: number }`     | no       | Persisted layout coordinates. Missing → Auto-layout on first render.      |
+| `color`    | `string` (HTML hex)            | no       | Node background/border. Format as in mindmap (`#rrggbb`/`#rgb`).          |
+| `position` | `{ x: number, y: number }`     | no       | Persisted layout coordinates. Missing → auto-layout on first render.      |
 
 **ID Rules:**
 - Required and non-empty (after trim).
-- Unique within the Document — Codec throws `GraphCodecError("Duplicate node id: <id>")` on parse if two nodes have the same ID.
-- Can contain letters, digits, `-`, `_`, `.`; technically, anything JSON/YAML accepts as a string is allowed. Recommendation: kebab-case or snake_case, not mandatory.
-- When renaming in the UI (see §5.4): every edge that had the old ID as `source` or `target` is re-routed to the new one.
+- Unique within the Document — the codec throws `GraphCodecError("Duplicate node id: <id>")` on parse if two nodes have the same ID.
+- Can contain letters, numbers, `-`, `_`, `.`; technically, anything JSON/YAML accepts as a string is allowed. Recommendation: kebab-case or snake_case, not mandatory.
+- When renaming in the UI (see §5.4): any edge that had the old ID as `source` or `target` is re-pointed to the new one.
 
 **Resilience on Read (Nodes):**
-- Position missing or non-numeric: Auto-layout, no throw.
-- Color in unknown format: Codec normalizes as in mindmap.
+- Position missing or non-numeric: auto-layout, no throw.
+- Color in unknown format: codec normalizes as in mindmap.
 - Unknown per-node fields: remain in `node.extra`.
 
 ### 2.2 Edge
 
-| Field    | Type               | Required | Meaning                                                                                 |
-|----------|--------------------|----------|-----------------------------------------------------------------------------------------|
-| `source` | `string`           | **yes**  | ID of a node — source node of the edge.                                                 |
-| `target` | `string`           | **yes**  | ID of a node — target node. If `directed: true`, the arrow points here.                 |
-| `id`     | `string`           | no       | Stable edge ID. Missing → Renderer/Editor synthesizes `<source>-><target>` as key; the `id` field remains absent on disk. |
-| `label`  | `string`           | no       | Display text on the edge (vue-flow renders it in the middle of the line).               |
-| `color`  | `string` (HTML-Hex)| no       | Stroke color; default is vue-flow's theme color.                                        |
+| Field    | Type               | Required | Meaning                                                                               |
+|----------|--------------------|----------|---------------------------------------------------------------------------------------|
+| `source` | `string`           | **yes**  | ID of a node — source node of the edge.                                               |
+| `target` | `string`           | **yes**  | ID of a node — target node. If `directed: true`, the arrow points here.               |
+| `id`     | `string`           | no       | Stable edge ID. Missing → renderer/editor synthesizes `<source>-><target>` as key; the `id` field remains absent on disk. |
+| `label`  | `string`           | no       | Display text on the edge (vue-flow renders it in the middle of the line).             |
+| `color`  | `string` (HTML hex)| no       | Stroke color; default is vue-flow's theme color.                                      |
 
 **Edge Rules:**
 - `source`/`target` must point to existing node IDs. An edge with an unknown ID remains in the Document (round-trip stable) but is not rendered by the editor — this prevents data loss if a target node is accidentally deleted; as soon as the node returns, the edge becomes visible again.
@@ -93,7 +93,7 @@ Unknown top-level keys remain in `doc.extra` and are re-emitted verbatim when wr
 
 ### 2.4 Backward-Compat: legacy `node.edges`
 
-Earlier versions of this spec stored edges as `string[]` directly on the node. The codec continues to read this old format and automatically lifts the entries into the top-level `edges` array (each string becomes `{ source: <node.id>, target: <string>, extra: {} }`). Only the new format is produced when writing; a single save is sufficient for migration. Existing top-level `edges` entries take precedence over legacy `node.edges` in case of conflict.
+Earlier versions of this spec stored edges as `string[]` directly on the node. The codec continues to read this old format and automatically lifts the entries into the top-level `edges` array (each string becomes `{ source: <node.id>, target: <string>, extra: {} }`). When writing, only the new format is produced; a single save is sufficient for migration. Existing top-level `edges` entries take precedence over legacy `node.edges` in case of conflict.
 
 **Canonical Form** (JSON):
 
@@ -140,9 +140,9 @@ Earlier versions of this spec stored edges as `string[]` directly on the node. T
 - `kind` from `$meta.kind` (with top-level fallback for legacy Documents).
 - Top-level keys `graph?`, `nodes`, `edges?`. Other keys (except `$meta`) → `doc.extra`.
 - `nodes` must be an array. Non-object entries are dropped (resilience).
-- Per node: `id` is required (non-empty string); if missing, the node is dropped with a Codec warning.
-- `edges` is an array of objects. `source` and `target` (strings) are required; without them, entries are dropped. Optional: `id`, `label`, `color`, plus arbitrary pass-through fields.
-- Backward-Compat: legacy `node.edges: string[]` is automatically promoted to top-level Edges on read (see §2.4).
+- Per node: `id` is required (non-empty string); if missing, the node is dropped with a codec warning.
+- `edges` is an array of objects. `source` and `target` (strings) are required; without them, entries are dropped. Optional: `id`, `label`, `color`, plus any pass-through fields.
+- Backward-Compat: legacy `node.edges: string[]` is automatically promoted to top-level edges on read (see §2.4).
 
 **Writing Rules:**
 - 2-space indent.
@@ -173,7 +173,7 @@ Single-Document: Top-level mapping with `$meta: { kind: graph }` as the first ke
 
 ### 3.3 Markdown
 
-**Deliberately not supported.** Markdown bodies with `kind: graph` are rejected by the codec; the Web-UI offers **only the Raw Editor** and no Graph tab. If a graph is needed in Markdown, change the Document's MIME type to `application/json` or `application/yaml` and convert the body.
+**Intentionally not supported.** Markdown bodies with `kind: graph` are rejected by the codec; the Web-UI offers **only the raw editor** and no graph tab. If a graph is needed in Markdown, change the Document's MIME type to `application/json` or `application/yaml` and convert the body.
 
 Justification in §1 under "What it does not define".
 
@@ -181,7 +181,7 @@ Justification in §1 under "What it does not define".
 
 ## 4. Server Path
 
-Like list/tree/records: **no dedicated endpoint**, no server-side graph parser. Editor loads via `GET /documents/{id}`, parses in the browser, writes back via `PUT /documents/{id}`. `HeaderStrategy` automatically mirrors `kind: graph` to `DocumentDocument.kind`.
+Like list/tree/records: **no dedicated endpoint**, no server-side graph parser. The editor loads via `GET /documents/{id}`, parses in the browser, writes back via `PUT /documents/{id}`. `HeaderStrategy` automatically mirrors `kind: graph` to `DocumentDocument.kind`.
 
 The `graph:` block and `nodes` array are transparent to the server — it sees them like all top-level JSON/YAML keys.
 
@@ -199,33 +199,33 @@ When switching `Graph → Raw`, the parsed model is serialized back; when switch
 
 ### 5.1a Inline and Embedded Modes
 
-`<GraphView>` has a `mode` prop with three values — `editor` (Default, fully editable), `inline` (read-only, from fence body), and `embedded` (read-only, from loaded Document). Spec analogous to Mindmap/Chart-View.
+`<GraphView>` has a `mode` prop with three values — `editor` (default, fully editable), `inline` (read-only, from fence body), and `embedded` (read-only, from loaded Document). Spec analogous to Mindmap/Chart-View.
 
 - **Inline** (` ```graph` fence in chat): `content` prop carries the body. The parser decides based on the first non-whitespace char: `{` → JSON, otherwise → YAML. Failures silently fall back to an empty graph — `console.warn` with the original error.
-- **Embedded** (`vance:` link to a graph document): `document.inlineText` is parsed with the Document MIME type (Default: `application/json`).
+- **Embedded** (`vance:` link to a graph document): `document.inlineText` is parsed with the Document MIME type (default: `application/json`).
 
 In non-editor mode:
 - Toolbar, side panel, and empty selection hint are hidden.
 - `nodes-draggable`, `nodes-connectable`, `elements-selectable`, `edges-updatable` are pinned to `false` — vue-flow ignores user interaction except pan/zoom.
-- `onNodesChange`/`onEdgesChange`/`onConnect`/`onKeyDown` are inert via `isEditor.value`-guard; defensive protection against vue-flow internal re-layout events.
+- `onNodesChange`/`onEdgesChange`/`onConnect`/`onKeyDown` are inert via `isEditor.value` guard; defensive protection against vue-flow internal re-layout events.
 - `emitDoc()` and `toggleDirected()` are no-ops — nothing is returned.
 - Canvas height `22 rem` (min `16 rem`) instead of 65 vh — more compact for the chat viewport.
 
 **Auto-Layout in read-only mode:** If **no** node has a `position` (typical for LLM-emitted inline-graphs), Dagre runs once in a `computed` (`layoutPositions`) and provides a `Map<nodeId, {x,y}>`. `vfNodes` uses this order: `node.position` → `layoutPositions.get(id)` → Grid fallback. As soon as **at least one** node has a position (user dragged it in the editor), the renderer respects this and skips auto-layout — mixing dagre + manual would produce unreadable mixed layouts.
 
-**Save-as-Document** from the chat fence: via `InlineKindBox`-action, the body is persisted as `documents/graph-<ts>.json` with `application/json` (MIME type mapping in `extForKind`/`mimeForKind`). YAML bodies remain valid because JSON is syntactically a YAML subset.
+**Save-as-Document** from the chat fence: via `InlineKindBox` action, the body is persisted as `documents/graph-<ts>.json` with `application/json` (MIME type mapping in `extForKind`/`mimeForKind`). YAML bodies remain valid because JSON is syntactically a YAML subset.
 
 ### 5.2 Library
 
 **vue-flow** (`@vue-flow/core`, MIT, Vue-3-native, ~80 KB minified):
 - Node drag with auto-save of position.
-- Drag-from-handle-to-create-Edge — the renderer has implicit in/out handles per node.
+- Drag-from-handle-to-create-edge — the renderer has implicit in/out handles per node.
 - Pan/Zoom built-in.
-- Auto-layout for nodes without `position` during the initial render phase (vue-flow then positions at `(0,0)` and the user drags them into place — alternatively, a layouter like `dagre` can be integrated, which is v3).
+- Auto-layout for nodes without `position` during the initial render phase (vue-flow then positions them at `(0,0)` and the user drags them into place — alternatively, a layouter like `dagre` can be integrated, which is v3).
 
 DaisyUI has nothing comparable; writing a custom SVG renderer would be 2-3× more code for identical v1 functionality.
 
-### 5.3 Functionality v1
+### 5.3 Feature Set v1
 
 | Feature                          | v1 | Note |
 |----------------------------------|----|------|
@@ -235,8 +235,8 @@ DaisyUI has nothing comparable; writing a custom SVG renderer would be 2-3× mor
 | Add nodes                        | ✓  | Toolbar button `+ Node`, default ID `node_<N>` |
 | Rename nodes (id + label)        | ✓  | Side panel with two inputs |
 | Delete nodes                     | ✓  | Side panel or `Delete` key on selection |
-| Add edge                         | ✓  | Drag from node handle to target |
-| Delete edge                      | ✓  | Click on edge + `Delete` key |
+| Add edges                        | ✓  | Drag from node handle to target |
+| Delete edges                     | ✓  | Click on edge + `Delete` key |
 | Change node color                | ✓  | Side panel color input (HTML5 `<input type="color">`) |
 | Per-edge label                   | ✓  | Side panel input when edge is selected |
 | Per-edge color                   | ✓  | Side panel color picker when edge is selected |
@@ -253,8 +253,8 @@ DaisyUI has nothing comparable; writing a custom SVG renderer would be 2-3× mor
   - Holds local, mutable copies of `nodes` and `edges` (`localNodes`/`localEdges`).
   - Maps `GraphNode` → vue-flow-Node (`{ id, position, data: { label }, type: 'default', style? }`).
   - Maps `GraphEdge` → vue-flow-Edge (`{ id: edgeKey(e), source, target, label, type: 'default', markerEnd?, style? }`) — no adapter layer for the edge form, as `source`/`target` naming fits natively.
-  - Listens to `@nodes-change` (position on drag-end, remove), `@edges-change` (remove), `@connect` (insert new Edge into `localEdges`).
-  - Side panel on the right: for node selection, edit `id`/`label`/`color`+Delete; for edge selection, display `source → target` (read-only) plus edit `label`/`color`+Delete; without selection, a subtle hint.
+  - Listens to `@nodes-change` (position on drag-end, remove), `@edges-change` (remove), `@connect` (insert new edge into `localEdges`).
+  - Side panel on the right: on node selection, edit `id`/`label`/`color`+Delete; on edge selection, display `source → target` (read-only) plus edit `label`/`color`+Delete; without selection, a subtle hint.
 
 ### 5.5 Keyboard and Mouse
 
@@ -269,15 +269,15 @@ DaisyUI has nothing comparable; writing a custom SVG renderer would be 2-3× mor
 
 ### 5.6 Visual Conventions
 
-- Canvas fills the editor content to 65 vh / min. 420 px height (analogous to Mindmap).
-- Default theme: vue-flow's theme injected via CSS variables from DaisyUI — nodes with `hsl(var(--b1))` background, `hsl(var(--bc) / 0.4)` border.
+- Canvas fills editor content to 65 vh / min 420 px height (analogous to Mindmap).
+- Default theme: vue-flow's theme integrated via CSS variables from DaisyUI — nodes with `hsl(var(--b1))` background, `hsl(var(--bc) / 0.4)` border.
 - Selected node: stronger border stroke, primary color.
 - Side panel on the right (or bottom on narrow viewports): inputs for ID, Label, Color, Delete button.
-- Toolbar at the top: `+ Node`, `Auto-Layout`, `Directed`-checkbox, small hint text with operation cheat sheet.
+- Toolbar at the top: `+ Node`, `Auto-Layout`, `Directed` checkbox, small hint text with operation cheat sheet.
 
 ### 5.7 Auto-Layout (v2)
 
-Toolbar button `Auto-Layout` calls `@dagrejs/dagre` and recalculates node positions for **all** nodes — even those manually positioned by the user. Deliberately no "only undetermined positions" — mixing dagre-positioned and manual nodes produces ugly layouts.
+Toolbar button `Auto-Layout` calls `@dagrejs/dagre` and recalculates node positions for **all** nodes — even those manually positioned by the user. Intentionally not "only undetermined positions" — mixing dagre-positioned and manual nodes produces ugly layouts.
 
 Configuration v2:
 - `rankdir: 'LR'` — Left-to-Right, readable for directed flow graphs.
@@ -286,7 +286,7 @@ Configuration v2:
 
 Dagre provides center coordinates; the editor subtracts half the box size to fit vue-flow's top-left convention.
 
-Future extensions (not v2): Direction dropdown (TB/BT/LR/RL), tweak sliders for nodesep/ranksep, manual protection of certain nodes against auto-layout. The library (~50 KB) is only included because it serves real use cases in v2.
+Future extensions (not v2): direction dropdown (TB/BT/LR/RL), tweak sliders for nodesep/ranksep, manual protection of certain nodes against auto-layout. The library (~50 KB) is only included because it serves real use cases in v2.
 
 ---
 
@@ -294,7 +294,7 @@ Future extensions (not v2): Direction dropdown (TB/BT/LR/RL), tweak sliders for 
 
 ### 6.1 Edge Style (dashed/weight/marker-types)
 
-The current edge model carries `id`/`source`/`target`/`label`/`color`. Extensions would be `style: 'solid'|'dashed'|'dotted'`, `weight: number` (stroke width), or additional marker types (`markerStart`/`markerEnd` with arrow/diamond/circle). vue-flow supports this out-of-the-box; purely a UI extension.
+Current edge model carries `id`/`source`/`target`/`label`/`color`. Extensions would be `style: 'solid'|'dashed'|'dotted'`, `weight: number` (stroke width), or additional marker types (`markerStart`/`markerEnd` with arrow/diamond/circle). vue-flow supports this out-of-the-box; purely a UI extension.
 
 ### 6.2 Subgraphs / Clustering
 
@@ -313,7 +313,7 @@ Cycle detection, topological sorting, reachability queries. This would be a sepa
 ## 7. Open Points
 
 - **Default layout for nodes without position:** vue-flow positions them at `(0,0)` and stacks them on top of each other. Acceptable for small graphs (≤ ~5 nodes); for larger ones, §6.1 dagre is the solution. Until then, a simple random spread (`x: i * 180`, `y: i * 90`) would automatically distribute nodes when added — sensible as an interim solution, left open here whether this is too hacky.
-- **Color format:** canonical HTML-Hex as in mindmap (`#rrggbb`). Named colors and `rgb()`/`hsl()` are tolerated on read; Hex on write. Consistent across kinds.
-- **ID validation in the UI:** On rename, uniqueness + non-empty must be checked, analogous to the Records schema editor. Default IDs for new nodes: `node_<N>` with smallest-free N.
-- **Position persistence granularity:** Each drag-end event saves the new position and triggers an `update:doc` emit, which activates the Save button. In collaborative editing, this would create a save point per drag operation — okay for v1, as there is no real-time sync.
-- **Bundle size:** vue-flow is ~80 KB minified (on top of the already ~1.2 MB documents bundle). Lazy-loading `<GraphView>` (and similarly `<MindmapView>`) would be a separate polish PR; v1 without.
+- **Color format:** canonical HTML hex as in mindmap (`#rrggbb`). Named colors and `rgb()`/`hsl()` are tolerated on read; hex on write. Consistent across kinds.
+- **ID validation in the UI:** On rename, uniqueness + non-empty must be checked, analogous to the Records schema editor. Default IDs for new nodes: `node_<N>` with the smallest free N.
+- **Position persistence granularity:** Each drag-end event saves the new position and triggers an `update:doc` emit, which activates the save button. In collaborative editing, this would create a save point per drag operation — okay for v1, as there is no real-time sync.
+- **Bundle size:** vue-flow is ~80 KB minified (on top of the already ~1.2 MB documents bundle). Lazy loading of `<GraphView>` (and similarly `<MindmapView>`) would be a separate polish PR; v1 without.

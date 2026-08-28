@@ -1,6 +1,6 @@
 # Vancetope — Prompt Caching
 
-> Anthropic prompt caching for the `vance-brain` LLM layer. Goal: 60–85% token cost reduction for medium to long Sessions, without Engines (Eddie, Arthur, Ford, Marvin, …) needing to modify their code.
+> Anthropic prompt caching for the `vance-brain` LLM layer. Goal: 60–85% token cost reduction for medium to long Sessions, without Engines (Eddie, Arthur, Ford, Marvin, …) having to modify their code.
 >
 > Implementation in the **Provider Layer** (`vance-brain/ai/anthropic/`) — engine-agnostic and transparent. Other Providers (Gemini, Embedding) currently ignore the cache configuration.
 >
@@ -13,17 +13,17 @@
 | Term | Definition |
 |---|---|
 | **Cache Marker** | `cache_control: { type: "ephemeral" }` on a block in the Anthropic request. Anthropic caches **everything before and including** this block as a prefix. |
-| **Cache Boundary** | Vancetope-internal Enum (`CacheBoundary`) that specifies **where** in the request the marker is placed (`SYSTEM_AND_TOOLS` is default). |
-| **Cache Hit** | Subsequent call with an identical prefix hash. Anthropic charges `cache_read_input_tokens` — ~10% of standard price. |
-| **Cache Creation** | First call of a prefix. Anthropic charges `cache_creation_input_tokens` — ~125% of standard price. |
+| **Cache Boundary** | Vancetope-internal Enum (`CacheBoundary`) that specifies **where** in the Request the marker is placed (`SYSTEM_AND_TOOLS` is default). |
+| **Cache Hit** | Subsequent call with an identical prefix hash. Anthropic charges `cache_read_input_tokens` — ~10% of the standard price. |
+| **Cache Creation** | First call of a prefix. Anthropic charges `cache_creation_input_tokens` — ~125% of the standard price. |
 | **TTL** | Cache Time-To-Live. 5min (default, no extra charge) or 1h (~2× write-cost, beta header required). |
 
 **Cache Mechanics (Anthropic):**
 
-- Up to 4 cache markers per request.
-- Cache key = full prefix up to the marker. Bit-identity required — a changed whitespace character breaks the hit.
-- Markers are placed on the **last** system block / **last** tool; all preceding blocks automatically end up in the same cache entry.
-- Cache content: `system` blocks, tool definitions, potentially message content blocks. The cached prefix ends where the marker is placed.
+- Up to 4 Cache Markers per Request.
+- Cache key = full prefix up to the marker. Bit-identity required — a changed whitespace breaks the hit.
+- Markers are placed on the **last** system block / **last** Tool; all preceding blocks automatically end up in the same cache entry.
+- Cache content: `system` blocks, Tool definitions, potentially Message content blocks. The cached prefix ends where the marker is placed.
 
 ---
 
@@ -51,7 +51,7 @@ AiChatOptions opts = AiChatOptions.builder()
 
 ## 3. CacheTtl — how long the cache lives
 
-| Value | Anthropic behavior | Beta Header |
+| Value | Anthropic Behavior | Beta Header |
 |---|---|---|
 | `DEFAULT_5MIN` | TTL 5 minutes — Default, no extra charge | — |
 | `LONG_1H` | TTL 60 minutes — write costs ~2× | `anthropic-beta: extended-cache-ttl-2025-04-11` |
@@ -66,7 +66,7 @@ The `AnthropicProvider` automatically sets the Beta header if `cacheTtl == LONG_
 
 ### 4.1 AnthropicProvider — direct SDK path
 
-The `AnthropicProvider` no longer builds `langchain4j-anthropic`, but its own direct adapter:
+The `AnthropicProvider` no longer builds `langchain4j-anthropic`, but its own Direct Adapter:
 
 ```
 AnthropicProvider
@@ -82,7 +82,7 @@ The adapter uses the official `anthropic-java` SDK (Maven `com.anthropic:anthrop
 - Tool sorting must be guaranteed (see §5).
 - Future-proof: future Anthropic headers (extended-thinking, structured outputs) are accessible without an SDK upgrade.
 
-`langchain4j-anthropic` has been removed from the POM — `langchain4j-core` (ChatModel interfaces, ChatRequest, ToolSpecification) remains. Engines continue to interact with the langchain4j interface; the direct adapter is invisible to them.
+`langchain4j-anthropic` has been removed from the POM — `langchain4j-core` (ChatModel interfaces, ChatRequest, ToolSpecification) remains. Engines continue to interact with the langchain4j interface; the Direct Adapter is invisible to them.
 
 ### 4.2 GeminiProvider — `cacheBoundary` ignored
 
@@ -125,19 +125,19 @@ For caching to work, **static** content must be at the top and **dynamic** conte
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Rule:** Engines that place a timestamp, user ID, pod IP, or anything else variable in the block above the marker will **break the cache for every one of their Sessions**. Such content belongs in the dynamic block (positions 5–9) or in the Chat History.
+**Rule:** Engines that place a timestamp, user ID, pod IP, or anything else variable in the block above the marker **break the cache of each of their Sessions**. Such content belongs in the dynamic block (positions 5–9) or in the Chat History.
 
-**Recipe-promptOverride** must be constant. Recipes with dynamic content in `promptPrefix` (e.g., "current project inventory", "weather") must move the dynamic part into a separate block located after the marker.
+**Recipe-promptOverride** must be constant. Recipes with dynamic content in `promptPrefix` (e.g., "current Project inventory", "weather") must move the dynamic part into a separate block that is located after the marker.
 
 ### 5a. Multiple System Blocks and `SystemBlockKind`
 
-Engines provide multiple `SystemMessage` blocks — the `AnthropicRequestMapper` lifts them all into Anthropic's top-level `system` array. Where the cache marker lands is controlled by the **last STATIC block**:
+Engines emit multiple `SystemMessage` blocks — the `AnthropicRequestMapper` lifts them all into Anthropic's top-level `system` array. Where the Cache Marker lands is controlled by the **last STATIC block**:
 
 | Engine Pattern | Marker Placement |
 |---|---|
 | All blocks `STATIC` (= Default for `SystemMessage.from(...)`) | On the last block — corresponds to "classic" behavior |
 | `STATIC` … `STATIC` … `DYNAMIC` … `DYNAMIC` | On the last `STATIC` — dynamic tail outside the cache hash |
-| All blocks `DYNAMIC` | No System marker (Tools marker remains independent depending on `CacheBoundary`) |
+| All blocks `DYNAMIC` | No System Marker (Tools Marker remains independent depending on `CacheBoundary`) |
 
 Engines explicitly mark dynamic blocks using the wrapper class:
 
@@ -145,25 +145,27 @@ Engines explicitly mark dynamic blocks using the wrapper class:
 // static prefix — will be cached
 messages.add(SystemMessage.from(staticPrompt));
 messages.add(SystemMessage.from(skillsBlock));
-//   ────── Cache marker lands here ──────
-// dynamic tail — turn-specific, after the cache
+//   ────── Cache Marker lands here ──────
+// dynamic tail — turn-specific, behind the cache
 messages.add(VanceSystemMessage.dynamic(workingMemory));
 messages.add(VanceSystemMessage.dynamic(planTodos));
 ```
 
-`SystemBlockKind.STATIC` is default — Engines that have not been migrated remain backwards-compatible (one `SystemMessage`, marker on it, as before).
+`SystemBlockKind.STATIC` is default — Engines that have not been migrated remain backwards-compatible (a `SystemMessage`, marker on it, as before).
 
 **Current Engine Status** (migration status):
 
 | Engine | Static Blocks | Dynamic Blocks | Status |
 |---|---|---|---|
-| Arthur | Engine Default + Recipe Prompt | Date Block, Recipe Catalog, Memory Cascade Block, Persona/Facts, Active Workers, TodoList, Tool Hints | ✅ migrated |
-| Eddie | Engine Default + Recipe Prompt + User Context | Date Block, Persona Block, Facts Block, Memory Cascade Block, Delegated Workers, Working Project, Tool Hints, TodoList | ✅ migrated |
-| Ford | Engine Default + Tool Hints + Skills Block | Date Block, ARCHIVED_CHAT (semi-static) | ✅ migrated |
-| Frankie | Engine Default (incl. Memory) + Skills Block | Date Block, TodoList (§9.2) | ✅ migrated |
-| TrillianControl | Engine Default + Nature Addendum + Recipe Prompt | Date Block | ✅ migrated |
-| TrillianUser | Engine Default + Nature Addendum + Recipe Prompt | Date Block | ✅ migrated |
+| Arthur | Engine Default + Recipe Prompt | Date Block, Client Env Block, Scratchpad Block, Recipe Catalog, Memory Cascade Block, Persona/Facts, Active Workers, TodoList, Tool Hints | ✅ migrated |
+| Eddie | Engine Default + Recipe Prompt + User Context | Date Block, Client Env Block, Scratchpad Block, Persona Block, Facts Block, Memory Cascade Block, Delegated Workers, Working Project, Tool Hints, TodoList | ✅ migrated |
+| Ford | Engine Default + Tool Hints + Skills Block | Date Block, Client Env Block, Scratchpad Block, ARCHIVED_CHAT (semi-static) | ✅ migrated |
+| Frankie | Engine Default (incl. Memory) + Skills Block | Date Block, Client Env Block, Scratchpad Block, TodoList (§9.2) | ✅ migrated |
+| TrillianControl | Engine Default + Nature Addendum + Recipe Prompt | Date Block, Client Env Block, Scratchpad Block | ✅ migrated |
+| TrillianUser | Engine Default + Nature Addendum + Recipe Prompt | Date Block, Client Env Block, Scratchpad Block | ✅ migrated |
 | Marvin | Engine Default | — | ✅ no dynamic content in System |
+
+Three of the listed blocks are **conditional** and entirely absent in some turns: the Date Block, if the Recipe sets `promptDateGranularity: none` (§5b); the Client Env Block, as long as no CLIENT Work Target connection is bound — i.e., in all headless and Web turns (`PromptEnvironmentBlock`); the Scratchpad Block, as long as the Process has not created any Slots (§5c). All three are DYNAMIC, so their appearance and disappearance does not break the static prefix.
 
 ---
 
@@ -171,7 +173,7 @@ messages.add(VanceSystemMessage.dynamic(planTodos));
 
 Engines can provide the current date directly in the Prompt to the LLM, instead of fetching it via a `current_time` Tool call — for longer Sessions, this saves one round trip per turn. The block is rendered as a **DYNAMIC** SystemMessage and is therefore cache-neutral: it sits behind the `cache_control` marker (Anthropic) and does not break the stable prefix.
 
-**Position in Layout:** directly at the first DYNAMIC block, i.e., before all other turn-volatile System content (Memory blocks, Plan Mode TodoList, ARCHIVED_CHAT summaries).
+**Position in layout:** directly at the first DYNAMIC block, i.e., before all other turn-volatile System content (Memory blocks, Plan Mode TodoList, ARCHIVED_CHAT summaries).
 
 **Granularity — tier-aware by default.** The helper `PromptDateBlock.resolve(paramValue, tier)` renders one of three granularities:
 
@@ -181,9 +183,9 @@ Engines can provide the current date directly in the Prompt to the LLM, instead 
 | `DAY` | `Current date: 2026-06-24` | 24h |
 | `HOUR` | `Current date: 2026-06-24 14h UTC` or `+02:00` | 1h |
 
-**Control via Recipe parameter `promptDateGranularity`:**
+**Control via Recipe param `promptDateGranularity`:**
 
-| Parameter Value | Behavior |
+| Param Value | Behavior |
 |---|---|
 | (not set) | `auto` — same as `auto` value below |
 | `auto`, `true` | Tier-based: `SMALL` → `DAY`, `LARGE` → `HOUR`, Tier-unset → `DAY` |
@@ -192,22 +194,38 @@ Engines can provide the current date directly in the Prompt to the LLM, instead 
 | `hour` | Force HOUR |
 | (unknown value) | Falls back to `auto` — a Recipe typo does not silently disable the feature |
 
-**Default is `auto`** — all Engines provide the block until a Recipe explicitly sets `none`. To disable the feature for Trim-Token Recipes (e.g., Slart-/LightLlm-Helper), set `params.promptDateGranularity: none`.
+**Default is `auto`** — all Engines provide the block until a Recipe explicitly sets `none`. To disable the feature for trim-token Recipes (e.g., Slart-/LightLlm-Helper), set `params.promptDateGranularity: none`.
 
-**Timezone — the user's, not the server's.** The block is rendered in the **display timezone of the Process owner**, not the server JVM zone. This affects both: for `HOUR`, the appended offset (`14h +05:30`), for `DAY`, the day boundary (a user in `Asia/Kolkata` sees their local date, not the UTC date). `14h` alone would be ambiguous — therefore always the zone offset; UTC is output as `UTC` (instead of the ISO letter `Z`), other zones as an offset (`+02:00`, `-05:00`).
+**Timezone — the user's, not the server's.** The block is rendered in the **display timezone of the Process owner**, not the server JVM zone. This affects both: for `HOUR`, the appended offset (`14h +05:30`), and for `DAY`, the day boundary (a user in `Asia/Kolkata` sees their local date, not the UTC date). `14h` alone would be ambiguous — hence always the zone offset; UTC is output as `UTC` (instead of the ISO letter `Z`), other zones as an offset (`+02:00`, `-05:00`).
 
-The zone comes from the `TimezoneResolver` (Setting `display.timezone`, Cascade User → Tenant → `UTC`-fallback — see [settings-system](settings-system.md)). The `PromptDateContextResolver` lifts `Process → Session → userId` for this and is **headless-proof**: the scheduler stamps `session.userId = runAs`, so that even Auto-Wakeup/Scheduler turns resolve the correct zone without an open client connection. Only if the User (and the Tenant) have not set a zone, the block falls back to `UTC`.
+The zone comes from the `TimezoneResolver` (Setting `display.timezone`, Cascade User → Tenant → `UTC`-fallback — see [settings-system](settings-system.md)). The `PromptDateContextResolver` lifts `Process → Session → userId` for this purpose and is **headless-proof**: the scheduler stamps `session.userId = runAs`, so that even Auto-Wakeup/Scheduler turns without an open client connection resolve the correct zone. Only if the user (and the Tenant) have not set a zone does the block fall back to `UTC`.
 
-The same `display.timezone` is also the default zone of the `current_time` Tool: without an explicit `zone` parameter, it responds in the User's zone instead of UTC.
+The same `display.timezone` is also the default zone of the `current_time` Tool: without an explicit `zone` parameter, it responds in the user's zone instead of UTC.
 
-**Code Paths:**
+**Code paths:**
 
 - Helper: [`PromptDateBlock`](../../vance/vance-brain/src/main/java/de/mhus/vance/brain/prompt/PromptDateBlock.java) — `resolve(...)`, `render(...)`, `appendDynamicMessage(...)`.
 - Zone Lift: [`PromptDateContextResolver`](../../vance/vance-brain/src/main/java/de/mhus/vance/brain/context/PromptDateContextResolver.java) (`brain/context`) → [`TimezoneResolver`](../../vance/vance-shared/src/main/java/de/mhus/vance/shared/settings/TimezoneResolver.java) (`vance-shared`).
-- Constant: `PromptDateBlock.RECIPE_PARAM` (`"promptDateGranularity"`), Setting Key `TimezoneResolver.Keys.DISPLAY_TIMEZONE` (`"display.timezone"`).
+- Constant: `PromptDateBlock.RECIPE_PARAM` (`"promptDateGranularity"`), Setting key `TimezoneResolver.Keys.DISPLAY_TIMEZONE` (`"display.timezone"`).
 - Tests: `PromptDateBlockTest`, `TimezoneResolverTest`, `CurrentTimeToolTest`.
 
 Trillian (Control + User) did not have ModelCatalog access before this migration — it was injected as part of the Date integration, so that `tier` is also available there in the Pebble context and for auto-granularity.
+
+---
+
+## 5c. Scratchpad Block
+
+Slots created by the Process via `scratchpad_set` are available as a **DYNAMIC** block in the Prompt (`ScratchpadPromptBlock` + `ScratchpadPromptContributor`) — otherwise, the model would have to guess a title it assigned 30 turns earlier. Slot contents change per turn, so the block sits behind the `cache_control` marker, like the Date Block.
+
+**Empty inventory renders nothing.** This is the condition for the block to run on all six Engines: the `scratchpad_*` Tools are non-primary but not locked, so an unconditional block would cost budget in every turn of every Engine. This is intentionally different from the Plan Mode TodoList (§9.2), which renders an invitation if the list is empty.
+
+**Bounded by construction:** single-line slots ≤200 characters inline, everything else as a size hint (`- \`findings\` — 1240 chars, read with \`scratchpad_get('findings')\``), total block ≤2000 characters; what no longer fits is indicated by count instead of silently disappearing.
+
+**Slot text is untrusted.** An Engine may park an excerpt of a fetched page in the Slot — text that arrived correctly wrapped in the *User* role as a Tool result. If rendered unwrapped, it would become *System* text from the next turn. The Slot list is therefore in an `UntrustedContent.wrap` block (`<scratchpad-notes>`), titles are whitespace-collapsed (a newline in the title could otherwise open a heading at the beginning of a line), and content with any line terminator is never rendered inline.
+
+**Order trap.** The marker sits on the **last STATIC** block, and `buildSystemBlocks` collects System Messages from the **entire** Message list — even those that appear after the History. An untagged `SystemMessage.from(...)` after the Dynamic blocks would therefore pull them into the cached prefix, where any change breaks it. Two places were heading towards this and have been fixed: Ford appended the `ARCHIVED_CHAT` summaries after the Dynamic blocks (now before), and Trillian's `toLangchain` now renders Chat Log lines with `ChatRole.SYSTEM` — written by `MemoryCompactionService` — as DYNAMIC.
+
+Scope boundary v1: the lookup is process-bound — Slots of a terminated Process do not appear in any block. See `planning/scratchpad-review.md` §7.
 
 ---
 
@@ -220,7 +238,7 @@ List<ToolSpecification> sorted = new ArrayList<>(raw);
 sorted.sort(Comparator.comparing(ToolSpecification::name));
 ```
 
-Engines that assemble Tool lists from `Map`/`Set` previously had no sorting guarantee — same Tools, different order → different cache hash. Centralized sorting in the Mapper eliminates this race condition.
+Engines that assemble Tool lists from `Map`/`Set` previously had no sorting guarantee — same Tools, different order → different cache hash. Centralized sorting in the mapper eliminates this race condition.
 
 JSON schemas of individual Tools are mapped from langchain4j's `JsonSchemaElement` trees — strictly deterministic (`LinkedHashMap` for property order, sorted `required` list).
 
@@ -258,18 +276,18 @@ The hit rate is calculated against the full input token counter:
 
 `LlmTraceDocument` (Mongo) has two new fields:
 
-| Field | Type | Value |
+| Field | Type | Assignment |
 |---|---|---|
 | `cacheCreationInputTokens` | `Integer?` | from `AnthropicTokenUsage`, only OUTPUT rows, only cache-aware Provider |
 | `cacheReadInputTokens` | `Integer?` | ditto |
 
-`LlmTraceRecorder.recordResponse(...)` sets both fields via an `instanceof` check. Other Providers leave them `null`.
+`LlmTraceRecorder.recordResponse(...)` sets both fields via `instanceof` check. Other Providers leave them `null`.
 
-These fields are the data basis for a future Insights dashboard (Cache Hit Rate per Tenant/Project/Engine as KPI).
+These fields are the data basis for a future Insights Dashboard (Cache Hit Rate per Tenant/Project/Engine as a KPI).
 
 ---
 
-## 8. Cache Disable — Three Levels
+## 8. Cache Disable — three levels
 
 | Level | Where | When |
 |---|---|---|
@@ -277,7 +295,7 @@ These fields are the data basis for a future Insights dashboard (Cache Hit Rate 
 | **Per-Recipe** | YAML `params.disableCache: true` | Individual Recipe is cache-unfriendly |
 | **Global** | `application.yml` → `vance.ai.cache.enabled: false` | Operator kill switch (Dev / Compliance / Provider Issue) |
 
-**Evaluation Order:**
+**Evaluation order:**
 
 1. Engine builds `AiChatOptions` with desired Boundary (Default `SYSTEM_AND_TOOLS`).
 2. `EngineChatFactory.applyDefaults` reads `process.engineParams.disableCache` — if `true` → boundary to `NONE`.
@@ -332,8 +350,7 @@ Setting `ai.cacheTtl.long` (Cascade `process → project → _tenant`),
 comma-separated Recipe names. `EngineChatFactory.applyDefaults` sets
 `cacheTtl=LONG_1H` if the Process's Recipe name is in the
 allowlist. Only applies if caching has not been disabled via
-`vance.ai.cache.enabled=false` or `params.disableCache=true`.
-Default empty = all Recipes to 5min.
+`vance.ai.cache.enabled=false` or `params.disableCache=true`. Default empty = all Recipes to 5min.
 
 ### 10.2 Recipe Audit for Layout Convention (✅ completed)
 
@@ -347,8 +364,8 @@ When `process_create_delegate` spawns a new Process with its own System Prompt �
 ### 10.4 Insights Dashboard (✅ Backend implemented)
 
 Cache tokens are persisted on `LlmTraceDocument`
-(`cacheCreationInputTokens`, `cacheReadInputTokens`). Per-Process
-aggregation:
+(`cacheCreationInputTokens`, `cacheReadInputTokens`). Per-Process-
+Aggregation:
 
 ```
 GET /brain/{tenant}/admin/processes/{processId}/cache-stats
@@ -363,12 +380,12 @@ fraction in [0.0, 1.0].
 Aggregation in `LlmTraceService.cacheStatsByProcess` as a pure-Java-
 walk (TTL-bounded Collection, typically < 100 Trace rows per Process).
 Tenant-/Session-Scope aggregations would be Mongo `$group` pipelines —
-will come when demand becomes real. Frontend dashboard for displaying
+will come when demand materializes. Frontend dashboard for displaying
 stats is open (UI effort separate).
 
 ### 10.5 langchain4j-Upstream-PR
 
-Optional long-term: PR to `langchain4j-anthropic` that exposes the cache marker. Would remove our double dependency. Not relevant today — the direct adapter works and is closer to the SDK stream.
+Optionally long-term: PR to `langchain4j-anthropic` that exposes the Cache Marker. Would remove our double dependency. Not relevant today — the Direct Adapter works and is closer to the SDK stream.
 
 ---
 
@@ -378,7 +395,7 @@ Optional long-term: PR to `langchain4j-anthropic` that exposes the cache marker.
 - **Eddie Triage** (`eddie-engine.md`): Working Memory Block lands in the dynamic block (position 5).
 - **Reactive Compaction** (future): Compaction changes the Chat History → hash behind the marker changes → cache not affected (History is behind the marker).
 - **Recipes** (`recipes.md`): Recipe property `disableCache: true` is the Recipe escape; see §8.
-- **LLM Resource Management** (`llm-resource-management.md`): Per-call Provider selection is orthogonal to caching — for each `AiChat`, the Cache Boundary is decided once during build and remains fixed for all calls of that instance.
+- **LLM Resource Management** (`llm-resource-management.md`): Per-Call Provider selection is orthogonal to caching — for each `AiChat`, the Cache Boundary is decided once during build and remains fixed for all calls of that instance.
 
 ---
 

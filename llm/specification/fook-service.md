@@ -1,10 +1,10 @@
 # Vancetope — Fook Service
 
-> Built-in bug/feature triage system: a reporter (LLM or User) sends
-> free text, Fook asynchronously decides whether to create a new
-> ticket, merge it into an existing one, or discard it. The subsequent
-> processing of tickets (status transitions, fixes, PR sync) is handled
-> by **Frankie** — not in scope here.
+> Built-in bug/feature triage system: a reporter (LLM or user) sends
+> free text, Fook asynchronously decides whether to create a new ticket,
+> merge it into an existing one, or discard it. The subsequent processing
+> of tickets (status transitions, fixes, PR sync) is handled by
+> **Lunkwill** — not in scope here.
 >
 > Architecture: `LightLlmService` with Recipe `fook` as a
 > configuration profile, plus a thin service with an in-memory queue
@@ -21,39 +21,39 @@
 
 **Problem.** Vancetope bugs, feature requests, and documentation gaps
 require a low-threshold reporting channel — both for running Engines
-("I cannot perform this operation, but it should be possible") and
-for human users in Web and Foot. Without a built-in path, bugs
-disappear into Sessions and user minds.
+("I cannot perform this operation, but it should be possible") and for
+human users in Web and Foot. Without a built-in path, bugs disappear
+into Sessions and user minds.
 
-**Solution.** Three reporter channels all land in the same pipeline:
+**Solution.** Three reporter channels all feed into the same pipeline:
 
 - **LLM Tool `vance_support_request(text)`** — any Engine can
-  independently report a Vancetope deficiency it detects. Rate-limit max.
-  3 per Process-Lifetime against loop spam.
+  autonomously report if it detects a Vancetope deficiency.
+  Rate-limit max. 3 per Process-Lifetime against loop spam.
 - **Web Fook Button** in the user menu of `EditorTopbar` (globally
   accessible across all editors), opens a modal with a textarea.
 - **Foot `/support` Slash Command** with two modes: inline
-  (`/support Brain crashed on boot`) or, without args, a Lanterna
-  multi-line form.
+  (`/support Brain crashed on boot`) or, without args, a
+  Lanterna multi-line form.
 
-All three call the same `FookService.submit()` on the server side.
-The service queues in-memory, a worker tick calls the
+All three call the same `FookService.submit()` server-side. The
+service queues in-memory, a worker tick calls the
 [`LightLlmService`](light-llm-service.md) with Recipe `fook`, the
-result is applied as a Document-Side-Effect, and an Inbox-Item is
+result is applied as a Document side-effect, and an Inbox item is
 created for the reporter.
 
 **What Fook is not:**
 
-- Not a ticket editor — tickets are stored as YAML-Documents in the
-  `_vance` Tenant; UI for this comes with Frankie.
+- Not a ticket editor — tickets are stored as YAML Documents in the
+  `_vance` Tenant; UI for this comes with Lunkwill.
 - No status lifecycle after `new` — transitions to
   `triaged`/`accepted`/`in_progress`/`resolved`/`closed` are set by
-  Frankie.
+  Lunkwill.
 - No GitHub/Jira sync, no fix suggestion, no PR generation — all
-  Frankie.
-- No cross-tenant visibility model — tickets are globally readable
-  in the `_vance` Tenant (reporter identity as Document metadata),
-  not isolated per-Tenant.
+  Lunkwill.
+- No cross-tenant visibility model — tickets are globally readable in
+  the `_vance` Tenant (reporter identity as Document metadata), not
+  isolated per-Tenant.
 
 ---
 
@@ -67,7 +67,7 @@ created for the reporter.
 │       ▼                                              │
 │  VanceSupportRequestTool  ─── FookService.submit() ──┐
 │                                                      │
-│  User menu button in Web Topbar  ─── POST ───────────┤
+│  User Menu Button in Web Topbar  ─── POST ───────────┤
 │  /support in Foot CLI            ─── POST ───────────┤
 │  (POST /brain/{tenant}/fook/submit)                  │
 └──────────────────────────────────────────────────────┘
@@ -79,7 +79,7 @@ created for the reporter.
                        │     │                         │
                        │     │ 1. FookTicketService    │
                        │     │      .searchSimilar()   │
-                       │     │   → Top-N candidates    │
+                       │     │   → Top-N Candidates    │
                        │     │                         │
                        │     │ 2. LightLlmService      │
                        │     │      .callForJson(      │
@@ -93,7 +93,7 @@ created for the reporter.
                        │     │      updateRelations(.) │
                        │     │    - discard: nothing   │
                        │     │                         │
-                       │     │ 4. InboxItemService     │
+                       │     │ 4. MaximegalonService     │
                        │     │      .create(...)       │
                        │     ▼ (tenantId = reporter)   │
                        └───────────────────────────────┘
@@ -108,13 +108,48 @@ Storage (read+write by FookTicketService):
 - `FookService` — `submit()` enqueued, `@Scheduled` Tick drained,
   per-submission processing.
 - `FookTicketService` — data ownership over `fook-ticket` Documents
-  (CRUD + Similarity-Search). **Not** exposed as LLM Tools; all
+  (CRUD + Similarity Search). **Not** exposed as LLM Tools; all
   writes run from FookService after LLM decision.
 - `VanceSupportRequestTool` — `@Component` LLM Tool in the default
-  Tool-Inventory, with rate-limit.
+  Tool Inventory, with rate limit.
 - `FookController` — REST surface for UI clients.
-- Recipe `fook.yaml` — Config profile for `LightLlmService`, located
-  under `_vance/recipes/` and cascade-overridable.
+- Recipe `fook.yaml` — config profile for `LightLlmService`,
+  located under `_vance/recipes/` and cascade-overridable.
+
+### 2.1 Master Switch `vance.fook.enabled`
+
+The entire Fook subsystem can be disabled per Brain instance via the
+boot property **`vance.fook.enabled`** (default `true`). The switch
+does not deactivate the Beans (no `@ConditionalOnProperty`), but
+rather makes them do nothing internally — thus, behavior per surface
+remains controlled:
+
+- **LLM Tool** `vance_support_request` remains visible in the Tool
+  Inventory, but returns `{ status: "disabled", note }` on each call
+  — no enqueue, no budget consumption. The model thus explicitly
+  learns that feedback is disabled, instead of repeating it
+  unsuccessfully.
+- **REST** `POST /brain/{tenant}/fook/submit` responds with
+  **503 Service Unavailable** (`"Feedback (Fook) is disabled on this
+  brain"`). Web modal and Foot `/support` display the error text —
+  the web menu remains visible intentionally, the error only appears
+  upon sending.
+- **Central Bottleneck:** `FookService.submit()` throws if Fook is
+  disabled (defense-in-depth); however, the surfaces short-circuit
+  before that.
+- **Worker Ticks** (Triage drain, Session Analysis drain, Upstream
+  send/poll) exit early — nothing is triaged, analyzed, or forwarded
+  upstream.
+
+On boot, `FookService` logs exactly one info line
+(`Fook feedback disabled (vance.fook.enabled=false) …`) if the
+switch is off, so it remains clear that feedback is intentionally
+disabled and not silently broken.
+
+The five affected Beans (`FookService`, `FookController`,
+`VanceSupportRequestTool`, `FookSessionAnalysisService`,
+`FookUpstreamService`) each read the property via
+`@Value("${vance.fook.enabled:true}")` — one source, one key.
 
 ---
 
@@ -126,22 +161,21 @@ vance_support_request(text: string) → { submissionId, status, remainingBudget,
 
 - **Default Tool** (`primary: true`, auto-discovered in
   `BuiltInToolSource`). Every Engine sees it.
-- **Labels:** `write` + `side-effect`. Plan-Mode strips it.
-- **One parameter:** `text` — free text, anything the LLM wants to
+- **Labels:** `write` + `side-effect`. Plan Mode strips it.
+- **One Parameter:** `text` — free text, anything the LLM wants to
   tell the reporter. Fook (server-side) derives Type
   (bug/feature/question/other), Severity, and Title from it. The
   reporter does not rate their own bugs.
-- **Rate-Limit:** max. 3 submissions per `processId` lifecycle,
-  `ConcurrentHashMap<String, AtomicInteger>` in the Tool. When
-  over-cap-throw occurs, the counter is decremented so that failed
-  calls do not burn slots.
-- **Context-Enrichment:** Tool resolves
+- **Rate Limit:** max. 3 submissions per `processId` lifecycle,
+  `ConcurrentHashMap<String, AtomicInteger>` in the Tool. On over-cap
+  throw, the counter is decremented so failed calls do not burn slots.
+- **Context Enrichment:** Tool resolves
   `ThinkProcessService.findById(processId)` and populates
   `TicketContext` with `projectId`/`sessionId`/`processId`/
-  `recipe`/`engine` from the Process-Document.
-- **Tool-Description:** explicitly states that this is *NOT* intended
+  `recipe`/`engine` from the Process Document.
+- **Tool Description:** explicitly states that this is *NOT* intended
   for user project data or ongoing user tasks — exclusively for
-  Vancetope-as-system topics.
+  Vancetope-as-a-system topics.
 
 **Reporter Kind:** `ENGINE`.
 
@@ -176,8 +210,8 @@ them.
 ```
 
 **Auth & Permission:** `Action.WRITE` on `Resource.Tenant(tenant)`.
-JWT filter validates upstream that the path Tenant matches the
-`tid` claim. UserId comes from the Subject claim and populates the
+JWT filter validates upstream that the path tenant matches the
+`tid` claim. UserId comes from the subject claim and populates the
 reporter as `USER_DIRECT`.
 
 **Consumers:**
@@ -194,25 +228,25 @@ reporter as `USER_DIRECT`.
 
 ## 5. Triage Flow
 
-`FookService.drainQueue()` runs as a Spring-`@Scheduled` with
+`FookService.drainQueue()` runs as a Spring `@Scheduled` with
 `fixedDelayString = "${vance.fook.tick:PT2S}"`. Per submission:
 
-1. **Candidate-Lookup.**
+1. **Candidate Lookup.**
    `FookTicketService.searchSimilar(text, limit=8)` — Mongo full-text
    page over all `fook-ticket` Documents in the `_vance` Tenant,
    `_tenant` Project, path prefix `_vance/fook/tickets/`. In-memory
-   Jaccard ranking on tokens (3+ characters, lowercase), top-N by
-   score returned. v1-Cap: 500 scanned tickets per lookup; after that,
-   it must switch to embedding recall.
+   Jaccard ranking on tokens (3+ chars, lowercase), top-N by score
+   returned. v1-Cap: 500 scanned tickets per lookup; after that,
+   embedding recall must be used.
 
-2. **LightLlm-Call with Tenant-Fallback.**
+2. **LightLlm Call with Tenant Fallback.**
    Triage runs **preferably in the system Tenant `_vance`** —
    uniform model, uniform decision quality independent of the
    reporter. Prerequisite: the `_vance` Tenant has
    `ai.default.provider`/`ai.default.model` settings configured
-   (set by admin, one-time).
+   (set by admin, once).
 
-   If `_vance` is *not* configured (Day-1 default, or conscious
+   If `_vance` is *not* configured (Day-1 default, or intentional
    Tenant-Pays architecture), the first call throws an
    `AiModelResolver.UnknownModelException` — Fook catches it and
    retries **against the reporter Tenant**. This keeps Fook
@@ -238,51 +272,53 @@ reporter as `USER_DIRECT`.
    }
    ```
 
-   Recipe is `internal: true`, `engine: jeltz`. The `fook.yaml` is
-   located in the Bundled-Resources and is found by every Tenant via
-   Cascade — `tenantId` only controls the credential/settings lookup,
-   not the Recipe lookup.
+   Recipe is `internal: true`, `engine: jeltz`. The `fook.yaml`
+   is in the bundled resources and found by every Tenant via
+   cascade — `tenantId` only controls credential/settings lookup,
+   not recipe lookup.
 
    **If the fallback also fails** (reporter Tenant is `_vance` itself
-   or empty): the exception bubbles to the Failure-Inbox.
+   or empty): the exception bubbles to the Failure Inbox.
 
-   **Other failures** (Schema-Validation after `maxAttempts`, Provider
+   **Other Failures** (schema validation after `maxAttempts`, provider
    5xx, …) do *not* trigger a fallback — only `UnknownModelException`
-   triggers the retry. Otherwise, a temporarily down LLM would be paid
-   for twice.
+   triggers the retry. Otherwise, a temporarily down LLM would be
+   paid for twice.
 
-3. **Decision-Switch.**
+3. **Decision Switch.**
    - `new_ticket` → `FookTicketService.createTicket(payload)` with
-     LLM-`derivedTitle`/`derivedType`/`derivedSeverity`, new UUID,
-     reporter identity, origin context.
+     LLM-`derivedTitle`/`derivedType`/`derivedSeverity`, new
+     UUID, reporter identity, origin context. If
+     `needSessionReport=true` **and** the origin context carries a
+     Session + Process, an analysis job is additionally queued in
+     `FookSessionAnalysisService` (§11).
    - `merge_into` → `FookTicketService.updateRelations(targetId,
      patch)` — `relation` from the LLM controls whether extra links
      are merged under `relatedTo` or `rootCauseOf`.
    - `discard` → no Document operation.
 
-4. **Inbox-Item.**
-   `InboxItemService.create(InboxItemDocument)` with
-   `tenantId = reporter.tenantId` (cross-tenant — `InboxItemService`
-   does not validate against Caller-Scope, the `tenantId` on the
-   Document is Source of Truth). `originatorUserId = "fook"` as an
+4. **Inbox Item.**
+   `MaximegalonService.create(MaximegalonDocument)` with
+   `tenantId = reporter.tenantId` (cross-tenant — `MaximegalonService`
+   does not validate against caller scope, the `tenantId` on the
+   Document is the Source of Truth). `originatorUserId = "fook"` as an
    audit marker. Type `OUTPUT_TEXT`, Criticality `LOW`,
    `requiresAction=false`, Tag `["fook"]`, Payload with
    `decision`/`ticketId`/`submissionId` for UI deep-link.
 
-**Crash behavior:** Queue lives only in the JVM heap. Pod restart
+**Crash Behavior:** Queue lives only in the JVM heap. Pod restart
 loses pending submissions without Inbox feedback — consciously
-accepted, the alternative would be a persistent queue with replay
-logic.
+accepted, alternative would be a persistent queue with replay logic.
 
-**Race-Conditions:** Two Pods triage without cross-Pod sync.
+**Race Conditions:** Two Pods triage without cross-Pod sync.
 Simultaneous reports of the same problem can create two separate
-tickets. Consciously accepted — Frankie cleans up duplicates later.
+tickets. Consciously accepted — Lunkwill cleans up duplicates later.
 
 ---
 
 ## 6. TriageResult Schema
 
-The LightLlm-Call returns a Map<String,Object>, parsed into
+The LightLlm call returns a Map<String,Object>, parsed into
 `TriageResult`. Three variants, tagged by `decision`:
 
 ### 6.1 new_ticket
@@ -294,19 +330,25 @@ The LightLlm-Call returns a Map<String,Object>, parsed into
   "derivedSeverity": "low" | "medium" | "high",
   "derivedTitle": "Brain crash on boot",
   "englishTranslation": "<English body translation, or \"\" if already English>",
+  "needSessionReport": true | false,
   "relatedTickets": ["<uuid>", ...],
   "triageNote": "1–3 sentences (optional, English)",
-  "reason": "1 sentence for Inbox-Item"
+  "reason": "1 sentence for Inbox item"
 }
 ```
+
+`needSessionReport` is the triage's hint that a distilled analysis
+of the reporter's Session would help the fixer (details in §11). If
+the field is missing, `false` applies. Only a hint — the analysis
+path has a second gate.
 
 Severity heuristic: `high` = crash/data loss/security/user-blocking,
 `medium` = degraded behavior, `low` = cosmetic. For non-bug types,
 the Recipe defaults to `medium`.
 
-**Language handling.** Vancetope tickets go to an English-speaking
+**Language Handling.** Vancetope tickets go to an English-speaking
 upstream tracker (see [`fook-upstream.md`](fook-upstream.md)).
-So that maintainers can read without translation effort:
+So maintainers can read without translation effort:
 
 - `derivedTitle` is **always English** — the LLM translates inline
   if necessary (titles are short, no separate field needed)
@@ -318,7 +360,7 @@ So that maintainers can read without translation effort:
   file paths, and log lines are not translated — only natural
   language prose.
 - `triageNote` is always English (maintainer-oriented)
-- `reason` may remain in the reporter's language (reporter-oriented)
+- `reason` may remain in reporter's language (reporter-oriented)
 
 ### 6.2 merge_into
 
@@ -329,13 +371,13 @@ So that maintainers can read without translation effort:
   "relation": "duplicateOf" | "rootCauseOf" | "relatedTo",
   "relatedTickets": ["<uuid>", ...],
   "triageNote": "1–3 sentences",
-  "reason": "1 sentence for Inbox-Item"
+  "reason": "1 sentence for Inbox item"
 }
 ```
 
-`targetTicketId` must appear verbatim in the candidate list — the
-Recipe prompt explicitly requires this, the Recipe loader checks the
-JSON response against an `object` schema (Jeltz-style with
+`targetTicketId` must appear verbatim in the candidate list —
+the Recipe prompt explicitly requires this, the Recipe loader checks
+the JSON response against an `object` schema (Jeltz-style with
 retry-on-violation).
 
 ### 6.3 discard
@@ -345,11 +387,11 @@ retry-on-violation).
   "decision": "discard",
   "category": "project_data" | "documentation_question"
               | "unrelated" | "nonsense" | "self_loop" | "other",
-  "reason": "1–2 sentences for Inbox-Item"
+  "reason": "1–2 sentences for Inbox item"
 }
 ```
 
-**Discard categories:**
+**Discard Categories:**
 
 - `project_data` — reporter talks about user project content
   ("Document X is missing"), not about Vancetope.
@@ -361,19 +403,20 @@ retry-on-violation).
 - `self_loop` — Fook submitted via Fook (recursion).
 - `other` — fallback if nothing fits.
 
-**On Failure** (LightLlm-Exception, missing/unknown `decision` field),
-FookService writes a Failure-Inbox-Item with payload
-`{ decision: "failed", error: <ExceptionClassName>, submissionId }`
-and performs no Document-Side-Effect action.
+**On Failure** (LightLlm exception, missing/unknown
+`decision` field), FookService writes a Failure Inbox item with
+payload `{ decision: "failed", error: <ExceptionClassName>,
+submissionId }` and performs no Document side-effect action.
 
 ---
 
-## 7. Ticket-Document Schema
+## 7. Ticket Document Schema
 
-**Format YAML** (not Markdown — tickets are structured, prose
-component is small). Storage convention uses the `$meta:` wrapper
-pattern from `vance-shared/document/YamlHeaderStrategy` — scalar
-fields in `$meta`, all nested/prose as top-level keys next to it.
+**Format YAML** (not Markdown — tickets are structured,
+prose content is small). Storage convention uses the
+`$meta:` wrapper pattern from `vance-shared/document/YamlHeaderStrategy`
+— scalar fields in `$meta`, all nested/prose as top-level keys
+next to it.
 
 Path: `_vance/fook/tickets/<uuid>.yaml` in the `_vance` Tenant,
 `_tenant` Project.
@@ -385,7 +428,7 @@ $meta:
   title: "Brain crash on boot"
   type: bug                  # bug | feature | question | other
   severity: high             # low | medium | high
-  status: new                # Frankie manages later lifecycle
+  status: new                # Lunkwill manages later lifecycle
   duplicateOf: null          # only relation as scalar in $meta
   reporterKind: engine       # engine | user_direct | service_account
   reporterUserId: alice
@@ -394,6 +437,8 @@ $meta:
   createdAt: 2026-06-09T12:34:56Z
   triagedAt: 2026-06-09T12:34:58Z
   triagedBy: fook            # always "fook" in v1
+  analysisRef: _vance/fook/tickets/7e3f1c2a-....analysis.md  # if Report written (§11)
+  analysisStatus: written    # written | skipped | failed (missing = never requested)
 
 description: |
   Original submission text from the reporter, verbatim.
@@ -415,21 +460,21 @@ relations:
     - <uuid>
 ```
 
-**Field distribution — Rule:**
+**Field Distribution — Rule:**
 
-- `$meta` — all scalars suitable for `searchSimilar` or for Frankie
-  as a filter. The *one* scalar relation `duplicateOf` remains here
-  for quick lookups.
-- Body-Keys — prose (`description`, `triageNote`) and nested
+- `$meta` — all scalars suitable for `searchSimilar` or for
+  Lunkwill as a filter. The *one* scalar relation
+  `duplicateOf` remains here for quick lookups.
+- Body Keys — prose (`description`, `triageNote`) and nested
   structures (`context`, `relations`).
 
-**Status value range v1:** only `new`. Fook sets it to `new` once
+**Status Value Range v1:** only `new`. Fook sets to `new` once
 and then exits.
 
 **`kind`-Indexing:** `DocumentService.applyHeader()` extracts
 `$meta.kind` and writes it to the indexed
 `DocumentDocument.kind` column. `listByProjectPaged(..., kind =
-"fook-ticket")` filters directly on it.
+"fook-ticket")` filters directly on this.
 
 ---
 
@@ -439,22 +484,22 @@ and then exits.
 |-------------------|------------------------------------------------|-----------------------------------------|
 | `ENGINE`          | `vance_support_request` from running Process | `process.userId` in `process.tenantId`  |
 | `USER_DIRECT`     | Web Fook Button / Foot `/support`             | Active User in Path Tenant              |
-| `SERVICE_ACCOUNT` | Tool call from Daemon/Scheduler without User  | v1: no Inbox-Item, only Log             |
+| `SERVICE_ACCOUNT` | Tool call from Daemon/Scheduler without User | v1: no Inbox item, only log             |
 
-Service-Account submissions are correctly triaged and create tickets
-— only the Inbox feedback is omitted because there is no human
-recipient.
+Service Account submissions are correctly triaged and create
+tickets — only the Inbox feedback is omitted because there is no
+human recipient.
 
 ---
 
-## 9. Inbox-Item
+## 9. Inbox Item
 
-Exactly one `InboxItemDocument` per submission (except
+Exactly one `MaximegalonDocument` per submission (except
 `service_account` path).
 
 | Field                | Value                                             |
 |----------------------|---------------------------------------------------|
-| `tenantId`           | `reporter.tenantId` (NOT `_vance`)                |
+| `tenantId`           | `reporter.tenantId` (NOT `_vance`)              |
 | `assignedToUserId`   | `reporter.userId`                                 |
 | `originatorUserId`   | `"fook"` (Audit marker)                           |
 | `originProcessId`    | `context.processId` if available                  |
@@ -464,10 +509,10 @@ Exactly one `InboxItemDocument` per submission (except
 | `requiresAction`     | `false`                                           |
 | `tags`               | `["fook"]`                                        |
 | `title`              | "Ticket created" / "Merged into existing ticket" / "Submission not opened as a ticket" / "Submission could not be triaged" |
-| `body`               | 1–2 sentences with Outcome + Reason + Ticket-ID if available |
+| `body`               | 1–2 sentences with outcome + reason + ticket ID if available |
 | `payload`            | `{ decision, ticketId?, category?, submissionId, error? }` for UI deep-link |
 
-The Inbox component in `user-interaction.md` knows the tag
+The Inbox component in `user-interaction.md` recognizes the tag
 `"fook"` as a filter criterion.
 
 ---
@@ -478,7 +523,7 @@ Located under
 `vance-brain/src/main/resources/vance-defaults/_vance/recipes/fook.yaml`.
 Cascade-overridable per Tenant/Project — Tenants can override the
 Recipe in their `_vance/recipes/fook.yaml` (e.g., to add their own
-Discard categories or sharpen the Severity mapping).
+discard categories or sharpen the severity mapping).
 
 ```yaml
 engine: jeltz
@@ -494,65 +539,175 @@ tags: [internal, fook, triage]
 
 `internal: true` is mandatory — `LightLlmService` rejects
 non-internal Recipes. `engine: jeltz` is also mandatory: the
-LightLlm-Call runs through Jeltz' single-shot schema loop.
+LightLlm call runs through Jeltz's single-shot schema loop.
 
-The `promptPrefix`-Template is compile-validated during Recipe load
-(Pebble syntax fail = fail-fast boot error).
+The `promptPrefix` template is compile-validated during Recipe load
+(Pebble syntax failure = fail-fast boot error).
 
 ---
 
-## 11. Lifecycle after `new` — Out of Scope (Frankie)
+## 11. Session Analysis Report
+
+Optional second step: for a newly created ticket, Fook generates a
+distilled analysis report from the reporter's Session and attaches it
+as a sidecar document.
+
+**Why.** The ticket fixer **Lunkwill** potentially runs on a different
+system and has **no access to the Session**. The report is thus the
+*only* bridge over which Session context (what the Engine attempted,
+where it broke) can cross the system boundary to the fixer. Fook holds
+the Session reference at triage time — this step uses it while it is
+fresh.
+
+**Trigger + Double Gate.**
+
+1. The Triage LLM sets `needSessionReport` in the `new_ticket` branch
+   (§6.1) — a hint that an analysis would help.
+2. `FookService` queues the analysis job only if a Session **and**
+   Process context is additionally present. This is the Engine report
+   path (`vance_support_request` carries both); user-direct reports
+   without Process are v2. Requested-but-not-analyzable →
+   `$meta.analysisStatus = skipped`.
+3. The analysis model may return `useful=false` after viewing the
+   Session (Session contained nothing valuable) → no sidecar. Two
+   gates: triage heuristic + actual Session view.
+
+**Execution — `FookSessionAnalysisService`, agentic loop.** Own
+in-memory queue + own `@Scheduled` tick (`vance.fook.analysis.tick`,
+default 5s), separate from the triage tick, so Session loading does not
+slow down triage throughput. Timing is non-critical.
+
+A Session can be **much larger than a context window**. Therefore, the
+report is **not** generated from a truncated transcript in one shot,
+but in a **bounded ReAct loop** where the model works with tools over
+the data — like a human analyst:
+
+1. Load active chat history **once** via
+   `ChatMessageService.activeHistory(tenantId, sessionId, processId)`
+   (data ownership — never directly on the chat collection). Contains,
+   where available, the compaction summary as a regular message; empty
+   → `skipped`. Messages are stored server-side as an indexed list
+   (index `[i]`); this is *not* a context window problem — only the
+   prompt must never contain the entire Session.
+2. Per turn, a `LightLlmService.callForJson` (Recipe
+   `fook-session-analysis`) that returns **exactly one action**:
+   - `overview` — count/roles/time span/index range + first/last
+     snippets (provided as a seed before turn 1).
+   - `search{query}` — keyword search → hit indices + snippets.
+   - `grep{regex}` — Java regex search → hit indices + snippets.
+   - `read{from,to}` — full text of an index range (truncated,
+     pageable).
+   - `finish{useful, report}` — end.
+   Fook executes the action against the in-memory list (plain grep/slice)
+   and appends the observation to a scratchpad, which is passed to the
+   next turn as an `observations` var. The model extracts excerpts —
+   it **never** gets the Session completely.
+3. **Runs in the reporter Tenant/Project**, not `_vance` — that's where
+   the Session is located, and potentially sensitive content remains with
+   the user-configured provider. (Asymmetric to triage, which prefers
+   `_vance`.)
+4. Bounds: step budget (`vance.fook.analysis.max-steps`, default **24**,
+   visible to the model per turn as `stepsLeft`) — safety net against
+   runaway, not a goal; a targeted analysis typically needs 4–10
+   investigative calls + `finish`, the model finishes early. Plus
+   match/snippet/read caps + scratchpad cap (oldest observations fall
+   out, seed overview remains). `finish` with `useful && report`
+   non-blank → `FookTicketService.writeAnalysis`; `finish` not-useful/blank
+   → `skipped`; `MAX_STEPS` without `finish` → `skipped` (outcome
+   `exhausted`).
+
+**Recipe `fook-session-analysis`.** Bundled under
+`_vance/recipes/fook-session-analysis.yaml`, `engine: jeltz`,
+`internal: true`, model `default:analyze`. It is the **per-turn prompt**
+of the loop: tool description + action schema + goal; Pebble vars
+`ticketTitle`/`ticketType`/`reason`/`triageNote`/`engine`/`recipe` plus
+`stepsLeft` + `observations`. The prompt explicitly targets
+**Vancetope system behavior**, not user content dump.
+
+**Storage — Sidecar.** Report as a sibling document
+`_vance/fook/tickets/<uuid>.analysis.md` with Markdown front matter
+`kind: fook-ticket-analysis` (separate Kind → does not appear in any
+`fook-ticket` scan). The ticket `$meta` gets `analysisRef` +
+`analysisStatus=written`. Not inline, so the ticket YAML remains lean
+(`searchSimilar` scans it) and upstream transport can handle the
+attachment separately.
+
+**Privacy — Critical Path.** The report distills potentially the same
+sensitive data for which the Session is *not* attached. It is
+secret-scrubbed during writing like the description
+(`FookTicketAnonymizer.scrubSecretsAtRest`) and must undergo the same
+`fook-upstream` scrub (reporter hash + regex) during external transport
+— see [`fook-upstream.md`](fook-upstream.md).
+
+**Failure + Crash.** Analysis failure is non-fatal — ticket + Inbox
+item already exist; ticket is stamped `analysisStatus=failed`, no
+failure Inbox item. Queue is JVM-heap-only like the triage queue; Pod
+restart loses pending analyses (ticket survives, only the report is
+missing).
+
+**v2 (consciously postponed):** Reports for `merge_into` (multiple
+analyses per ticket), persistent analysis queue, user-direct
+session-wide analysis without Process.
+
+Design Trail: `planning/fook-session-report.md`.
+
+---
+
+## 12. Lifecycle after `new` — Out of Scope (Lunkwill)
 
 The following is explicitly not in this spec — Vancetope only prepares
 tickets locally:
 
 - Status transitions after transfer (`triaged` → `accepted` →
   `in_progress` → `resolved` → `closed`) happen in the external
-  ticket system (GitHub Issues), not in Vancetope. Vancetope only mirrors
-  the Open/Closed state back.
+  ticket system (GitHub Issues), not in Vancetope. Vancetope only
+  mirrors the open/closed state back.
 - Aggregate reports on tickets.
-- Knowledge-Graph entries for ticket relations.
+- Knowledge graph entries for ticket relations.
 - Cross-Pod queue synchronization.
-- Web-UI for ticket browsing in Vancetope — the canonical UI is the
+- Web UI for ticket browsing in Vancetope — the canonical UI is the
   external ticket system.
 
-**Outbound transport** (local triage → external system) is covered
-by [`fook-upstream.md`](fook-upstream.md). **Lifecycle after transfer**
-is Frankie's responsibility and happens in the external system.
+**Outbound transport** (local triage → external system) is covered by
+[`fook-upstream.md`](fook-upstream.md). **Lifecycle after transfer**
+is Lunkwill's responsibility and happens in the external system.
 
 ---
 
-## 12. Quotas, Metrics, Observability
+## 13. Quotas, Metrics, Observability
 
-**Quotas:** Hard rate-limit on the Tool side (3 per Process). REST/UI
-are not hard-limited in v1 — user-direct submissions are trustworthy.
+**Quotas:** Hard rate limit on the Tool side (3 per Process). REST/UI
+are not hard-limited in v1 — user-direct submissions are
+trustworthy.
 
-**Micrometer-Counter** (see `CLAUDE.md` metrics convention):
+**Micrometer Counters** (see `CLAUDE.md` metrics convention):
 
 - `vance.fook.submissions` with tag `source` ∈
   `{engine, user_direct, service_account}`
 - `vance.fook.triage` with tag `outcome` ∈
   `{new_ticket, merge_into, discard, failed}`
+- `vance.fook.analysis` with tag `outcome` ∈
+  `{written, skipped_not_useful, skipped_no_session, exhausted, failed}` (§11)
 - `vance.fook.tickets.scanned` (distribution — how large was the
   candidate search?)
 
-No tags with high cardinality (no `tenantId`/`projectId`).
+No high-cardinality tags (no `tenantId`/`projectId`).
 
-**Audit-Trail:** Every ticket creation logs with
-`reporter.kind/userId` at INFO. Every cross-tenant Inbox-Write logs
-with `targetTenant`. Ticket-Documents carry
+**Audit Trail:** Each ticket creation logs with
+`reporter.kind/userId` at INFO level. Each cross-tenant Inbox write
+logs with `targetTenant`. Ticket Documents carry
 `reporterKind`/`reporterUserId`/`reporterTenantId` in `$meta`.
 
 ---
 
-## 13. References
+## 14. References
 
-- [light-llm-service](light-llm-service.md) — Single-Shot-LLM-Call-
-  Helper, consumed by Fook.
+- [light-llm-service](light-llm-service.md) — Single-shot LLM call
+  helper, consumed by Fook.
 - [recipes](recipes.md) — Recipe system, `internal: true` marker.
 - [user-interaction](user-interaction.md) — Inbox subsystem.
 - [architecture-scopes-clients](architektur-scopes-clients.md) —
   `_vance` Tenant + `_tenant` Project convention.
-- [web-ui](web-ui.md) — `EditorShell`/`EditorTopbar`, User menu.
+- [web-ui](web-ui.md) — `EditorShell`/`EditorTopbar`, user menu.
 - [java-cli-modulstruktur](../java-cli-modulstruktur.md) — Foot
-  Slash-Command pattern.
+  Slash Command pattern.

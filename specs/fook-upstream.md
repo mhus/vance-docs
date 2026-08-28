@@ -12,15 +12,15 @@ permalink: /specs/fook-upstream
 > Locally triaged Fook tickets are forwarded to an external ticket system
 > (Default: GitHub Issues). Vancetope thus acts as the
 > **collector/preparation pipeline**, while the target system is the
-> **single source of truth** — Frankie and the Maintainers work there,
+> **single source of truth** — Lunkwill and the Maintainers work there,
 > not in Vancetope. Reporters receive a link in their Inbox and
 > track the ticket in the external tracker; status updates and
 > Maintainer comments are polled back and also appear
 > as Inbox items.
 >
 > v1 has exactly one adapter: **GitHub Issues**. The interface
-> {@code TicketProvider} is provider-agnostic; further adapters
-> (GitLab, Gitea, Jira, …) can be added as additional Spring Beans.
+> {@code TicketProvider} is provider-agnostic; additional adapters
+> (GitLab, Gitea, Jira, …) can be added as extra Spring Beans.
 >
 > See also: [fook-service](/specs/fook-service) |
 > [user-interaction](/specs/user-interaction) |
@@ -31,13 +31,13 @@ permalink: /specs/fook-upstream
 ## 1. Purpose & Scope
 
 **Problem.** Fook produces locally triaged tickets. For Maintainers
-to see them and Frankie to process them, they must be sent to a central
+to see them and Lunkwill to process them, they must go to a central
 ticket system — specifically:
 
 - **anonymized** (no user/Tenant leak),
 - **with approval mode** (no accidental sending),
 - **bidirectional** (status + comments flow back),
-- **multi-pod safe** (only one Pod sends per cluster).
+- **multi-pod safe** (only one Pod sends per Cluster).
 
 **Solution.** A small transport pipeline with three components:
 
@@ -48,14 +48,14 @@ ticket system — specifically:
    hashes reporter identity and scrubs free text using configurable
    regex patterns before anything leaves the Tenant boundary.
 3. **{@code FookUpstreamService}** — Cluster-Master-Pod-gated
-   scheduler with two ticks: Sender (local → Provider) and Poll
+   Scheduler with two ticks: Sender (local → Provider) and Poll
    (Provider → local).
 
 **What it is not:**
 
-- Not a dedicated Vancetope-HQ-Brain — the goal is a real ticket system
-  (GitHub Issues); Vancetope remains a collector. Frankie operates
-  exclusively against the target system, not against Vancetope's internal
+- Not a dedicated Vancetope HQ Brain — the goal is a real ticket system
+  (GitHub Issues); Vancetope remains a collector. Lunkwill operates
+  exclusively against the target system, not against Vancetope-internal
   storage.
 - No federation, no multi-hop, no custom webhook — Vancetope
   pulls.
@@ -84,7 +84,7 @@ switches to `automatic`.
 ## 3. Sender Tick — {@code @Scheduled}
 
 ```
-@Scheduled(fixedDelayString="${vance.fook.upstream.sendTick:PT5M}")
+@Scheduled(fixedDelayString="${vance.fook.upstream.send-tick:PT5M}")
 public void sendTick() {
     if (!masterService.isLocalPodMaster()) return;
     if ("never".equals(currentMode())) return;
@@ -119,24 +119,24 @@ and {@code ClusterCleanupTick}. If the Master crashes, another Pod takes
 over after lease expiry.
 
 **Pending List.** {@code FookTicketService.listPendingTransport()}
-filters tickets in the local store for {@code status=new} AND
+filters tickets in the local store by {@code status=new} AND
 {@code transportApproval ∈ {auto, approved}}.
 
 **Retryable vs. permanent failure.** Providers throw {@code ProviderException}
 with an {@code isRetryable()}-flag:
 
-- {@code 429}, {@code 5xx}, Network-Error → retryable. Ticket remains
-  in {@code new}; the next tick tries again. No Inbox update.
-- {@code 4xx} except 429 → permanent. Ticket changes to
-  {@code status=failed}; the Inbox item is updated to "Transfer failed";
-  an Admin must intervene.
+- {@code 429}, {@code 5xx}, Network error → retryable. Ticket remains
+  in {@code new}, next tick tries again. No Inbox update.
+- {@code 4xx} except 429 → permanent. Ticket goes to
+  {@code status=failed}, Inbox item is updated to "Transfer failed",
+  Admin must intervene.
 
 ---
 
 ## 4. Poll Tick — Status + Comments Back
 
 ```
-@Scheduled(fixedDelayString="${vance.fook.upstream.pollTick:PT1H}")
+@Scheduled(fixedDelayString="${vance.fook.upstream.poll-tick:PT1H}")
 public void pollTick() {
     if (!masterService.isLocalPodMaster()) return;
     if ("never".equals(currentMode())) return;
@@ -166,19 +166,19 @@ public void pollTick() {
 ```
 
 **Polling Anchor.** We use the minimum of {@code upstreamLastSyncedAt}
-of all transferred tickets as the `since`-anchor — no update will be
-missed, even with arbitrarily long Pod downtimes. For the first poll,
-it falls back to {@code transferredAt}.
+of all transferred tickets as the `since`-anchor — no update is
+missed, even with arbitrarily long Pod downtimes. For the first poll, it
+falls back to {@code transferredAt}.
 
 **Provider Filter.** Tickets that were once transferred by Provider A
 (e.g., GitHub) are only polled by Provider A — even if the Brain has
 since switched to GitLab, the old tickets remain in their original connection.
 
-**Inbox items for status changes** use {@code InboxItemType.OUTPUT_TEXT}
+**Inbox items for status changes** use {@code MaximegalonType.OUTPUT_TEXT}
 + {@code Criticality.LOW} + {@code tags=[fook, fook-status]} +
 {@code requiresAction=false}. They inform without forcing an action.
 
-**Inbox items for new comments** use {@code InboxItemType.FEEDBACK}
+**Inbox items for new comments** use {@code MaximegalonType.FEEDBACK}
 + {@code Criticality.NORMAL} + {@code tags=[fook, fook-comment]} +
 {@code requiresAction=true}. Reporter clicks "Reply" → Inbox reply
 handler calls {@code provider.postComment(ref, replyText)} (see §7).
@@ -199,7 +199,7 @@ reporterHash = sha256(tenantId + "|" + userId + "|" + instanceSecret)[:16]
 ```
 
 - **Deterministic** across Brain restarts (even for the
-  same reporter → same hash). Frankie can recognize "same reporter, three
+  same reporter → same hash). Lunkwill can recognize "same reporter, three
   reports" without ever seeing the real name.
 - **Salted** (Brain-Instance-Secret) — other Vancetope instances
   produce different hashes for the same reporter. Cross-instance
@@ -221,7 +221,7 @@ Four regex patterns are built-in, each optionally activatable:
 
 The operator selects via setting {@code fook.upstream.scrub.patterns}
 (comma-separated). Default: all four enabled. Unknown pattern names
-are ignored (with warning); known ones apply in the specified
+are ignored (with warning), known ones apply in the specified
 order.
 
 Application: title, description, triageNote. Not: structured
@@ -231,7 +231,7 @@ metadata (type/severity/timestamps).
 
 Before sending, another detail applies: the target system (GitHub
 Issues) is read by a Maintainer community that primarily
-works in English. Reporters, however, may write in their native language.
+works in English. However, reporters may write in their native language.
 
 The **Triage LLM** provides both versions
 (see [`fook-service.md §6.1`](/specs/fook-service#61-new_ticket)):
@@ -253,7 +253,7 @@ assembles the final `description` as:
 
 — if `englishTranslation` is non-empty. Otherwise, only the
 original remains. Reporters see the bilingual body (English
-on top) in their Inbox; Maintainers on GitHub see the same. The original
+at the top) in their Inbox, Maintainers on GitHub see the same. The original
 audit trail is preserved — the LLM can sometimes translate incorrectly.
 
 Anonymization applies **after** translation, i.e., scrubber
@@ -268,7 +268,7 @@ and tokens are redacted in both languages.
 | {@code reporter.tenantId} | → instanceFingerprint |
 | {@code context.projectId/sessionId/processId} | **strip** — Tenant-internal |
 | {@code context.recipe/engine} | remains — Vancetope constants, helpful |
-| {@code id} (Fook-UUID) | remains — as {@code fookTicketId} in the Body-Footer for reverse lookup |
+| {@code id} (Fook-UUID) | remains — as {@code fookTicketId} in the Body footer for reverse lookup |
 
 ---
 
@@ -328,8 +328,8 @@ Every Issue carries:
 ```
 
 Reporters **do not need a GitHub account** — the Vancetope Bot posts on
-behalf of the bridge. Maintainers see the hash and can reply
-back via the bridge if needed.
+behalf of the bridge. Maintainers see the hash and can
+reply via the bridge if needed.
 
 ### 6.5 Auth
 
@@ -348,17 +348,17 @@ Default {@code https://api.github.com}. Operator overrides
 
 ## 7. Comment Reply Bridge
 
-When a Reporter receives a FEEDBACK Inbox item and clicks "Reply",
+When a reporter receives a FEEDBACK Inbox item and clicks "Reply",
 the reply must go back to the target system.
 
 **v1 implementation:** existing Inbox reply handler calls a
 new method {@code FookUpstreamService.postReply(inboxItem,
 replyText)}, which in turn calls {@code TicketProvider.postComment(ref,
 scrubbedText)}. (Anonymization also applies here — reply
-text is scrubbed by {@code FookTicketAnonymizer.scrubText}, then the body template
-is used with a hash prefix.)
+text is processed by {@code FookTicketAnonymizer.scrubText}, then the Body template
+with hash prefix.)
 
-The Inbox item payload already carries everything needed:
+The Inbox item payload already carries everything necessary:
 {@code upstreamProvider}, {@code upstreamUrl},
 {@code commentExternalId} (for threading), {@code ticketId}.
 
@@ -388,7 +388,7 @@ fook.upstream.anonymize: true                   # default on
 fook.upstream.scrub.patterns: email,ipv4,apiKey,guid
 
 fook.upstream.statusPoll.enabled: true
-fook.upstream.statusPoll.interval: PT1H         # via vance.fook.upstream.pollTick
+fook.upstream.statusPoll.interval: PT1H         # via vance.fook.upstream.poll-tick
                                                  # (Spring-prop, not setting-form)
 
 fook.upstream.instanceFingerprint: ""           # auto-generated on first send
@@ -436,14 +436,14 @@ Both ticks are **master-only**:
 if (!masterService.isLocalPodMaster()) return;
 ```
 
-Exactly one Pod in the cluster sends/polls. Other Pods run the same
-Spring scheduler but return immediately. In case of Master failover (lease
+Exactly one Pod in the Cluster sends/polls. Other Pods run the same
+Spring Scheduler but return immediately. In case of Master failover (lease
 expiry), another Pod takes over seamlessly without configuration changes.
 
 **Why this is so important:** without a guard, every Pod would push every pending ticket
-→ N-fold GitHub Issues, N-fold GH API rate limit
-waste, N-fold Inbox items per status change. The lock is
-not optional, but mandatory security.
+→ N-times GitHub Issues, N-times GH API rate limit
+waste, N-times Inbox items per status change. The lock is
+not optional, but a mandatory safety measure.
 
 ---
 
@@ -453,7 +453,7 @@ not optional, but mandatory security.
 
 Written by {@code FookService} directly after triage. Updated by
 {@code FookUpstreamService} on transfer success/failure
-**in-place** via {@code InboxItemService.updateContent}.
+**in-place** via {@code MaximegalonService.updateContent}.
 
 ```
 title:           "Ticket created" → "Ticket transferred" / "Ticket transfer failed"
@@ -469,8 +469,8 @@ payload:         { decision, ticketId, status, upstreamProvider?,
 | Phase | Body |
 |-------|------|
 | Triage (mode=automatic) | "Your submission was opened as ticket `<uuid>`. It is being forwarded to the upstream ticket system; this item updates with the link once the transfer completes." |
-| Triage (mode=manual) | "... waiting for an admin to approve forwarding ..." |
-| Triage (mode=never) | "... stays local — upstream forwarding is disabled on this brain." |
+| Triage (mode=manual) | "… waiting for an admin to approve forwarding …" |
+| Triage (mode=never) | "… stays local — upstream forwarding is disabled on this brain." |
 | Transfer-Success | "Your submission was transferred to the upstream ticket system. Track it at \<URL\>" |
 | Transfer-Failure | "Forwarding your submission to the upstream ticket system failed permanently. Reason: \<msg\>. Contact an admin to retry." |
 
@@ -545,14 +545,14 @@ Audit trail via existing {@code AuditService} for
   for the Brain's public URL, pollTick can be replaced by push reception. v2.
 - **Federation / Multi-Sink** — one Brain, multiple sinks simultaneously
   (e.g., GitHub for Bugs, Jira for Features). v3+.
-- **Pre-Send User-Approval-UI** — currently, the Admin writes
+- **Pre-Send User-Approval-UI** — today, the Admin writes
   {@code transportApproval=approved} directly; a dedicated
   "Pending Tickets" Admin Dashboard would be v2.
 - **OAuth-linked Reporter Identity** — Reporter logs in
   once with a GH account, replies appear under their
   GitHub identity instead of the Bot. v3.
-- **LLM-based Scrubber** — Regex doesn't catch everything (no
-  "My boss Max Mustermann said ..."). v2 with a small
+- **LLM-based Scrubber** — Regex doesn't catch everything (not
+  "My boss Max Mustermann said …"). v2 with a small
   LightLlm pass.
 - **Bulk Export** — import existing tickets from a second Brain.
   Out of scope.
@@ -562,10 +562,10 @@ Audit trail via existing {@code AuditService} for
 ## 15. References
 
 - [fook-service](/specs/fook-service) — the local triage pipeline,
-  from which data is further processed here.
+  which is further processed here.
 - [user-interaction](/specs/user-interaction) — Inbox subsystem.
 - [setting-forms](/specs/setting-forms) — Setting Form format.
 - [light-llm-service](/specs/light-llm-service) — used by the triage path;
   transport itself communicates directly with the Provider.
 - {@code de.mhus.vance.brain.cluster.ClusterMasterService} — the
-  Master lease, to which the ticks are tied.
+  Master lease, to which the ticks are bound.

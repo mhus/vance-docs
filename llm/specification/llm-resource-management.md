@@ -19,13 +19,13 @@ The Brain makes LLM calls. However:
 
 ## 2. LLM Configuration at Each Scope Level
 
-LLM providers, keys, and quotas can be defined at **every level**:
+LLM providers, keys, and quotas can be defined at **any level**:
 
 | Level | Example | Use Case |
 |-------|---------|----------|
 | **Account** | Mike's personal Claude key | Personal use |
 | **Project** | Research project has 5M tokens/month from grant | Budget per Project |
-| **Team** | NLP Team has a shared Anthropic key | Shared access |
+| **Team** | NLP team has a shared Anthropic key | Shared access |
 | **Tenant** | Company-wide Google AI Key | Default for all |
 | **Local** | Ollama on the server | Free fallback |
 
@@ -128,7 +128,7 @@ When the Brain wants to make an LLM call:
    b. Does Project have a provider for this model?       → use Project key
    c. Does Team have a provider for this model?          → use Team key
    d. Does Tenant have a provider for this model?        → use Tenant key
-   e. Can Local LLM handle this model (or equivalent)? → use local
+   e. Can local LLM provide this model (or equivalent)? → use local
    f. Nothing? → Task failed
 
 4. Check quota (ALL applicable levels):
@@ -182,9 +182,9 @@ acme:
 
 **When the mechanism runs relative to the §3 cascade:** the alias resolver runs *before* provider resolution. First, the logical model label (e.g., `default:analyze`) is resolved to a concrete `(provider, model)`, then §3 searches for the appropriate key in the Account/Project/Team/Tenant cascade. Aliases and quota cascade are orthogonal concepts: alias decides *which model*, cascade decides *whose key*.
 
-**Model size as Tier-Hint:** `ai-models.yaml` additionally declares `size: SMALL|LARGE` per model. This is used for Recipe prompt variant selection (see `recipes.md` §5.1). Aliases do not change the classification — the tier information always comes from the *resolved* model.
+**Model size as a Tier-Hint:** `ai-models.yaml` additionally declares `size: SMALL|LARGE` per model. This is used for Recipe prompt variant selection (see `recipes.md` §5.1). Aliases do not change the classification — the tier information always comes from the *resolved* model.
 
-#### Comma Cascade across Multiple Specs
+#### Comma Cascade over Multiple Specs
 
 The input of a model spec can be a **list**, separated by commas. The first element that is *configured* wins. Example in a Recipe:
 
@@ -202,15 +202,15 @@ This reads as: "take the engine-specific `default:arthur` if the Tenant has defi
 - Element is a direct `<provider>:<model>` → wins immediately.
 - Element is a named provider instance (`ai.provider.<prefix>.type` is set) → wins immediately.
 - Element is an alias and `ai.alias.<prefix>.<rest>` is configured → recursively resolve with the resolved value (which itself can be a cascade).
-- Element is **not** configured → *not* the `default:` safety net fallback as usual, but jump to the next cascade element.
+- Element is **not** configured → *not* the `default:` safety-net fallback as usual, but jump to the next cascade element.
 
-**Last-resort fallback only at the end:** The **last** element of the cascade still falls back to the `default:` safety net rule (`ai.default.provider` / `ai.default.model`). Thus, `default:arthur,default:chat` in the worst case (neither Arthur nor Chat alias configured) lands on the Tenant default — it does not throw an error.
+**Last-resort fallback only at the end:** The **last** element of the cascade still falls back to the `default:` safety-net rule (`ai.default.provider` / `ai.default.model`). Thus, `default:arthur,default:chat` in the worst case (neither Arthur nor Chat alias configured) lands on the Tenant default — it does not throw an error.
 
 **Cascade also in alias values:** The comma cascade applies wherever a spec string is resolved — including in the *target* of an alias. `ai.alias.default.chat = anthropic:claude-haiku-4-5,openai:gpt-4o-mini` is valid and acts as a two-stage cascade from the alias target. Cycle detection works per cascade element with its own `seen` set; the depth limit (`MAX_DEPTH=8`) remains unchanged.
 
-**When the cascade continues:** Currently **only when a definition is missing** (no direct provider match, no instance type, no alias setting). **Runtime errors** (provider down, quota exhausted, model deactivated) do *not* abort the cascade and fail hard as before. Disable logic will later move into the **same** resolver method, so all cascade consumers automatically benefit — without API changes.
+**When the cascade continues:** Today, **only in case of missing definition** (no direct provider match, no instance type, no alias setting). **Runtime errors** (provider down, quota exhausted, model deactivated) do *not* abort the cascade and fail hard as before. Disable logic will later move into the **same** resolver method, so all cascade consumers automatically benefit — without API changes.
 
-**Distinction from `params.fallbackModels`:** `fallbackModels` (`ChatBehaviorBuilder`) is a **runtime fallback chain** at the provider level — the primary model is actually called, and only on quota/provider failure does the chain switch. The comma cascade is a **setup-time cascade** at the alias definition level — it selects the first *configured* model *before* the first API call. Both mechanisms are orthogonal and combinable: an entry in `fallbackModels` can itself be a comma cascade.
+**Distinction from `params.fallbackModels`:** `fallbackModels` (`ChatBehaviorBuilder`) is a **runtime fallback chain** at the provider level — the primary model is actually called, and only in case of quota/provider failure does the chain continue. The comma cascade is a **setup-time cascade** at the alias definition level — it selects the first *configured* model *before* the first API call. Both mechanisms are orthogonal and combinable: an entry in `fallbackModels` can itself be a comma cascade.
 
 **Example settings + Recipe:**
 
@@ -238,16 +238,16 @@ Tenant `acme` has `default:arthur` configured → arthur Recipe uses `claude-opu
 
 ### Named Provider Instances
 
-The left part of a model spec (`<prefix>:<model>`) is semantically a **Provider Instance**, not necessarily the protocol type. Default: instance name == `ProviderType.wireName()` (`openai`, `anthropic`, …) — so all existing specs and settings remain valid.
+The left part of a model spec (`<prefix>:<model>`) is semantically a **provider instance**, not necessarily the protocol type. Default: instance name == `ProviderType.wireName()` (`openai`, `anthropic`, …) — so all existing specs and settings remain valid.
 
-Tenants can define additional **named instances** to use, for example, multiple OpenAI-compatible endpoints (real OpenAI, DeepSeek-Direct, OpenRouter, local vLLM) in parallel — each with its own `apiKey` and `baseUrl`, but the same wire protocol:
+Tenants can define additional **named instances** to, for example, use multiple OpenAI-compatible endpoints (real OpenAI, DeepSeek-Direct, OpenRouter, local vLLM) in parallel — each with its own `apiKey` and `baseUrl`, but the same wire protocol:
 
 ```yaml
 acme:
   # Standard instance "openai" → real OpenAI
   ai.provider.openai.apiKey:           { type: PASSWORD, value: sk-... }
 
-  # Additional instance "deepseek-direct" → OpenAI-Wire, but DeepSeek-Endpoint
+  # Additional instance "deepseek-direct" → OpenAI-Wire, but DeepSeek endpoint
   ai.provider.deepseek-direct.type:    { type: STRING,   value: openai }
   ai.provider.deepseek-direct.baseUrl: { type: STRING,   value: https://api.deepseek.com/v1 }
   ai.provider.deepseek-direct.apiKey:  { type: PASSWORD, value: sk-... }
@@ -269,7 +269,7 @@ input := <prefix>:<rest>
        Unknown type-wireName → IllegalArgumentException
 
   Setting `ai.alias.<prefix>.<rest>` is set
-    → recursively resolve with the resolved value
+    → recursively resolve with resolved value
 
   prefix == "default" and no alias
     → Fallback (ai.default.provider, ai.default.model)
@@ -289,7 +289,22 @@ input := <prefix>:<rest>
   ```
 - **`AiChatConfig.providerType`** still provides the protocol for adapter dispatch in `AiModelService` (which `AiModelProvider` bean builds the chat).
 
-**What the instance does not change:** the wire model name that goes to the API (`rest` part). To use the same model name with different metadata configs, create two instances with the same `type` that differ per instance under `_vance/model/<instance>/<modelName>.yaml` (see §3a).
+**What the instance does not change:** the wire model name sent to the API (`rest` part). To use the same model designation with different metadata configs, create two instances with the same `type` that differ per instance under `_vance/model/<instance>/<modelName>.yaml` (see §3a).
+
+### Scope-Pinning: `params.aiScope`
+
+Alias, `ai.default.*`, `ai.provider.<instance>.apiKey`, `.baseUrl`, and the `ModelCatalog` view are **separate** cascade lookups (`think-process → project → _tenant`). A Project that only overrides a part of this mixes layers: if it sets `ai.provider.openai.baseUrl` to a different endpoint but inherits the model name from `_tenant`, the Tenant model goes to the Project endpoint (symptom: 404 "model does not exist" despite valid config at both levels).
+
+A Recipe can therefore pin its AI config to the outermost layer via a parameter:
+
+```yaml
+params:
+  aiScope: tenant     # Default: cascade
+```
+
+`tenant` means: **all** mentioned lookups run with `projectId=null`/`processId=null`, so the cascade collapses to `_tenant`. Model and endpoint thus come from the same level by design. There is deliberately **no** fallback to the Project level if the Tenant has not configured anything — "sometimes Tenant, sometimes Project, depending on which key is set" would be exactly the non-determinism that pinning eliminates. The pinned Engine will then fail (for best-effort services, this means no execution).
+
+The **criterion for pinning** is not "Service-Engine", but *is the output control data for others*: [Agrajag](agrajag-engine.md) marks Tools UNAVAILABLE and sets cooldowns that slow down other processes — this decision must not depend on a Project's experimental model. User-facing helpers (`how_do_i`, `follow-up`) intentionally remain on `cascade` and follow the Project model. The process itself remains in its Project; only the AI config (`AiConfigScope`, read in `ChatBehaviorBuilder`/`EngineChatFactory`) is pinned.
 
 ---
 
@@ -299,7 +314,7 @@ Model metadata is **not** kept in a monolithic `ai-models.yaml`. Each model is a
 
 ### 3a.1 Path Convention
 
-The catalog knows **two parallel path prefixes** per Scope — intentionally separated by path and not by flag, so that auto-writes can never overwrite manual data and vice versa:
+The catalog knows **two parallel path prefixes** per Scope — deliberately separated by path and not by flag, so that auto-writes can never overwrite manual data and vice versa:
 
 ```
 _vance/model/<providerInstance>/<filenameSlug>.yaml          ← MANUAL  (Operator/Maintainer)
@@ -309,10 +324,10 @@ _vance/model/<providerInstance>/<sub>/<filenameSlug>.yaml    ← nested for '/' 
 
 | Path Prefix | Owner | Provenance | Who writes |
 |---|---|---|---|
-| `_vance/model/**` | Operator / Maintainer | Hand-maintained; contains pricing, capabilities, custom overrides | UI/Setting-Forms, Eddie via `manual_read('ai-model-catalog')`, direct Doc edits |
+| `_vance/model/**` | Operator / Maintainer | Hand-maintained; carries pricing, capabilities, custom overrides | UI/Setting-Forms, Eddie via `manual_read('ai-model-catalog')`, direct Doc edits |
 | `_vance/model-auto/**` | Automation | Provider listing output; only what the vendor API provides | `ModelDiscoveryService` (§3a.6); **never manual** |
 
-Both paths exist in every Scope (Project, `_tenant`, `_vance`). Within a Scope, **manual is applied after auto** — so manual wins field-wise (see §3a.4). Discovery can freely overwrite in its own subtree half.
+Both paths live in every Scope (Project, `_tenant`, `_vance`). Within a Scope, **manual is applied after auto** — manual thus wins field-wise (see §3a.4). Discovery can freely overwrite in its own subtree half.
 
 **Naming Convention** (applies identically to both prefixes):
 
@@ -321,7 +336,7 @@ Both paths exist in every Scope (Project, `_tenant`, `_vance`). Within a Scope, 
 - **Wire model name** (what goes to the provider API):
   - Default: relative path under the provider directory, without `.yaml` extension. Example: `_vance/model/lmstudio/mlx-community/Qwen3.6-35B-A3B-4bit.yaml` → Wire name `mlx-community/Qwen3.6-35B-A3B-4bit`.
   - Override via YAML field `wireName: ...` — for model names with `:` (Ollama tags like `qwen3:30b`) or other filename-unsafe characters. Example: `_vance/model/ollama/qwen3-30b.yaml` with `wireName: "qwen3:30b"`.
-- **No provider metadata sidecar.** Provider config (wire type, API key, base URL) lives exclusively in settings (`ai.provider.<instance>.{type,apiKey,baseUrl}`, see §3 "Named Provider Instances"). A second source for this would be double-accounting and a source of drift.
+- **No provider metadata sidecar.** Provider config (wire type, API key, base URL) lives exclusively in settings (`ai.provider.<instance>.{type,apiKey,baseUrl}`, see §3 "Named Provider Instances"). A second source for this would be double-entry bookkeeping and a source of drift.
 - Validation happens during catalog build. Invalid provider names or file slugs → Skip + WARN log, so a single typo does not block the entire catalog.
 
 ### 3a.2 Model Document — YAML Schema
@@ -340,9 +355,11 @@ capabilities:                    # List, replaced as a whole
   - pdf
   - thinking
 stripThinkTags: false            # default false — see §4.1
-messageParser: null              # optional — name of a registered MessageParser bean
+messageParser: null              # optional — Name of a registered MessageParser bean
                                  # (gemma4, deepseek-v4, …). Falls back to model-quirks.yaml
                                  # pattern match, see §4.1.1.
+outputTokenParam: max_tokens     # optional — OpenAI-Wire field for output cap
+                                 # (max_tokens | max_completion_tokens), see §4.1.2
 pricing:                         # Hand-maintained in the manual layer (auto never writes this)
   currency: USD
   inputPerMTok: 3.00
@@ -361,12 +378,16 @@ discoveredAt: "2026-06-27T10:00:00Z"
 | `pricing` | yes (vendor standard) | yes (enterprise deals) | **never** | yes | **never** |
 | `capabilities` | yes | on override | **never** (API listing doesn't know this) | on override | **never** |
 | `kind` | yes | on override | if listing provides it | on override | if listing provides it |
-| `stripThinkTags` | yes (reasoning models) | on override | **never** | on override | **never** |
-| `messageParser` | rarely (only if pattern in `model-quirks.yaml` is not enough) | on override | **never** | on override | **never** |
+| `stripThinkTags` | yes (Reasoning models) | on override | **never** | on override | **never** |
+| `messageParser` | rarely (only if pattern in `model-quirks.yaml` is insufficient) | on override | **never** | on override | **never** |
 
-**Required fields**: `contextWindowTokens`, `size` (effectively via cascade resolve — an auto-doc alone doesn't need them as long as bundled/manual provides them). Everything else is optional. `pricing` null means "unpriced" for cost tracking.
+**Required fields**: `contextWindowTokens`, `size` (effectively via cascade resolve — an auto-doc alone does not need them as long as bundled/manual provides them). Everything else is optional. `pricing` null means "unpriced" for Cost-Tracking: the call **still** lands in the ledger (tokens, calls, model, caller), only the cost columns remain 0 and `currency` null. An unpriced model must never look like an unused one in usage statistics.
 
-**No separate provider documents.** Unlike earlier spec versions, there is **no** `_provider.yaml` sidecar. Provider endpoint config (wire type, API key, base URL) is a settings domain (§3 "Named Provider Instances"); UI display names are derived client-side from the instance name or configured via optional settings (`ai.provider.<instance>.displayName`).
+Missing `pricing` means **"price unknown", not "free"** — the daily bucket counts such calls in `unpricedCalls` and the report shows its coverage, instead of silently adding a zero to the sum. To keep this unambiguous, locally running models (ollama/lmstudio) carry an **explicit zero rate** (`inputPerMTok: 0.0`) instead of no block at all.
+
+**`defaultMaxOutputTokens` for Reasoning models.** On the OpenAI wire, `reasoning_content` tokens count **against** `max_tokens`. A cap measured only for the visible answer is therefore eaten up by the Thinking pass: the provider responds with HTTP 200, `finish_reason: "length"` and **completely empty** content — no text, no tool call. For every reasoning-capable model, the cap must therefore cover Thinking **plus** answer (bundled value for GLM-/DeepSeek families: 32768). The resilience layer treats exactly this combination (empty + `finish=LENGTH`) as **not retryable** — an identical re-request hits the same wall — and passes the `finishReason` to the Engine so that the user message says "Output limit reached" instead of "transient provider glitch" (see §8).
+
+**No separate provider documents.** Unlike in earlier spec versions, there is **no** `_provider.yaml` sidecar. Provider endpoint config (wire type, API key, base URL) is the domain of settings (§3 "Named Provider Instances"); UI display names are derived client-side from the instance name or configured via optional settings (`ai.provider.<instance>.displayName`).
 
 ### 3a.3 Override Cascade
 
@@ -395,8 +416,8 @@ if tenant given:
 
 - **Merge is deep, per field.** An override only provides the fields it changes; unset fields are inherited.
 - **Lists are replaced as a whole** (especially `capabilities`, `supportedAspectRatios`) — so owners can both add and remove individual values. Concatenation semantics would be ambiguous.
-- **Manual over Auto per Scope.** Within a `(tenant, project)` scope, the manual layer is applied *after* the auto layer — so manual edits win field-wise against fresh discovery data at the same scope. Discovery can freely overwrite in its subtree (`_vance/model-auto/**`) without manual overrides being lost.
-- **Inner-Scope-Auto beats Outer-Scope-Manual.** Example: `(tenant, project)` auto sets `contextWindowTokens = 50000`; `(tenant, _tenant)` manual has `100000`. Lookup at `(tenant, project)` yields `50000` — Project is the inner scope. This is intentional: Project-specific reality beats Tenant default, regardless of who wrote it.
+- **Manual over Auto per Scope.** Within a `(tenant, project)` Scope, the manual layer is applied *after* the auto layer — manual hand-edits thus win field-wise against fresh Discovery data at the same Scope. Discovery can freely overwrite in its subtree (`_vance/model-auto/**`) without manual overrides being lost.
+- **Inner-Scope-Auto beats Outer-Scope-Manual.** Example: `(tenant, project)` auto sets `contextWindowTokens = 50000`; `(tenant, _tenant)` manual has `100000`. Lookup at `(tenant, project)` yields `50000` — Project is the inner Scope. This is intentional: Project-specific reality beats Tenant default, regardless of who wrote it.
 - **Bundled layer** is located under `vance-brain/src/main/resources/vance-defaults/_vance/model/<providerInstance>/<filenameSlug>.yaml` (path mirror in the classpath, same convention as `DocumentService.RESOURCE_PREFIX = "vance-defaults/"`). There is **no** bundled layer for `model-auto/**` — bundled is always manual-shaped. With a new Brain version, bundled updates are **not** automatically mirrored in Tenant docs.
 
 Engines automatically pass `tenantId`/`projectId` from the Process via `AiChatOptions` to the per-call providers, so their capability lookups (Vision/PDF packaging) also see the scope-specific view.
@@ -409,21 +430,21 @@ Engines automatically pass `tenantId`/`projectId` from the Process via `AiChatOp
 1. Classpath scan over `vance-defaults/_vance/model/**/*.yaml` → Bundled layer (manual-shaped).
 2. `findAllByPathPrefix("_vance/model/")` → a map `(tenantId, projectId) → Manual layer`.
 3. `findAllByPathPrefix("_vance/model-auto/")` → a map `(tenantId, projectId) → Auto layer`.
-4. Build a complete new `Snapshot` in a local variable, then assign it to the active cache pointer with **a single atomic volatile write**.
+4. Build a complete new `Snapshot` in a local variable, then assign it to the active cache pointer with **one atomic volatile write**.
 
 **Refresh (every 30 minutes, scheduled):** identical loader — new Snapshot built completely, then atomic swap. **No partial updates to the running cache**, so readers never see an inconsistent intermediate state.
 
 **Refresh on Demand:**
-- REST: `POST /brain/{tenant}/admin/ai-models/refresh` (Admin right via `RequestAuthority.enforce(Tenant, ADMIN)`). Empty body. Response: `{ refreshedAt, bundledModelsLoaded, bundledProvidersLoaded, overrideScopes, durationMs }`. Synchronous — response only comes after swap.
+- REST: `POST /brain/{tenant}/admin/ai-models/refresh` (Admin right via `RequestAuthority.enforce(Tenant, ADMIN)`). Empty body. Response: `{ refreshedAt, bundledModelsLoaded, bundledProvidersLoaded, overrideScopes, durationMs }`. Synchronous — response only after swap.
 - UI: Button in the Profile Editor (`Actions` section) calls the same endpoint and shows the counters as a toast.
 
-**Intentionally no `DocumentChangedEvent` invalidation.** Catalog contents change infrequently (models per Tenant in the order of dozens, update frequency days to weeks). A 30-min sliding freshness plus explicit trigger is sufficient — and avoids a listener path that would have to react to every settings/wizard write.
+**Deliberately no `DocumentChangedEvent` invalidation.** Catalog contents change infrequently (models per Tenant in the order of dozens, update frequency days to weeks). A 30-min sliding freshness plus explicit trigger is enough — and avoids a listener path that would have to react to every settings/wizard write.
 
-**Pod Locality:** Each pod has its own cache. Refresh is not coordinated — in multi-pod setups, a refresh drifts by a maximum of 30 minutes between pods, which is acceptable for model catalog data. For cluster-wide immediate consistency, call the REST endpoint per pod (or via a cluster broadcast, which is not part of v1).
+**Pod Locality:** Each Pod has its own cache. Refresh is not coordinated — in multi-Pod setups, a refresh drifts by a maximum of 30 minutes between Pods, which is acceptable for model catalog data. For cluster-wide immediate consistency, call the REST endpoint per Pod (or via a cluster broadcast, which is not part of v1).
 
 ### 3a.5 Bootstrap & Migration
 
-**First-Boot-Bootstrap:** A `ModelCatalogBootstrapper` runs once at Brain startup. If the `_vance` Tenant contains **no** documents under `_vance/model/**`, it copies all bundled files there. This makes the initial Tenant productive without anyone having to manually write YAML beforehand. Later Brain versions execute the bootstrap again, but **only add missing** models — existing Tenant edits are not overwritten. **`_vance/model-auto/`** is never populated by the bootstrapper — that is Discovery domain.
+**First-Boot Bootstrap:** A `ModelCatalogBootstrapper` runs once at Brain startup. If the `_vance` Tenant contains **no** documents under `_vance/model/**`, it copies all bundled files there. This makes the initial Tenant productive without anyone having to manually write YAML beforehand. Later Brain versions execute the bootstrap again, but **only add missing** models — existing Tenant edits are not overwritten. **`_vance/model-auto/`** is never populated by the bootstrapper — that is Discovery's domain.
 
 **No migration path from old monolithic `ai-models.yaml`.** The old format is replaced with this spec — Brain reads neither `_vance/ai-models.yaml`, `_tenant/ai-models.yaml`, nor Project `ai-models.yaml`. Existing bundled `ai-models.yaml` was converted to the new directory structure during the build (one-time code change, no runtime fallback).
 
@@ -436,12 +457,12 @@ Engines automatically pass `tenantId`/`projectId` from the Process via `AiChatOp
 - UI: "Discover AI Models" button in the Profile Editor next to "Refresh".
 - (Optional) UrsaScheduler Recipe for scheduled runs (Default off).
 
-**Scope Symmetry:** Discovery reads provider credentials non-cascaded per `(tenant, project)` and writes the auto-docs into the *same* scope. This means: settings in Project `_tenant` produce auto-docs in Project `_tenant`; settings in Project `acme-research` produce auto-docs in Project `acme-research`. No cross-scope bleeding.
+**Scope Symmetry:** Discovery reads provider credentials non-cascaded per `(tenant, project)` and writes the auto-docs to the *same* Scope. This means: settings in Project `_tenant` produce auto-docs in Project `_tenant`; settings in Project `acme-research` produce auto-docs in Project `acme-research`. No cross-scope bleeding.
 
 **Per Scope:**
-1. `SettingService.findAll(tenant, "project", projectId)` returns all settings in the scope. Keys `ai.provider.<instance>.{type,apiKey,baseUrl}` are grouped per `<instance>`.
+1. `SettingService.findAll(tenant, "project", projectId)` returns all settings in the Scope. Keys `ai.provider.<instance>.{type,apiKey,baseUrl}` are grouped per `<instance>`.
 2. Read protocol type from `ai.provider.<instance>.type` (Fallback: `instance == ProviderType.wireName()`). Unknown `type` → skip + WARN.
-3. Decrypt API key via `SettingService.getDecryptedPassword(...)`. For providers with `requiresApiKey()` and an empty key → skip + DEBUG.
+3. Decrypt API key via `SettingService.getDecryptedPassword(...)`. For providers with `requiresApiKey()` and empty key → skip + DEBUG.
 4. Call `AiModelService.findProvider(type).listAvailableModels(ProviderListingRequest)`. Each provider bean implements the same SPI; internally, the respective listing API is called:
 
    | Provider | Endpoint | Data Fields |
@@ -449,25 +470,27 @@ Engines automatically pass `tenantId`/`projectId` from the Process via `AiChatOp
    | Anthropic | `GET /v1/models` (`x-api-key`) | id only |
    | OpenAI / OpenAI-wire Gateways | `GET /v1/models` (`Bearer`) | id only |
    | Gemini | `GET /v1beta/models?key=...` | id + `inputTokenLimit` |
-   | Ollama | `GET /api/tags` (no auth) | id (with `:` tag convention) |
-   | OllamaCloud | `GET /api/tags` (`Bearer`) | id (with `:` tag) |
+   | Ollama | `GET /api/tags` (no auth) | id (with `:`-tag convention) |
+   | OllamaCloud | `GET /api/tags` (`Bearer`) | id (with `:`-tag) |
    | LM Studio | `GET /v1/models` (no auth needed) | id only |
 
-5. Write a YAML doc for each found model to `_vance/model-auto/<instance>/<slug>.yaml`. Slug encoding: `:` → `-` plus `wireName:` field; `/` → nested subdirectories. Content: `wireName` (if necessary), `contextWindowTokens` (if API provides it), `kind: chat`, `discoveredBy: discovery-job`, `discoveredAt: <ISO-8601>`.
+5. For each found model, write a YAML doc to `_vance/model-auto/<instance>/<slug>.yaml`. Slug encoding: `:` → `-` plus `wireName:` field; `/` → nested subdirectories. Content: `wireName` (if necessary), `contextWindowTokens` (if API provides it), `discoveredBy: discovery-job`, `discoveredAt: <ISO-8601>`.
 
 **Failure Isolation:** Per-instance `try/catch` — a 401 or a hanging provider does not block the others. Failed instances land in `DiscoveryResult.skippedInstances` with the error message and are displayed by the UI as a WARN list; the entire pass result is still `200 OK`.
 
-**Pricing — intentionally not auto-discovered.** No vendor listing API provides prices; a LightLlm/Web-Search path is not included in v1 (hallucination risk, complexity without clear gain). Pricing comes from the **manual** layer (Bundled for known models, Operator edit for new ones), and is overlaid field-wise onto an auto-doc by the cascade merge. New models without a bundled entry appear as "unpriced" after discovery until an Operator writes a manual doc (see Eddie manual `manuals/ai-model-catalog` for the workflow).
+**Pricing — deliberately not auto-discovered.** No vendor listing API provides prices; a LightLlm/Web-Search path is not included in v1 (hallucination risk, complexity without clear gain). Pricing comes from the **manual** layer (Bundled for known models, Operator edit for new ones), and is overlaid field-wise onto an auto-doc by the cascade merge. New models without a bundled entry appear as "unpriced" after Discovery until an Operator writes a manual doc (see Eddie manual `manuals/ai-model-catalog` for the workflow).
 
-**Idempotence:** Auto-docs are always overwritable; each discovery run rewrites them. Operator edits live in the disjoint `_vance/model/**` path and are thus automatically safe — no `discoveredBy` check needed.
+**`kind` — also deliberately not auto-discovered.** Discovery writes only **observations** (wire name, context window), never **classifications** (`kind`, pricing, `capabilities`). The reason is the cascade direction: the auto layer is *above* the bundled layer, so an asserted `kind: chat` would overwrite a correctly bundled `kind: image`. Specifically: Gemini lists `gemini-2.5-flash-image` with `generateContent` — it fits any "chat-capable" filter, but it's an image model. Before this fix, a Discovery run reclassified it as a chat model, causing it to disappear from `listAllImages` and thus from the Fenchurch alias pickers, while `ai.alias.default.image` still pointed to it → `invalid_choice` when saving the LLM form. Providers no longer report `kind` at all (`DiscoveredModelInfo` has no such field).
 
-**Refresh after Job End:** `ModelCatalog.refresh()` is called internally directly, so the new auto-docs become visible without a second REST call.
+**Idempotence:** Auto-docs are always overwritable; each Discovery run writes them anew. Operator edits live in the disjoint `_vance/model/**` path and are thus automatically safe — no `discoveredBy` check needed.
+
+**Refresh after job end:** `ModelCatalog.refresh()` is called internally directly, so the new auto-docs become visible without a second REST call.
 
 ---
 
 ### Quota Check: All Levels Simultaneously
 
-This is important: a call consumes quota at **every level**. If Mike is working in Project X:
+This is important: a call consumes quota at **every level**. If Mike works in Project X:
 
 ```
 Call: 3000 Tokens
@@ -489,7 +512,7 @@ If the Project budget is exhausted but Mike's personal budget is not:
 
 ## 4. A New LLM Object Per Call
 
-The Brain does **not** hold a global ChatClient. For each LLM call, a fresh client with the correct credentials is created:
+The Brain holds **no global ChatClient**. For each LLM call, a fresh client is created with the correct credentials:
 
 ```java
 public class LlmFactory {
@@ -498,7 +521,7 @@ public class LlmFactory {
         Account account = session.getAccount();
         Project project = session.getProject();
         
-        // Model based on purpose — Preferences cascade
+        // Determine model based on purpose — Preferences cascade
         String model = resolveModel(purpose, account, project);
         
         // Find provider and key — Cascade
@@ -518,7 +541,7 @@ public class LlmFactory {
 
 ### 4.1 Provider Decorator Chain
 
-Each per-call `AiChat` (built via `StandardAiChat`) stacks an optional decorator layer around the langchain4j `ChatModel` of the provider. This same layer performs two tasks against the raw response — Think-tag stripping and model-specific message parsing — and is hooked in only if at least one of the two is active:
+Each per-call `AiChat` (built via `StandardAiChat`) stacks an optional decorator layer around the langchain4j `ChatModel` of the provider. This same layer performs two tasks on the raw response — Think tag stripping and model-specific message parsing — and is hooked in only when at least one of the two is active:
 
 ```
 engine / Light-LLM / StandardAiChat.ask
@@ -538,16 +561,16 @@ Streaming has the same topology with `SanitizingStreamingChatModel` as the outer
 
 **Contract of the layers:**
 
-- **`LoggingChatModel`** is always active. Writes every request/response to `de.mhus.vance.brain.ai.trace` logger plus optionally via `LlmTraceWriter` to the `LlmTraceDocument` collection. ALWAYS sees the raw model response including any reasoning markup or inline emitted tool calls.
+- **`LoggingChatModel`** is always active. Writes every request/response to `de.mhus.vance.brain.ai.trace` logger plus optionally via `LlmTraceWriter` to the `LlmTraceDocument` collection. ALWAYS sees the raw model response including any existing reasoning markup or inline emitted tool calls.
 - **`SanitizingChatModel`** processes the response in two stages:
-  1. **Message Parser Stage** (if a `MessageParser` is bound, see §4.1.1): rewriting of the `AiMessage` — typically synthesizes `ToolExecutionRequest`s from inline emitted tool-call text (Gemma-4) or fixes malformed `function.arguments` (DeepSeek-V4).
-  2. **Think-Tag-Strip Stage** (if `modelInfo.stripThinkTags() == true`): clones the `ChatResponse` with a cleaned `AiMessage` (Tool-Execution-Requests remain untouched), so all consumers above (Engines, chat_messages persistence, History-Replay, Judges) only see the final user text.
+  1. **Message Parser Stage** (if a `MessageParser` is bound, see §4.1.1): rewriting of the `AiMessage` — typically synthesizes `ToolExecutionRequest`s from inline emitted tool call text (Gemma-4) or repairs malformed `function.arguments` (DeepSeek-V4).
+  2. **Think-Tag-Strip Stage** (if `modelInfo.stripThinkTags() == true`): clones the `ChatResponse` with a cleaned `AiMessage` (Tool-Execution-Requests remain untouched), so that all consumers above (Engines, chat_messages persistence, History replay, Judges) only see the final user text.
 
   Default behavior (both flags inactive, no parser bound): no wrap, no overhead.
 
 **Why not in the Engine:** Engines (Arthur, Eddie, Ford, Marvin, …) consume `response.aiMessage().text()` and `aiMessage().toolExecutionRequests()` and should NOT have to know per provider/model which markup to expect or which model emits text instead of structured tool calls. Sanitizer and MessageParser are *cross-cutting* and belong on the provider side — analogous to the trace logger.
 
-**Raw-Thoughts-Capture (instead of pure discarding).** The raw narration that the model streams during the turn (for reasoning models, the `<think>…</think>` monologues from Qwen3/DeepSeek-R1/Granite or Harmony-`analysis`-channels for GPT-OSS) is valuable to the user — they want to be able to reread their live-seen thoughts later. Instead of discarding them, the Engines of the Structured-Action family (Arthur, Eddie) accumulate the **raw response text of each loop iteration verbatim** per turn (analogous to the `historyTagSink` pattern, in the `TurnReasoningBuffer`) and write it as a separate `thinking` field to the `ChatMessageDocument` during persistence — separate from the final `content` (which comes from the structured action `message` field). **Nothing is filtered**: the `thinking` value is exactly the text the client saw streaming. Models that only emit the action tool call without free text (typically non-reasoning models like Claude) provide empty text → `null`, no field. The `thinking` content goes via `ChatMessageDto`/`ChatMessageAppendedData` to the clients; the Web UI displays it as an expandable, verbatim rendered "thoughts" section below the answer (see [web-ui.md](web-ui.md) §6.5). Important: on the **streaming path**, the strip stage does not apply (partial tokens pass through raw), so the raw narration for the chat turn is in the aggregated `aiMessage().text()` and encapsulated there.
+**Raw-Thoughts-Capture (instead of pure discarding).** The raw narration that the model streams during the turn (for reasoning models, the `<think>…</think>` monologues from Qwen3/DeepSeek-R1/Granite or Harmony-`analysis`-channels for GPT-OSS) is valuable to the user — they want to be able to reread their live-seen thoughts later. Instead of discarding them, the Engines of the Structured-Action family (Arthur, Eddie) accumulate the **raw response text of each loop iteration verbatim** per turn (analogous to the `historyTagSink` pattern, in the `TurnReasoningBuffer`) and write it as a separate `thinking` field to the `ChatMessageDocument` during persistence — separate from the final `content` (which comes from the structured action `message` field). **Nothing is filtered**: the `thinking` value is exactly the text the client saw streaming. Models that only emit the action tool call without free text (typically non-reasoning models like Claude) provide empty text → `null`, no field. The `thinking` content goes to clients via `ChatMessageDto`/`ChatMessageAppendedData`; the Web UI displays it as an expandable, verbatim rendered "thoughts" area below the response (see [web-ui.md](web-ui.md) §6.5). Important: on the **streaming path**, the strip stage does not apply (partial tokens pass through raw), so the raw narration for the chat turn is in the aggregated `aiMessage().text()` and is encapsulated there.
 
 ### 4.1.1 MessageParser SPI
 
@@ -573,11 +596,11 @@ Concrete `@Component` implementations (`Gemma4MessageParser`, `DeepSeekV4Message
 **Resolution Cascade for `messageParser`** (outermost → innermost; innermost wins):
 
 ```
-1. Project Layer YAML    _vance/model/<provider>/<model>.yaml    (explicit)
-2. _tenant Layer YAML    _vance/model/<provider>/<model>.yaml    (explicit)
-3. _vance Layer YAML     _vance/model/<provider>/<model>.yaml    (explicit)
-4. Bundled per-model     vance-defaults/_vance/model/<...>.yaml  (explicit)
-5. Bundled Quirks File   vance-defaults/model-quirks.yaml        (Pattern Match by Name)
+1. Project-Layer YAML    _vance/model/<provider>/<model>.yaml    (explicit)
+2. _tenant-Layer YAML    _vance/model/<provider>/<model>.yaml    (explicit)
+3. _vance-Layer YAML     _vance/model/<provider>/<model>.yaml    (explicit)
+4. Bundled per-model    vance-defaults/_vance/model/<...>.yaml  (explicit)
+5. Bundled Quirks-File   vance-defaults/model-quirks.yaml        (Pattern match by Name)
 6. null  (no parser — pass-through)
 ```
 
@@ -596,22 +619,55 @@ rules:
 
 **Why this way:**
 
-- **Zero-config for the default case.** New models of the Gemma-4 or DeepSeek-V4 family are automatically recognized without having to maintain per-model YAMLs anywhere.
-- **One place for "known quirks."** `model-quirks.yaml` is versioned with the Brain code and visible in code review — no scattered settings.
+- **Zero-Config for the default case.** New models of the Gemma-4 or DeepSeek-V4 family are automatically recognized without having to maintain per-model YAMLs anywhere.
+- **One place for "known quirks".** `model-quirks.yaml` is versioned with the Brain code and visible in code review — no scattered settings.
 - **Specific beats general.** An override in the per-model YAML (`messageParser: null` or a different parser name) wins against the pattern.
-- **No auto-detection in the hot path.** Selection is data-driven and resolved once during model resolution — no per-turn regex race. Defensive `canParse` checks live *within* the concrete parser implementation, not in the routing.
+- **No auto-detection in the hot path.** Selection is data-driven and resolved once during model resolution — no per-turn regex race. Defensive `canParse`-checks live *within* the concrete parser implementation, not in the routing.
 
 **Adding a new parser:**
 
 1. `@Component` under `de.mhus.vance.brain.ai.parser` with `MessageParser` implementation.
-2. One line in `model-quirks.yaml` with `match` pattern + `messageParser` name (if cross-provider).
+2. A line in `model-quirks.yaml` with `match` pattern + `messageParser` name (if cross-provider).
 3. Unit test with the concrete LLM output snippet (preferably verbatim from Brain log).
 
 The `name()` is validated by `MessageParserRegistry` on boot; unknown names in `messageParser` fields produce a WARN log line, but no boot error — the response then simply passes through unchanged.
 
+#### 4.1.2 Request Quirks — `outputTokenParam`, `unsupportedParams`, `reasoningEffortWhenOff`
+
+The same quirks file carries not only response rewrites but also **request** quirks: three `ModelInfo` fields that describe the dialect a model requires on the wire. All three were verified against `openai:gpt-5.6-sol` on 2026-08-10 (`ModelWireProbeAiTest`, see below) — each one was a hard HTTP 400 that killed the turn.
+
+**`outputTokenParam`** (`max_tokens` | `max_completion_tokens`, Default `max_tokens`) — which field carries the output cap; the `OpenAiProvider` reads it when building the request builder. OpenAI's reasoning models (o-series, gpt-5 upwards) reject `max_tokens` with HTTP 400 and require `max_completion_tokens`; all other OpenAI-wire endpoints (cortecs, LM Studio, Ollama, GLM, DeepSeek) only know the historical field. This makes it a **per-model fact**, not a provider switch.
+
+**`unsupportedParams`** (list of `temperature`/`top_p`/`top_k`/`frequency_penalty`/`presence_penalty`/`seed`/`stop`, Default empty) — sampling knobs that the model rejects. `AbstractChatProvider` nulls them **centrally** before `buildModels`, i.e., uniformly for every provider; the model then runs on its own defaults instead of refusing the request. This is not cosmetic: `AiChatOptions` sets `temperature` via builder default, so a reasoning model without this entry is dead in **every** turn. An **empty list in YAML is a statement** ("accepts everything") and beats the pattern; a missing field inherits it.
+
+**`reasoningEffortWhenOff`** (String, Default unset) — what is sent when Vance *does not* want reasoning. Normal case: send nothing. Reasoning-native models (gpt-5.x) think by default and then refuse this in combination with function tools (`"Function tools with reasoning_effort are not supported … set reasoning_effort to 'none'"`) — since every Engine turn carries a tool manifest, the "off" must be explicitly stated. Consequence in the catalog: the `gpt-5.6-*` models **deliberately do not** have a `thinking` capability, otherwise a `thinking: medium` Recipe could override the pin again.
+
+```yaml
+rules:
+  - match: "gpt-5*"
+    outputTokenParam: "max_completion_tokens"
+    unsupportedParams: ["temperature", "top_p", "frequency_penalty", "presence_penalty", "stop"]
+    reasoningEffortWhenOff: "none"
+```
+
+Cascade identical to `messageParser` (per-model YAML beats pattern beats default), with two additions:
+
+- **Resolution per field.** A rule can carry `messageParser`, `outputTokenParam`, or both; it searches for the first rule that sets the *requested* field. This prevents a parser rule from obscuring a later token rule for the same model.
+- **Patterns apply even without a catalog entry.** The synthetic `ModelInfo` fallback for an unknown model also goes through the quirks — an uncataloged gpt-5 derivative would otherwise die on the 400 error just because no one wrote its YAML.
+
+**Onboarding a new model — `ModelWireProbeAiTest`.** The dialect facts above were not guessed, but measured. `qa/ai-test/.../ModelWireProbeAiTest` (opt-in via `VANCE_MODEL_PROBE=1`) boots a Brain, resolves the default model configured via settings, and fires **one** single-sentence call per request parameter — without Engine, without Session, without tool manifest. Each parameter is a separate test method, so the Surefire report is the compatibility matrix; the provider error message in the assert is the phrasing that belongs in the model YAML.
+
+```bash
+VANCE_MODEL_PROBE=1 \
+VANCE_INIT_SETTINGS_FILE=$PWD/confidential/init-settings-<model>.yaml \
+    ./wb qa ModelWireProbeAiTest
+```
+
+The probe covers the parameter level; the tool level (e.g., the `reasoning_effort`-with-tools conflict) only shows up in a real Engine turn — for this, a small E2E like `EddieLearnAiTest` with the same init-settings file is sufficient.
+
 ### 4.2 Provider Implementation Convention — `AbstractChatProvider`
 
-Each concrete provider (`AnthropicProvider`, `GeminiProvider`, `OpenAiProvider`, `OllamaProvider`, `OllamaCloudProvider`, `LmStudioProvider`) inherits from `AbstractChatProvider`. The base class handles recurring orchestration:
+Each concrete provider (`AnthropicProvider`, `GeminiProvider`, `OpenAiProvider`, `OllamaProvider`, `OllamaCloudProvider`, `LmStudioProvider`) inherits from `AbstractChatProvider`. The base class handles the recurring orchestration:
 
 ```
 final AiChat createChat(config, options):
@@ -626,10 +682,10 @@ final AiChat createChat(config, options):
 
 Subclasses only implement `buildModels(...)` (langchain4j `ChatModel`/`StreamingChatModel` construction) and optionally override `applyOptionGates(...)` for provider-specific option transformations (e.g., Anthropic's Capability/Cache-Kill). Provider-specific `@Value` configs (BaseURL, cacheEnabled) remain in the concrete class.
 
-**What this pattern achieves:** new cross-cutting layers (e.g., a future rate-limiter decorator, a new trace layer) land in **one** place (`AbstractChatProvider.createChat` or `StandardAiChat`) instead of six times in each provider. Concrete examples:
+**What this pattern buys:** new cross-cutting layers (e.g., a future rate-limiter decorator, a new trace layer) land in **one** place (`AbstractChatProvider.createChat` or `StandardAiChat`) instead of sixfold in each provider. Concrete examples:
 
-- The `stripThinkTags` field + `SanitizingChatModel` layer was added without any of the six providers getting their own logic for it.
-- The `messageParser` field + `MessageParserRegistry` lookup + Gemma-4-/DeepSeek-V4-Parser (see §4.1.1) were also later added exclusively in the template method — provider constructors only received the registry as an additional parameter.
+- `stripThinkTags` field + `SanitizingChatModel` layer was retrofitted without any of the six providers getting their own logic for it.
+- `messageParser` field + `MessageParserRegistry` lookup + Gemma-4-/DeepSeek-V4-Parser (see §4.1.1) were later also added exclusively in the template method — provider constructors only received the registry as an additional parameter.
 
 ---
 
@@ -679,7 +735,7 @@ quota_status:
     tokens_limit: 20000000
 ```
 
-### Warning Thresholds (Configurable per Level)
+### Warning Thresholds (configurable per level)
 
 | Threshold | Action |
 |----------|--------|
@@ -706,15 +762,15 @@ tenant:
         light: good
 ```
 
-Free Accounts without their own key only use the local LLM. Projects with grant budgets use cloud LLMs. The fallback to local works transparently.
+Free Accounts without their own key only use the local LLM. Projects with grant budgets use Cloud LLMs. The fallback to local works transparently.
 
 ---
 
 ## 7. Model Routing per Task Type
 
-| Task Type | Typical Model | Reason |
+| Task Type | Typical Model | Why |
 |----------|-----------------|-------|
-| **Tree Planning** | Strong (Claude Sonnet) | Tree structure requires reasoning |
+| **Tree Planning** | Strong (Claude Sonnet) | Tree structure requires Reasoning |
 | **Extract** | Medium (Gemini Flash) | Simpler |
 | **Analyze / Verify** | Strong | Requires critical thinking |
 | **Synthesize** | Strong | Creative + analytical |
@@ -737,13 +793,13 @@ Preferences cascade for model selection: Think Process override → Project pref
 
 ## 7a. Model Characteristics: Context-Discipline vs. Training-Trust
 
-Models of the same performance class behave **differently disciplined** when tool outputs or user corrections contradict their training snapshot. For Vancetope, this is not academic — the architecture is designed for workers to retrieve fresh data and for the model to *synthesize* an answer from it. If the model ignores fresh data in favor of its training, the entire research pipeline is ineffective.
+Models of the same performance class behave **differently disciplined** when tool outputs or user corrections contradict their training snapshot. For Vancetope, this is not academic — the architecture is designed for Workers to fetch fresh data and for the model to *synthesize* an answer from it. If the model ignores fresh data in favor of its training, the entire research pipeline is ineffective.
 
 ### Two Dimensions
 
 | Dimension | Description | Failure Mode |
 |---|---|---|
-| **Context-Discipline** | How strongly does the model respect the content of its context window (tool outputs, previous Assistant replies with sources, user corrections) against its training? | Model rejects fresh facts as "not official" / "does not exist", even though its own web search confirmed them one message earlier |
+| **Context-Discipline** | How strongly does the model respect the content of its context window (tool outputs, previous Assistant replies with source attribution, user corrections) against its training? | Model rejects fresh facts as "not official" / "does not exist", even though its own web research confirmed them in a previous message |
 | **Tool-Loop-Persistence** | Can the model sustain a multi-stage tool loop until an answer (Decompose → Call Recipe → Use Result)? | Model runs dozens of LLM calls without a single tool call because it "knows" what the answer is |
 
 ### Observed Profiles (as of 2026-06-15)
@@ -764,18 +820,18 @@ This table is **empirical**, not exhaustive. It is based on Vancetope-internal r
 
 Vancetope Recipes have a sensible default model alias (`default:analyze`, `default:web`, `default:deep`). Tenant Operators configure the *binding* of these aliases. The recommendation to Operators:
 
-- `default:fast` can be a model with weak Context-Discipline (classification / triage benefits from training trust)
-- `default:analyze`, `default:web`, `default:deep` **should** be bound to models with strong Context-Discipline, otherwise Ford workers and Marvin trees are self-serving theater
+- `default:fast` may be a model with weak Context-Discipline (classification / triage benefits from training trust)
+- `default:analyze`, `default:web`, `default:deep` **should** be bound to models with strong Context-Discipline, otherwise Ford Workers and Marvin Trees are self-serving theater
 
 In Vancetope v1, this is **not** enforced by an automatic selector — Tenants have their own provider contracts. The character information in this table is decision support for `init-settings-*.yaml` and Web UI setting forms, not code.
 
-### Symptoms in Trace (Diagnostic Heuristics)
+### Symptoms in the Trace (Diagnostic Heuristics)
 
 If a Tenant complains about poor research results, check in this order:
 
-1. **Tool-Loop-Persistence** — how many LLM calls per tool call? If ratio > 20:1 in a Marvin/Ford session: model is self-serving. Switch.
-2. **Context-Discipline** — search the Final-Reply for phrases like "does not exist", "not publicly available", "no official model", even though earlier Assistant replies or tool results prove the opposite. If such a passage is found: model is overriding context with training. Switch.
-3. **Source Attribution** — Final-Reply without `[source: url]` anchors in research tasks means: model did not take its own tool outputs seriously as evidence. Marginal case — can predict symptom 2.
+1. **Tool-Loop-Persistence** — how many LLM calls per tool call? If ratio > 20:1 in a Marvin/Ford session: model is self-occupied. Change.
+2. **Context-Discipline** — search the Final-Reply for phrases like "does not exist", "not publicly available", "no official model", even though earlier Assistant replies or Tool Results prove the opposite. If such a passage is found: model is overriding Context with Training. Change.
+3. **Source Attribution** — Final-Reply without `[source: url]` anchor in research tasks means: model did not take its own tool outputs seriously as evidence. Marginal case — can predict symptom 2.
 
 ### What this table does NOT do
 
@@ -802,9 +858,56 @@ llm_config:
     fallback_to_local: true
 ```
 
+### 8.1 Empty Completions — Retryable vs. Deterministic
+
+`ResilientStreamingChatModel` retries not only exceptions, but also **successful but empty** completions (no text, no tool call) — these come via `onCompleteResponse` and would never reach the exception path. Two causes, two treatments:
+
+| Case | Symptom | Treatment |
+|---|---|---|
+| Provider glitch / Model collapse | empty, `finish` ≠ `LENGTH` (e.g., Gemini with `STOP`) | retry, max. 3 attempts with backoff, then chain advance |
+| Output cap exhausted | empty, `finish = LENGTH` | **no** retry — chain advance directly, otherwise deliver empty response |
+
+The `LENGTH` case is deterministic: the model has exhausted its `max_tokens` budget (for reasoning models, typically completely in `reasoning_content`), an identical re-request hits the same wall. Retries only cost tokens and wall-clock there. Chain advance remains allowed — a fallback entry can carry a larger cap and save the turn.
+
+In both cases, the empty response is delivered **unchanged** to the caller (including `finishReason`), not converted into an error. The Engine decides what happens next.
+
+**Engine side: `StreamedReply`.** Engines no longer reduce a completion directly to its `AiMessage` — that discarded the `finishReason`, precisely the information needed to distinguish the two cases. Instead, `StreamedReply` (`vance-brain/.../ai/`) encapsulates `message` + `finishReason` + `maxOutputTokens` (the latter read from the request, not from the model config — the user should see the value that was actually on the wire) and offers `isEmpty()`, `atOutputCap()`, and `emptyReplyMessage(collapseMessage, stateNote)`. The truncation text is formulated **once** there (diagnosis + buttons are the same everywhere); the non-truncation formulation remains per Engine because how it's parked and whether a rephrase helps at all differs.
+
+Consumers:
+
+- **Frankie** — persists the Assistant message and parks `BLOCKED`.
+- **Trillian-Control** — has *in addition* to the resilience layer its own one-time retry; this is skipped for `LENGTH` and the message says "Output limit" instead of "Rephrase the question". Exit remains `IDLE`.
+- **Trillian-User** — headless, a silent turn is normal and there is no user to notify. Instead of a message, there is a WARN line for `LENGTH` so that the config cause does not disappear as a "quiet turn" in the log.
+
 ---
 
 ## 9. LLM Usage Dashboard
+
+**Built (v2):** two levels, one write path.
+
+**Usage is recorded at the seam, not at the call site.** A `UsageAccountingChatModel` sits as a decorator in the model chain, attached in `AbstractChatProvider.createChat` — the only place through which every chat is built. It is **within** `ResilientChatModel` and **below** the trace log, thus seeing every attempt: retries, chain fallbacks, aborted streams, and failed attempts, all of which were previously invisible. Previously, callers booked themselves, and those who didn't book didn't exist — Jeltz (and thus Magrathea's `agent_task`), Agrajag, Eddie's LLM triage, and Cortex Deep-Validate ran completely unbilled.
+
+**Who pays is a mandatory parameter.** `createChat(config, options, attribution)` takes a `CallAttribution` (`vance-shared`, an object instead of six loose fields, unpacked all the way to the ledger write). A caller who does not provide it will cause a compile error. **Not to be confused with `AiChatOptions.tenantId/projectId`** — these indicate against which level the model catalog resolves (a tenant-pinned Process deliberately leaves `projectId` empty there), while billing must still name the Project that consumed the tokens. Two questions, two fields.
+
+Instead of `engineName`, the dimension is called **`caller`**: Think Engines by their name, everything else names itself — `_light` (single-shot helpers: Discovery, Follow-Up, Title-Gen), `_triage`, `_compaction`, `_fenchurch` (images), `_rag` (embeddings), `_deep-validate`. "Engine" hasn't been accurate for a while. Not `source`: that word in this tree means the opposite direction (Zarniwoop/Centauri/Jaglan — external data coming in).
+
+**Two levels, two lifespans:**
+
+- **`llm_usage_daily`** is the billing: a bucket per `(tenant, UTC-day, project, caller, recipe, model, currency, kind)`, incremented live via atomic `$inc`-upsert (deterministic `bucketId` = the key itself, hashed; duplicate-key race → one retry). No night job, no lease, no watermark — and "today" is complete, instead of needing permanent special treatment in the report. Default retention: forever.
+  **Amounts are integer micro-units** (`cost*Micros`, 1e-6 of the currency), not `double`. These fields are added via `$inc` once per attempt and never recalculated — and when the detail lines are gone after 60 days, they are the only remaining proof. IEEE-754 accumulation is lossy *and* order-dependent; irrelevant for a diagnostic counter, but not for the number on the invoice. `LlmUsageService.toMicros/fromMicros` are the only converters, conversion happens only on read. Detail lines retain `double` — nothing sums there. Migration: `2026-08-24_001`.
+- **`llm_usage_records`** is the diagnosis: one line per attempt with Session/Process/Attempt/Rate snapshot. Short-lived (60 days success, 14 days failed attempts) and switchable via setting — which is only possible now that the daily balance is the billing.
+
+Retention via the cascade (`usage.retentionDays`, `usage.detailRetentionDays`, `usage.detailRetentionDaysFailed`) plus TTL index, as with the Megadodo feed. Detail is tri-state (`>0` days / `0` forever / `<0` do not write at all), the daily balance is bi-state — billing cannot be turned off by a number.
+
+**Coverage is reported, not smoothed.** A model without a `pricing:` block is *unknown*, not *free*; the line carries actual tokens and 0 cost, and the bucket counts `unpricedCalls` so the report can say "the amount covers 94% of calls". To ensure "no block" unambiguously means "price missing", locally running models (ollama/lmstudio) declare an **explicit zero rate**. Failed attempts are counted separately and never included in the amount.
+
+One level below is `unmeasuredCalls`: a successful call for which the provider **did not report any** token numbers (some Ollama/LM Studio endpoints). Such calls were initially *discarded* — "a zero line adds no information". The discarded information was that the call **did happen**: the endpoint completely disappeared from the report, and a missing line reads as "nothing ran there". Now it is booked and marked. The difference from `unpricedCalls` is the question that is open: there, the *rate* is missing, here, the *tokens* are missing.
+
+Read side: `GET /brain/{tenant}/usage/{summary,by-project,by-model,by-caller,by-recipe}` (Tenant-`ADMIN`, `by-engine` remains as an alias), rendered in the Insights tab "Usage & Cost". All five are projections of the same bucket key, summed over buckets instead of millions of individual lines — therefore, a multi-year window can also be answered. `detailHorizon` in the DTO indicates when drill-down is still available; it is read from the oldest existing detail line, not calculated from the setting (which would lie after every change).
+
+`LlmCallTracker` maintains the live HUD and Prometheus counters — these need the Process and are not billing.
+
+The following mockup is the **target sketch** (quotas/warnings are not yet built):
 
 ```
 Token Usage — Today (Account: Mike)
@@ -835,15 +938,15 @@ LLM Credentials + Quotas at every level:
 
 Per Call:
   1. Determine model (Purpose → Preferences cascade)
-  2. Find provider + key (Credential cascade)
+  2. Find Provider + Key (Credential cascade)
   3. Check quota (ALL levels, all must be OK)
-  4. Instantiate fresh ChatClient
+  4. Instantiate a fresh ChatClient
   5. Execute call
   6. Track usage at all levels
 ```
 
 > **Every LLM call is a fresh client.**
-> Credentials and budgets can reside at Account, Project, Team, or Tenant level.
+> Credentials and budgets can be at Account, Project, Team, or Tenant level.
 > All applicable quotas are checked and charged simultaneously.
 
 ---
@@ -852,11 +955,11 @@ Per Call:
 
 | Phase | What |
 |-------|-----|
-| **v1** | One provider, one key (Environment), global tracking |
-| **v1.5** | Account-level keys, provider resolution, quota per Account |
-| **v2** | Project-level keys + quotas, multi-provider, failover |
-| **v2** | Local LLM as free tier, model routing per task type |
-| **v3** | Team/Tenant-level sharing, usage dashboard, warnings |
+| **v1** | One Provider, one Key (Environment), global tracking |
+| **v1.5** | Account-Level Keys, Provider Resolution, Quota per Account |
+| **v2** | Project-Level Keys + Quotas, Multi-Provider, Failover |
+| **v2** | Local LLM as Free-Tier, Model Routing per Task Type |
+| **v3** | Team/Tenant-Level Sharing, Usage Dashboard, Warnings |
 
 ---
 

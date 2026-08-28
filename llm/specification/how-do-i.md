@@ -1,34 +1,34 @@
 # Vancetope — `how_do_i` Discovery Tool
 
-> A Discovery Tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full Source Catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `{{ sources }}`.
+> A discovery tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full source catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `{{ sources }}`.
 >
-> Purpose: Prompt scaling. Instead of mentioning a Manual hook in the Engine Prompt for every new capability, the Prompt gets **a single** Discovery line — O(1) in the Prompt footprint, regardless of how many Manuals/Skills/Tools exist.
+> Purpose: Prompt scaling. Instead of mentioning a Manual hook in the Engine prompt for every new capability, the prompt gets **a single** Discovery line — O(1) in prompt footprint, regardless of how many Manuals/Skills/Tools exist.
 >
 > See also: [prompts-and-manuals](prompts-and-manuals.md) | [skills](skills.md) | [recipes](recipes.md) | [prompt-caching](prompt-caching.md) | [jeltz-engine](jeltz-engine.md)
 
 ---
 
-## 1. Purpose & Scope
+## 1. Purpose & Delimitation
 
-**Problem.** With every new capability, the Engine Prompt grows by a Manual hook. This works for 15 Manuals. With 50+, the pattern collapses in three areas: token cost per turn (linear), attention dilution in the LLM, and maintainability (drift between Prompt hooks and actual Manuals).
+**Problem.** With every new capability, the Engine prompt grows by a Manual hook. This works for 15 Manuals. With 50+, the pattern collapses in three areas: token costs per turn (linear), attention dilution in the LLM, and maintainability (drift between prompt hooks and actual Manuals).
 
-**Solution.** A tool called by the Caller LLM when it is unsure how to do something. The tool internally calls a `DiscoveryService` that uses the `how-do-i` Recipe as a config layer (model, Pebble template) and calls the LLM **directly** (Jeltz-style single-shot call with schema validation loop — **no** Process spawn, **no** Lane lock). The Worker LLM sees the full Source Catalog in the Prompt (via `{{ sources }}`) and responds with the appropriate match in one of three JSON shapes. The Caller Prompt contains only **one** line about it (plus the negation trap from [prompts-and-manuals §4](prompts-and-manuals.md#regel-3-anti-pattern--negation-explizit-abfangen)).
+**Solution.** A tool called by the caller LLM when it is unsure how to do something. The tool internally calls a `DiscoveryService` that uses the `how-do-i` Recipe as a config layer (model, Pebble template) and calls the LLM **directly** (Jeltz-style single-shot call with schema validation loop — **no** Process spawn, **no** Lane lock). The worker LLM sees the full source catalog in the prompt (via `{{ sources }}`) and responds with the appropriate match in one of three JSON shapes. The caller prompt contains only **one** line about it (plus the negation trap from [prompts-and-manuals §4](prompts-and-manuals.md#regel-3-anti-pattern--negation-explizit-abfangen)).
 
 **What it is not:**
 - Not a replacement for `manual_read('name')` — these tools remain primitives for direct lookup when the Manual name is already known.
 - Not a RAG endpoint for Project Documents — see [rag](rag.md). Discovery is for **capability knowledge**, not user content.
 - Not a Recipe selector for `DELEGATE` decisions — Recipe selection remains in the Engine code (`RecipeResolver`). Recipes are **not** indexed in v1.
 
-### 1a. `DISCOVER` Action vs. `how_do_i` Tool (Two Entry Points, One Backend)
+### 1a. `DISCOVER` Action vs. `how_do_i` Tool (two entry points, one backend)
 
 Discovery currently has **two entry points**, both running on the same `DiscoveryService`:
 
 | Entry Point | When | Where Defined |
 |---|---|---|
-| `DISCOVER` Action (`type: "DISCOVER"`, `intent: …`) | **User mentions a term the Engine doesn't know** — Vancetope jargon, Kit feature, invented word, ambiguous metaphor. Top-level decision: "before I even build an answer, I need to look it up". | `ArthurActionSchema.TYPE_DISCOVER` / `EddieActionSchema.TYPE_DISCOVER` |
-| `how_do_i` Tool | **Engine knows the term but wants to validate a detail** — e.g., check fence syntax before the first fence block, or confirm the Kind's schema before `doc_create`. Mid-turn tool call, not a separate Action Type. | `tools/discovery/HowDoITool.java` |
+| `DISCOVER` Action (`type: "DISCOVER"`, `intent: …`) | **User names a term the Engine doesn't know** — Vancetope jargon, Kit feature, invented word, ambiguous metaphor. Top-level decision: "before I even build an answer, I need to look it up". | `ArthurActionSchema.TYPE_DISCOVER` / `EddieActionSchema.TYPE_DISCOVER` |
+| `how_do_i` Tool | **Engine knows the term but wants to validate a detail** — e.g., check fence syntax before the first fence block, or confirm the Kind's schema before `doc_write`. Mid-turn tool call, not a separate Action Type. | `tools/discovery/HowDoITool.java` |
 
-**Engine Lifecycle for DISCOVER (continuing action):** LLM emits `arthur_action(type=DISCOVER, intent=…)`; Engine calls `DiscoveryService.discover(intent)` synchronously, formats the result as JSON (same shape as `how_do_i`: `loaded` / `alternatives` / `hint`), returns it as a Tool Result to the Action loop. The next iteration sees the result and selects the actual Action (ANSWER / DELEGATE / ASK_USER / …).
+**Engine Lifecycle for DISCOVER (continuing action):** LLM emits `arthur_action(type=DISCOVER, intent=…)`; Engine calls `DiscoveryService.discover(intent)` synchronously, formats the result as JSON (same shape as `how_do_i`: `loaded` / `alternatives` / `hint`), returns it as a tool result to the Action loop. The next iteration sees the result and selects the actual Action (ANSWER / DELEGATE / ASK_USER / …).
 
 **Why two paths?** Structural separation in the model prompt. The `DISCOVER` Action forces the LLM to answer "do I know this or not?" as the **first** question, before even reaching the tool-picking phase. The tool remains for in-flight refinement. Benchmark `HowDoIReflexBenchmark` validates: 1/5 → 4/5 after the introduction of DISCOVER.
 
@@ -92,15 +92,15 @@ Errors:
 
 ---
 
-## 3. Sources of Truth — What Goes into the Catalog (v1)
+## 3. Sources of Truth — what goes into the Catalog (v1)
 
 Three sources, all pre-computable per Tenant:
 
-| Source | What Goes into the Catalog | Update Trigger |
+| Source | What goes into the Catalog | Update Trigger |
 |---|---|---|
-| **Engine Manuals** (`vance-defaults/manuals/*.md` + Sub-Folder) | **Summary Card**: H1-Title + Front-Matter-`triggers` + Front-Matter-`summary` (Fallback: first paragraph after H1, truncated to ~400 characters) | Spring-Boot-Start (idempotent via Content-Hash); Document-Save-Hook for Tenant-/Project-Overrides |
-| **Skill Definitions** (`SKILL.md` from Kits) | `title` + `description` + `triggers.keywords` + `promptExtension` (truncated to ~150 characters) | Kit-Install/Update |
-| **Tool Descriptions** (`@Component`-Tools) | `name()` + `description()` from Java code | Spring-Boot-Start |
+| **Engine Manuals** (`vance-defaults/manuals/*.md` + sub-folders) | **Summary Card**: H1-Title + Front-Matter-`triggers` + Front-Matter-`summary` (Fallback: first paragraph after H1, truncated to ~400 characters) | Spring-Boot start (idempotent via content hash); Document-Save-Hook for Tenant/Project overrides |
+| **Skill Definitions** (`SKILL.md` from Kits) | `title` + `description` + `triggers.keywords` + `promptExtension` (truncated to ~150 characters) | Kit install/update |
+| **Tool Descriptions** (`@Component` Tools) | `name()` + `description()` from Java code | Spring-Boot start |
 
 **Manual Header Convention** (optional, no YAML — see [prompts-and-manuals §3](prompts-and-manuals.md#3-manual-anatomie)):
 
@@ -108,7 +108,7 @@ Three sources, all pre-computable per Tenant:
 ---
 triggers: image, picture, screenshot, Bild
 summary: How to show a picture in chat.
-requires-tools: image_generate, doc_create
+requires-tools: image_generate, doc_write
 ---
 # Embedding — Images
 
@@ -116,20 +116,20 @@ requires-tools: image_generate, doc_create
 ```
 
 - `triggers` is a comma-separated keyword list, multilingual where appropriate. Helps the Discovery LLM find the Manual via keyword match.
-- `summary` is a single-line description that ends up in the Catalog as a Description block. If missing, the builder falls back to the first prose paragraph after the H1 (truncated to ~400 characters).
-- **`requires-tools`** is a comma-separated list of Tool names. If set, the `DiscoveryService` hides the Manual from the Catalog if **any** of the tools are not in the calling Worker's Engine Allow Set — the LLM then only sees Manuals whose prerequisites it can actually fulfill. Missing = no condition. Implementation: `CatalogFilter.filter(snapshot, allowedTools)` in the 5-arg `discover(intent, tenantId, projectId, processId, allowedTools)` path; the 4-arg path remains unchanged (no filter).
+- `summary` is a single-line description that ends up in the Catalog as a description block. If missing, the builder falls back to the first prose paragraph after the H1 (truncated to ~400 characters).
+- **`requires-tools`** is a comma-separated list of tool names. If set, the `DiscoveryService` hides the Manual from the Catalog if **any** of the tools are not in the calling worker's Engine Allow Set — the LLM then only sees Manuals whose prerequisites it can actually fulfill. Missing = no condition. Implementation: `CatalogFilter.filter(snapshot, allowedTools)` in the 5-arg `discover(intent, tenantId, projectId, processId, allowedTools)` path; the 4-arg path remains unchanged (no filter).
 - Manuals without a header still work — only Title + First-Paragraph end up in the Catalog. The header is an additive enrichment, not mandatory.
 
-**Allow-Set Filter for Tools:** Tool entries in the Catalog are also filtered against the Allow Set in the 5-arg `discover` path. Each Tool entry trivially "requires" itself — if the Tool name is not in the Allow Set, the entry is removed from the Catalog provided to the LLM. This ensures `how_do_i` never suggests a Tool that the calling Worker cannot invoke. Skill entries always remain (they have their own activation mechanism).
+**Allow-Set Filter for Tools:** Tool entries in the Catalog are also filtered against the Allow Set in the 5-arg `discover` path. Each Tool entry trivially "requires" itself — if the Tool name is not in the Allow Set, the entry is removed from the Catalog provided to the LLM. This way, `how_do_i` never suggests a Tool that the calling worker cannot invoke. Skill entries always remain (they have their own activation mechanism).
 
 **What v1 does NOT index (intentionally):**
 
-- Recipes — selection remains programmatic (`RecipeResolver`). This would be a duplicate path.
-- RAG Documents (Project content) — a different subsystem with different cache semantics.
-- Memory Learnings — not yet in production.
+- Recipes — selection remains programmatic (`RecipeResolver`). Would be a duplicate path.
+- RAG Documents (Project content) — different subsystem with different cache semantics.
+- Memory Learnings — not yet productive.
 - Workflow Snippets (Vogon Strategies etc.) — coming in v2 when the inventory grows.
 
-**Catalog Format** (Markdown, consumable by the Worker):
+**Catalog Format** (Markdown, consumable by the worker):
 
 ```markdown
 ## Manuals
@@ -165,19 +165,19 @@ and needs to turn it into one coherent thing. …
 Search the web for information about a topic. Returns titles,
 URLs, and snippets. …
 
-### document_link
+### doc_link
 Build a Markdown link to a Document. Resolves path, kind, project. …
 
 …
 ```
 
-The Worker receives this block as `{{ sources }}` via Pebble in the Prompt — see §4.
+The worker receives this block as `{{ sources }}` via Pebble in the prompt — see §4.
 
 ---
 
 ## 4. Backend — DiscoveryService on LightLlmService
 
-No Process spawn. Discovery is the **first consumer** of the central [`LightLlmService`](light-llm-service.md) — a Recipe-config-driven single-shot caller with a Jeltz-style schema loop. This makes the `DiscoveryService` a thin wrapper.
+No Process spawn. Discovery is the **first consumer** of the central [`LightLlmService`](light-llm-service.md) — a Recipe-Config-driven single-shot caller with a Jeltz-style schema loop. This makes the `DiscoveryService` a thin wrapper.
 
 **Path per call:**
 
@@ -196,7 +196,7 @@ how_do_i(intent)
        4. return structured result
 ```
 
-The `LightLlmService` handles: Recipe resolution, Pebble rendering, ChatModel build with fallbacks, schema loop. `DiscoveryService` provides **only** what is Discovery-specific: Catalog rendering and name cross-check against hallucinations.
+The `LightLlmService` handles: Recipe resolve, Pebble render, ChatModel build with fallbacks, schema loop. `DiscoveryService` provides **only** what is Discovery-specific: Catalog rendering and name cross-check against hallucinations.
 
 **Recipe `how-do-i.yaml`:**
 
@@ -292,7 +292,7 @@ public class DiscoveryService {
 
 Everything not Discovery-specific resides in `LightLlmService` — see [light-llm-service](light-llm-service.md) for details.
 
-**Engine field in Recipe** is for documentation only — the service does not spawn anything. We set `engine: jeltz` as a signal *"single-shot, schema-validated call"*; the field could also be named `engine: discovery-service`. The important thing is that the Recipe is not accidentally picked by the standard spawn path (for this, the Recipe is **not** listed in the public Recipe Catalog anyway, but marked as an internal config profile — detail in §9).
+The **Engine field in the Recipe** is for documentation only — the service does not spawn anything. We set `engine: jeltz` as a signal *"single-shot, schema-validated call"*; the field could also be named `engine: discovery-service`. The important thing is that the Recipe is not accidentally picked by the standard spawn path (for this, the Recipe is **not** listed in the public Recipe Catalog anyway, but marked as an internal config profile — detail in §9).
 
 **Pebble Render Context.** The `PromptTemplateRenderer` (see `recipes.md` §5) receives **two** additional variables for this path:
 
@@ -307,25 +307,25 @@ The other standard render variables (`tier`/`model`/`provider`/`mode`/…) remai
 
 The LLM responds with **one of the three JSON shapes** (see Recipe Prompt). `DiscoveryService` parses, validates against `DISCOVERY_SCHEMA`, checks capability names against the Catalog, and — for `loaded` + `type: manual` — loads the Manual body server-side. Final states:
 
-| LLM Output | Server Behavior | Tool Response (Caller Sees) |
+| LLM Output | Server Behavior | Tool Response (Caller sees) |
 |---|---|---|
 | `{ "loaded": { name, type:manual, summary } }` with valid name | `documentService.lookupCascade("manuals/<name>.md")` → Body in `loaded.content` | `{ loaded: { …, content: "<body>" }, alternatives: [], hint: null }` |
 | `{ "loaded": { name, type:skill\|tool } }` | No auto-load (no on-disk body), pointer passed through | `{ loaded: { name, type, summary }, alternatives: [], hint: null }` |
 | `{ "alternatives": [ … ] }` | Unknown names discarded, rest passed through | `{ loaded: null, alternatives: […], hint: null }` |
 | `{ "hint": "…" }` | Passed through directly | `{ loaded: null, alternatives: [], hint: "…" }` |
-| `loaded.name` not in Catalog **or** Cascade lookup empty | **Retry** — new LLM call with Correction variable (`{{ correction }}`) up to `MAX_DISCOVERY_ATTEMPTS = 3` | After exhausted attempts: `{ hint: "Discovery couldn't resolve a usable manual after 3 attempts. Bad picks: …" }` |
+| `loaded.name` not in Catalog **or** Cascade lookup empty | **Retry** — new LLM call with correction variable (`{{ correction }}`) up to `MAX_DISCOVERY_ATTEMPTS = 3` | after exhausted attempts: `{ hint: "Discovery couldn't resolve a usable manual after 3 attempts. Bad picks: …" }` |
 
 Caller processes:
-- `loaded` with `content` (type:manual) → **use directly**, no further Tool call. Backend has already loaded the body.
+- `loaded` with `content` (type:manual) → **use directly**, no further tool call. Backend has already loaded the body.
 - `loaded` without `content` (type:skill/tool) → use the respective skill/tool API.
-- `alternatives` → select one (by `summary`/`score`), then `manual_read(name)` for the body.
+- `alternatives` → select one (by `summary`/`score`), then call `manual_read(name)` for the body.
 - `hint` set → adjust intent or `manual_list()` as a last-resort enumeration.
 
-**Why full text inline despite Summary Card Catalog?** Clean separation: the **LLM** only sees Summary Cards (Catalog remains small, token-efficient, ~5 KB), the **server code** loads the body from the same Document Cascade that the Catalog summarized. This means:
+**Why full text inline despite Summary Card Catalog?** Clean separation: the **LLM** only sees Summary Cards (Catalog remains small, token-efficient, ~5 KB), the **server code** loads the body from the same Document Cascade that the Catalog summarized. This ensures:
 
 - Catalog scales (LLM sees O(KB) instead of O(MB) with 100+ Manuals).
 - No hallucination risk for the body — server path is deterministic, no LLM token generation of content.
-- Happy path remains 1 Tool call (`how_do_i` → done).
+- Happy path remains 1 tool call (`how_do_i` → done).
 - Anti-hallucination retry loop secures ID selection against LLM invention of names.
 
 **Confidence heuristic** lies in the LLM, not in a score table. Advantage: context-sensitive (e.g., if the Manual directly addresses the intent, confidence is higher than for a distant match).
@@ -348,7 +348,7 @@ public record CatalogSnapshot(String markdown, String contentHash) {}
 | Subsequent call | Cache hit, no rebuild. |
 | Manual invalidation | `invalidate(tenantId)` via code call — Document-Save-Hook is not yet wired. |
 
-**v2 (planned): Mongo Persistence.** When Vancetope runs multi-pod, the local cache layer will be supplemented by a `DiscoveryCatalogDocument`-Mongo-Collection as a shared source of truth:
+**v2 (planned): Mongo Persistence.** When Vancetope runs multi-pod, the local cache layer will be supplemented by a `DiscoveryCatalogDocument` Mongo collection as a shared source of truth:
 
 ```java
 @Document("discovery_catalog")
@@ -363,7 +363,7 @@ class DiscoveryCatalogDocument {
 
 Plus Document-Save-Hook on `manuals/`-Cascade and Kit-Install-Events for automatic invalidation.
 
-**Snapshot Size:** Per Tenant, depending on content, ~5–15 KB Markdown. With 200 Manuals + 50 Skills + 100 Tools, the snapshot would be ~50 KB — still uncritical for Mongo and for Prompt caching.
+**Snapshot Size:** Per Tenant, depending on content, ~5–15 KB Markdown. With 200 Manuals + 50 Skills + 100 Tools, the snapshot would be ~50 KB — still uncritical for Mongo and for prompt caching.
 
 ---
 
@@ -371,7 +371,7 @@ Plus Document-Save-Hook on `manuals/`-Cascade and Kit-Install-Events for automat
 
 The tool exists **in parallel** to `manual_read`/`manual_list`. No migration of existing hooks in v1 (spec decision 2026-05-26).
 
-Recommended hook line in the Engine Prompt — **one** compact section:
+Recommended hook line in the Engine prompt — **one** compact section:
 
 ```markdown
 ## When you're not sure how to do something
@@ -393,7 +393,7 @@ The tool returns one of three shapes:
 data does.
 ```
 
-Hooks for **Hot-Path Topics** with known failure modes (e.g., `embed-*`) **remain** additionally in the Prompt — rationale: the negation trap (*"Never say 'I cannot show images' without …"*) is topic-specific and not replaceable by generic `how_do_i`.
+Hooks for **Hot-Path Topics** with known failure modes (e.g., `embed-*`) **remain** additionally in the prompt — rationale: the negation trap (*"Never say 'I cannot show images' without …"*) is topic-specific and not replaceable by generic `how_do_i`.
 
 ---
 
@@ -402,14 +402,14 @@ Hooks for **Hot-Path Topics** with known failure modes (e.g., `embed-*`) **remai
 | Situation | Behavior |
 |---|---|
 | Intent empty / >500 characters | `InvalidIntent` |
-| Catalog snapshot not yet ready (boot in progress) | `CatalogUnavailable`, Tool Description advises retry-in-30s or `manual_list` as fallback |
-| LLM call fails (Provider 5xx, Timeout, Quota) | `LlmCallFailed` with Provider reason; standard resilient layer (fallback models from Recipe) intervenes beforehand |
-| LLM responds unparseable (no valid JSON) | Schema validator loop: Correction message appended, retry up to `maxAttempts`. On repeated failure: `SchemaValidationFailed` |
-| LLM invents capability names | `DiscoveryService` cross-checks the returned `name` against the Catalog. On mismatch, a new LLM iteration is performed with a `{{ correction }}` Pebble variable that lists previous failed attempts — up to `MAX_DISCOVERY_ATTEMPTS = 3`. Afterwards, `hint` with a list of failed attempts. |
-| `loaded.name` is in Catalog header, but `manuals/<name>.md` cannot be loaded (Catalog/Filesystem drift) | Same retry loop as for hallucination — the name ends up in the `badPicks` buffer, next iteration gets the correction. |
-| LLM still provides a `content` field | Ignored by `DiscoveryService`. `content` is exclusively populated server-side by `documentService.lookupCascade`. |
+| Catalog snapshot not yet ready (boot in progress) | `CatalogUnavailable`, tool description advises retry in 30s or `manual_list` as fallback |
+| LLM call fails (provider 5xx, timeout, quota) | `LlmCallFailed` with provider reason; standard resilient layer (fallback models from Recipe) intervenes beforehand |
+| LLM responds unparseable (no valid JSON) | Schema validator loop: correction message appended, retry up to `maxAttempts`. On repeated failure: `SchemaValidationFailed` |
+| LLM invents capability names | `DiscoveryService` cross-checks the returned `name` against the Catalog. On mismatch, a new LLM iteration is run with `{{ correction }}` Pebble variable, listing previous failed attempts — up to `MAX_DISCOVERY_ATTEMPTS = 3`. Afterwards, `hint` with list of failed attempts. |
+| `loaded.name` is in Catalog header, but `manuals/<name>.md` cannot be loaded (Catalog/Filesystem drift) | same retry loop as for hallucination — the name lands in the `badPicks` buffer, next iteration gets the correction. |
+| LLM still provides a `content` field | ignored by `DiscoveryService`. `content` is exclusively populated server-side by `documentService.lookupCascade`. |
 
-**Trust Signal:** the Tool Response contains `source` (engine/tenant/project) — the Caller can identify where the information comes from.
+**Trust Signal:** the Tool Response contains `source` (engine/tenant/project) — the caller can identify where the information comes from.
 
 ---
 
@@ -428,9 +428,9 @@ Hooks for **Hot-Path Topics** with known failure modes (e.g., `embed-*`) **remai
 | `discovery.enabled` | bool | true | v2 | Discovery-specific switch (in addition to `lightllm.enabled`) |
 | `discovery.recipe` | string | `how-do-i` | v2 | Tenant override of the Recipe name (currently via Document Cascade) |
 | `discovery.catalog.maxBytes` | int | 60_000 | v2 | Hard limit for Catalog size — truncation heuristic if exceeded |
-| `discovery.maxAttempts` | int | 3 | v2 | Discovery-specific override of `lightllm` defaults |
+| `discovery.maxAttempts` | int | 3 | v2 | Discovery-specific override over `lightllm` defaults |
 
-The `how-do-i` Recipe is marked as an **internal config profile** with `internal: true`. This means it is not listed in the public Recipe Catalog of the selector and cannot be accidentally spawned via `process_create(recipe="how-do_i")`. Recipe-specific settings (model, prompt, fallback models) go through the standard Recipe system.
+The Recipe `how-do-i` is marked as an **internal config profile** with `internal: true`. This means it is not listed in the public Recipe Catalog of the selector and cannot be accidentally spawned via `process_spawn(recipe="how-do-i")`. Recipe-specific settings (model, prompt, fallback models) go through the standard Recipe system.
 
 ---
 
@@ -439,10 +439,10 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 | Tool | Use Case | When to Use |
 |---|---|---|
 | `manual_list()` | Enumeration of all Manuals in Scope | Rarely — debug or general overview |
-| `manual_read(name)` | Direct lookup with known name | If the Prompt hook explicitly names it, or `how_do_i` recommended a name (via `alternatives`) |
+| `manual_read(name)` | Direct lookup with known name | If the prompt hook explicitly names it, or `how_do_i` recommended a name (via `alternatives`) |
 | `how_do_i(intent)` | Semantic search when uncertain | Default path for "how do I do X" |
 
-`how_do_i` is not mandatory — if the LLM already has the Manual name (via Prompt hook), it directly calls `manual_read`. `how_do_i` is the entry point for *new* or *uncertain* intents.
+`how_do_i` is not mandatory — if the LLM already has the Manual name (via prompt hook), it calls `manual_read` directly. `how_do_i` is the entry point for *new* or *uncertain* intents.
 
 ---
 
@@ -450,25 +450,25 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 
 **Per call (without cache, Summary Card Catalog):**
 
-- Catalog: ~1–3 K Tokens as input. Cache creation surcharge ~25%.
-- Intent + Recipe boilerplate: ~300 Tokens.
-- LLM output: 50–200 Tokens (`{ loaded: { name, summary } }` or `{ alternatives: [...] }`).
+- Catalog: ~1–3 K tokens as input. Cache creation surcharge ~25%.
+- Intent + Recipe boilerplate: ~300 tokens.
+- LLM output: 50–200 tokens (`{ loaded: { name, summary } }` or `{ alternatives: [...] }`).
 - Latency: ~400–1200 ms depending on the model. No spawn/lane overhead, because direct `ChatModel.chat` call.
 
-**Plus per successful case one `manual_read('<name>')`:** ~500–3000 Tokens for the actual Manual body. Thus, the total hop path is two Tool calls, but only loads the **one** truly needed body, not all 30 Manuals in the Discovery Catalog.
+**Plus per success case one `manual_read('<name>')`:** ~500–3000 tokens for the actual Manual body. Thus, the total hop path is two tool calls, but only loads the **one** truly needed body, not all 30 Manuals in the Discovery Catalog.
 
 **Per call with Anthropic Prompt Cache Hit (within 5 min TTL):**
 
 - Catalog: ~10% of standard price (cache read).
 - Intent + Output: full price.
-- Effective token cost: ~500–1000 Tokens-equivalent for the Discovery call.
+- Effective token cost: ~500–1000 token-equivalent for the Discovery call.
 
 **Comparison to the old full-text Catalog (before 2026-05-28):**
 
-| | Full-Text Catalog | Summary-Card Catalog |
+| | Full-Text Catalog | Summary Card Catalog |
 |---|---|---|
 | Catalog Tokens | 5–15 K (scales with Manual count) | 1–3 K (scales linearly, slower) |
-| Discovery Output | up to 2000 Tokens (`content` inline) | 50–200 Tokens (name + summary only) |
+| Discovery Output | up to 2000 tokens (`content` inline) | 50–200 tokens (only name + summary) |
 | Hops on Match | 1 | 2 (how_do_i → manual_read) |
 | Cache Invalidations | every Manual edit invalidates everything | only edits to Manual frontmatter or first paragraph affect the hash |
 | Routing Accuracy | decreases with Manual count (attention dilution) | consistently higher (curated Triggers + Summary) |
@@ -485,22 +485,22 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 
 | Phase | Result | Status |
 |---|---|---|
-| **D1** | `CatalogSnapshot` + `SourceCatalogBuilder` + `SourceCatalogService.renderForTenant`. **In-memory** Cache (Mongo persistence in v2). | Completed 2026-05-26 — 13 tests green |
-| **D2** | Recipe `how-do-i.yaml` as internal config profile (`internal: true`), Pebble render context extended with `intent` + `sources` | Completed |
-| **D3** | `DiscoveryService` as @Service: Catalog render + `LightLlmService.callForJson` + name cross-check against hallucinations | Completed — 10 tests green |
-| **D4** | `HowDoITool` as @Component, thin wrapper around `DiscoveryService.discover`. **Note:** Constructor uses `@Lazy DiscoveryService` — otherwise `DiscoveryService → SourceCatalogService → Builder → List<Tool> → HowDoITool → DiscoveryService` would create a Bean cycle during Spring startup. The Lazy proxy is only resolved on the first `invoke()`. | Completed — 9 tests green |
-| **D5** | Prompt hook in Arthur Prompt (parallel to existing hooks). E2E test `HowDoIDiscoveryAiTest` in `qa/ai-test/`: 4 realistic intents + Catalog sanity + garbage intent. | Completed — 6/6 green against Gemini-2.5-flash |
-| **D5.1** | **Summary-Card Refactor 2026-05-28:** `SourceCatalogBuilder` renders per Manual only Title + Frontmatter-`triggers` + Frontmatter-`summary` (Fallback: first paragraph). 22 Routing Manuals have Frontmatter convention. Caller Prompts (Arthur/Eddie/Ford) updated. Catalog ~150 KB → ~5 KB. | Completed — 46 tests green |
-| **D5.2** | **Server-Side Auto-Load + Retry-Loop 2026-05-28:** Despite Summary-Card Catalog, the tool delivers the body inline for `loaded` + `type: manual` — `DiscoveryService` directly calls `documentService.lookupCascade("manuals/<name>.md")` and populates `loaded.content`. In case of hallucination (name not in Catalog OR Cascade lookup empty), a retry occurs with `{{ correction }}` Pebble variable, up to 3 attempts. Caller gets 1-hop behavior as before, without the LLM trusting body generation. | Completed — 32 tests green |
-| **D6** *(v2)* | RAG Documents as source (selective snippet extraction, not full docs). | Open |
-| **D7** *(v2+)* | Mongo-persisted `DiscoveryCatalogDocument` with Document-Save-Hook (see §6). Settings namespace `discovery.*` (see §9). | Open, low priority (single-pod works) |
-| **D8** *(v2+)* | Migration: replace existing `manual_read` hooks in the Prompt with `how_do_i`, as long as no negation trap is needed. One PR per Engine. | Open |
+| **D1** | `CatalogSnapshot` + `SourceCatalogBuilder` + `SourceCatalogService.renderForTenant`. **In-memory** cache (Mongo persistence in v2). | completed 2026-05-26 — 13 tests green |
+| **D2** | Recipe `how-do-i.yaml` as internal config profile (`internal: true`), Pebble render context extended with `intent` + `sources` | completed |
+| **D3** | `DiscoveryService` as @Service: Catalog render + `LightLlmService.callForJson` + name cross-check against hallucinations | completed — 10 tests green |
+| **D4** | `HowDoITool` as @Component, thin wrapper around `DiscoveryService.discover`. **Note:** Constructor uses `@Lazy DiscoveryService` — otherwise `DiscoveryService → SourceCatalogService → Builder → List<Tool> → HowDoITool → DiscoveryService` would create a Bean cycle during Spring startup. The Lazy proxy is only resolved on the first `invoke()`. | completed — 9 tests green |
+| **D5** | Prompt hook in Arthur Prompt (parallel to existing hooks). E2E test `HowDoIDiscoveryAiTest` in `qa/ai-test/`: 4 realistic intents + Catalog sanity + garbage intent. | completed — 6/6 green against Gemini-2.5-flash |
+| **D5.1** | **Summary Card Refactor 2026-05-28:** `SourceCatalogBuilder` renders only Title + Frontmatter-`triggers` + Frontmatter-`summary` per Manual (Fallback: first paragraph). 22 Routing Manuals have Frontmatter convention. Caller Prompts (Arthur/Eddie/Ford) updated. Catalog ~150 KB → ~5 KB. | completed — 46 tests green |
+| **D5.2** | **Server-Side Auto-Load + Retry-Loop 2026-05-28:** Despite Summary Card Catalog, the tool delivers the body inline for `loaded` + `type: manual` — `DiscoveryService` calls `documentService.lookupCascade("manuals/<name>.md")` directly and populates `loaded.content`. In case of hallucination (name not in Catalog OR Cascade lookup empty), a retry with `{{ correction }}` Pebble variable occurs, up to 3 attempts. Caller gets 1-hop behavior as before, without the LLM trusting body generation. | completed — 32 tests green |
+| **D6** *(v2)* | RAG Documents as source (selective snippet extraction, not full docs). | open |
+| **D7** *(v2+)* | Mongo-persisted `DiscoveryCatalogDocument` with Document-Save-Hook (see §6). Settings namespace `discovery.*` (see §9). | open, low priority (single-pod is sufficient) |
+| **D8** *(v2+)* | Migration: replace existing `manual_read` hooks in the prompt with `how_do_i`, as long as no negation trap is needed. One PR per Engine. | open |
 
 ---
 
 ## 13. Open Questions (for later)
 
-- **Multi-Tenant Cache Sharing:** If 100 Tenants have identical bundled defaults, a shared Catalog snapshot is worthwhile. Currently separate per Tenant — storage trivial, so not a priority.
+- **Multi-Tenant Cache Sharing:** If 100 Tenants have identical Bundled Defaults, a shared Catalog snapshot is worthwhile. Currently separate per Tenant — storage trivial, so not a priority.
 - **Discovery for Wizards/Workflows:** Should Vancetope Wizards and saved Workflows be additional Catalog sources?
 - **Per-User-Catalog:** Should the Catalog know user memory sources? Clarify privacy boundaries.
 - **Catalog Size vs. Selective Inclusion:** If Catalog >60 KB, Manuals must be selectively included (e.g., by Tenant frequency). Heuristic then needed.
@@ -510,12 +510,12 @@ The `how-do-i` Recipe is marked as an **internal config profile** with `internal
 
 ## Status
 
-**v1 in production since 2026-05-26.** Spec decisions:
+**v1 productive since 2026-05-26.** Spec decisions:
 
-- v1 Sources: Engine Manuals + Skills + Tools (not Recipes, not RAG).
-- Parallel coexistence with `manual_read` hooks; no Prompt migration in v1.
-- **Backend is a `DiscoveryService`** that uses the central `LightLlmService` (Recipe `how-do-i` as config profile, `ChatModel` call with Jeltz-style schema loop) — **no** Process spawn.
+- Sources v1: Engine Manuals + Skills + Tools (not Recipes, not RAG).
+- Parallel coexistence with `manual_read` hooks; no prompt migration in v1.
+- **Backend is a `DiscoveryService`**, which uses the central `LightLlmService` (Recipe `how-do-i` as config profile, `ChatModel` call with Jeltz-style schema loop) — **no** Process spawn.
 - **Source Catalog is injected into the System Prompt via Pebble variable `{{ sources }}`** — **Summary Cards** (Title + Triggers + Summary), no full texts. LLM picks only names. **Server loads** the Manual body on confident `loaded` match via `documentService.lookupCascade` and inlines it into `loaded.content` — 1-hop for the happy path. Anti-hallucination retry loop with `{{ correction }}` up to 3 attempts (as of 2026-05-28).
-- Pure Recipe-Config path, no Embedding quickpath.
+- Pure Recipe-Config path, no Embedding Quickpath.
 - v1 Cache is in-memory (`ConcurrentHashMap`); Mongo persistence v2.
-- v1 Settings minimal (`lightllm.*` suffice); own `discovery.*` namespace v2.
+- v1 Settings minimal (`lightllm.*` are sufficient); own `discovery.*` namespace v2.

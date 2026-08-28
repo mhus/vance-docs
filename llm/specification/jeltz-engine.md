@@ -1,8 +1,8 @@
 # Vancetope — Jeltz Think Engine
 
-> **Jeltz** is the structured single-shot engine of the Vancetope engine set — the Vogon Constructor Captain who does nothing without a form. It takes a question and a JSON schema, calls an LLM, validates the response against the schema, and returns the validated JSON as a result. In case of schema violations, it retries up to a configurable upper limit; otherwise, it returns a structured error.
+> **Jeltz** is the structured single-shot engine of the Vancetope engine set — the Vogon Constructor Captain who does nothing without a form. It takes a question and a JSON schema, calls an LLM, validates the response against the schema, and returns the validated JSON as a result. In case of schema violations, it retries up to a configurable limit; otherwise, it returns a structured error.
 >
-> See also: [ford-engine](ford-engine.md) (single-LLM archetype), [marvin-engine](marvin-engine.md) (currently uses a prompt-based variant of the pattern), [think-engines](think-engines.md) (registry, lifecycle), [recipes](recipes.md)
+> See also: [ford-engine](ford-engine.md) (single-LLM model), [marvin-engine](marvin-engine.md) (currently uses a prompt-based variant of the pattern), [think-engines](think-engines.md) (registry, lifecycle), [recipes](recipes.md)
 
 ---
 
@@ -10,18 +10,18 @@
 
 Jeltz answers a **single** question with a **schema-validated** JSON object. One spawn = one question = one result, then terminal `done`. This covers a use case that neither Ford nor Marvin currently handle cleanly:
 
-- **Caller needs machine-readable structure**: a tool or an orchestrator engine wants to extract a list, a record, or a decision object from an LLM response — without free-text parsing.
-- **Caller provides the schema at runtime**: the target format is not Recipe-fixed but determined by the specific call context (e.g., "create 5 chapters" → schema with `chapters[]`, "extract user action" → schema with `userId/action/timestamp`).
+- **Caller needs machine-readable structure**: A tool or an orchestrator engine wants to extract a list, a record, or a decision object from an LLM response — without free-text parsing.
+- **Caller provides the schema at runtime**: The target format is not Recipe-fixed but determined by the specific call context (e.g., "create 5 chapters" → schema with `chapters[]`, "extract user action" → schema with `userId/action/timestamp`).
 
-Marvin's `marvin-worker` solves a related case (structured worker response within a task tree), but with a **fixed** schema in the system prompt and without native provider response format usage. Jeltz is the generalization: dynamic schema + native structured-output path + strict validator loop.
+Marvin's `marvin-worker` solves a related case (structured worker response within a task tree), but with a **fixed** schema in the system prompt and without native provider response format usage. Jeltz is the generalization: dynamic schema + native structured output path + strict validator loop.
 
 ---
 
-## 2. What Jeltz CANNOT do (by design)
+## 2. What Jeltz CANNOT do (intentionally)
 
-- **No chat conversation.** No multi-turn dialogue with the user. Result is returned, Process is `done`. For dialogue, there is Ford/Arthur.
-- **No orchestration.** Jeltz does not start sub-processes or build a task tree.
-- **No free tool loop.** The default is "no tool" because the goal is structured synthesis, not research. Recipes can activate tools (e.g., `web_search` for "summarize top N search results as JSON"), but this is the exception, not the default.
+- **No chat conversation.** No multi-turn dialogue with the user. Result is returned, Process is `done`. For dialogue, there are Ford/Arthur.
+- **No orchestration.** Jeltz does not start sub-Processes or build a task tree.
+- **No free tool loop.** The default is "no tool" because the goal is structured synthesis, not research. Recipes can activate tools (e.g., `web_search` for "summarize top-N search results as JSON"), but this is the exception, not the default.
 - **No user interaction.** No Inbox item, no `awaiting_user_input`. Jeltz is auto-terminal — either a schema-compliant result or a schema error.
 
 ---
@@ -30,16 +30,16 @@ Marvin's `marvin-worker` solves a related case (structured worker response withi
 
 ### 3.1. Spawn Params
 
-The caller spawns Jeltz via `process_create` / `process_create_delegate` with Recipe `jeltz`. The operational inputs come as **Process Params**:
+Callers spawn Jeltz via `process_spawn` / `process_create_delegate` with Recipe `jeltz`. The operational inputs are provided as **Process Params**:
 
 | Param | Type | Required | Description |
 |-------|------|----------|-------------|
 | `prompt` | String | yes | The user-facing question / instruction. Appended as the sole `UserChatInput` to the LLM call. |
-| `schema` | Object | yes | JSON Schema (Draft 2020-12 Subset, see §6) of the expected response structure. Top-level must be an object schema. |
+| `schema` | Object | yes | JSON Schema (Draft 2020-12 Subset, see §6) of the expected response structure. Top-level must be an Object schema. |
 | `maxAttempts` | Integer | no (Default 3) | Maximum number of LLM calls, including correction retries. |
 | `model` | String | no | Model alias override (e.g., `default:fast`). Otherwise, Recipe default. |
 
-Initial steer is **empty** — Jeltz pulls everything from `context.params()`. An initial `UserChatInput` is synthesized by the engine code (from `prompt`) so that the LLM conversation looks natural (System + User + Assistant).
+Initial steer is **empty** — Jeltz pulls everything from `context.params()`. An initial `UserChatInput` is synthesized by the Engine code (from `prompt`) so that the LLM conversation looks natural (System + User + Assistant).
 
 ### 3.2. Result Format
 
@@ -53,7 +53,7 @@ Jeltz writes the final result as a **single `ChatMessage.assistant`** with a str
 }
 ```
 
-In case of an error:
+In case of error:
 
 ```json
 {
@@ -69,20 +69,20 @@ In case of an error:
 
 ### 3.3. How the Caller Collects the Result
 
-Since Jeltz has `asyncSteer = false`, the caller (another engine via `process_create_delegate`) can read the result wrapper directly from the steer reply — the tool result contains the `newMessages` of the sub-process. For purely client-side calls (e.g., a future `jeltz_query` tool that spawns a sub-process), the tool handler reads the last chat message of the process after the `done` status transition.
+Since Jeltz has `asyncSteer = false`, the caller (another Engine via `process_create_delegate`) can read the result wrapper directly from the steer reply — the Tool Result contains the `newMessages` of the sub-Process. For purely client-side calls (e.g., a future `jeltz_query` tool that spawns a sub-Process), the Tool Handler reads the last Chat Message of the Process after the `done` status transition.
 
 ---
 
 ## 4. What Jeltz Can Do
 
-A Lane turn does exactly this:
+A Lane Turn does exactly this:
 
-1. `context.drainPending()` — discards everything except the first synthetic `UserChatInput` (any further inputs after spawn are programming errors → warning + discarded).
+1. `context.drainPending()` — discards everything except the first synthetic `UserChatInput` (any further inputs after spawn are Programming Errors → Warning + discarded).
 2. Read `prompt` + `schema` from `context.params()`. Fail-fast if missing.
 3. Compile schema: `JsonSchemaLight.compile(schema)` (validator) and `Lc4jSchema.toObjectSchema(schema)` (langchain4j tree).
 4. Render system prompt from Recipe (Pebble template, with `{{ schema_json }}` available as a variable for inline examples if desired).
 5. Validator loop, max `maxAttempts` iterations:
-   1. LLM call with `ResponseFormat = JsonSchema(<langchain4j-tree>)` if the provider supports it; otherwise, fallback to prompt forcing (schema in system prompt + plain text mode).
+   1. LLM call with `ResponseFormat = JsonSchema(<langchain4j-tree>)` if provider supports it; otherwise, fallback to prompt forcing (schema in system prompt + plain text mode).
    2. Parse response as JSON.
    3. Validate against `JsonSchemaLight`.
    4. On success → Result wrapper with `success: true, attempts: N, data: <parsed>` → Chat-append → `closeProcess(DONE)` → return.
@@ -97,15 +97,15 @@ Streaming: during LLM calls, token chunks are published via `context.events().pu
 
 | Method | Behavior |
 |--------|----------|
-| `start(process, ctx)` | Validates `params.prompt` and `params.schema` (mandatory, form). On errors: write result wrapper with `error: "invalid_params"`, `closeProcess(DONE)`. On OK: executes the validator loop directly and closes with `closeProcess(DONE)` at the end. |
-| `resume(process, ctx)` | If the process is already closed: no-op. Otherwise: treated like `start` — the loop is idempotent against re-entry because it only needs the original params. |
+| `start(process, ctx)` | Validates `params.prompt` and `params.schema` (mandatory, form). On errors: write Result wrapper with `error: "invalid_params"`, `closeProcess(DONE)`. On OK: executes the validator loop directly and closes with `closeProcess(DONE)` at the end. |
+| `resume(process, ctx)` | If Process already closed: no-op. Otherwise: treated like `start` — the loop is idempotent against re-entry because it only needs the original params. |
 | `suspend(process, ctx)` | No cleanup. Chat history persistent. Status → `SUSPENDED`. |
-| `steer(process, ctx, msg)` | External `SteerMessage` after spawn is a programming error → warning, discarded. Jeltz is not steerable. |
-| `stop(process, ctx)` | `closeProcess(STOPPED)`. Write result wrapper with `error: "stopped"` if no final result is available yet. |
+| `steer(process, ctx, msg)` | External `SteerMessage` after spawn is a Programming Error → Warning, discarded. Jeltz is not steerable. |
+| `stop(process, ctx)` | `closeProcess(STOPPED)`. Write Result wrapper with `error: "stopped"` if no final result is available yet. |
 
-Actual status flow: `INIT` → `RUNNING` → `CLOSED` (with `CloseReason.DONE` in normal cases, `STOPPED` on `stop()`). Jeltz **always** reaches the terminal `CLOSED` status — either with a success or error wrapper in the final Assistant message. Unlike Ford/Arthur, which never close.
+Actual status flow: `INIT` → `RUNNING` → `CLOSED` (with `CloseReason.DONE` in normal cases, `STOPPED` on `stop()`). Jeltz **always** reaches the terminal `CLOSED` status — either with a success or error wrapper in the final Assistant Message. Unlike Ford/Arthur, which never close.
 
-`asyncSteer = false` — the caller waits synchronously and receives the result as `newMessages`.
+`asyncSteer = false` — Caller waits synchronously, receives the result as `newMessages`.
 
 ---
 
@@ -120,19 +120,19 @@ Actual status flow: `INIT` → `RUNNING` → `CLOSED` (with `CloseReason.DONE` i
 - Constraints: `description`, `enum` (for string enums), `pattern` (regex), `format` (e.g., `date-time` — validator hint, not a hard gate)
 - Arbitrarily deep nesting
 
-**Deliberately not in v1 scope:**
+**Intentionally not in v1 scope:**
 
-- `oneOf` / `anyOf` / `allOf` — can be added later, requires dedicated validator logic in `JsonSchemaLight`.
+- `oneOf` / `anyOf` / `allOf` — can be added later, requires custom validator logic in `JsonSchemaLight`.
 - `$ref` / `$defs` — avoids recursive schemas. Caller must send flat schemas.
-- Numeric constraints (`minimum`, `maximum`, `multipleOf`). If needed: via `description` + prompt.
+- Numeric constraints (`minimum`, `maximum`, `multipleOf`). If needed: via `description` + Prompt.
 
-Schema validation happens at spawn (fail-fast) and with every LLM reply. Compile errors in the schema are reported in the result wrapper as `error: "invalid_schema"` with specific validator output.
+Schema validation happens on spawn (fail-fast) and with every LLM reply. Compile errors in the schema are reported in the Result wrapper as `error: "invalid_schema"` with concrete validator output.
 
 ### 6.1. Prompt Forcing in v1, Native ResponseFormat as v2
 
 **v1 (initial):** Jeltz runs in prompt-forcing mode — the schema is placed as formatted JSON in the system prompt, along with the instruction "respond exclusively with JSON without Markdown fences". The validator loop catches deviations. Advantage: works identically across all providers, no capability branch, same mechanism as `marvin-worker` today. Disadvantage: a schema violation costs another LLM roundtrip.
 
-**v2 (planned):** native `ResponseFormat = JsonSchema(...)` support for providers that can do it (OpenAI: `response_format` field; Anthropic: via tool schema). The provider then **guarantees** schema-compliant JSON — the validator loop remains as a safety net. Detection via the `ai-models.yaml` capability list (field `capabilities.structured_output`).
+**v2 (planned):** native `ResponseFormat = JsonSchema(...)` support for providers that can (OpenAI: `response_format` field; Anthropic: via Tool Schema). The provider then **guarantees** schema-compliant JSON — the validator loop remains as a safety net. Detection via the `ai-models.yaml` capability list (Field `capabilities.structured_output`).
 
 The v1 → v2 transition is additive: providers with `structured_output: true` take the native path, all others remain in prompt-forcing mode. The validator loop remains unchanged in both variants.
 
@@ -177,33 +177,33 @@ tags:
 
 Pebble variables available in the render context: `schema_json` (formatted JSON schema), `prompt`, as well as the standard variables from `recipes.md` §5 (`tier`, `model`, `provider`, `mode`, …).
 
-Override cascade works as usual (Project → `_tenant` Tenant → Bundled). Tenants can increase `maxAttempts` or provide their own `promptPrefix` variants without touching the engine code.
+Override cascade works as usual (Project → `_tenant` Tenant → Bundled). Tenants can increase `maxAttempts` or provide their own `promptPrefix` variants without touching the Engine code.
 
 ---
 
-## 8. Use Cases
+## 8. Usage Scenarios
 
-**As a Sub-Worker from Engine:** Arthur, Marvin, Vogon, Zaphod can spawn Jeltz when a workflow step requires a structured intermediate response. Example: Vogon phase "extract requirements" spawns Jeltz with a `requirements[]` schema; the result is mapped to the next phase input.
+**As a Sub-Worker from Engine:** Arthur, Marvin, Vogon, Zaphod can spawn Jeltz when a workflow step requires a structured intermediate response. Example: Vogon phase "Extract Requirements" spawns Jeltz with a `requirements[]` schema; the result is mapped to the next phase input.
 
-**As a Tool Backend:** a future built-in tool `structured_query(prompt, schema)` can internally spawn a Jeltz sub-process and return the result wrapper's `data` field. This provides a clean bridge to structured outputs for free LLM loops (Ford, Arthur) without exposing engine selection to the user.
+**As a Tool Backend:** a future built-in tool `structured_query(prompt, schema)` can internally spawn a Jeltz sub-Process and return the Result Wrapper's `data` field. This provides a clean bridge to structured outputs for free LLM loops (Ford, Arthur) without exposing engine selection to the user.
 
-**As a Top-Level Session:** technically possible (Session.create with Recipe `jeltz`), but practically without added value — the user experience of a single-shot JSON engine is unusable in chat. Not actively supported, but also not strictly blocked.
+**As a Top-Level Session:** technically possible (Session.create with Recipe `jeltz`), practically without added value — the user experience of a single-shot JSON engine is unusable in chat. Not actively supported, but also not strictly blocked.
 
 ---
 
 ## 9. What This Spec Does **Not** Solve
 
-- **Cost-Bound for long validator loops.** Default `maxAttempts: 3` is a heuristic. Quota consumption per Jeltz call should be factored into LLM resource management (see `llm-resource-management.md`).
-- **Streaming API for Caller.** The caller receives the result as a whole — no partial schema result during the loop. Can be added later if UI demands it.
-- **Multiple schemas in one call (union-style).** If needed: caller spawns multiple Jeltz sub-processes in parallel, or formulates a wrapper schema with an `outcome` discriminator.
-- **Schema output caching.** Identical schema + identical prompt could be cached (hash-based). Not in v1 scope.
+- **Cost-Bound for long Validator Loops.** Default `maxAttempts: 3` is a heuristic. Quota consumption per Jeltz call should be factored into LLM resource management (see `llm-resource-management.md`).
+- **Streaming API for Caller.** Caller receives the result as a whole — no partial schema result during the loop. Can be added later if UI demands it.
+- **Multiple Schemas in one Call (Union-Style).** If needed: Caller spawns multiple Jeltz sub-Processes in parallel, or formulates a wrapper schema with an `outcome` discriminator.
+- **Schema Output Caching.** Identical schema + identical prompt could be cached (hash-based). Not in v1 scope.
 
 ---
 
 ## 10. Relation to Other Specs
 
 - [ford-engine](ford-engine.md) — structurally related (single-LLM engine, no orchestration), but Ford is chat-oriented and free-text. Jeltz does not replace Ford.
-- [marvin-engine](marvin-engine.md) — `marvin-worker` recipe is currently a prompt-only variant of the Jeltz pattern. In the medium term, Marvin's WORKER node could run Jeltz-based (with Marvin's outcome schema as the caller schema).
+- [marvin-engine](marvin-engine.md) — `marvin-worker` Recipe is currently a prompt-only variant of the Jeltz pattern. In the medium term, Marvin's WORKER node could run Jeltz-based (with Marvin's Outcome Schema as the caller schema).
 - [structured-engine-output](structured-engine-output.md) — `respond` tool is orthogonal: it governs the *end* of a chat turn. Jeltz has no `respond` (no chat).
 - [recipes](recipes.md) — Recipe mechanics, Pebble templating, cascade.
 - [think-engines](think-engines.md) — Engine registry, lifecycle, status model. Jeltz's terminal `done` transition is regular (unlike Ford/Arthur, which never reach `done`).

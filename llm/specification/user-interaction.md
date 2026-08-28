@@ -1,8 +1,8 @@
 # Vancetope — User Interaction
 
-> How the system communicates with humans when non-chat mechanisms are needed — decision templates, free-text feedback, ordering inputs, structured outputs (texts, images, documents). Plus: how the user is notified of new items, cross-channel.
+> How the system communicates with humans when non-chat mechanisms are needed — decision templates, free-text feedback, ordering inputs, structured outputs (texts, images, documents). Plus: how the user is notified of new items, across channels.
 >
-> Two subsystems, separate but coupled: **Inbox** (what needs to be answered/viewed) and **Notifications** (how the user finds out).
+> Two subsystems, separate but coupled: **Inbox** (what needs to be answered/viewed) and **Notifications** (how the user learns about it).
 >
 > See also: [arthur-engine](arthur-engine.md) | [vogon-engine](vogon-engine.md) | [architecture-scopes-clients](architektur-scopes-clients.md) | [settings-system](settings-system.md)
 
@@ -10,12 +10,12 @@
 
 ## 1. Rationale
 
-The existing chat path (Arthur → ChatMessage → Plaintext response via `process_steer`) is sufficient for conversation, **not** for structured interaction:
+The existing chat path (Arthur → ChatMessage → Plaintext response via `process_steer`) suffices for conversation, **not** for structured interaction:
 
 - Decision-Asks with concrete options — the LLM would have to re-parse "one of [a, b, c]" from free text, which is error-prone.
 - Ordering inputs (Drag-&-Drop)
 - Images, diagrams, documents for viewing
-- Cross-user routing ("put it in road-runner's Inbox")
+- Cross-User-Routing ("put it in road-runner's Inbox")
 - Auto-Answer for trivial questions (LOW criticality)
 - Mobile/Web clients that are not permanently connected
 
@@ -27,7 +27,7 @@ The Inbox is the user's **structured inbox** — Asks AND Outputs mixed, each ty
 
 | Subsystem | What | Where |
 |---|---|---|
-| **Inbox** | Data — the items themselves, their responses, lifecycle, delegation | `vance-shared/inbox/` (Mongo-persistent) |
+| **Inbox** | Data — the items themselves, their answers, lifecycle, delegation | `vance-shared/inbox/` (Mongo-persistent) |
 | **Notification Dispatcher** | Routing — how the user learns about new items (WS, Email, Mobile) | `vance-brain/notifications/` (Channel-Beans) |
 
 Engines (Vogon-Checkpoints, Arthur-Decision-Asks, arbitrary Tool-Side-Effects) create Inbox-Items via Service-API. The Inbox-Service calls the Dispatcher upon persistence; Channels check user preferences / session connections and deliver or skip.
@@ -36,19 +36,32 @@ Engines (Vogon-Checkpoints, Arthur-Decision-Asks, arbitrary Tool-Side-Effects) c
 
 ## 3. InboxItem — Data Model
 
+> **Regarding the name.** The entity in the code is called **Maximegalon** (`MaximegalonDocument`,
+> Collection `maximegalon_threads`) — a codename, because it is a discussion thread with
+> participants and history, and `Thread` is taken by `java.lang.Thread`. **"Inbox"
+> remains the name of the view**: `/inbox`, `/brain/{tenant}/inbox`, the
+> `inbox-*`-WS-frames and the prose here. Where "Item" appears below, a thread is meant.
+>
+> **This document describes the view and the Notification subsystem.** The thread model
+> itself — one decision per concern, the three state axes, unread and badge,
+> participants/team/access, history and reactions — is in
+> [`maximegalon-system.md`](maximegalon-system.md). The sections here on Item-Types (§4),
+> Lifecycle (§5), `AnswerPayload` (§6), Criticality (§7) and Engine-Integration (§10) apply
+> unchanged.
+
 ```
-InboxItemDocument {
+MaximegalonDocument {
   id                    Mongo ObjectId
   tenantId              String
 
   // Routing
   originatorUserId      String               // who created it (audit)
   assignedToUserId      String               // who is currently responsible (can change through delegation)
-  originProcessId       String?              // which Process created it (for response routing)
+  originProcessId       String?              // which Process created it (for answer routing)
   originSessionId       String?              // which Session (for filtering in the UI)
 
   // Classification
-  type                  InboxItemType        // see §4
+  type                  MaximegalonType        // see §4
   criticality           Criticality          // LOW / NORMAL / CRITICAL
   tags                  List<String>         // free (e.g., ["analysis", "literature-review"])
 
@@ -65,8 +78,16 @@ InboxItemDocument {
   resolvedAt            Instant?
   resolverReason        String?              // optional, e.g., "INSUFFICIENT_INFO: …"
 
+  // Thread — Details in maximegalon-system.md
+  teamId                String?              // access bearer; null = derivation via assignee (§5 there)
+  participants          List<String>         // who receives updates and contributes
+  readBy                List<String>         // who has read title + body
+  unreadFor             List<String>         // Badge-Index, ⊆ participants (§3 there)
+  reactions             List<Reaction>       // on the thread itself
+  messages              List<Message>        // the history, embedded and flat (§6 there)
+
   // Audit
-  history               List<HistoryEntry>   // delegate, archive, retry-events
+  history               List<HistoryEntry>   // delegate, archive, invite, retry-events
 
   createdAt             Instant
   updatedAt             Instant
@@ -74,14 +95,17 @@ InboxItemDocument {
 }
 ```
 
-Compound indexes:
+Compound-Indexes:
 - `(tenantId, assignedToUserId, status, criticality)` — Hot-Path: "show me what's open, sorted by importance"
-- `(tenantId, originSessionId, status)` — Filtering within a Session
+- `(tenantId, originSessionId, status)` — Filtering within a session
 - `(originProcessId, status)` — when a Process is answered, quickly find its open items
+- `(tenantId, unreadFor, status)` — the Badge-Query; fires on every page mount in every individual HTML entry and must therefore remain a query on a single collection
+
+**No `projectId`** — justified in [`maximegalon-system.md`](maximegalon-system.md) §9.
 
 ---
 
-## 4. Item Types
+## 4. Item-Types
 
 Eight types, each with its own payload schema.
 
@@ -100,10 +124,10 @@ Eight types, each with its own payload schema.
 | Type | Payload | UI-Render |
 |---|---|---|
 | `OUTPUT_TEXT` | `{ format: "markdown" \| "plain" }` (content in `body`) | Markdown rendering, scrollable |
-| `OUTPUT_IMAGE` | `{ url: string, mimeType: string, caption?: string }` | Inline image, clickable for enlargement |
+| `OUTPUT_IMAGE` | `{ url: string, mimeType: string, caption?: string }` | Inline image, clickable to enlarge |
 | `OUTPUT_DOCUMENT` | `{ url: string, mimeType: string, sizeBytes: int, filename: string }` | Download link, preview if possible |
 
-Outputs are not "answered" — they do not have an `answer` field. They can be `DISMISSED` (user clicks away) or `ARCHIVED` (user moves to archive).
+Outputs are not "answered" — they have no `answer` field. They can be `DISMISSED` (user clicks away) or `ARCHIVED` (user moves to archive).
 
 ---
 
@@ -121,29 +145,29 @@ Outputs are not "answered" — they do not have an `answer` field. They can be `
                         └────┬────┘
                              ↓
                    (auto-archive after N days
-                    OR user explicitly)
+                    OR User explicitly)
                              ↓
                         ARCHIVED
 ```
 
-- `PENDING` → `ANSWERED`: User has answered (or Auto-Resolver, or LOW-default adoption)
-- `PENDING` → `DISMISSED`: User clicks away without answering (Process receives a Skip response)
+- `PENDING` → `ANSWERED`: User has answered (or auto-resolver, or LOW-default adoption)
+- `PENDING` → `DISMISSED`: User clicks away without answering (Process receives a skip answer)
 - `ANSWERED` / `DISMISSED` → `ARCHIVED`: User explicitly archives or Tenant-Setting `inbox.autoArchiveAfterDays` (Default 30) applies
 
 ARCHIVED items remain for audit; UI hides them behind "Show Archive" filter.
 
-**Persistence:** all items remain until explicit deletion (which v1 does not provide). Storage is cheap, audit value is high.
+**Persistence:** all items remain until explicit deletion (which v1 does not have). Storage is cheap, audit value is high.
 
 ---
 
 ## 6. AnswerPayload — 3-State Schema
 
-Every Ask response can have one of three outcomes. Applies to user responses **and** Auto-Resolver output (v2):
+Every Ask answer can have one of three outcomes. Applies to user answers **and** auto-resolver output (v2):
 
 ```
 AnswerPayload {
   outcome      Outcome           // DECIDED / INSUFFICIENT_INFO / UNDECIDABLE
-  value        Object?           // for DECIDED: type-specific response payload
+  value        Object?           // for DECIDED: type-specific answer payload
   reason       String?           // for INSUFFICIENT_INFO or UNDECIDABLE: explanation
   answeredBy   String            // userId or Worker-ProcessId
 }
@@ -156,7 +180,7 @@ Outcome:
 
 **Users are also allowed to cancel.** The UI offers two additional buttons for each Ask: "I lack information" (opens Reason input → `INSUFFICIENT_INFO`) and "I cannot decide" (Reason input → `UNDECIDABLE`). This prevents pseudo-answers from users who are actually clueless.
 
-`value` schema per type:
+`value`-schema per type:
 | Type | `value` |
 |---|---|
 | `APPROVAL` | `{ approved: bool }` |
@@ -178,7 +202,7 @@ Criticality:
 
 **LOW Auto-Default Adoption** (v1 implemented):
 
-If `criticality == LOW` AND `payload.default` is set, the `InboxItemService` adopts it directly upon creation:
+If `criticality == LOW` AND `payload.default` is set, the `MaximegalonService` adopts it directly upon creation:
 
 ```
 status = ANSWERED
@@ -203,11 +227,11 @@ autoResolver: {
 }
 ```
 
-NORMAL-Items with `autoResolver` would, in v2, spawn a lightweight worker that provides DECIDED/INSUFFICIENT_INFO/UNDECIDABLE. For DECIDED → answer; for Abstain → escalates to user with worker reason visible in the UI. The worker responds via `inbox_answer`-API just like a user; the schema is identical (3-State).
+NORMAL-Items with `autoResolver` would, in v2, spawn a lightweight worker that provides DECIDED/INSUFFICIENT_INFO/UNDECIDABLE. For DECIDED → answer; for abstain → escalates to user with worker-reason visible in the UI. The worker answers via `inbox_answer`-API just like a user; the schema is identical (3-State).
 
 ---
 
-## 8. Multi-User Routing and Delegation
+## 8. Multi-User-Routing and Delegation
 
 Each item has two user fields:
 
@@ -220,9 +244,9 @@ Each item has two user fields:
 - History entry: `{ action: "DELEGATE", from: <prev>, to: <toUserId>, by: <currentUserId>, note, at: now }`
 - Notification to the new `assignedToUserId`
 
-**Response routing back to the Process:** the `originProcessId` never changes. No matter who ultimately answers — the response flows to the originally blocked Process via `SteerMessage.InboxAnswer(itemId, payload)` (new variant, see §10).
+**Answer-Routing back to the Process:** the `originProcessId` never changes. No matter who ultimately answers — the answer flows to the originally blocked Process via `SteerMessage.InboxAnswer(itemId, payload)` (new variant, see §10).
 
-**Permissions:** v1 — any user in the same Tenant can delegate to or answer any item they are assigned to. No sub-permission system. Will come with Multi-User-Spec if relevant.
+**Permissions:** v1 — any user in the same Tenant can delegate to or answer any item they are assigned to. No sub-permission system. Comes with Multi-User-Spec when relevant.
 
 ---
 
@@ -230,30 +254,30 @@ Each item has two user fields:
 
 `tags: List<String>` on the item. Freely selectable. Examples: `["analysis", "literature-review"]`, `["bug-fix", "auth-module"]`, `["onboarding"]`.
 
-The UI offers tag filters; the API accepts `tags` query parameters on list calls. Tag conventions are not enforced — the system is tolerant of typos / synonyms. If this becomes a problem later, a tag normalization/suggestion layer will be added.
+The UI offers tag filters; the API accepts `tags`-query parameters for list calls. Tag conventions are not enforced — the system is tolerant of typos / synonyms. If this becomes a problem later, a tag normalization/suggestion layer will be added.
 
 ---
 
-## 10. Engine Integration
+## 10. Engine-Integration
 
 ### 10.1 Creation — three paths
 
 | Who | How |
 |---|---|
-| **Tools** (LLM-driven) | Server-Tool `inbox_post(target_user, type, title, body, payload, tags?, criticality?)` — Engine can call it as a Side-Effect |
-| **Engines directly** (Vogon-Checkpoints) | `InboxItemService.create(...)` from Java — deterministic, no LLM path |
+| **Tools** (LLM-driven) | Server-Tool `inbox_post(target_user, type, title, body, payload, tags?, criticality?)` — Engine can call it as a side-effect |
+| **Engines directly** (Vogon-Checkpoints) | `MaximegalonService.create(...)` from Java — deterministic, no LLM path |
 | **Tools** (Output-Posting) | Specialized Tools like `inbox_post_analysis(target_user, content, tags)` — convenience wrapper around `inbox_post` with `type=OUTPUT_TEXT` |
 
-### 10.2 Response Routing back to the Process
+### 10.2 Answer-Routing back to the Process
 
-New `SteerMessage` variant in `vance-brain/thinkengine/SteerMessage.java`:
+New `SteerMessage`-variant in `vance-brain/thinkengine/SteerMessage.java`:
 
 ```java
 record InboxAnswer(
     Instant at,
     @Nullable String idempotencyKey,
     String inboxItemId,
-    InboxItemType itemType,
+    MaximegalonType itemType,
     AnswerPayload answer
 ) implements SteerMessage {}
 ```
@@ -262,24 +286,24 @@ record InboxAnswer(
 
 When a user answers:
 1. WS-Frame `inbox-answer` → `InboxAnswerHandler`
-2. Handler validates response against Item-Type
+2. Handler validates answer against item type
 3. Update Item: `status = ANSWERED`, `answer = ...`, `resolvedAt = ...`
 4. Build `SteerMessage.InboxAnswer` and `appendPending` to `originProcessId`
-5. `LaneScheduler.submit(originProcessId, runTurn)` — Process wakes up, drains Inbox, sees response
+5. `LaneScheduler.submit(originProcessId, runTurn)` — Process wakes up, drains Inbox, sees answer
 
-Engines (Vogon, possibly Arthur) must handle `InboxAnswer` in their `steer` method. Default implementation in the interface does warning-log + ignore.
+Engines (Vogon, possibly Arthur) must handle `InboxAnswer` in their `steer`-method. Default implementation in the interface does warning-log + ignore.
 
 ### 10.3 Vogon-Checkpoints become Inbox-Items
 
 Vogon §2.3 will be rewritten — Checkpoints create Inbox-Items of the appropriate type instead of their own BLOCKED mechanism. Process goes to BLOCKED, waits for `InboxAnswer` via Pending-Queue.
 
-### 10.4 Arthur Use Cases
+### 10.4 Arthur-Use-Cases
 
-Arthur can optionally use Inbox for structured Asks: "User wants to spawn a worker, several Recipes fit — create Decision-Item with options instead of plaintext question". Not mandatory for V1 — Arthur may continue to use plaintext chat.
+Arthur can optionally use Inbox for structured Asks: "User wants to spawn a worker, several Recipes fit — create a Decision-Item with options instead of a plaintext question". Not mandatory for V1 — Arthur may continue to use plaintext chat.
 
 ---
 
-## 11. WS Protocol
+## 11. WS-Protocol
 
 | Frame | Direction | Purpose |
 |---|---|---|
@@ -297,7 +321,7 @@ The frames are a subset of the general WS-Envelope (`type/id/replyTo/data`) — 
 
 ---
 
-## 12. Notification Subsystem
+## 12. Notification-Subsystem
 
 ### 12.1 Architecture
 
@@ -331,7 +355,7 @@ Activation is derived from *Connection-Presence* / *Configuration-Existence*, no
 | **WS** | User has active WS connection in the Tenant (`SessionConnectionRegistry.findBoundForUser`). No threshold, no settings toggle |
 | **Web** | Subtype of WS — same mechanism |
 | **Email** | Setting `notify.email.address` resolved (User → Project → Tenant Cascade) AND `criticality >= notify.email.minCriticality` AND not in Quiet-Hours |
-| **Mobile** | (v2) `DeviceRegistration` exists for the user AND not in Quiet-Hours |
+| **Mobile** | (v2) `DeviceRegistration` for the user exists AND not in Quiet-Hours |
 
 `canHandle` for CRITICAL Items ignores Quiet-Hours (see `notify.quietHours.exceptCritical`).
 
@@ -351,7 +375,7 @@ Existing `SettingService.getStringValue(tenantId, refType, refId, key)` is suffi
 
 ### 12.4 Per-Connection-Opt-Out (v2-Hook)
 
-Reserved field in WS-Welcome-Handshake: `notifyMode: "all" | "critical-only" | "none"`. `ConnectionContext` holds it, `WsNotificationChannel.canHandle` would respect it. **v1**: the field is accepted but ignored during welcome; all active WS receive everything.
+Reserved field in WS-Welcome-Handshake: `notifyMode: "all" | "critical-only" | "none"`. `ConnectionContext` would hold it, `WsNotificationChannel.canHandle` would respect it. **v1**: the field is accepted at welcome but ignored; all active WS receive everything.
 
 ### 12.5 Pending-Summary on Session-Resume
 
@@ -370,7 +394,7 @@ If a user was offline and reconnects: in addition to the normal `welcome`-frame,
 
 This immediately informs the client that there are open items, without having to poll the Inbox first.
 
-### 12.6 Delivery Log
+### 12.6 Delivery-Log
 
 Mongo-Collection `notification_deliveries` — Audit entry per attempt:
 
@@ -386,11 +410,11 @@ Written in v1 — costs ~30 lines, pays off with the first "why wasn't the user 
 
 ---
 
-## 13. v1-Scope — What We Build, What We Postpone
+## 13. v1-Scope — what we build, what we postpone
 
 ### 13.1 Implemented in v1
 
-- `InboxItemDocument` + Repository + Service
+- `MaximegalonDocument` + Repository + Service
 - 4 Item-Types: `APPROVAL`, `DECISION`, `FEEDBACK`, `OUTPUT_TEXT`
 - Lifecycle: `PENDING` → `ANSWERED` / `DISMISSED` → `ARCHIVED`
 - 3-State-AnswerPayload (DECIDED / INSUFFICIENT_INFO / UNDECIDABLE)
@@ -407,7 +431,7 @@ Written in v1 — costs ~30 lines, pays off with the first "why wasn't the user 
 
 ### 13.2 Stubs / Spec-only in v1
 
-- `OUTPUT_IMAGE`, `OUTPUT_DOCUMENT`, `ORDERING`, `STRUCTURE_EDIT` — Item-Types documented, UI-Renderers + Validators later
+- `OUTPUT_IMAGE`, `OUTPUT_DOCUMENT`, `ORDERING`, `STRUCTURE_EDIT` — Item-Types documented, UI-renderers + validators later
 - `EmailNotificationChannel` — Bean exists, `canHandle` always `false`
 - `MobilePushChannel` — Bean exists, `canHandle` always `false`. `DeviceRegistration` Schema documented, endpoint later
 - Auto-Resolver-Worker for NORMAL — Schema documented in Item (`autoResolver`-block), implementation v2
@@ -436,18 +460,18 @@ Order depends on needs from live operation.
 - Process goes to BLOCKED
 - ParentNotificationListener routes `ProcessEvent(type=BLOCKED, summary=item.title)` to Vogon's Parent (typically Arthur), so Arthur can give the user the hint in chat
 - Notification-Dispatcher additionally pings (WS-Push)
-- User answers via Inbox-UI → `InboxAnswer` rolls to Vogon → drainPending → Phase continues
+- User answers via Inbox-UI → `InboxAnswer` rolls to Vogon → drainPending → phase continues
 
-All Engines use the same mechanism — Vogon is the primary consumer, but the path is valid for any Engine lifecycle.
+All Engines use the same mechanism — Vogon is the primary consumer, but the path is valid for any Engine-Lifecycle.
 
 ---
 
 ## 15. Open Points
 
-- **Item size vs. Storage**. `OUTPUT_TEXT` with 100k-char Markdown — directly in the item or externalized (S3/local Workspace)? V1 inline; externalize if real performance issues arise.
+- **Item size vs. Storage**. `OUTPUT_TEXT` with 100k-char-Markdown — directly in the item or externalized (S3/local Workspace)? V1 inline; externalize if real performance issues arise.
 - **Image / Document Storage**. `OUTPUT_IMAGE.url` — where is the file located? V1 likely local `data/inbox-attachments/` with signed-URLs; production deployment would require S3-equivalent.
-- **Idempotency on Item-Create**. If an Engine posts the same item twice in a row (retry after crash) — how do we prevent duplicates? `idempotencyKey` field on the Create call, Service checks `(originProcessId, idempotencyKey)`.
-- **Permissions for Tag-Filter**. Currently: everyone sees all items assigned to them. If items with sensitive tags ("compliance", "hr") are delegated to multiple users, we need tag-visibility rules. Outside v1.
+- **Idempotency on Item-Create**. If an Engine posts the same item twice in a row (retry after crash) — how do we prevent duplicates? `idempotencyKey` field on the Create-call, Service checks `(originProcessId, idempotencyKey)`.
+- **Permissions for Tag-Filter**. Today: everyone sees all items assigned to them. If items with sensitive tags ("compliance", "hr") are delegated to multiple users, we need tag-visibility rules. Outside v1.
 - **Notification-Batching for Email**. `batchIntervalSec` is collected for `LOW`/`NORMAL`. Who flushes the batch? Spring `@Scheduled`-job — this is the second v1-`@Scheduled` with memory compaction (should be uncritical).
 - **Cross-Tenant-Delegation**. V1 no; an item can only be delegated to users in the same Tenant. Cross-Tenant requires a permission/confidentiality model.
 - **WebSocket-Reconnect with Item-Catch-up**. If an item is created while the user briefly loses WS: does it appear in the `inbox-pending-summary` on resume or do we see a race? `pending-summary` is the truth; WS-Push is additional acceleration. Race is acceptable — client merges.

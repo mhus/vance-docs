@@ -12,7 +12,7 @@
 > See also [`live-ws.md`](live-ws.md) (envelope framework, channel inventory)
 > and [`documents-channel.md`](documents-channel.md) (the subscribe/identity
 > pattern reused here). Refactor history:
-> [`planning/pointers-channel.md`](../../planning/pointers-channel.md).
+> [`planning/pointers-channel.md`](../../planning/archive/pointers-channel.md).
 
 ## 1. Purpose
 
@@ -22,7 +22,7 @@ participant. Purely additive, **opt-in per application**.
 
 The channel is deliberately **separated from the two `documents` channel
 exclusions** (`documents-channel.md` §11: "Cursor-Position-Sharing — deliberately
-out"; `live-ws.md` §9: CRDT deliberately out). `pointers` does **not** implement
+out"; `live-ws.md` §9: CRDT deliberately out). `pointers` does **not** create
 a collab editor, no edit sync, no CRDT — only ephemeral pointer awareness on a
 surface. The `documents` channel remains cursor-free.
 
@@ -48,12 +48,12 @@ Each frame is in a [`LiveEnvelope`](live-ws.md#3-envelope-format) with
 | `pointer-leave` | S → C | `{ path, editorId }` |
 
 - **`x` / `y`** — `double`, opaque app-space coordinates. The server
-  does **not** interpret them (no clamping, no normalization, no transform).
+  **does not** interpret them (no clamping, no normalization, no transform).
 - **`data`** — optional, typed additional map (`Map<String, Object>`) for
   app extras (e.g., pointer color, pointer type). The server passes it through
   1:1 without reading it.
 - **Identity is server-derived, not client-asserted.** The sender sends
-  `pointer-move` **without** its own identity; the server appends
+  `pointer-move` **without** its own identity; the server attaches
   `editorId`/`userId`/`displayName` from the authenticated
   [`ConnectionContext`](documents-channel.md#4-writer-identity) to the outgoing
   `pointer` frame — analogous to the `documents` channel. This makes the
@@ -64,7 +64,7 @@ Each frame is in a [`LiveEnvelope`](live-ws.md#3-envelope-format) with
 
 `pointer` and `pointer-leave` frames are **not** delivered to the triggering
 WS connection (filter in the broadcaster by `editorId`). The sender never sees
-their own pointer echoed back. Two tabs of the same user have different
+their own pointer reflected back. Two tabs of the same user have different
 `editorId`s and therefore see each other as separate cursors.
 
 ### 2.2 Subscribe Limit + Rate Cap
@@ -72,12 +72,12 @@ their own pointer echoed back. Two tabs of the same user have different
 - **100 subscriptions per connection** (like `documents`). A Canvas app
   typically needs one.
 - **60 `pointer-move`/s per connection** (Fixed-Window). Excess moves are
-  **silently dropped** (no error frame — an error per drop would itself cause
-  flooding). The client coalesces anyway to ~30 Hz (§6).
+  **silently dropped** (no error frame — an error per drop would itself flood).
+  The client coalesces anyway to ~30 Hz (§6).
 
 ## 3. Server Architecture
 
-Mirrored to `ws.documents`, but **without Roster state**:
+Mirrored to `ws.documents`, but **without roster state**:
 
 | Class | Responsibility |
 |---|---|
@@ -86,8 +86,8 @@ Mirrored to `ws.documents`, but **without Roster state**:
 
 **No `DocumentSubscriberRegistry` equivalent with Redis-HASH.** The only
 server-side state is the per-connection subscription set in RAM (for
-leave-on-disconnect + local fan-out addressing). "Who is pointing now" is
-derived purely from the frame stream.
+leave-on-disconnect + local fan-out addressing). "Who is pointing now"
+results purely from the frame stream.
 
 ### 3.1 Redis Pub/Sub (Cross-Pod only)
 
@@ -99,7 +99,7 @@ Topic:   vance:{tenantId}:pointers.leave
 Payload: "{podId}|{base64(path)}|{editorId}"
 ```
 
-Self-echo via `podId` (Per-Process-UUID) discarded — like
+Self-echo via `podId` (per-process UUID) discarded — like
 `documents.changed`. Receiver pods fan out to their local subscribers of the
 path.
 
@@ -109,7 +109,7 @@ path.
 subscribers on the same pod), but not cross-pod — exactly the failure mode
 pattern of the `documents` channel. Sufficient for single-pod dev.
 
-## 4. Delimitation from the `documents` Channel
+## 4. Distinction from the `documents` Channel
 
 | | `documents` | `pointers` |
 |---|---|---|
@@ -124,18 +124,18 @@ pollute a roster with high-frequency writes.
 
 ## 5. Lifecycle — Cursors Appear & Disappear
 
-Without a persistent roster, "who is pointing" is derived purely from the frame
+Without a persistent roster, "who is pointing" results purely from the frame
 stream. Three cleanup paths:
 
 1. **Explicit `pointer-leave`** — Client sends `unsubscribe` on
    `pointerleave`/tab blur/editor unmount. Server broadcasts `pointer-leave`
    to others.
-2. **WS-Disconnect** — the local pod broadcasts a `pointer-leave` for each
+2. **WS Disconnect** — the local pod broadcasts a `pointer-leave` for each
    subscribed path combination of the connection (from the per-connection
    subscription set). Cross-pod is covered by path 3.
-3. **Client-TTL-Fade (Primary Safeguard)** — the receiver client fades out
-   a foreign pointer if no update has arrived for ~5 s. Robustly catches lost
-   leaves, cross-pod gaps, and network disconnections without server state.
+3. **Client TTL Fade (Primary Safeguard)** — the receiving client hides a
+   foreign pointer if no update has arrived for ~5 s. Robustly catches lost
+   leaves, cross-pod gaps, and network disconnections, without server state.
 
 ## 6. Client Architecture
 
@@ -147,10 +147,10 @@ Module Federation addons (Canvas) share it; WS access is via the
 
 - **Sender:** `report(x, y, data?)` — coalesces on `requestAnimationFrame`
   at `throttleHz` (default 30), sends `pointer-move`. The app calls it from
-  its `pointermove` handler with **app-space coordinates** (after its
-  own zoom/pan inverse).
+  its `pointermove` handler with **app-space coordinates** (after its own
+  zoom/pan inverse).
 - **Listener:** reactive `Map<editorId, RemotePointer>` with `lastSeen`,
-  TTL-fade (`ttlMs`, default 5000) via a 1s interval.
+  TTL fade (`ttlMs`, default 5000) via a 1s interval.
 - **Rendering is app-specific:** The composable only provides app-space
   coordinates. The application applies its current transform to position the
   pointer overlays (zoom-correct).
@@ -170,7 +170,7 @@ coordinates in the `pointermove` handler via the VueFlow viewport inverse
 ### 6.2 Workbook Integration
 
 `WorkbookAppKind.vue` uses the same channel, scoped to the path of the active
-page. A Workpage is **scrolling, wrapping flowing text** — not a 2D plane like
+page. A workpage is **scrolling, wrapping flowing text** — not a 2D plane like
 Canvas. Therefore, the two signals are **deliberately modeled
 differently**:
 
@@ -187,7 +187,7 @@ differently**:
   The receiver resolves it via `blockRectAtPos(pos)` against **its own layout**
   to the block element rectangle and highlights this block. Block awareness
   ("what is the person working on") is calmer and more stable than a
-  character-accurate caret (no jitter per keypress) and remains correct with
+  character-accurate caret (no jitter per keystroke) and remains correct with
   different window widths / wrapping / scrolling.
 
 The block editor (`@vance/block-editor` `WorkPageEditor`) exposes
@@ -207,7 +207,7 @@ caret or selection range would be a later, purely additive refinement
 |---|---|
 | `vance.redis.enabled=false` | Channel operates pod-locally; no cross-pod cursors. Brain continues normally. |
 | WS reconnect | New `editorId`; desired subscriptions are replayed; old foreign pointers fade via TTL. |
-| WS-Close without `unsubscribe` | Leave-on-Disconnect broadcasts `pointer-leave` locally; cross-pod is covered by client TTL. |
+| WS close without `unsubscribe` | Leave-on-Disconnect broadcasts `pointer-leave` locally; cross-pod is covered by client TTL. |
 | Lost `pointer-move`/`pointer-leave` | Best-effort — the next move replaces the position, TTL cleans up dead cursors. |
 | Flooding client | Server rate cap (60/s) drops silently; client coalesces to 30 Hz. |
 
@@ -217,12 +217,12 @@ caret or selection range would be a later, purely additive refinement
 |---|---|
 | Channel Handler | `vance-brain/.../ws/pointers/PointerChannelHandler.java` |
 | Broadcaster + State | `vance-brain/.../ws/pointers/PointerBroadcaster.java` |
-| Channel Demux (Routing) | `vance-brain/.../ws/LiveWebSocketHandler.java` (`pointers`-Case + Leave-on-Close) |
+| Channel Demux (Routing) | `vance-brain/.../ws/LiveWebSocketHandler.java` (`pointers`-case + Leave-on-Close) |
 | Wire DTOs | `vance-api/.../ws/PointerMoveRequest.java`, `PointerNotification.java`, `PointerLeaveNotification.java`, `PointerSubscribeRequest.java` |
-| MessageType | `vance-api/.../ws/MessageType.java` (`POINTER*`-Konstanten) |
+| MessageType | `vance-api/.../ws/MessageType.java` (`POINTER*`-constants) |
 | Client Composable | `@vance/shared/ws/usePointers.ts` |
 | Bridge API | `@vance/shared/ws/bridge.ts` (`VanceWsApi` Pointer methods) |
-| Host Wiring | `vance-face/src/ws/wsConnectionStore.ts` (pointers-Section) + `vance-face/src/platform/bootWeb.ts` (`configureVanceWs`) |
+| Host Wiring | `vance-face/src/ws/wsConnectionStore.ts` (pointers-section) + `vance-face/src/platform/bootWeb.ts` (`configureVanceWs`) |
 | Canvas Consumer | `vance-addon-brain-canvas/client/src/CanvasEditor.vue` |
 | Workbook Consumer | `vance-addon-brain-workbook/client/src/WorkbookAppKind.vue` (Mouse + `data.node`) |
 | Tests | `vance-brain/.../ws/pointers/PointerBroadcasterTest.java` |

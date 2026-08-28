@@ -3,30 +3,30 @@
 > Live WS channel `signals`: subscribe per document path and receive **ephemeral,
 > document-related signals**. **Pure fan-out** — no persistent state, no history,
 > best-effort, **no DB write**. A generic frame `SignalFrame{path, signal, data}`:
-> `signal` discriminates the type, `data` carries the payload. Cross-Pod via
+> `signal` discriminates the type, `data` carries the payload. Cross-pod via
 > Redis Pub/Sub.
 >
-> Status: v1 in production. First consumer: **Compose Run Status**
+> Status: v1 in production. First consumer: the **Compose Run Status**
 > (`signal: "compose-run"`) — see [`damogran-system.md`](damogran-system.md).
 >
 > See also [`live-ws.md`](live-ws.md) (envelope frame, channel inventory) and
-> [`pointers-channel.md`](pointers-channel.md) (same roster-free fan-out
-> pattern). History: [`planning/agent-compose-run.md`](../../planning/agent-compose-run.md) §5.
+> [`pointers-channel.md`](pointers-channel.md) (the same roster-free fan-out
+> pattern). History: [`planning/agent-compose-run.md`](../../planning/archive/agent-compose-run.md) §5.
 
 ## 1. Purpose
 
-A channel for **ephemeral signals belonging to a document** and intended for its
-current viewers — without touching the document state. The prime example: "a
-Compose Run is currently active on this page". Such transient signals do **not**
-belong in a document write (which incurs Redis publish costs even without
+A channel for **ephemeral signals belonging to a document** that should be sent
+to its current viewers — without touching the document state. The prime example:
+"a Compose Run is currently active on this page". Such transient signals do
+**not** belong in a document write (which incurs Redis publish costs even without
 viewers, is an archive version candidate, and conflicts with an open unsaved
-editor buffer) and **not** in Presence (which answers "who is watching", not
+editor buffer) and **not** in presence (which answers "who is watching", not
 "what is happening").
 
 The channel is intentionally **generic**: new signal types (e.g., a future
 `compose-kill`/`run-kill`) ride along using the same `signal` discriminator,
-without new wire types. "pointers" is the high-frequency cursor channel;
-`signals` is the low-frequency event channel.
+without new wire types. "pointers" is the high-frequency cursor channel; `signals`
+is the low-frequency event channel.
 
 ## 2. Wire Format
 
@@ -83,33 +83,33 @@ Topic:   vance:{tenantId}:signals
 Payload: "{podId}|{tenantId}|{base64(json(SignalFrame))}"
 ```
 
-Self-echo via `podId` (Per-Process-UUID) discarded — like `documents.changed`
+Self-echo via `podId` (per-process UUID) discarded — like `documents.changed`
 and `pointers`. `vance.redis.enabled=false` → the channel operates **pod-locally**
-(fan-out on the same Pod), but not cross-pod. Sufficient for single-pod dev.
+(fan-out on the same pod), but not cross-pod. Sufficient for single-pod dev.
 
 ## 4. Client Architecture
 
 In `wsConnectionStore` (`vance-face`): `subscribeSignals(path)` /
 `unsubscribeSignals(path)` + `onSignal(path, handler)` — per-path callbacks,
-reconnect resubscribe (desired-set) as with `pointers`. A `signal` frame is
-dispatched to registered handlers based on `data.path`.
+reconnect-resubscribe (desired-set) like with `pointers`. A `signal` frame is
+dispatched to the registered handlers based on `data.path`.
 
 ## 5. Consumer: Compose Run Status
 
 `compose_block_run` (see [`damogran-system.md`](damogran-system.md) §9)
 emits on the path of the Compose document:
 
-| `signal` | `data` | When |
+| `signal` | `data` | when |
 |---|---|---|
-| `compose-run` | `{ runId, status: "running", workspace }` | Immediately after run start (before fast-path wait) |
-| `compose-run` | `{ runId, status: "done" \| "failed", workspace }` | Upon completion (inline or `onDone`) |
+| `compose-run` | `{ runId, status: "running", workspace }` | immediately after run start (before fast-path wait) |
+| `compose-run` | `{ runId, status: "done" \| "failed", workspace }` | upon completion (inline or `onDone`) |
 
 The `ComposeView` (Cortex) subscribes to the path of its open document and
 immediately shows "running" when `running` + polls the live tail via
-`GET /brain/{tenant}/compose/run/{runId}`. The **final `$output`** does **not**
-come via this signal, but via the `documents.changed` reload (the server writes
-`$output` back server-authoritatively). The signal is purely *during*-run
-feedback; not result transport.
+`GET /brain/{tenant}/compose/run/{runId}`. The **final `$output`** does
+**not** come via this signal, but via the `documents.changed` reload
+(the server writes `$output` back server-authoritatively). The signal is pure
+*during*-the-run feedback; not result transport.
 
 ## 6. Not in Scope (intentionally)
 
@@ -118,8 +118,8 @@ feedback; not result transport.
 - **Roster / Presence** — "who is watching" is the concern of the `documents` channel.
 - **Result/State Transport** — signals are triggers/status, not payload
   channels; actual state flows via REST/document.
-- **Client→Server Signals** (v1) — only subscribe + server push; inbound will
-  come when a consumer (run-kill) needs it.
+- **Client→Server Signals** (v1) — only subscribe + server push; inbound will come
+  when a consumer (run-kill) needs it.
 
 ## 7. Code Anchors
 
@@ -127,10 +127,10 @@ feedback; not result transport.
 |---|---|
 | Channel Handler | `vance-brain/.../ws/signals/SignalChannelHandler.java` |
 | Broadcaster + State | `vance-brain/.../ws/signals/SignalBroadcaster.java` |
-| Channel Demux (Routing) | `vance-brain/.../ws/LiveWebSocketHandler.java` (`signals`-Case + Unsubscribe-on-Close) |
+| Channel Demux (Routing) | `vance-brain/.../ws/LiveWebSocketHandler.java` (`signals`-case + Unsubscribe-on-Close) |
 | Wire DTOs | `vance-api/.../ws/SignalFrame.java`, `SignalSubscribeRequest.java` |
-| MessageType | `vance-api/.../ws/MessageType.java` (`SIGNAL*`-Constants) |
+| MessageType | `vance-api/.../ws/MessageType.java` (`SIGNAL*`-constants) |
 | Producer (compose-run) | `vance-brain/.../damogran/ComposeBlockRunTool.java` (`emitSignal`) |
-| Client Wiring | `vance-face/src/ws/wsConnectionStore.ts` (signals-Section) |
+| Client Wiring | `vance-face/src/ws/wsConnectionStore.ts` (signals-section) |
 | Consumer | `vance-face/src/cortex/components/ComposeView.vue` |
 | Tests | `vance-brain/.../ws/signals/SignalBroadcasterTest.java` |

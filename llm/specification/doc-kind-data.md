@@ -7,12 +7,12 @@
 
 ## 1. Purpose
 
-`kind: data` is the *unstructured* sibling of the typed Kinds. Where `list` / `tree` / `records` / `sheet` prescribe a clear item model and come with a suitable editor, `data` is explicitly **free**: the Document holds any JSON / YAML object, written and read by tools or processes.
+`kind: data` is the *unstructured* sibling of the typed Kinds. Where `list` / `tree` / `records` / `sheet` prescribe a clear item model and provide a suitable editor, `data` is explicitly **free**: the Document holds any JSON / YAML object that is written and read by tools or processes.
 
 **Use Cases:**
-- Configuration for a tool, located in the Project document pool (`config.yaml` with `kind: data`).
-- Output of a Worker that produces structured data (e.g., a search result list with URLs + scores), which a Recipe later reads.
-- Input bundle for a Worker (parameter set, fixture data).
+- Configuration for a tool, located in the Project Document Pool (`config.yaml` with `kind: data`).
+- Output of a worker that produces structured data (e.g., a search result list with URLs + scores), which a Recipe later reads.
+- Input bundle for a worker (parameter set, fixture data).
 - General "structured notebook" — key-value collection, tag list, lookup table without schema constraints.
 
 **Distinction from other Kinds:**
@@ -31,7 +31,7 @@
 
 `data` and `text` are the two "no dedicated editor" Kinds — `text` for Markdown prose, `data` for structured machine data.
 
-**What this Spec defines:**
+**What this spec defines:**
 - On-disk formats JSON and YAML.
 - Header convention (same `kind` mirror path as list/records).
 - Pass-through guarantee: what goes in as top-level keys / values comes out unchanged (lossless).
@@ -86,9 +86,9 @@ There is **no** `items` wrapper, **no** `schema`, **no** predefined top-level sh
 ```
 
 **Reading Rules:**
-- `kind` from `$meta.kind`. Backward compatibility: legacy top-level `kind: "data"` is accepted as a fallback.
+- `kind` from `$meta.kind`. Backward-Compat: legacy top-level `kind: "data"` is accepted as a fallback.
 - All other top-level keys besides `$meta` are the body — held losslessly in `doc.data` (a generic `Record<string, unknown>`/`unknown` field).
-- The top level can also be an array or scalar. In that case, no `$meta` wrapper slot exists; the codec accepts this but **does not** automatically mirror `kind: data` — such documents must have the `kind` set via the Document metadata API or will not be recognized as `data` by the `HeaderStrategy` path. Recommendation: a top-level object with `$meta` is the canonical form.
+- The top level can also be an array or scalar. In that case, no `$meta` wrapper slot exists; the codec accepts this, but does **not** automatically mirror `kind: data` — such documents must have the `kind` set via the Document Metadata API or will not be recognized as `data` by the `HeaderStrategy` path. Recommendation: a top-level object with `$meta` is the canonical form.
 
 **Writing Rules:**
 - 2-space indent.
@@ -113,7 +113,7 @@ list_of_things:
     label: beta
 ```
 
-Single-Document: Top-level mapping with `$meta` as the first key (carrying `kind`), followed by arbitrary body keys at the same level. Top-level array/scalar is also accepted — in that case, no space exists for `$meta`, and the `kind` must be set via the Document metadata API.
+Single-Document: Top-level mapping with `$meta` as the first key (carrying `kind`), followed by arbitrary body keys at the same level. Top-level array/scalar is also accepted — in this case, no space exists for `$meta`, and the `kind` must be set via the Document Metadata API.
 
 **Reading Rules:**
 - Top-level mapping → `$meta.kind` is read and mirrored, the remaining top-level keys are the body.
@@ -122,21 +122,21 @@ Single-Document: Top-level mapping with `$meta` as the first key (carrying `kind
 - Comments are lost during round-trip — to preserve comments, document them in a sidecar `*.md`.
 
 **Writing Rules:**
-- Single-Document, 2-space indent, `$meta` as the first key for object form.
+- Single-document, 2-space indent, `$meta` as the first key for object form.
 - Block style for deep structures, flow style for compact arrays of scalars (analogous to records).
 - Trailing newline at EOF.
 
 ### 3.3 Markdown
 
-Not supported. `kind: data` in Markdown front matter is rejected by the UI with "use JSON or YAML for data"; the Raw editor remains usable (it's still an `.md` file), but the Preview tab is disabled. In practice: Documents are created with the appropriate format (`.json` / `.yaml`), and `kind: data` mode assumes this.
+Not supported. `kind: data` in Markdown front matter is rejected by the UI with "use JSON or YAML for data"; the Raw editor remains usable (as it's still an `.md` file), but the Preview tab is disabled. In practice: Documents are created with the appropriate format (`.json` / `.yaml`), and `kind: data` mode assumes this.
 
 ---
 
 ## 4. Server Path
 
-Like all other Kinds: **no dedicated endpoint**, no server-side data parser. `GET /documents/{id}` returns the entire body, `PUT /documents/{id}` writes it back. The `HeaderStrategy` path (`JsonHeaderStrategy` / `YamlHeaderStrategy`) recognizes `kind: data` in `$meta` or the first Doc and mirrors it to `DocumentDocument.kind` — the same code as for list/records/etc.
+Like all other Kinds: **no dedicated endpoint**, no server-side data parser. `GET /documents/{id}` delivers the entire body, `PUT /documents/{id}` writes it back. The `HeaderStrategy` path (`JsonHeaderStrategy` / `YamlHeaderStrategy`) recognizes `kind: data` in `$meta` or the first Doc and mirrors it to `DocumentDocument.kind` — the same code as for list/records/etc.
 
-Tools / processes that consume or produce the Document use the normal Document tool suite (`doc_read`, `doc_create`, `doc_import_url`) — they see the body as a string and parse it themselves. There is **no** path access to individual fields via REST; that would be the responsibility of a `data_get(path)` tool at a higher level and is not part of this Spec.
+Tools / processes that consume or produce the Document use the normal Document Tool Suite (`doc_read`, `doc_write`, `doc_import_url`) — they see the body as a string and parse it themselves. There is **no** path access to individual fields via REST; this would be the responsibility of a `data_get(path)` tool at a higher level and is not part of this spec.
 
 ---
 
@@ -146,20 +146,20 @@ Tools / processes that consume or produce the Document use the normal Document t
 
 - **`kind === 'data'`** + Format ∈ {json, yaml} → Tabs `Preview` (Default) / `Raw`.
 - **`kind === 'data'`** + Format = md → Raw editor only; a subtle hint in the toolbar recommends JSON or YAML.
-- Other Format/Kind combinations: Raw editor only.
+- Other format/kind combinations: Raw editor only.
 
-Switch `Preview → Raw`: no re-serialize needed (Preview is read-only — the Raw body is the truth). Switch `Raw → Preview`: the codec parses the current body and renders the Tree-View; in case of a parse error, the Preview tab shows a compact error card (line, column, expectation) instead of the tree.
+Switch `Preview → Raw`: no re-serialization needed (Preview is read-only — the Raw body is the truth). Switch `Raw → Preview`: the codec parses the current body and renders the Tree-View; in case of a parse error, the Preview tab displays a compact error card (line, column, expectation) instead of the tree.
 
 ### 5.2 Feature Set v1 — Preview Tab
 
 | Feature                                | v1 | Note |
-|----------------------------------------|----|------|
-| Read-only Tree-View                    | ✓  | JSON / YAML structure as a collapsible tree |
+|----------------------------------------|----|-------|
+| Read-only Tree-View                    | ✓  | JSON-/YAML-structure as a collapsible tree |
 | Expand / Collapse per Node             | ✓  | Click-toggle, Cmd/Ctrl-Click expands recursively |
 | Type-Badges (Object / Array / Primitive) | ✓ | Small label to the right of the key |
 | Search / Filter in Tree                | ✗  | v2 |
 | Copy-Path to Node                      | ✗  | v2 |
-| Editing in Preview                     | **intentionally no** | "free storage, editor is preview only, editing is done in the file itself" — Spec requirement |
+| Editing in Preview                     | **intentionally no** | "free storage, editor is preview only, editing is done in the file itself" — spec requirement |
 
 **Edit Path:** Switch tab to `Raw`. There, the unchanged file body is editable like any other text-based document. Save is done via the Raw editor; Preview automatically reflects after save.
 
@@ -170,16 +170,16 @@ Switch `Preview → Raw`: no re-serialize needed (Preview is read-only — the R
 - **Objects:** Key in quotes if whitespace / special characters, otherwise bare. Type-Badge `Object(<n keys>)`.
 - **Deep Structures:** no hard cut of nesting depth; UI is the vertical scroll container. Default state on render: all top-level nodes expanded, everything deeper collapsed — otherwise large configs become unwieldy.
 - **Long Values:** Strings > 200 characters are truncated with `…` and expand on click into a small modal/popover.
-- **No DaisyUI classes** outside the component library (`VCard` for the Outer-Box, pure Tailwind layout classes for Grid and Spacing).
+- **No DaisyUI classes** outside the component library (`VCard` for the outer box, pure Tailwind layout classes for Grid and Spacing).
 
 ### 5.4 Components
 
-- `<DataView>` — Top-level container. Receives `:doc: DataDocument` (parsed Body + meta), shows Preview or Raw according to the active tab. Emits `update:doc` only from the Raw tab — the Preview tab is silent.
-- `<DataNode>` — recursive component for a tree node. Renders itself plus all children. Own `expanded` state, no global store needed.
+- `<DataView>` — Top-level container. Receives `:doc: DataDocument` (parsed Body + meta), displays Preview or Raw according to the active tab. Emits `update:doc` only from the Raw tab — the Preview tab is silent.
+- `<DataNode>` — Recursive component for a tree node. Renders itself plus all children. Own `expanded` state, no global store needed.
 
 ### 5.5 Parse Errors in Preview Tab
 
-If the Raw body is not valid JSON / YAML, the Preview tab shows a focused error card instead of the tree:
+If the Raw body is not valid JSON / YAML, the Preview tab displays a focused error card instead of the tree:
 
 ```
 ─ Parse error ──────────────────────────
@@ -200,7 +200,7 @@ No automatic repair. No attempt to render a partial tree — all or nothing. The
 
 ### 6.1 Path Access via Tools
 
-A `data_get(documentId, path)` / `data_set(documentId, path, value)` tool that allows selective reads and writes to a `data` document structure — similar to `jq`/`yq` paths. This would provide a structural operator layer to the entire Document pool. Separate spec step.
+A `data_get(documentId, path)` / `data_set(documentId, path, value)` tool that allows selective reads and writes to a `data` document structure — similar to `jq`/`yq` paths. This would provide a structural operator layer for the entire Document Pool. Separate spec step.
 
 ### 6.2 Schema Validation as Sidecar
 
@@ -212,7 +212,7 @@ If a tool overwrites the Document, a "diff since last save" view would be useful
 
 ### 6.4 Search in Preview
 
-Full-text search over keys and values with highlighting in the tree. Good UX, but not v1.
+Full-text search across keys and values with highlighting in the tree. Good UX, but not v1.
 
 ---
 
@@ -220,5 +220,5 @@ Full-text search over keys and values with highlighting in the tree. Good UX, bu
 
 - **Canonical form for Top-Level Array:** should the codec accept a top-level array or wrap it in an object with key `items` before saving? v1 accepts both; UI recommendation: top-level object, as `$meta` can be cleanly placed there.
 - **YAML Anchors / Aliases:** the library default expands them on read. Round-trip is therefore not truly lossless if the user uses anchors — anchors become inline values. Accepted trade-off because Vancetope tools rarely produce anchors.
-- **Very Large Bodies (> Inline-Threshold):** the Document becomes storage-backed (same mechanism as for other Kinds). The Preview tab must be able to stream content, or a "Body too large for preview, use a tool to access" fallback is shown. v1: Inline-Threshold is sufficient; storage-backed `kind: data` is a spec point for later.
-- **Default Format on Creation:** if the user selects "new `kind: data` Document", should the stub be `.json` or `.yaml`? Suggestion: YAML — more compact, human-readable, equally consumable by tools.
+- **Very Large Bodies (> Inline-Threshold):** the Document becomes storage-backed (same mechanism as for other Kinds). The Preview tab must be able to stream content, or a "Body too large for preview, use a tool to access" fallback should be shown. v1: inline threshold is sufficient; storage-backed `kind: data` is a spec point for later.
+- **Default Format on Creation:** if the user selects "new `kind: data` Document", should the stub be `.json` or `.yaml`? Suggestion: YAML — more compact, human-readable, and equally consumable by tools.

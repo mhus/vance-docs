@@ -25,7 +25,7 @@ This means: v1 does not require AI-powered graph analysis. But the collections, 
 
 ### 2.1 Entities
 
-Everything in the Knowledge System is an Entity. In MongoDB, a `entities` collection:
+Everything in the knowledge system is an Entity. In MongoDB, a `entities` collection:
 
 ```yaml
 id: ent_abc123
@@ -71,7 +71,7 @@ Defined in the Enum from the start, even if v1 does not actively use all of them
 | `document` | active | File, PDF, Upload |
 | `note` | active | Free-text note |
 | `result` | active | Think Process Task result |
-| `fact` | active | Single fact ("Deadline is June 15th") |
+| `fact` | active | Single fact ("Deadline is June 15th.") |
 | `folder` | active | Organizational container with `children` |
 | `claim` | **Field exists, UI v2** | Assertion from a source |
 | `insight` | **Field exists, UI v2** | Distilled insight |
@@ -113,7 +113,7 @@ created_by: user                 # user | engine | brain_linker
 
 All defined in the Enum from the start. v1 only uses the simple ones:
 
-#### Content-based Relationships
+#### Content Relationships
 
 | Relation | v1 | Description |
 |----------|-----|-------------|
@@ -147,7 +147,7 @@ All defined in the Enum from the start. v1 only uses the simple ones:
 
 ---
 
-## 3. What v1 Can Do
+## 3. What v1 Can Do Specifically
 
 ### 3.1 Manually Set Simple Relationships
 
@@ -167,7 +167,7 @@ An extract node automatically generates:
 
 ### 3.2 Automatic Origin Relationships
 
-The Brain automatically sets the following during Task execution:
+The Brain automatically sets these during task execution:
 
 | Event | Relation | Automatic |
 |-------|----------|------------|
@@ -193,7 +193,7 @@ GET /api/entities?orphans=true&scope=project/proj_5
 
 Desktop/Web Client shows:
 - Document detail view with "Related" section
-- Simple connection lines between documents
+- Simple connecting lines between documents
 - No Force-Graph visualization in v1 — only lists
 
 ---
@@ -225,9 +225,9 @@ memory insight "Flash Attention optimizes IO, not Compute" \
 
 ### 4.3 Confidence Values
 
-Relations and Insights receive Confidence Scores:
+Relations and Insights receive Confidence scores:
 - Manually: User sets Confidence
-- Think Process-based: Verify node assesses Confidence
+- Think Process-based: Verify node evaluates Confidence
 - Later (v3): Brain Linker calculates from amount of evidence
 
 ### 4.4 Richer Visualization
@@ -259,11 +259,11 @@ scope: project
 
 | Strategy | What it does | LLM Costs |
 |-----------|-------------|------------|
-| **Contradiction Scan** | Check new claims against existing ones | Medium |
-| **Support Scan** | Check new evidence against hypotheses | Medium |
-| **Orphan Linking** | Connect unconnected entities | Low (Embedding pre-filter) |
-| **Synthesis Suggestion** | N claims on the same topic → suggest insight | High |
-| **Gap Detection** | Hypotheses without evidence, unanswered questions | Low |
+| **Contradiction Scan** | Check new Claims against existing ones | Medium |
+| **Support Scan** | Check new Evidence against Hypotheses | Medium |
+| **Orphan Linking** | Connect unconnected Entities | Low (Embedding pre-filter) |
+| **Synthesis Suggestion** | N Claims on the same topic → Suggest Insight | High |
+| **Gap Detection** | Hypotheses without Evidence, unanswered Questions | Low |
 
 Each strategy can be individually enabled/disabled and has its own token budget.
 
@@ -273,8 +273,8 @@ Before querying the LLM, the Brain filters using Cosine Similarity:
 
 ```
 New Claim C
-  → Calculate embedding of C
-  → Find top 20 most similar existing claims/insights
+  → Calculate Embedding of C
+  → Find Top-20 most similar existing Claims/Insights
   → Present only these 20 to the LLM: "Does C contradict any of these?"
   → Saves ~95% of LLM calls
 ```
@@ -285,7 +285,7 @@ New Claim C
 
 - Graph Traversal Queries: "Show the path from Paper A to Hypothesis Z"
 - Automatic Confidence calculation from evidence network
-- Cross-project linkages at the group level
+- Cross-Project links at the Group level
 - Timeline view: how an insight evolved
 - Export as knowledge base (JSON-LD, RDF, or simple Markdown)
 - Potentially migrate from MongoDB adjacency lists to Neo4j if necessary
@@ -443,7 +443,7 @@ v2: Typed Relations (supports, contradicts, extends, ...)
     Insights, Claims, Hypotheses as Entity Types
     Think Processes produce Relations as output
     Confidence values
-    Graph visualization in client
+    Graph visualization in the Client
 
 v3: Brain Linker background process
     Active contradiction and support detection
@@ -452,7 +452,7 @@ v3: Brain Linker background process
     Embedding pre-filter for LLM costs
 
 v4: Complete Knowledge Graph
-    Cross-project linkages
+    Cross-Project links
     Timeline / Version history
     Automatic Confidence calculation
     Potentially Neo4j migration

@@ -1,6 +1,6 @@
 # Vancetope — Document Kind `slides`
 
-> Specifies the **`slides` payload** for documents that carry a sequence of presentation slides, written as Markdown sections separated by CommonMark thematic breaks (`---`). Renderer is **Marpit** (`@marp-team/marpit`) — a pure markdown→HTML+CSS library, no runtime framework.
+> Specifies the **`slides` payload** for documents that carry a sequence of presentation slides, written as Markdown sections separated by CommonMark thematic breaks (`---`). The renderer is **Marpit** (`@marp-team/marpit`) — a pure markdown→HTML+CSS library, no runtime framework.
 > See also: [doc-kind-mindmap](doc-kind-mindmap.md) | [doc-kind-items](doc-kind-items.md) | [web-ui](web-ui.md)
 
 ---
@@ -15,33 +15,33 @@ Distinctions:
 - **mindmap**: visual hierarchy, not a linear slide deck.
 - **chart**: one chart per document; a deck can reference multiple charts (see §6.3).
 
-**Design Principle — Markdown is the truth.** Slides are primarily Markdown sections, separated by CommonMark Thematic Breaks (`---`). This is exactly what reveal.js, Marp, Slidev, and Obsidian Advanced Slides have in common. No Vancetope-specific dialect. This makes the source format trivially human-editable, LLM-friendly, and round-trip stable.
+**Design Principle — Markdown is the source of truth.** Slides are primarily Markdown sections, separated by CommonMark Thematic Breaks (`---`). This is exactly what reveal.js, Marp, Slidev, and Obsidian Advanced Slides have in common. No Vancetope-specific dialect. This makes the source format trivially human-editable, LLM-friendly, and round-trip stable.
 
-**Design Principle — Marpit as renderer, not a slide runtime.** We use `@marp-team/marpit` (MIT, TypeScript-native, ~15 KB minified without themes). Marpit is a pure function `markdown → { html, css }`. Rationale:
+**Design Principle — Marpit as Renderer, no Slide Runtime.** We use `@marp-team/marpit` (MIT, TypeScript-native, ~15 KB minified without themes). Marpit is a pure function `markdown → { html, css }`. Rationale:
 
-- Its library character (no global state, no keyboard bindings, no custom app shell) fits Vancetope Editor embedding, analogous to `marked` for `kind: doc`.
+- Its library character (no global state, no keyboard bindings, no proprietary app shell) fits Vancetope's editor embedding, analogous to `marked` for `kind: doc`.
 - Microsoft-backed standard (official VS Code extension "Marp for VS Code"), actively maintained, no vendor lock-in.
 - The slide separator is plain CommonMark — no proprietary syntax that might cause issues later.
-- CSS scope is trivial: Marpit emits the theme CSS as a string, we wrap it in a container with a class prefix or a Shadow Root.
+- CSS scope is trivial: Marpit emits the theme CSS as a string; we wrap it in a container with a class prefix or a Shadow Root.
 
-**Deliberately not using reveal.js**: it brings its own theme system, its own runtime, its own keyboard bindings, its own plugins — more of an "app" than a "lib". If we later need keynote-like live presentations, that will exist as a separate export path (see §6.5), not as a render layer in the editor.
+**Deliberately not using reveal.js**: it brings its own theme system, its own runtime, its own keyboard bindings, its own plugins — more of an "app" than a "lib". If we later need keynote-like live presentations, that will be a separate export path (see §6.5), not a render layer in the editor.
 
 **What this spec defines:**
 
 - Markdown as the canonical format, `---` as the slide separator.
 - Optional top-level `slides` block (Theme, Aspect-Ratio, Paginate, Default-Class).
 - Per-slide directives via Marpit's HTML comment syntax (`<!-- _class: ... -->`, `<!-- _backgroundColor: ... -->`).
-- Speaker notes via Marpit convention (`<!-- Speaker note text -->` without underscore prefix).
+- Speaker notes via Marpit convention (`<!-- Speaker note text -->` without an underscore prefix).
 - JSON/YAML form as an alternative for machine generation (slides as a string array).
-- Web-UI activation with two tabs (`Slides` / `Raw`).
+- Web UI activation with two tabs (`Slides` / `Raw`).
 
 **What it does not define:**
 
 - Live presentation mode (fullscreen, remote control, speaker display). v1 is slide preview in the editor — arrow/keyboard navigable, but no fullscreen runtime. See §6.5.
 - In-place WYSIWYG editing per slide. Editing in v1 is exclusively via the Raw tab (direct Markdown).
-- PDF export, PPTX export. Marpit cannot do this directly; `@marp-team/marp-cli` can, but it's CLI-only and over-engineered for v1. See §6.4.
+- PDF export, PPTX export. Marpit cannot do this directly; `@marp-team/marp-cli` can, but it's CLI-only and oversized for v1. See §6.4.
 - Custom theme definition per document. Themes are globally registered (DaisyUI-oriented), not inline.
-- Interactive elements in slides (animations, click-to-reveal, fragments). Deliberately excluded — as soon as we have fragments, we drift towards reveal.js specialization. Static slides are the 95% solution.
+- Interactive elements in slides (animations, click-to-reveal, fragments). Deliberately excluded — as soon as we have fragments, we drift towards reveal.js specifics. Static slides are the 95% solution.
 - Slide composition from multiple documents (include directives). One document = one deck.
 
 ---
@@ -56,7 +56,7 @@ Distinctions:
 | `slides`  | `SlidesHeader`      | no       | Deck metadata (Theme, Aspect, Paginate, Default-Class). Default `{}`.   |
 | `items`   | `string[]`          | yes      | Slide Markdown strings in order. At least one entry.                    |
 
-Unknown top-level keys remain in `doc.extra` and are re-emitted verbatim when writing (pass-through like all other kinds).
+Unknown top-level keys remain in `doc.extra` and are re-emitted verbatim when writing (pass-through as with all other kinds).
 
 ### 2.2 SlidesHeader
 
@@ -87,7 +87,7 @@ Each `items[i]` is a **Markdown string** describing the content of **one** slide
 
 This is the **Marpit standard**, not a Vancetope dialect. What Marpit does not support (e.g., `<!-- .slide: data-transition="zoom" -->` from reveal.js), we also do not support.
 
-**Canonical JSON form:**
+**Canonical JSON Form:**
 
 ```json
 {
@@ -147,17 +147,17 @@ A Think Tool, not a productivity app.
 
 **Reading Rules:**
 
-- Front-matter like all other kinds (`---` fences at the beginning of the file, **before** the first slide content). Front-matter is optional — without front-matter, the kind is known from the Document Header Mapping (`HeaderStrategy`).
-- Slide separator: **CommonMark Thematic Break** (`---`, `***`, or `___` on a line, surrounded by blank lines). Canonically written as `---`.
-- The first section after front-matter is `items[0]`. Each subsequent thematic break starts the next section.
-- Blank lines directly after the separator are trimmed during parsing (leading blank lines per slide removed). Trailing whitespace is preserved.
+- Front-Matter as with all other kinds (`---` fences at the file beginning, **before** the first slide content). Front-Matter is optional — without Front-Matter, the kind is known from the Document Header Mapping (`HeaderStrategy`).
+- Slide Separator: **CommonMark Thematic Break** (`---`, `***`, or `___` on a line, surrounded by blank lines). Canonical writing is `---`.
+- The first section after Front-Matter is `items[0]`. Each subsequent Thematic Break starts the next section.
+- Blank lines directly after the separator are trimmed during parsing (leading blank lines per slide are removed). Trailing whitespace is preserved.
 - HTML comments within a slide section remain part of `items[i]` — Marpit interprets them at render time.
 
 **Writing Rules:**
 
-- Front-matter with `kind: slides` and `slides:` block (if defaults are overridden).
+- Front-Matter with `kind: slides` and `slides:` block (if defaults are overridden).
 - Slides are joined with `\n\n---\n\n` (blank line + `---` + blank line).
-- Trailing newline at the end of the file: yes, one.
+- Trailing newline at the file end: yes, one.
 
 ### 3.2 JSON
 
@@ -211,11 +211,11 @@ Block-style sequences with `|`-literal scalars for the slides (preserve newlines
 
 ### 3.4 Codec Impact
 
-Dedicated lightweight codec `slidesCodec.ts` in `@vance/shared`:
+A dedicated lightweight codec `slidesCodec.ts` in `@vance/shared`:
 
-- Markdown → Parse: detach front-matter, split body at thematic breaks, trim leading blank lines per slide.
-- Markdown → Write: front-matter + join with `\n\n---\n\n`.
-- JSON/YAML: identical to Items codec convention — `$meta`-wrapper, `slides`-block, `items`-array.
+- Markdown → Parse: detach Front-Matter, split body at Thematic Breaks, trim leading blank lines per slide.
+- Markdown → Write: Front-Matter + Join with `\n\n---\n\n`.
+- JSON/YAML: identical to the Items Codec convention — `$meta` wrapper, `slides` block, `items` array.
 
 Server-side: **no dedicated endpoint, no slide parser**. The `HeaderStrategy` path automatically mirrors `kind: slides` to `DocumentDocument.kind`. The `slides:` block is transparent to the server — like all other top-level keys.
 
@@ -229,7 +229,7 @@ Like tree, mindmap, items: **no dedicated endpoint**, no server-side slide rende
 
 ---
 
-## 5. Web-UI
+## 5. Web UI
 
 ### 5.1 Editor Activation
 
@@ -240,18 +240,18 @@ Like tree, mindmap, items: **no dedicated endpoint**, no server-side slide rende
 
 Read-only render based on `@marp-team/marpit`:
 
-- Adapter `slidesDocumentToMarpitInput(doc: SlidesDocument): { markdown: string, options: MarpitOptions }` constructs a single Markdown string that Marpit understands (joined with `---`) from the `slides`-block + `items[]`.
+- Adapter `slidesDocumentToMarpitInput(doc: SlidesDocument): { markdown: string, options: MarpitOptions }` constructs a single Markdown string that Marpit understands (joined with `---`) from the `slides` block + `items[]`.
 - `new Marpit(options).render(markdown) → { html, css }`.
 - HTML is mounted into a scoped container element, CSS is injected directly before it as `<style scoped>`. We prefix the CSS selector scope via Marpit's `container` option to prevent DaisyUI/Tailwind styles from bleeding through and vice versa.
-- Layout: vertical slide stream **or** single-slide view with arrow keys/buttons. v1: **Single-Slide-View** is default; a switch at the bottom left toggles to "all slides one below the other" (stream mode for print preview/long-scroll reading).
-- Navigation: `←` / `→`, `PgUp` / `PgDown`, optional `Home` / `End`. Slide index at the bottom center (`3 / 12`).
+- Layout: vertical slide stream **or** single-slide view with arrow keys/buttons. v1: **Single-Slide-View** is default; a switch in the bottom left toggles to "all slides stacked" (stream mode for print preview/long-scroll reading).
+- Navigation: `←` / `→`, `PgUp` / `PgDown`, optional `Home` / `End`. Slide index in the bottom center (`3 / 12`).
 - Thumbnails strip (left, narrow, scrollable) is **v2**. For v1, the index is sufficient.
 
 ### 5.3 `Raw` Tab
 
 CodeMirror 6 with Markdown mode (for md) or JSON/YAML mode accordingly. Editing the source text, live preview is not synchronized in v1 — the user switches to the `Slides` tab to see the result.
 
-Side-by-side live preview (CodeMirror left, Marpit render right) is **v2**. Rationale: in v1, we do not want to interfere with the editor layout apparatus; this pattern only becomes viable when at least two kinds benefit from it.
+Side-by-side live preview (CodeMirror left, Marpit render right) is **v2**. Rationale: in v1, we do not want to interfere with the editor layout apparatus; this pattern will only be implemented when at least two kinds benefit from it.
 
 ### 5.4 Feature Set v1
 
@@ -259,7 +259,7 @@ Side-by-side live preview (CodeMirror left, Marpit render right) is **v2**. Rati
 |----------------------------------------|----|------|
 | Slide Render (Marpit)                  | ✓  | per-slide HTML + scoped CSS |
 | Single-Slide-View + Nav                | ✓  | Keyboard + buttons |
-| Stream-View (all slides one below the other) | ✓  | Toggle |
+| Stream-View (all slides stacked)       | ✓  | Toggle |
 | Theme Selection per Document           | ✓  | `slides.theme`, registered themes |
 | Paginate Toggle                        | ✓  | `slides.paginate` |
 | Per-Slide Directives (`_class`, `_backgroundColor`, …) | ✓ | Marpit pass-through |
@@ -275,31 +275,31 @@ Side-by-side live preview (CodeMirror left, Marpit render right) is **v2**. Rati
 
 ### 5.5 Components
 
-- `<SlidesView>` — top-level Slides tab. Receives `:doc: SlidesDocument`, calls adapter + Marpit, mounts HTML+CSS in Shadow-Root or scoped container.
+- `<SlidesView>` — top-level Slides tab. Receives `:doc: SlidesDocument`, calls adapter + Marpit, mounts HTML+CSS in Shadow Root or scoped container.
 - `<SlidesNav>` — index display at the bottom, arrow buttons, stream/single toggle.
-- Tab bar like with mindmap (`content-tab` class from `DocumentApp.vue`).
+- Tab bar as with mindmap (`content-tab` class from `DocumentApp.vue`).
 
 ### 5.6 Themes
 
-v1 set:
+v1 Set:
 
 - `default` — light background, dark text, neutral sans-serif. Marpit's built-in default is sufficient.
 - `dark` — dark background, light text.
 - `vance` — aligned with DaisyUI tokens (CSS variable-based theme, light/dark follows the active DaisyUI theme).
 
-Themes live under `packages/vance-face/src/components/slides/themes/*.css`, are Marpit theme CSS (registered via `marpit.themeSet.add(css)`). Custom theme authoring per document is v2 — until then, this set is sufficient.
+Themes reside under `packages/vance-face/src/components/slides/themes/*.css`, are Marpit theme CSS (registered via `marpit.themeSet.add(css)`). Self-theme-authoring per document is v2 — until then, this set is sufficient.
 
 ---
 
-## 6. Future (not v1)
+## 6. Future (Not v1)
 
 ### 6.1 Thumbnails Strip
 
-A vertical strip with mini-previews to the left of the slide view. Clicking jumps to the slide. Marpit can deliver HTML per slide individually (`render(markdown).html` has slide boundaries), allowing small previews to be iframed or easily realized with CSS `transform: scale()`.
+A vertical strip with mini-previews to the left of the slide view. Clicking jumps to the slide. Marpit can provide HTML per slide individually (`render(markdown).html` has slide boundaries), allowing small previews to be iframed or easily realized with CSS `transform: scale()`.
 
 ### 6.2 Side-by-Side Live Preview
 
-CodeMirror left, Marpit render right, scroll-synchronized per slide. Once we have this pattern, it will also apply to `kind: doc` with Markdown — thus, a cross-kind layout component spec, not slides-only.
+CodeMirror on the left, Marpit render on the right, scroll-synchronized per slide. Once we have this pattern, it will also apply to `kind: doc` with Markdown — thus, a cross-kind layout component spec, not Slides-only.
 
 ### 6.3 Embed Directives (Chart, Mindmap, …)
 
@@ -307,19 +307,19 @@ A slide references another document in the same Project via Vancetope URI: `![](
 
 ### 6.4 Export — PDF, PPTX, HTML
 
-`@marp-team/marp-cli` can do this (Chromium-headless for PDF, OOXML generator for PPTX, static HTML with `bespoke`-player). Server-side as an export action of a Document Operator — belongs in the `export` path (analogous to Records → CSV), not in the editor.
+`@marp-team/marp-cli` can do this (Chromium-headless for PDF, OOXML generator for PPTX, static HTML with `bespoke` player). Server-side as an export action of a Document Operator — belongs in the `export` path (analogous to Records → CSV), not in the editor.
 
 ### 6.5 Fullscreen Presentation Mode
 
-If we want to present keynote-style: separate viewer route (`/present/:documentId`), browser fullscreen API, arrow/click navigation, optional speaker notes on a second window. Render engine remains Marpit; the viewer is additive. Only useful when actual users "hold" the deck live.
+If we want to present keynote-style: separate viewer route (`/present/:documentId`), browser fullscreen API, arrow/click navigation, optional speaker notes in a second window. The render engine remains Marpit; the viewer is additive. Only useful when actual users "hold" the deck live.
 
 ### 6.6 In-Place WYSIWYG Edit per Slide
 
-Instead of raw Markdown editing, click-into-slide editing (double-click on title changes h1, double-click on bullet list edits bullets). This would overwrite Marpit's output with `contenteditable`-patches and project back to the Markdown source. Requires robust Markdown round-trip — non-trivial, at the earliest after the Markdown editing experience in the `kind: doc`-editor is saturated.
+Instead of raw Markdown editing, a click-into-slide edit (double-click on title changes h1, double-click on bullet list edits bullets). This would overwrite Marpit's output with `contenteditable` patches and project back to the Markdown source. Requires robust Markdown roundtrip — non-trivial, at the earliest after the Markdown editing experience in the `kind: doc` editor is saturated.
 
 ### 6.7 Speaker Notes Display
 
-Marpit delivers speaker notes per slide via a `comments`-array on each rendered slide. UI variant: a small panel below the single-slide view that displays the notes of the active slide. Trivial addition — awaits the first use case where someone actually maintains speaker notes.
+Marpit provides speaker notes per slide via a `comments` array on each rendered slide. UI variant: a small panel below the single-slide view that displays the notes of the active slide. Trivial addition — awaits the first use case where someone actually maintains speaker notes.
 
 ### 6.8 Theme Authoring in the Editor
 
@@ -330,7 +330,7 @@ User registers a new theme inline in the document (`slides.themeCss: |\n  ...`).
 ## 7. Open Issues
 
 - **Slide Identity on Edit:** if the user reorders or inserts slides in the Raw tab, there is no stable slide ID. Speaker notes, edit cursor position, etc., are referenced positionally. OK for v1 (raw edit, no UI state mapping per slide), but as soon as the thumbnails strip + per-slide components come into play, we may need invisible slide IDs (`<!-- _slide-id: ulid-... -->`). Decision deferred to v2.
-- **Default Aspect:** `16:9` is the industry default, but for in-editor preview (editor height usually limited), `4:3` is more readable. We might separate "On-Screen-Aspect" (render box) from "Logical-Aspect" (theme layout). v1: only `16:9`/`4:3` as theme layout, render box adapts proportionally.
-- **Image Hosting:** external URLs (`https://…`) work immediately. Document-internal images (`vance:document/<id>` for a `kind: image`-document) first require the `vance:` URI spec item from §6.3. Until then, anyone who wants images will use external URLs.
+- **Default Aspect:** `16:9` is the industry default, but for in-editor preview (editor height is usually limited), `4:3` is more readable. We might separate "On-Screen-Aspect" (render box) from "Logical-Aspect" (theme layout). v1: only `16:9`/`4:3` as theme layout, render box adapts proportionally.
+- **Image Hosting:** external URLs (`https://…`) work immediately. Document-internal images (`vance:document/<id>` for a `kind: image` document) first require the `vance:` URI spec item from §6.3. Until then, anyone who wants images will use external URLs.
 - **CSS Scoping Strategy:** Marpit's `container` option (class prefix) **or** Shadow DOM mount. Class prefix is easier to debug; Shadow DOM is more isolation-secure. Decision upon the first real theme conflict with DaisyUI — likely class prefix will suffice because Marpit itself does not emit utility CSS (Tailwind-like).
-- **Single-Source vs. Slides-Array in Storage:** Markdown stores linearly (slides as sections in the file), JSON/YAML stores as an array. This is transparent during Markdown→JSON round-trip via codec; for external tooling that only sees JSON, it must be clear that `items[i]` is a Markdown string and not a pre-structured slide representation. A documentation note is sufficient.
+- **Single-Source vs. Slides-Array in Storage:** Markdown stores linearly (slides as sections in the file), JSON/YAML stores as an array. This is transparent during Markdown→JSON roundtrip via codec; for external tooling that only sees JSON, it must be clear that `items[i]` is a Markdown string and not a pre-structured slide representation. A documentation note is sufficient.

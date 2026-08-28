@@ -1,6 +1,6 @@
 # Vancetope — Memory Compaction
 
-> Long Sessions accumulate more chat history than any model's context window can hold. Memory Compaction folds older turns into an **`ARCHIVED_CHAT` summary** and replays it in every subsequent prompt — the LLM continues to see the main thread without the prompt exploding. This spec describes **triggers, selection, persistence, replay, and the Pinned convention**, which guarantees that critical messages never have to survive compaction because it never affects them.
+> Long Sessions accumulate more chat history than any model's context window can hold. Memory Compaction folds older turns into an **`ARCHIVED_CHAT` summary** and replays it in every subsequent prompt — the LLM continues to follow the thread without the prompt exploding. This spec describes **triggers, selection, persistence, replay, and the Pinned convention**, which guarantees that critical messages never have to survive compaction because it never affects them.
 >
 > See also: [memory-knowledge-management](memory-knowledge-management.md) | [arthur-engine](arthur-engine.md) | [frankie-engine](frankie-engine.md) | [trillian-engine](trillian-engine.md) | [plan-mode](plan-mode.md) | `planning/memory-compaction.md` | `planning/topic-recompaction.md`
 
@@ -8,13 +8,13 @@
 
 ## 1. Purpose and Scope
 
-**Problem.** An LLM Engine running in chat mode for extended periods (Frankie Coding Session, Arthur Plan Session, Trillian Nature-0 Loop) accumulates USER and ASSISTANT messages per turn. Without intervention, the replay volume will eventually exceed the model's context window — `tokensIn` races towards 100%, the next call fails, or costs explode.
+**Problem.** An LLM Engine running in chat mode for extended periods (Frankie-Coding-Session, Arthur-Plan-Session, Trillian-`void`-Loop) accumulates USER and ASSISTANT messages per turn. Without intervention, the replay volume will eventually exceed the model's context window — `tokensIn` races towards 100%, the next call fails, or costs explode.
 
 **Solution.** Before each LLM call, the Engine checks the token volume against thresholds. If exceeded, `MemoryCompactionService` condenses older messages into a summary and marks the originals as archived. `MemoryContextLoader` replays the active summary into the next prompt. The LLM does not lose the thread.
 
 **What Compaction is not:**
 
-- **No user-visible forgetting.** Originals remain in `chat_messages` with an `archivedInMemoryId` pointer; they are still readable via `history(...)` (audit, `history_search` tool).
+- **No user-visible forgetting.** Originals remain in `chat_messages` with an `archivedInMemoryId` pointer; they are still readable via `history(...)` (Audit, `history_search` tool).
 - **No Persona Memory.** Compaction summarizes the conversation, not "what the user likes." Persistent profile facts belong in the `_user_<login>` hub (see [memory-knowledge-management](memory-knowledge-management.md)).
 - **No Topic Sorting.** Sliding-window works purely chronologically / strength-based. The **Range Recompaction path** (§3.2) is the topic-aware alternative for Plan Completion.
 
@@ -36,13 +36,13 @@ A Compaction lives as a special Memory Document:
 | `metadata.recompaction` | `true` for the Range path (otherwise absent) |
 | `metadata.topicLabel` | Range path: topic name assigned by the Plan |
 | `metadata.rangeFromAt` / `metadata.rangeToAt` | Range path: time window of the compaction |
-| `supersededAt` | Set to the timestamp of the next compaction — after which the row is no longer active |
+| `supersededAt` | Set to the time of the next compaction — after this, the row is no longer active |
 
 The original `ChatMessageDocument` rows get `archivedInMemoryId` set to the ID of the new `ARCHIVED_CHAT` Memory:
 
-- `ChatMessageService.history(...)` continues to deliver them (audit / debug / trace).
+- `ChatMessageService.history(...)` continues to provide them (Audit / Debug / Trace).
 - `ChatMessageService.activeHistory(...)` filters them out — this is the LLM replay path. The LLM only sees the summary plus the most recent unarchived messages.
-- `history_search` / `history_recall` tools (see [process-history-search](process-history-search.md)) find them via tags and full-text search.
+- `history_search` / `history_recall` tools (see [process-history-search](process-history-search.md)) find them via tags and full-text.
 
 `markArchived(messageIds, memoryId)` is idempotent — a message that already has an `archivedInMemoryId` is skipped by the second path.
 
@@ -85,15 +85,15 @@ The **Anchor** is the set of the last K messages that *always* remain verbatim �
 2. `markArchived(olderIds, savedMemoryId)` on the selected chat rows.
 3. If a prior active summary existed: `memoryService.supersede(priorId, newId)` — old becomes inactive, audit chain via `supersededByMemoryId` remains navigable.
 
-If step 2 fails, the chat rows remain unarchived; the next turn tries again. If step 3 fails, there are briefly two active summaries — `MemoryContextLoader.appendArchivedChatSummary` takes the newest via `getLast()` in that case.
+If step 2 fails, the chat rows remain unarchived; the next turn attempts it again. If step 3 fails, there are briefly two active summaries — `MemoryContextLoader.appendArchivedChatSummary` takes the newest via `getLast()` in that case.
 
 **Client-visible Signal.** `ChatMessageStatus.COMPACTION` is emitted via the progress channel — the Web UI renders a `[compaction]` status stitch in the chat history, so the user sees "Vancetope summarized the thread here."
 
-### 3.2 Range Recompaction Path (Plan Mode Hook, opt-in)
+### 3.2 Range Recompaction Path (Plan-Mode Hook, opt-in)
 
 `MemoryCompactionService.compactRange(process, fromCreatedAt, toCreatedAt, topicLabel)` condenses an **explicit time range** instead of the oldest N turns — a sub-topic block that the user has actively completed.
 
-**Trigger:** the last Todo of a Plan flips to `COMPLETED`, and before the `MODE:plan` marker there are ≥ 2 USER turns about other topics → `PlanModeService.maybeOfferRecompaction` posts an Inbox item (`type=APPROVAL`, tag `RECOMPACTION_OFFER`). If the user accepts, `RecompactionOfferAnsweredListener` calls `compactRange` with the range coordinates stored in the payload.
+**Trigger:** the last Todo of a Plan flips to `COMPLETED`, and before the `MODE:plan` marker there are ≥ 2 USER turns about other topics → `PlanModeService.maybeOfferRecompaction` posts an Inbox Item (`type=APPROVAL`, tag `RECOMPACTION_OFFER`). If the user accepts, `RecompactionOfferAnsweredListener` calls `compactRange` with the range coordinates stored in the payload.
 
 **In addition to normal compaction writing**, the Range path inserts a `SYSTEM` marker with tag `RECOMPACTION:<topicLabel>` at the end of the range in `chat_messages` — it is visibly in the chat as a topic stitch, unlike sliding-window compaction which only archives the originals and relies on the replay block (§4.1).
 
@@ -106,7 +106,7 @@ Details: [plan-mode](plan-mode.md) §15, `planning/topic-recompaction.md`.
 Both are **orthogonal and non-competing:**
 
 - Sliding-Window runs even if no Plan is involved (pure long-session hygiene).
-- Range runs only on Plan Completion with history — user-confirmed.
+- Range runs only on Plan Completion with prior history — user-confirmed.
 - Both use the same persistence (`ARCHIVED_CHAT` Memory + `archivedInMemoryId`). A turn can theoretically be archived by both paths; `markArchived` is idempotent.
 
 ---
@@ -117,7 +117,7 @@ Compaction without replay would be *de-facto forgetting*: the summary would be i
 
 ### 4.1 Summary Replay
 
-`MemoryContextLoader.appendArchivedChatSummary(sb, process)` runs as part of `composeBlock(process, userQuery)` between Client Agent Doc and RAG Auto-Inject. Implementation:
+`MemoryContextLoader.appendArchivedChatSummary(sb, process)` runs as part of `composeBlock(process, userQuery)` between Client-Agent-Doc and RAG-Auto-Inject. Implementation:
 
 1. `memoryService.activeByProcessAndKind(tenantId, processId, ARCHIVED_CHAT)` — Sort ASC by `createdAt`.
 2. If empty → no-op.
@@ -126,30 +126,30 @@ Compaction without replay would be *de-facto forgetting*: the summary would be i
 
 | Rule | Behavior |
 |---|---|
-| At most one active summary per Process | `supersede()` retires older rows on the next `compact()`. In a stable state, `activeByProcessAndKind` delivers at most one row. In case of a race on two: `getLast()` takes the newer one. |
-| Visible in every turn | Lives in the static system prompt block — placed *before* the `cache_control` cut in the Anthropic prompt cache strategy. A compaction update breaks the cache once; one cache reset per compaction is acceptable. |
-| Audit path untouched | No `chat_messages` mutations — the replay block only exists in the in-memory prompt construction. `history(...)` / `activeHistory(...)` remain unchanged. |
-| Hierarchy is transparent | For multiple compactions in a session, the LLM always sees the *current* (hierarchically condensed) summary, not a chain of old summaries — `supersede()` retires the predecessors. |
+| At most one active summary per Process | `supersede()` retires older rows on the next `compact()`. In a stable state, `activeByProcessAndKind` returns at most one row. In case of a race on two: `getLast()` takes the newer one. |
+| Visible in every turn | Lives in the static System Prompt block — placed *before* the `cache_control` cut in the Anthropic prompt cache strategy. A compaction update breaks the cache once; one cache reset per compaction is acceptable. |
+| Audit path untouched | No `chat_messages` mutations — the replay block exists only in the in-memory prompt construction. `history(...)` / `activeHistory(...)` remain unchanged. |
+| Hierarchy is transparent | For multiple compactions in a session, the LLM always sees the *current* (hierarchically compacted) summary, not a chain of old summaries — `supersede()` retires the predecessors. |
 
 ### 4.2 Worker Spawn Context Inheritance
 
-`MemoryContextLoader.appendParentContext(sb, process)` adds a `## Parent Context` block if `process.parentProcessId != null`. A newly spawned Worker would otherwise be completely blind to its Parent's mission (own `processId` → own empty `chat_messages` view).
+`MemoryContextLoader.appendParentContext(sb, process)` adds a `## Parent Context` block if `process.parentProcessId != null`. A newly spawned Worker would otherwise be completely blind to its Parent's mission (its own `processId` → its own empty `chat_messages` view).
 
 Implementation:
 
-1. `thinkProcessService.findById(parentProcessId)`. On exception or Empty → graceful skip.
+1. `thinkProcessService.findById(parentProcessId)`. On exception or empty → graceful skip.
 2. Identity block always: Parent Name, Recipe, Engine, Title.
 3. **Confidentiality Cut** on `process.projectId == parent.projectId`:
    - **Same-project Workers** additionally receive the Parent's active `ARCHIVED_CHAT` summary under `### Parent Conversation Summary`. This allows the Worker to operate with context without having to ask the Parent for goals.
-   - **Cross-project Workers** (`allowsCrossProjectSpawn=true` Engines like [Trillian-Control](trillian-engine.md)) see **only** the Identity. The Parent Summary remains in the Parent Project — `activeByProcessAndKind` is not even fired. Workers that need more context receive it explicitly as a `goal` parameter during spawn.
+   - **Cross-project Workers** (`allowsCrossProjectSpawn=true` Engines like [Trillian-Control](trillian-engine.md)) see **only** the Identity. The Parent summary remains in the Parent project — `activeByProcessAndKind` is not even fired. Workers needing more context receive it explicitly as a `goal` parameter during spawn.
 
 | Scenario | Identity Block | Parent Summary |
 |---|---|---|
-| Same-project Frankie Worker with active Parent Summary | ✓ | ✓ |
-| Same-project Frankie Worker without Parent Summary | ✓ | (none available) |
-| Cross-project Trillian Worker | ✓ | ✗ (Confidential) |
+| Same-project Frankie-Worker with active Parent Summary | ✓ | ✓ |
+| Same-project Frankie-Worker without Parent Summary | ✓ | (none available) |
+| Cross-project Trillian-Worker | ✓ | ✗ (Confidential) |
 | Parent orphaned (`findById` empty) | ✗ | ✗ (graceful skip) |
-| Mongo Down during Lookup | ✗ | ✗ (Exception swallowed) |
+| Mongo-Down during Lookup | ✗ | ✗ (Exception swallowed) |
 
 Defensive Rendering: missing fields (`name`, `recipeName`, `thinkEngine`) are rendered as `?` — never `null` in the prompt.
 
@@ -173,9 +173,9 @@ Sources for the `STRENGTH:pinned` tag:
 | Source | Mechanism |
 |---|---|
 | Auto-Pin of the first USER message | Server default (§5.3) |
-| Recipe / Engine policy on spawn | Before `chatMessageService.append(...)` directly in the `tags` set |
-| Prak Side-Channel output | If `sideChannelEnabled=true` — currently **off by default** |
-| User explicit `/pin` | Follow-up, not yet implemented |
+| Recipe / Engine policy on spawn | Directly in the `tags` set before `chatMessageService.append(...)` |
+| Prak Side-Channel Output | If `sideChannelEnabled=true` — currently **off by default** |
+| User-explicit `/pin` | Follow-up, not yet implemented |
 
 ### 5.2 Selector Protection
 
@@ -192,7 +192,7 @@ Sources for the `STRENGTH:pinned` tag:
 
 One Mongo `exists` round-trip per USER message append (cheap). Race-tolerant: two parallel USER appends that both see an empty history will both pin — harmless, both remain uncompacted.
 
-Short-circuit order: Role check → Tag check → only then the Mongo query. ASSISTANT/SYSTEM messages or messages with explicit STRENGTH tags cost nothing extra.
+Short-circuit order: Role check → Tag check → only then the Mongo query. ASSISTANT/SYSTEM messages or messages with an explicit STRENGTH tag incur no extra cost.
 
 ### 5.4 Prak Side-Channel (informative, currently off)
 
@@ -215,12 +215,12 @@ Which Engines participate in the Sliding-Window path (call `composeBlock` + `com
 | Ford | ✓ | Own sessions with Memory block |
 | [Frankie](frankie-engine.md) | ✓ | Pi-style endless-by-design |
 | [Trillian-Control](trillian-engine.md) | ✓ | Agentic Control-Loop, accumulates chat history |
-| [Trillian-User](trillian-engine.md) | ✓ | Nature-0 User-Loop, runs autonomously over many turns |
+| [Trillian-User](trillian-engine.md) | ✓ | Nature `void` User-Loop, runs autonomously over many turns |
 | Marvin | ✗ | Tree-of-Nodes architecture, per-node prompts without chat history |
 | Zaphod | ✗ | Single-shot Synthesizer, own `LanguageContextResolver` |
 | Vogon / Slartibartfast / Hactar / Jeltz / Agrajag | n/a | No permanent LLM loop — Helper / Script-Executor / LightLlmService |
 
-**Engines that participate in the path** call at the start of the turn in `runTurn` (or equivalent):
+**Those participating in the path** call at the start of the turn in `runTurn` (or equivalent):
 
 ```java
 List<ChatMessage> messages = buildPromptMessages(process, chatLog, …);
@@ -231,7 +231,7 @@ if (cr.compacted()) {
 }
 ```
 
-And in `buildPromptMessages`, the system prompt appends a Memory block from `MemoryContextLoader.composeBlock(process)` — this is where Languages, Agent Doc, ARCHIVED_CHAT Replay, Parent Context, and RAG Auto-Inject sit in a chain.
+And in `buildPromptMessages`, the System Prompt appends a Memory block from `MemoryContextLoader.composeBlock(process)` — this is where Languages, Agent-Doc, ARCHIVED_CHAT Replay, Parent Context, and RAG Auto-Inject sit in a chain.
 
 ---
 
@@ -241,14 +241,14 @@ All values in `PrakProperties` (`vance.prak.*`):
 
 | Property | Default | Effect |
 |---|---|---|
-| `compactionSoftThreshold` | 0.40 | SOFT-trigger quote `tokensIn / contextWindow` |
-| `compactionHardThreshold` | 0.85 | HARD-trigger quote |
-| `compactionEmergencyThreshold` | 0.95 | EMERGENCY-trigger quote |
+| `compactionSoftThreshold` | 0.40 | SOFT-Trigger-Quote `tokensIn / contextWindow` |
+| `compactionHardThreshold` | 0.85 | HARD-Trigger-Quote |
+| `compactionEmergencyThreshold` | 0.95 | EMERGENCY-Trigger-Quote |
 | `compactionKeepRecent` | 10 | Minimum barrier below which `active.size()` no compaction runs |
 | `softAnchor` / `hardAnchor` / `emergencyAnchor` | 10 / 5 / 3 | Number of messages at the end that remain verbatim in every mode |
 | `compactionMaxSourceChars` | (see code) | Cap on Summarizer input size, protects against model window overflow in the Summarizer call itself |
 | `sideChannelEnabled` | false | Master switch for Prak (Strength-Tagging-Analyzer). Off by default — "burns tokens without an active Memory consumer" |
-| `inlineOnCompaction` | false | If Prak is on: additionally run inline before every HARD compaction for fresh STRENGTH tags |
+| `inlineOnCompaction` | false | If Prak is on: additionally run inline before each HARD compaction for fresh STRENGTH tags |
 
 Override via `application.yml`:
 
@@ -259,15 +259,15 @@ vance:
     compactionKeepRecent: 6         # allow deeper cutting
 ```
 
-Cascade override (Tenant-/Project-specific) is possible via the standard settings system; see [settings-system](settings-system.md).
+Cascade override (Tenant-/Project-specific) is possible via the standard Settings system; see [settings-system](settings-system.md).
 
 ---
 
 ## 8. Relationship to Other Features
 
-- **[RAG / Knowledge Graph](memory-knowledge-management.md) §5.** RAG indexes curated Memory Documents for topic search; Compaction folds chat history. Both write to `MemoryDocument`, but under different `kind` values — RAG index uses `KNOWLEDGE` / `FACT`, Compaction `ARCHIVED_CHAT`. They do not compete.
-- **[Plan Mode](plan-mode.md) §15.** The Range Recompaction path (§3.2) hooks into the Plan Completion. Sliding-Window runs independently — those not using Plan Mode only benefit from the automatic path.
-- **[Inbox](user-interaction.md).** SOFT-trigger does not post an Inbox offer in the standard path; HARD and EMERGENCY run silently. The only Inbox interface is `RECOMPACTION_OFFER` from the Range path (§3.2).
+- **[RAG / Knowledge-Graph](memory-knowledge-management.md) §5.** RAG indexes curated Memory Documents for topic search; Compaction folds Chat History. Both write to `MemoryDocument`, but under different `kind` values — RAG index uses `KNOWLEDGE` / `FACT`, Compaction `ARCHIVED_CHAT`. They do not compete.
+- **[Plan-Mode](plan-mode.md) §15.** The Range Recompaction path (§3.2) is tied to the Plan Completion hook. Sliding-Window runs independently — those not using Plan-Mode benefit only from the automatic path.
+- **[Inbox](user-interaction.md).** SOFT-Trigger does not post an Inbox offer in the standard path; HARD and EMERGENCY run silently. The only Inbox interface is `RECOMPACTION_OFFER` from the Range path (§3.2).
 - **[Process-History-Search](process-history-search.md).** Allows the LLM to read archived originals on-demand again — the replay block (§4.1) is sufficient for thread maintenance; if the LLM needs a specific detail, it uses `history_search`.
 
 ---
@@ -278,7 +278,7 @@ Micrometer Counters (all low-cardinality):
 
 - `vance.memory.compaction{mode}` — incremented per compaction, tag value `soft` / `hard` / `emergency` / `range`.
 - `vance.memory.compaction.messages{mode}` — DistributionSummary over the number of archived messages per run.
-- Log lines at `INFO` with pattern `Frankie.turn id='…' compaction (turn-start) ok: N msgs → C chars (memory='…')` (Engine-prefixed for grep).
+- Log lines on `INFO` with pattern `Frankie.turn id='…' compaction (turn-start) ok: N msgs → C chars (memory='…')` (Engine-prefixed for Grep).
 
 Web UI: for each compaction, a `[compaction]` status stitch in the chat history (`ChatMessageStatus.COMPACTION` Side-Channel event).
 

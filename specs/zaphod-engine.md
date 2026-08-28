@@ -17,12 +17,12 @@ permalink: /specs/zaphod-engine
 
 ## 1. Role and Classification
 
-Zaphod is the fifth Engine class alongside Arthur, Ford, Marvin, Vogon. It fills a previously open architectural axis: **multi-perspective on the same question**.
+Zaphod is the fifth engine class, alongside Arthur, Ford, Marvin, Vogon. It fills a previously open architectural axis: **multi-perspective on the same question**.
 
 | Engine | Axis | Data Model |
 |---|---|---|
-| `arthur` | Reactive Chat, User-IO | Chat History (linear) |
-| `ford` | Generalist-Worker, one question → one answer | Chat History (linear) |
+| `arthur` | Reactive Chat, User-IO | Chat-History (linear) |
+| `ford` | Generalist-Worker, one question → one answer | Chat-History (linear) |
 | `vogon` | Temporally structured, phases with gates | Strategy-State (static) |
 | `marvin` | Vertical Decomposition, Sub-Trees | Task-Tree (dynamic) |
 | **`zaphod`** | **Horizontal Multi-View, parallel heads** | **Flat Heads List** |
@@ -31,12 +31,12 @@ Zaphod is the fifth Engine class alongside Arthur, Ford, Marvin, Vogon. It fills
 
 - **Consultation with multiple views**: "Should I choose architecture A or B?" → Optimist / Skeptic / Pragmatist
 - **Structured Review**: "Is this plan viable?" → Proponent / Critic / Risk Analyst
-- **Multi-Model Diversity**: run the same question through multiple providers/models, then synthesize
-- **Self-Consistency** (V2 / Branch-and-Vote Pattern): N parallel attempts, Best-of-N
+- **Multi-model diversity**: run the same question through multiple providers/models, then synthesize
+- **Self-Consistency** (V2 / Branch-and-Vote pattern): N parallel attempts, best-of-N
 
 **What Zaphod is not:**
 
-- Not a Tree-Builder — the heads are a *flat* list, not a hierarchy. (Marvin's job)
+- Not a Tree-builder — the heads are a *flat* list, not a hierarchy. (Marvin's job)
 - No phases — all heads work on the same step. (Vogon's job)
 - No direct user chat — user only sees the synthesis, via Arthur. (Arthur's job)
 
@@ -49,21 +49,21 @@ Zaphod currently supports **two** patterns (synonym: "modes"). Two more remain o
 | Pattern | Mechanism | Rounds | Implemented |
 |---|---|---|---|
 | **`council`** | All heads receive the same question once. Synthesizer LLM call summarizes: consensus + dissent + recommendation. | 1 (single-shot) | ✓ |
-| **`debate`** | 2-N heads with opposing roles. Round 0: initial position. Round 1..N-1: each head sees the answers of the others from the previous round and reacts. Between rounds, a LightLlm call checks if consensus is reached; otherwise, the next round runs until consensus or `maxRounds` is reached. Synthesizer summarizes the last round. | N (1..maxRounds) | ✓ |
-| `generator-critic` (later) | Generator produces, Critic criticizes, Generator iterates. Bounded to max-N rounds or "Critic accepts". | N | — |
+| **`debate`** | 2-N heads with opposing roles. Round 0: initial position. Round 1..N-1: each head sees the others' answers from the previous round and reacts. Between rounds, a LightLlm call checks if consensus is reached; otherwise, the next round runs until consensus or `maxRounds` is reached. Synthesizer summarizes the last round. | N (1..maxRounds) | ✓ |
+| `generator-critic` (later) | Generator produces, Critic criticizes, Generator iterates. Bounded by max-N rounds or "Critic accepts". | N | — |
 | `branch-and-vote` (later) | N heads independently solve the same task (same Persona, slightly different temperature). Judge selects the best solution. | 1 + Judge | — |
 
 V1 Assumptions (to be relaxed later):
 
-- **Sequential** instead of parallel — heads are driven one after another synchronously (analogous to Vogon phases / Marvin workers). Parallelism is a performance optimization, not a V1 feature; it does not change the round semantics.
-- **Direct Synthesizer LLM Call** — Zaphod calls the LLM itself at the end (analogous to Marvin's PLAN/AGGREGATE), no separate Synthesizer Sub-Process.
-- **Consensus-Check via LightLlm**, not Self-Report — see §6. Heads end their replies *without* markers (no `[CONSENSUS]`); a separate Light-LLM call (Recipe `zaphod-consensus`, `internal: true`) decides per round.
+- **Sequential** instead of parallel — heads are driven synchronously one after another (analogous to Vogon phases / Marvin workers). Parallelism is a performance optimization, not a V1 feature; it does not change the round semantics.
+- **Direct Synthesizer LLM call** — Zaphod calls the LLM itself at the end (analogous to Marvin's PLAN/AGGREGATE), no separate Synthesizer sub-process.
+- **Consensus-Check via LightLlm**, not Self-Report — see §6. Heads end their replies *without* markers (no `[CONSENSUS]`); a separate Light LLM call (Recipe `zaphod-consensus`, `internal: true`) decides per round.
 
 ---
 
 ## 3. Data Model
 
-`ZaphodState` lives on `ThinkProcessDocument.engineParams.zaphodState` — analogous to Vogon's `strategyState`. Only a handful of heads per Process (typically 2–5), so embedded instead of a separate Mongo collection.
+`ZaphodState` lives on `ThinkProcessDocument.engineParams.zaphodState` — analogous to Vogon's `strategyState`. Only a handful of heads per process (typically 2–5), hence embedded instead of a separate Mongo collection.
 
 ```
 ZaphodState {
@@ -83,24 +83,24 @@ ZaphodState {
 ZaphodHead {
   name              "optimist" | "skeptiker" | …    // unique within the heads list
   recipe            String                          // Ford-Recipe that implements the head
-  persona           String?                         // optional Steer-Postfix per head
-  spawnedProcessId  String?                         // set on first Spawn (Round 0)
-                                                     // — for debate, the same Sub-Process is reused
-                                                     // across all Rounds, NOT respawned per Round
-  replies           List<String>                    // one per Round; length == state.currentRound+1
-                                                     // if the head has completed the current Round
+  persona           String?                         // optional steer postfix per head
+  spawnedProcessId  String?                         // set on first spawn (Round 0)
+                                                     // — for debate, the same sub-process is reused
+                                                     // across all rounds, NOT respawned per round
+  replies           List<String>                    // one per round; length == state.currentRound+1
+                                                     // if the head has completed the current round
   status            "pending" | "running" | "done" | "failed"
-                                                     // "done" = last Round successful
-                                                     // "failed" = any Round empty/Exception, head is out
+                                                     // "done" = last round successful
+                                                     // "failed" = any round empty/exception, head is out
   failureReason     String?
 }
 ```
 
-**Head reuse across Rounds (debate):** a head is spawned once and driven across all rounds via `steer(...)`. The Worker Process retains its chat history, thus implicitly seeing what *it itself* said in previous rounds. The Zaphod Engine injects the last-round replies of the *other* heads as an additional user message before the next round. Only after the Synthesizer turn (or on abort) is the head process terminated via `stop(...)`.
+**Head reuse across rounds (debate):** a head is spawned once and driven across all rounds via `steer(...)`. The worker process retains its chat history, thus implicitly seeing what *it itself* said in previous rounds. The Zaphod engine injects the last-round replies of the *other* heads as an additional user message before the next round. Only after the synthesizer turn (or on abort) is the head process terminated via `stop(...)`.
 
 **Council remains unchanged:** `maxRounds=1`, `currentRound=0`, `consensusReached` and `consensusReason` unused. Council heads are spawned, driven once, then stopped as before.
 
-**Mongo Persistence:** the complete State document is written atomically via `ThinkProcessService.replaceEngineParams` (same pattern as Vogon).
+**Mongo Persistence:** the complete state document is written atomically via `ThinkProcessService.replaceEngineParams` (same pattern as Vogon).
 
 ---
 
@@ -135,7 +135,7 @@ runTurn(process, ctx):
      If status == "failed" → ThinkProcessStatus.STALE, return.
 
   4. If currentHeadIndex < heads.size():
-       // Within the current Round: drive the next head.
+       // Within the current round: drive the next head.
        head := heads[currentHeadIndex]
        driveHeadForRound(head, currentRound)   // see §5
        state.currentHeadIndex++
@@ -143,9 +143,9 @@ runTurn(process, ctx):
        eventEmitter.scheduleTurn(self)
        return
 
-  5. Else (all heads processed in this Round):
+  5. Else (all heads processed in this round):
        If pattern == "council" OR currentRound + 1 >= maxRounds:
-         // Round-Loop is finished — either because single-shot or
+         // Round loop is finished — either because single-shot or
          // because maxRounds was reached (backstop without consensus).
          runSynthesis()                         // §7
          finalizeDone()
@@ -161,7 +161,7 @@ runTurn(process, ctx):
        If result.consensus:
          runSynthesis(); finalizeDone(); return
 
-       // Start next Round — Heads remain the same, Sub-Processes
+       // Start next round — Heads remain the same, Sub-Processes
        // are NOT respawned.
        state.currentRound++
        state.currentHeadIndex = 0
@@ -171,13 +171,13 @@ runTurn(process, ctx):
        return
 ```
 
-**One Round = one pass through all Heads.** The round counter is *only* incremented if all living heads (`status != failed`) have produced a reply in the current round — after that, the Consensus Check runs (debate only), and either synthesis occurs or the next round begins.
+**One Round = one pass through all Heads.** The round counter is *only* incremented if all living heads (`status != failed`) have produced an answer in the current round — after that, the Consensus-Check runs (debate only), and either synthesis occurs or the next round begins.
 
-**Lane Discipline** as with Vogon and Marvin: `runTurn` performs **one action** per call (drive one head, or Consensus Check, or Synthesis), then `scheduleTurn` for the next step. This keeps the lane occupied for a short time, allowing other tasks (e.g., Arthur's `process_steer` no-op) to run in between. The Consensus Check counts as *one* `runTurn` step — it is a synchronous LightLlm call (typically <2 seconds), not a separate Sub-Process.
+**Lane Discipline** as with Vogon and Marvin: `runTurn` performs **one action** per call (drive one head, or Consensus-Check, or Synthesis), then `scheduleTurn` for the next step. This keeps the lane occupied for a short time, allowing other tasks (e.g., Arthur's `process_steer` no-op) to run in between. The Consensus-Check counts as *one* `runTurn` step — it is a synchronous LightLlm call (typically <2 seconds), not a separate sub-process.
 
 ---
 
-## 5. Head Spawn and Sync-Drive
+## 5. Head Spawn and Sync Drive
 
 ```
 driveHeadForRound(head, round):
@@ -192,7 +192,7 @@ driveHeadForRound(head, round):
     thinkEngineService.start(child).
 
   Else:
-    child = thinkProcessService.findById(head.spawnedProcessId)   // existing Sub-Process
+    child = thinkProcessService.findById(head.spawnedProcessId)   // existing sub-process
 
   // ── Steer-Content for this Round ──
   If round == 0:
@@ -204,8 +204,8 @@ driveHeadForRound(head, round):
                    + foreach otherHead in heads where otherHead.name != head.name:
                        "\n--- " + otherHead.name + " ---\n"
                        + (otherHead.replies.last() ?? "[failed in previous round]")
-                   + "\n\nComment on this — confirm, clarify, contradict. "
-                   + "If your previous view was justifiably corrected by another argument, "
+                   + "\n\nComment on this — confirm, clarify, or contradict. "
+                   + "If your previous view was legitimately corrected by another argument, "
                    + "state that explicitly."
 
   // ── Drive (synchronous, Lane-bound) ──
@@ -213,23 +213,23 @@ driveHeadForRound(head, round):
     laneScheduler.submit(child.id, () -> engine.steer(child, msg)).get()
 
   // ── Collect Reply ──
-  reply = readLastAssistantText(child)   // last ASSISTANT message in the Worker Chat
+  reply = readLastAssistantText(child)   // last ASSISTANT message in worker chat
   If reply == null or blank:
     head.status = "failed"
     head.failureReason = "worker produced no assistant reply in round " + round
   Else:
     head.replies.append(reply)
-    head.status = "running"   // remains running until synthesis runs
+    head.status = "running"   // remains running until synthesis
   persistState()
 ```
 
-**Worker Process Reuse across Rounds:** the worker retains its chat history across rounds. In Round 1, the worker sees its own Round 0 output in the system prompt + chat history, plus the block with the other heads' replies provided by the Zaphod Engine code. The worker is **only stopped after the Zaphod process completes** — Synthesizer turn (or Failure / Stop by User) is the stop trigger.
+**Worker Process Reuse Across Rounds:** the worker retains its chat history across rounds. In Round 1, the worker sees its own Round 0 output in the system prompt + chat history, plus the block with the other heads' replies provided by the Zaphod engine code. The worker is **only stopped after the Zaphod process completes** — the Synthesizer turn (or Failure / Stop by User) is the stop trigger.
 
-**Persona Mechanism:** the Persona is passed as a Steer-Postfix below the Goal in **Round 0** (not repeated in every round — the worker history carries it). The Recipe Prompt defines the *Engine Role* (e.g., "You are a Ford worker..."); the *Personality* (Optimist / Skeptic / Pro / Con) is the Persona.
+**Persona Mechanism:** the Persona is passed as a Steer-Postfix below the Goal in **Round 0** (not repeated in every round — the worker history carries it). The Recipe prompt defines the *Engine Role* (e.g., "You are a Ford worker..."); the *Personality* (Optimist / Skeptic / Pro / Con) is the Persona.
 
-**Worker Engine Choice:** typically `ford` as the Engine (= Generalist-Worker, one answer). Theoretically, `marvin-worker` is also possible (= head that performs deep research itself) — this works without Engine code changes, the Recipe Resolver handles it. V1 only documents the Ford use case.
+**Worker Engine Choice:** typically `ford` as the engine (= Generalist-Worker, one answer). Theoretically, `marvin-worker` is also possible (= head that performs deep research itself) — this works without engine code changes, the Recipe Resolver handles it. V1 only documents the Ford use case.
 
-**Failure per Head:** if a head fails in a round (empty reply, exception), it is set to `failed` and skipped in subsequent rounds. As long as at least two heads are alive, debate continues. If it falls below two → abort round loop, synthesize with existing replies. Only if ALL heads fail does the entire Process go to STALE.
+**Failure per Head:** if a head fails in a round (empty reply, exception), it is set to `failed` and skipped in subsequent rounds. As long as at least two heads are alive, debate continues. If it drops below two → abort round loop, synthesize with available replies. Only if ALL heads have failed does the entire process go to STALE.
 
 ---
 
@@ -253,21 +253,21 @@ runConsensusCheck() -> { consensus: bool, reason: string }:
        Do the heads agree substantively? Provide JSON
        { "consensus": true|false, "reason": "<a single sentence explanation>" }.
   3. lightLlmService.call(recipe="zaphod-consensus", user=<above block>, schema=ConsensusCheckResult.class)
-  4. On Schema Error / Budget Exhaustion: consensus=false, reason="check failed: <error>" — no
-     Process-Failure, but fall-through to next Round (or maxRounds-backstop).
+  4. In case of schema error / budget exhaustion: consensus=false, reason="check failed: <error>" — no
+     process failure, but fall-through to next round (or maxRounds-backstop).
 ```
 
-**Threshold:** the LightLlm prompt defines consensus as "the heads agree on the **actionable conclusions** — minimal nuances, different justifications for the same recommendation, or complementary rather than contradictory views count as consensus. True dissent = heads draw different practical conclusions." This avoids the check triggering on purely stylistic differences.
+**Threshold:** the LightLlm prompt defines consensus as "the heads agree on the **actionable conclusions** — minimal nuances, different justifications for the same recommendation, or complementary rather than contradictory views count as consensus. True dissent = heads draw different practical conclusions." This prevents the check from triggering on purely stylistic differences.
 
-**Cost-Bound:** one check call per round, thus a maximum of `maxRounds - 1` additional LightLlm calls per Process. The check runs via the `default:fast` alias (see `zaphod-consensus` recipe), not the expensive synthesis model alias.
+**Cost-Bound:** one check call per round, thus a maximum of `maxRounds - 1` additional LightLlm calls per process. The check runs using the `default:fast` alias (see `zaphod-consensus` recipe), not the expensive synthesis model alias.
 
-**Consensus-Prompt** is located in the recipe `_vance/recipes/zaphod-consensus.yaml` as `promptPrefix` (Pebble template). Unlike the Synthesizer Prompt, there is no separate cascade path under `_vance/prompts/` — LightLlm recipes carry their system prompt directly in the YAML, Tenants/Projects override via the standard recipe cascade (project → tenant → bundled).
+**Consensus-Prompt** is located in the recipe `_vance/recipes/zaphod-consensus.yaml` as `promptPrefix` (Pebble template). Unlike the Synthesizer prompt, there is no separate cascade path under `_vance/prompts/` — LightLlm recipes carry their system prompt directly in the YAML; Tenants/Projects override via the standard recipe cascade (project → tenant → bundled).
 
 ---
 
-## 7. Synthesizer (direct LLM Call)
+## 7. Synthesizer (direct LLM call)
 
-After the round loop concludes (consensus or maxRounds reached), Zaphod **directly** calls an LLM — analogous to Marvin's AGGREGATE step. No Sub-Process, no Recipe.
+After the round loop concludes (consensus or maxRounds reached), Zaphod **directly** calls an LLM — analogous to Marvin's AGGREGATE step. No sub-process, no recipe.
 
 ```
 runSynthesis():
@@ -296,11 +296,11 @@ runSynthesis():
   6. persistState().
 ```
 
-**Synthesizer only sees the last Round.** The assumption: converged views are consolidated in the last round; older rounds serve only the Debate process itself. If the Synthesizer benefits from the entire round history, the Recipe would need to explicitly request it — V1 focuses on the last round (cost + clarity).
+**Synthesizer only sees the last round.** The assumption: converged views are consolidated in the last round; older rounds only serve the debate process itself. If the synthesizer benefits from the entire round history, the recipe would need to explicitly request it — V1 focuses on the last round (cost + clarity).
 
-**Engine-Default Synthesizer-System-Prompt** is located under `_vance/prompts/zaphod-synthesis.md` (Cascade path, recipe-override via `promptDocument`). Structures the recommendation typically into consensus / differences / recommendation.
+**Engine-Default Synthesizer System Prompt** is located under `_vance/prompts/zaphod-synthesis.md` (cascade path, recipe-override via `promptDocument`). It typically structures the recommendation into consensus / differences / recommendation.
 
-Recipe-Param `synthesisPrompt` is appended to the userMessage-prefix — suitable for providing pattern-specific synthesis instructions ("Summarize the three views with structure: 1. Consensus, 2. Differences, 3. Concrete Recommendation").
+Recipe-Param `synthesisPrompt` is appended to the userMessage prefix — suitable for providing pattern-specific synthesis instructions ("Summarize the three views with the structure: 1. Consensus, 2. Differences, 3. A concrete recommendation").
 
 ---
 
@@ -330,7 +330,7 @@ Recipe-Param `synthesisPrompt` is appended to the userMessage-prefix — suitabl
       - name: pragmatiker
         recipe: ford
         persona: |
-          You provide the grounded view: what is feasible with the
+          You provide the down-to-earth view: what is feasible with the
           available resources, in what time, at what cost?
     synthesisPrompt: |
       Summarize the three views. Structure:
@@ -345,7 +345,7 @@ Recipe-Param `synthesisPrompt` is appended to the userMessage-prefix — suitabl
 - name: debate-pro-contra
   description: |
     Pro/Con debate with max. 3 rounds. After each round, a
-    LightLlm check verifies if consensus is reached; otherwise, the next
+    LightLlm-Check verifies if consensus is reached; otherwise, the next
     round runs. Synthesizer summarizes the final position.
   engine: zaphod
   params:
@@ -378,9 +378,9 @@ Recipe-Param `synthesisPrompt` is appended to the userMessage-prefix — suitabl
 
 - `pattern` must be `council` or `debate`.
 - `heads`: non-empty list, each element with `name` + `recipe`. For `debate`, at least 2 heads.
-- `name`s must be unique within the list (same name would cause Sub-Process naming collision).
+- `name`s must be unique within the list (same name would cause sub-process name collision).
 - `maxRounds`: only evaluated for `debate`. Default 3, hard-cap 10 (see §13). Ignored for `council` (engine enforces 1).
-- `synthesisPrompt` is optional — if missing, default prompt from Engine.
+- `synthesisPrompt` is optional — if missing, default prompt from engine.
 
 ---
 
@@ -389,9 +389,9 @@ Recipe-Param `synthesisPrompt` is appended to the userMessage-prefix — suitabl
 | Configuration | Works? | Note |
 |---|---|---|
 | Arthur → Zaphod | ✓ | Default use case. Arthur spawns a `council-*` or `debate-*` recipe, receives synthesis as ProcessEvent. |
-| Vogon → Zaphod | ✓ | A Vogon phase can spawn a Zaphod Council/Debate as a Phase-Worker (e.g., "Phase: Architecture-Council"). Synthesis lands as Phase-Artifact. |
-| Marvin → Zaphod | ✓ | Marvin-WORKER node can use a Council/Debate recipe if the sub-task is multi-perspective. Clean recursion: Marvin-Tree-node is horizontally multi-perspective. |
-| Zaphod → Marvin/Vogon | ✓ | A head can itself be a Marvin-Worker (e.g., "Architect" head that performs deep research) or execute a Vogon phase plan. Via recipe indirection without engine code change. |
+| Vogon → Zaphod | ✓ | A Vogon phase can spawn a Zaphod Council/Debate as a phase worker (e.g., "Phase: Architecture-Council"). Synthesis becomes a phase artifact. |
+| Marvin → Zaphod | ✓ | Marvin-WORKER node can use a Council/Debate recipe if the sub-task is multi-perspective. Clean recursion: Marvin tree node is horizontally multi-perspective. |
+| Zaphod → Marvin/Vogon | ✓ | A head can itself be a Marvin worker (e.g., "Architect" head doing deep research) or execute a Vogon phase plan. Via recipe indirection without engine code change. |
 | Zaphod-in-Zaphod | technically ✓, questionable | Double synthesis dilutes information. Only useful for significantly different patterns (e.g., outer Council with inner Debate head — rather exotic). |
 
 ---
@@ -438,7 +438,7 @@ Initial repertoire:
 
 | Name | Purpose |
 |---|---|
-| `zaphod` | Engine-Default — deliberately minimal: Pattern must be explicitly set, otherwise error. Catch-all for engine-direct-Spawns (tests). |
+| `zaphod` | Engine-Default — deliberately minimal: pattern must be explicitly set, otherwise error. Catch-all for engine-direct spawns (tests). |
 | `council-three-perspectives` | Optimist / Skeptic / Pragmatist, single-shot synthesis |
 | `debate-pro-contra` | Pro / Con, max 3 rounds with consensus stop |
 | `zaphod-consensus` | LightLlm-Recipe (`internal: true`), called per round by engine code — decides `consensus: bool`. No direct spawn by tools/users. |
@@ -473,22 +473,22 @@ The `ParentNotificationListener` reacts to the transition to DONE and calls `sum
 - **Min-Heads for debate:** 2 (single-head-debate is pointless — rejected on spawn).
 - **Max-Rounds for debate:** Recipe-Param `maxRounds`, default 3, hard-cap 10. Values > 10 are clamped to 10 + Warning.
 - **Consensus-Check-Budget:** one call per round, thus `maxRounds - 1` additional LightLlm calls maximum. Model default: `default:fast` via `zaphod-consensus` recipe.
-- **Per-Head-Lane-Timeout:** no separate timeout in V1 — Sub-Process behavior applies as before.
+- **Per-Head-Lane-Timeout:** no separate timeout in V1 — sub-process behavior applies as before.
 - **Token-Bound for Synthesizer:** not yet in V1; if needed later, analogous to Marvin AGGREGATE `maxOutputChars`.
 
-Later extensions analogous to Vogon §11: `maxTotalCostUsd`, `maxWallclockSeconds`, `maxHeadSpawns` as Recipe-Bounds.
+Later extensions analogous to Vogon §11: `maxTotalCostUsd`, `maxWallclockSeconds`, `maxHeadSpawns` as Recipe bounds.
 
 ---
 
 ## 14. Open Points (later)
 
-- **Parallel Heads.** V1 sequential. Later: drive heads in parallel on their own lanes, wait for all DONE of the current round, then Consensus Check + potentially next round. Performance × N per round.
-- **Generator-Critic Pattern.** Alternating step G→C→G→C, bounded to max-N rounds or "Critic accepts". Structurally like debate, but asymmetric roles (only one head revises its artifact, the other criticizes).
+- **Parallel Heads.** V1 sequential. Later: drive heads in parallel on their own lanes, wait for all DONE in the current round, then Consensus-Check + potentially next round. Performance × N per round.
+- **Generator-Critic Pattern.** Alternating step G→C→G→C, bounded by max-N rounds or "Critic accepts". Structurally like debate, but asymmetric roles (only one head revises its artifact, the other criticizes).
 - **Branch-and-Vote.** Self-Consistency with identical heads + Judge. Recipe-Param `votingStrategy` (`majority`, `judge-llm`, `longest-reply`-heuristic).
 - **Brainstorm Mode.** Multi-round without strict consensus requirement — stop criterion is "idea saturation" (new round brings nothing new) instead of "heads agree". Requires a separate check prompt.
-- **Per-Head-Consensus-Vote.** Today, the LightLlm check decides universally. Variant: each head replies additionally with `[CONSENSUS]`/`[DISSENT]`; consensus reached if all live heads signal `[CONSENSUS]`. More self-report risk, but no additional LLM call.
+- **Per-Head Consensus Vote.** Today, the LightLlm check decides universally. Variant: each head replies additionally with `[CONSENSUS]`/`[DISSENT]`; consensus reached if all live heads signal `[CONSENSUS]`. More self-report risk, but no additional LLM call.
 - **Model Diversity.** Per-head recipe can already choose different models via Recipe-Params. Later: explicitly documented + bundled recipe demonstrating this.
 - **Persona Composition.** V1: Persona is append-only to the steer message. Later: separate Persona library with reusable roles (`@personas/skeptic`, `@personas/cost-optimizer`, ...).
-- **User-Steering during runtime.** "Add another head", "end synthesis now with what's available", "let the skeptic argue differently again". External commands, not implemented in V1.
+- **User Steering during runtime.** "Add another head", "end synthesis now with what's available", "let the skeptic argue differently again". External commands, not implemented in V1.
 - **Persisted Round Histories.** With higher `maxRounds`, replies grow — separate Mongo collection `zaphod_replies` analogous to `marvin_nodes`, if state size exceeds engineParams embedding.
 - **Synthesis Validation.** Does the synthesizer reply explicitly include all heads? Later: Validator loop like Marvin Worker Output (1-2 correction re-prompts if a head is not referenced).

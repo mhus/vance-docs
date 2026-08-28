@@ -4,28 +4,28 @@
 > which the system calculates **bottom-up** to a canonical **per-year** figure.
 > For project financial planning, budgets, cashflow, and cost/revenue models — a
 > *thinking/modeling* tool (calculating scenarios), **not** accounting.
-> Interchangeable **report processors** generate output documents from the calculated model
-> in existing Kinds (`sheet`, `chart`, `markdown`).
+> From the calculated model, interchangeable **Report Processors** generate output
+> documents in existing Kinds (`sheet`, `chart`, `markdown`).
 > See also: [doc-kind-sheet](doc-kind-sheet.md), [doc-kind-chart](doc-kind-chart.md)
-> (report target Kinds), [light-llm-service](../light-llm-service.md) (assessment report),
-> [web-ui](../web-ui.md) §7. Standalone addon `vance-addon-brain-finance`.
-> Implementation track: [`planning/app-finance-tree.md`](../../planning/app-finance-tree.md).
+> (Report target Kinds), [light-llm-service](light-llm-service.md) (assessment Report),
+> [web-ui](web-ui.md) §7. Standalone Addon `vance-addon-brain-finance`.
+> Implementation track: [`planning/app-finance-tree.md`](../../planning/archive/app-finance-tree.md).
 
 ---
 
 ## 1. Purpose
 
 A **`kind: finance-tree`** document is a tree of nodes. Each node carries
-additive **Value-Records** (amounts with period, optional interest) and is
-summed up **bottom-up**. A node's **sign** flips the entire subtree, so
+additive **Value Records** (amounts with period, optional interest) and is
+summed **bottom-up**. A node's **sign** flips the entire subtree, so
 an expense branch automatically subtracts positively entered amounts. The
-result is a simple, yet hierarchical cost accounting.
+result is a simple but hierarchical cost accounting.
 
 Analogy **Compiler**: the `finance-tree` is the source (raw data in human
 units), the mathematics (`FinanceCalculator`/`FinanceProjector`) the compiler,
 report documents the compiled artifacts.
 
-A `finance-tree` is **one** document — versionable, exportable, embeddable via
+A `finance-tree` is **a single** document — versionable, exportable, embeddable via
 `vance:`-URI. No Doc-per-node.
 
 ## 2. Data Model
@@ -34,26 +34,26 @@ A `finance-tree` is **one** document — versionable, exportable, embeddable via
 
 1 year = **365 days = 12 months = 52 weeks**. From this: 1 month = 365/12 ≈ 30.42
 days, 1 week = 365/52 ≈ 7.02 days. Everything is canonically normalized to **per year**;
-day/week/month are division.
+day/week/month are divisions.
 
-### 2.2 Node
+### 2.2 Nodes
 
 | Field | Meaning |
-|------|-----------|
-| `name` | unique business key in the tree (edges/reports reference it) |
+|-------|---------|
+| `name` | unique business key in the tree (Edges/Reports reference it) |
 | `title` / `icon` / `color` | Display |
 | `sign` | `+1` / `-1` — affects the **total contribution**: `total = sign × (Σ own Values + Σ children's Total)` |
 | `description` / `notesRef` | Description + Ref to a notes document |
-| `values` | List of Value-Records |
+| `values` | List of Value Records |
 | `children` | recursive sub-nodes |
 
 An **expense branch** is a node with `sign: -1` over positively entered
 children — no negative numbers need to be entered.
 
-### 2.3 Value-Record
+### 2.3 Value Record
 
 | Field | Meaning |
-|------|-----------|
+|-------|---------|
 | `value` | Base amount (required) |
 | `mode` | `recurring` (rate, Default) \| `one_time` (lump sum at a date) |
 | `period` | `{count, unit}`, unit ∈ `day\|week\|month\|year` — required for `recurring` |
@@ -67,9 +67,9 @@ calculated like `vom_hundert` (v2).
 
 ## 3. On-Disk Format & Web-UI
 
-YAML canonically, JSON dual (`FinanceTreeCodec`, byte-stable model round-trip via
+YAML canonical, JSON dual (`FinanceTreeCodec`, byte-stable model round-trip via
 the `$meta`-header). The **Body** only holds **Input**; calculated values are under
-`$computed` (derived, regenerable, never Source of Truth). A `version`-field is
+`$computed` (derived, regenerable, never Source of Truth). A `version` field is
 always set (v1: `1`; missing is read as `1`).
 
 The YAML serialization prepends a fixed **comment header**, which immediately
@@ -101,19 +101,19 @@ $computed:
 ```
 
 **Web-UI**: `kind: finance-tree` opens the `FinanceKind`-editor in Cortex
-(Master-Detail): on the left the tree (Select + CRUD + Reorder/Indent/Outdent), on the
-right the detail panel of the selected node (fixed fields at the top, Value blocks below).
+(Master-Detail): on the left, the tree (Select + CRUD + Reorder/Indent/Outdent), on the right
+the detail panel of the selected node (fixed fields at the top, Value blocks below).
 Topbar: **Reload** (calculate snapshot, Day/Week/Month/Year toggle) and
 **Report** (Processor dropdown + Params → generate, inline or as document).
 
 In the **Embed/Chat channel**, `FinanceSummaryView` renders a data-only card
-(net annual value + top nodes) with an "Edit" dialog (full editor) —
+(Net Annual Value + Top Nodes) with an "Edit" dialog (full editor) —
 read-only via `GET /snapshot` (calculates without persistence).
 
 ## 4. Calculation Model
 
-The mathematics lives **exactly once** (pure, deterministic, testable), never in a
-processor or client.
+The mathematics exists **exactly once** (pure, deterministic, testable), never in a
+Processor or Client.
 
 **Snapshot (`FinanceCalculator`, "Reload").** Current value for "today":
 RECURRING records whose validity window includes today, normalized to per year
@@ -128,22 +128,22 @@ to `$computed` as server-authoritative.
 over the actual days per bucket. `ONE_TIME` lands in the bucket of its date; interest
 **compounds** here (`base × (1+r)^n`) if `compound: true` + `validFrom` is set,
 otherwise linear. Pure function of `(root, from, to, granularity)`, **on-demand, not
-persisted** (persisted only as a report document).
+persisted** (persisted only as a Report document).
 
 ## 5. Report Processors
 
-Two-layer architecture: **one** input Kind, **N** interchangeable processors
+Two-layer architecture: **one** input Kind, **N** interchangeable Processors
 (SPI `FinanceReportProcessor`, self-registered Beans; a Kit can contribute its own).
-A processor is **pure presentation** — it calls the shared math with
-the params and writes the payload **through the codec of the target Kind** (byte-identical).
+A Processor is **pure presentation** — it calls the shared math with the Params
+and writes the Payload **through the Codec of the target Kind** (byte-identical).
 
 | Processor | Target Kind | Content |
 |-----------|-------------|---------|
-| `table` | `sheet` | Period matrix (rows = nodes, columns = periods, total) |
+| `table` | `sheet` | Period matrix (rows = nodes, columns = periods, Total) |
 | `series` | `chart` | Time series per node, category X-axis, `chartType` line/bar/area/scatter |
 | `assessment` | `markdown` | LLM-generated prose report via `LightLlmService` (Recipe `finance-report`, `internal: true`) — **no period**, snapshot with sign applied (expenses negative) |
 
-`table`/`series` are pure; `assessment` is service-supported (receives Scope via
+`table`/`series` are pure; `assessment` is service-backed (receives Scope via
 `ReportContext`). Discovery: `finance_report_processors` / `GET .../processors`.
 
 ## 6. LLM Tools + REST
@@ -152,22 +152,22 @@ the params and writes the payload **through the codec of the target Kind** (byte
 (Root without parentName, otherwise child), `finance_node_update`, `finance_node_remove`,
 `finance_node_value_set`, `finance_tree_calc` (Reload), `finance_report_generate`
 (inline or persist), `finance_report_processors`. Thin adapters over
-`FinanceService` — Node/Value params pass through the codec grammar
+`FinanceService` — Node/Value params go through the Codec grammar
 (`FinanceTreeCodec.nodeFromMap`/`valueFromMap`), a grammar.
 
 **REST** under `/brain/{tenant}/addon/finance/…`: `GET/PUT /tree`, `POST /create`,
 `POST /calc`, `GET /project`, `POST /report`, `GET /processors` — with
 `RequestAuthority`-Enforcement (READ/WRITE/CREATE).
 
-Both interfaces delegate to the same `FinanceService`; the math is written and tested once.
-(Script-API adapter is reserved, once pluggable JS tooling exists.)
+Both interfaces delegate to the same `FinanceService`; the math is written and
+tested once. (Script-API adapter is reserved, once pluggable JS tooling exists.)
 
 ## 7. Agent Understanding of Data
 
 If the user asks for an assessment in chat, the Agent reads the tree via
 `document_read` as YAML. Three interacting components:
 
-1. **Manual** `_vance/manuals/finance-tree.md` — Data model concise, on-demand via
+1. **Manual** `_vance/manuals/finance-tree.md` — data model concise, on-demand via
    `manual_read('finance-tree')`.
 2. **Engine-Prompt-Hook** `_vance/prompts/arthur/finance-tree.md` — Trigger + Tool-
    Syntax + `manual_read` reference.
@@ -180,5 +180,5 @@ If the user asks for an assessment in chat, the Agent reads the tree via
 - **Single-currency** (pure numbers); multi-currency/conversion is Out of Scope.
 - A document holds up to ~hundreds of nodes; no pagination.
 - **Interest v1**: only `vom_hundert`, Compound only in projection (not in snapshot).
-- **v2**: the three percentage types, interest on `ONE_TIME` lump sums, Script-API,
+- **v2**: the three "hundred" types, interest on `ONE_TIME` lumps, Script-API,
   Workbook-Embed/Compose regeneration.

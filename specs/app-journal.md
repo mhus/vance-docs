@@ -9,7 +9,7 @@ permalink: /specs/app-journal
 ---
 # Vancetope Application — `app: journal`
 
-> Journal container via `kind: journal-entry` pages, built on the
+> Journal container for `kind: journal-entry` pages, built on the
 > [doc-kind-application](/specs/doc-kind-application) foundation. One folder = one
 > journal, one file = one day. Date-anchored, reflective prose — unlike
 > [app-kanban](/specs/app-kanban) (workflow states) and
@@ -57,7 +57,7 @@ mood: good
 tags: work, ideas
 ---
 
-Today I wrote the journal plan...
+Today I wrote the journal plan…
 
 ## Highlights
 - [x] Plan finished
@@ -105,18 +105,18 @@ journal:
 
 ## 6. Search
 
-Search is **primary navigation** for the Journal — retrieving old entries
+Search is the **primary navigation** for the Journal — retrieving old entries
 is done by "what did I write about".
 
 **Storage Reality:** The document body is stored (gzip-compressed above the
 compression threshold) as a blob in `StorageService`, **not** as a Mongo field — a
 body regex is not possible. Mongo-searchable fields are `title`, `tags`, `headers`,
 and the **`summary`** field (LLM auto-summary, uncompressed; Journal entries are
-mime-eligible, so `autoSummary` is on by default).
+mime-eligible, `autoSummary` is therefore on by default).
 
 Search uses the **shared** `DocumentService.searchProjectDocumentsMeta(...)`
 (no app-specific index): OR-match across `title` + `summary` + `tags`, scoped to
-`entries/`, with `mood` and `tag` facets and a snippet per hit. Deeper
+`entries/`, with `mood` and `tag` facets and one snippet per hit. Deeper
 semantic prose search belongs in the RAG subsystem (not v1 core). Calendar navigation
 and "On This Day" are read-only views without a tool.
 
@@ -125,12 +125,12 @@ and "On This Day" are read-only views without a tool.
 | Tool | Purpose | Logic in |
 |---|---|---|
 | `journal_app_create` | Bootstrap: Manifest + initial refresh. | `JournalApplication.create(...)`. |
-| `journal_entry_create` | Write/append a day. `date` defaults to today; same date **updates** (no duplicate). | `JournalService.upsertEntry(...)`. |
+| `journal_entry_create` | Write/append to a day. `date` defaults to today; same date **updates** (no duplicate). | `JournalService.upsertEntry(...)`. |
 | `journal_search` | Free text over Title/Summary/Tags + facets. | `JournalService.search(...)` → shared DocumentService method. |
 | `journal_query` | Deterministic date range list. | `JournalService.listRange(...)`. |
 | `app_rebuild` | Generic — regenerates `_index.md` + `_stats.yaml`. | `JournalApplication.refresh()` via Registry. |
 
-## 8. Web UI Editor
+## 8. Web-UI Editor
 
 The Journal editor is mounted by the shared Cortex/Notepad shell via the
 Kind Registry (`application:journal` → `JournalAppKind.vue`). Clicking on
@@ -146,7 +146,7 @@ Kind Registry (`application:journal` → `JournalAppKind.vue`). Clicking on
   live echo.
 - **Right:** "On This Day" — entries from the same day/month in previous years.
 - **Top:** Free text search with hit list (Date + Title + Snippet); Rebuild button.
-- **Live updates** via the `documents` channel (`useDocumentPrefixReaction` on the
+- **Live-Updates** via the `documents`-channel (`useDocumentPrefixReaction` on the
   suite folder). Last-Writer-Wins, no CRDT.
 
 **REST — `JournalAppController` (`/brain/{tenant}/addon/journal/...`)**, thin adapter:
@@ -155,7 +155,7 @@ Kind Registry (`application:journal` → `JournalAppKind.vue`). Clicking on
 |---|---|
 | `GET  /scan` | View: Title + Config + Stats + Recent |
 | `GET  /month?year=&month=` | Days-with-entry mask for the calendar |
-| `GET  /entry?date=` | Load entry (incl. body); 404 if none |
+| `GET  /entry?date=` | Load entry (incl. Body); 404 if none |
 | `PUT  /entry` | Upsert entry (`{date, body?, title?, mood?, tags?}`) |
 | `DELETE /entry?date=` | Move entry to trash |
 | `GET  /on-this-day?date=` | Entries from previous years on the same day/month |
@@ -169,15 +169,15 @@ Kind Registry (`application:journal` → `JournalAppKind.vue`). Clicking on
 | Daily chronicle, reflection, mood | `app: journal` | Time axis, one day = one page. |
 | Workflow states (todo → done) | `app: kanban` | Cards move between columns. |
 | Scheduled events / milestones | `app: calendar` | Events on a timeline. |
-| Curated page tree | `app: workbook` | Author manually arranges sections. |
+| Curated page tree | `app: workbook` | Author manually organizes sections. |
 
 ## 10. Non-Goals (v1)
 
 - **One entry per day.** Multiple entries/day → v2.
-- **No semantic/RAG search** — v1 searches Title/Summary/Tags (§6); full-text body
-  search via embeddings is a separate, cross-journal track.
+- **No semantic/RAG search** — v1 searches Title/Summary/Tags (§6); Body full-text
+  via embeddings is a separate, cross-journal track.
 - **No crypto** beyond normal document protection (Document-Lock USER suffices).
 - **No guided journaling / "Prompt of the day"** (v2, possibly via Wizard).
 - **No CRDT** — Last-Writer-Wins + Live-Watch.
-- **No dedicated version panel** in the editor v1 (Document-Archive remains available via
+- **No dedicated version panel** in Editor v1 (Document-Archive remains available via
   standard versioning).

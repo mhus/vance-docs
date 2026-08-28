@@ -1,10 +1,12 @@
 # Vancetope — Workflows
 
-> A **Workflow** is a project-scoped automation: a state-machine plan of typed tasks (Agent / Shell / Script / Tool / Gate / Timer / Condition / Sub-Workflow / Terminal) that is started by external triggers and runs via append-only Journal Records. Workflows live as YAML documents under `_vance/workflows/<name>.yaml` in the Document Layer.
+> A **Workflow** is a project-scoped automation: a state-machine plan of typed Tasks (Agent / Shell / Script / Tool / Gate / Timer / Condition / Sub-Workflow / Terminal) that is started by external triggers and runs via append-only Journal Records. Workflows live as YAML documents under `_vance/workflows/<name>.yaml` in the Document Layer.
 >
-> Workflows are **not** a replacement for session-driven Chat Engines (Arthur) and **not** a multi-phase plan runner for Sessions (Vogon). They are the layer *above* the Engines: they spawn Jeltz/Ford/Marvin/Vogon as sub-tasks, evaluate conditions on structured outputs, and survive Session boundaries — some Workflows run for weeks.
+> Workflows are **not** a replacement for Session-driven Chat Engines (Arthur). They are the layer *above* the Engines: they spawn Jeltz/Ford/Marvin as sub-Tasks, evaluate conditions on structured outputs, and survive Session boundaries — some Workflows run for weeks.
 >
-> Each Workflow definition is declarative configuration. At each start, the Engine freezes the complete YAML as a snapshot into the Run — edits to the source document do not affect running Runs.
+> **Vogon is the same runner with a different binding**: a run that belongs to a Session and a Process, instead of just a Project. One grammar, one Journal, two modes of operation — see §13a and [vogon-engine](vogon-engine.md).
+>
+> Each Workflow definition is declarative configuration. With each start, the Engine freezes the complete YAML as a snapshot into the Run — edits to the source document do not affect running Runs.
 >
 > See also: [kits](kits.md) | [scheduler](scheduler.md) | [events](events.md) | [recipes](recipes.md) | [jeltz-engine](jeltz-engine.md) | [vogon-engine](vogon-engine.md) | [user-interaction](user-interaction.md)
 
@@ -14,13 +16,13 @@
 
 | Term | Definition |
 |---|---|
-| **Workflow-Doc** | YAML document under `_vance/workflows/<name>.yaml` in the Project or in the `_tenant` Tenant Scope. The filename (without `.yaml`) is the Workflow name. |
-| **Workflow-Run** | A running instance, identified by a `workflowRunId` (full 32-hex UUID, dash-stripped — unique across all Scopes). Persisted as an append-only Journal in the Mongo collection `magrathea_journal`. |
+| **Workflow-Doc** | YAML document under `_vance/workflows/<name>.yaml` in the Project or in the `_tenant`-Tenant Scope. Filename (without `.yaml`) is the Workflow name. |
+| **Workflow-Run** | A running instance, identified by a `workflowRunId` (full 32-hex UUID, dash-stripped — unique across all Scopes). Persisted as an append-only Journal in the `magrathea_journal` Mongo collection. |
 | **State** | Entry under `states:` in the YAML. Carries a Task type, an optional `storeAs:` variable, transitions (`on:`/`catch:`), and potentially a retry block. |
-| **Task** | An execution instance of a State. Persisted in the Mongo collection `magrathea_tasks` while it is pending/claimed/running. |
-| **Outcome** | String that a Task produces at the end (`success`, `failure`, or type-specific like `approved`, `business_error`, `timeout`, `fired`). Matched by the Transition Resolver against `on:`/`catch:`. |
-| **Journal** | Append-only audit trail of typed records (`StartRecord`, `StateEnteredRecord`, `TaskStartedRecord`, `TaskResultRecord`, `VarRecord`, `StatusRecord`, `ResultRecord`, …). Source of truth for each Run; all status views are projections. |
-| **Frozen Snapshot** | The complete YAML body saved into the `StartRecord` at `start()`. Running Runs read exclusively from this. |
+| **Task** | An execution instance of a State. Persisted in the `magrathea_tasks` Mongo collection while it is pending/claimed/running. |
+| **Outcome** | String produced by a Task at the end (`success`, `failure`, or type-specific like `approved`, `business_error`, `timeout`, `fired`). Matched by the Transition Resolver against `on:`/`catch:`. |
+| **Journal** | Append-only audit trail of typed Records (`StartRecord`, `StateEnteredRecord`, `TaskStartedRecord`, `TaskResultRecord`, `VarRecord`, `StatusRecord`, `ResultRecord`, …). Source of truth for every Run; all status views are projections. |
+| **Frozen Snapshot** | The complete YAML body stored in the `StartRecord` at `start()`. Running Runs read exclusively from this. |
 
 **Workflow ↔ Recipe ↔ Engine:** Engines are code (Arthur/Ford/Vogon/Marvin/Jeltz). Recipes are named Engine configurations. Workflows orchestrate Tasks — some of these Tasks spawn Recipes. A Workflow State definition references a Recipe by name; inline Recipe definitions are not allowed.
 
@@ -32,7 +34,7 @@
 # _vance/workflows/pr-review.yaml
 
 description: |
-  Pull-Request-Review-Flow: Plan, Tests, Review-Gate, Merge.
+  Pull Request Review Flow: Plan, Tests, Review Gate, Merge.
 
 version: "1"
 start: plan
@@ -60,8 +62,10 @@ states:
     params:
       prompt: "Analyse PR ${params.pr_url}, identify risks, propose review plan."
       schema:
-        risk:        { type: string, enum: [low, medium, high] }
-        focus_areas: { type: array,  items: { type: string } }
+        type: object                  # Required — Jeltz rejects anything else
+        properties:
+          risk:        { type: string, enum: [low, medium, high] }
+          focus_areas: { type: array,  items: { type: string } }
     storeAs: plan_output
     timeoutSeconds: 600
     on:
@@ -98,7 +102,6 @@ states:
       title: "PR ${params.pr_url} approve?"
       assignedTo: "${params.reviewer}"
       criticality: NORMAL
-      # tags: [pr-review] # optional
     timeoutSeconds: 604800
     storeAs: review_decision
     on:
@@ -154,10 +157,11 @@ states:
 
 | Field | Required | Meaning |
 |---|---|---|
+| `$meta` | optional | Reserved header block of the Document Layer. Carries `kind: vance-workflow` (§2.5). Ignored by the Workflow parser. |
 | `description` | optional | Audit marker, visible in Web UI listings. |
 | `version` | optional | Free string, lands in `StartRecord.workflowVersion`. |
 | `start` | **yes** | Name of the initial State. Must exist in `states:`. |
-| `parameters` | optional | Map of caller parameter schemas. Permissive pass-through: caller parameters outside the schema are forwarded. |
+| `parameters` | optional | Map of caller parameter schemas. Permissive pass-through: caller parameters outside the schema are passed through. |
 | `bounds` | optional | Global guardrails per Run (§9). |
 | `allowedTools` | optional | Workflow-specific Tool whitelist; AND-combined with Project + Tenant pools (§10). |
 | `tags` | optional | Audit labels. |
@@ -169,36 +173,91 @@ states:
 |---|---|
 | `type` | Required. One of `agent_task` / `shell_task` / `script_task` / `tool_task` / `gate_task` / `timer_task` / `condition_task` / `workflow_task` / `terminal`. |
 | `description` | Audit string. |
-| `timeoutSeconds` | Task-level timeout. `shell_task`/`script_task` block the Lane until `waitMs`; `gate_task` creates a parallel timeout timer (§5.4). |
+| `timeoutSeconds` | Task-level timeout. Synchronous types (`shell_task`/`script_task`) block the Lane until `waitMs`. Asynchronous ones — `gate_task`, `agent_task`, `workflow_task` — have nothing to block and instead get a parallel timer that the scanner fires with `timeout` outcome (§5.4). If the timer fires first, a waiting `agent_task` is additionally cleared: its ThinkProcess is closed so no Agent continues calculating an answer that no one will read anymore. A `workflow_task` lets its sub-Run continue — stopping a run from outside requires the stop path, which does not yet exist. |
 | `storeAs` | Variable key. For non-null output, the Dispatcher writes a `VarRecord(key, value)` to the Journal. |
 | `on:` | Map outcome → next-state. Checked first by the Resolver. |
-| `catch:` | Map error-kind → next-state. Outcome interpreted as `ErrorKind` enum (case-insensitive, dashes→underscores). |
+| `catch:` | Map error-kind → next-state. Outcome interpreted as `ErrorKind`-Enum (case-insensitive, dashes→underscores). |
 | `retry:` | Spec with `maxAttempts`, `on: [error-kinds]`, `backoffSeconds`. State-level Retry preempts Resolver routing (§4.3). |
+| `enterCounter:` | Name of a variable that is incremented by 1 **each time** this State is entered (§2.2a). |
+| `resetCounters:` | List of variables that are set to 0 upon entry — before `enterCounter`. |
+
+### 2.2a Counters — How a Plan Counts its Rounds
+
+A back-edge is only a loop if it is bounded. `enterCounter:` counts entries into a State, `resetCounters:` resets. Both are **ordinary variables** (`VarRecord` in the Journal): readable as `#state['rounds']` in a Condition, as `${state.rounds}` in a Prompt, visible in the Run view. No second state concept, no second place to check.
+
+```yaml
+setup:
+  type: condition_task
+  resetCounters: [rounds]        # on the State that BEGINS the section
+  transitions:
+    - else: work
+
+work:
+  type: agent_task
+  enterCounter: rounds
+  ...
+
+check:
+  type: condition_task
+  transitions:
+    - if: "#state['rounds'] >= 5"
+      to: escalate
+    - else: work
+```
+
+**The reset is not optional.** A purely monotonic counter is incorrect when re-entering the same section — and this happens as soon as a `catch:` routes back there. The error is silent: the plan gives up after one round instead of five, and nothing indicates it.
+
+Order: first `resetCounters`, then `enterCounter`. A State that begins a section *and* is its first step can therefore declare both and will start at 1.
+
+Non-numeric values (because the plan uses the same variable elsewhere) restart the count instead of killing the run — a broken counter is a plan bug to check in the Journal, not a reason to abort mid-run.
 
 ### 2.3 YAML 1.2 Boolean Semantics
 
-The Workflow parser uses a custom resolver with YAML 1.2 boolean rules: only `true`/`false` are coerced. The barewords `on:`/`off:`/`yes:`/`no:` remain strings — otherwise, SnakeYAML defaults (YAML 1.1) would rewrite the `on:` transition block keyword to `Boolean.TRUE`.
+The Workflow parser uses a custom resolver with YAML 1.2 Boolean rules: only `true`/`false` are coerced. The barewords `on:`/`off:`/`yes:`/`no:` remain strings — otherwise, SnakeYAML defaults (YAML 1.1) would rewrite the `on:` transition block keyword to `Boolean.TRUE`.
 
 ### 2.4 Dataflow — `${params.X}` / `${state.X}`
 
 Any string value in a State spec may contain placeholders that are resolved **immediately before** Task execution (centrally in the Dispatcher across the entire spec map, before the Type Executor sees them):
 
 - `${params.<key>}` — a Run parameter (from `parameters:`).
-- `${state.<key>}` — a variable that an **earlier** State wrote via `storeAs: <key>`. Nested access works: `${state.review.summary}`.
+- `${state.<key>}` — a variable that a **previous** State wrote via `storeAs: <key>`. Nested access works: `${state.review.summary}`.
 
-This is how data flows from Task to Task: a Task writes its output with `storeAs`, a later Task reads it via `${state.<key>}` into a Prompt, Tool parameter, Gate title/body, or Terminal `result`. A missing key resolves to an empty string (no crash). Values without `${…}` remain untouched.
+This is how data flows from Task to Task: a Task writes its output with `storeAs`, a later one reads it via `${state.<key>}` into a Prompt, Tool parameter, Gate title/body, or Terminal `result`. A missing key resolves to an empty string (no crash). Values without `${…}` remain untouched.
 
 This is **different** from SpEL in `condition_task.transitions[].if` (`#state['k']` / `#params['k']`, §3.6) — SpEL evaluates conditions, `${…}` substitutes text.
+
+### 2.5 Document Kind `vance-workflow`
+
+A Workflow document carries the Document Kind **`vance-workflow`** — the first member of the `vance-*` Kind family that types Vance's own configuration documents (later `vance-recipe`, `vance-scheduler`, …). It is set, like any YAML document, via the reserved `$meta` block at the beginning of the file:
+
+```yaml
+$meta:
+  kind: vance-workflow
+
+start: plan
+states:
+  …
+```
+
+`YamlHeaderStrategy` mirrors `$meta.kind` into the document's `kind` field; the Workflow parser reads only named top-level keys and ignores `$meta`. Existing documents without a header remain valid — they are merely untyped.
+
+**Kind and location are independent.** The Kind states *what the document is*, the path states *whether it is active*:
+
+- A document with `kind: vance-workflow` is a Workflow definition anywhere in the Project — as a draft, template, or archived copy — and is validated identically everywhere.
+- Only documents under `_vance/workflows/<name>.yaml` are **resolvable by name**: only there does the Cascade apply (§6). All name-based triggers (§8) — Tool, Scheduler, Ursahook, Sub-Workflow — find a Workflow exclusively there. The path is not part of the type, and the Kind does not make a document startable.
+- Conversely, any document is **directly startable** via the path-based start (§8.7) — the path taken by the Flow view's start button.
+
+**Validation.** The `WorkflowKindHandler` (`vance-shared`, Package `magrathea`) delegates to the same parser that `start()` uses (`MagratheaWorkflowLoader.parseYaml`) — a finding therefore means exactly what a start would reject: missing `start:`/`states:`, unknown Task type or Error Kind, transition to an undeclared State. The handler is **not** coupled to `vance.services.magrathea`: the Kind remains known and verifiable on every Pod, even where no Workflow is running. Visible via `kind_validate`, `GET /brain/{tenant}/documents/validate`, and the auto-check of the Body Write Tools.
 
 ---
 
 ## 3. Task Types
 
-Nine types, all sharing the same lifecycle model: each Task produces a `TaskCompletedEvent` with an outcome string that triggers the Transition Resolver. Sync vs. Async types differ only in **who** writes the `TaskResultRecord`.
+Nine types, all sharing the same lifecycle model: each Task produces a `TaskCompletedEvent` with an Outcome string that triggers the Transition Resolver. Sync vs. Async types differ only in **who** writes the `TaskResultRecord`.
 
 | Type | Synchronous? | What it does |
 |---|---|---|
-| `condition_task` | yes | SpEL branch match over `transitions:` list. Sets `nextStateOverride`. |
+| `condition_task` | yes | SpEL branch match via `transitions:` list. Sets `nextStateOverride`. |
 | `tool_task` | yes | Calls `tool:` via Tool Dispatcher. Output = Tool Result Map. |
 | `shell_task` | yes (blocks Lane until `timeoutSeconds`) | Shell command via `ExecManager`. Output = `{status, exitCode, stdout, stderr, durationMs}`. |
 | `script_task` | yes (blocks Lane until `timeoutSeconds`) | JS script via the Unified Script Executor (`ScriptActionExecutor`). Output = Script return value. |
@@ -225,18 +284,74 @@ plan:
     agent_error: human_review
 ```
 
-`recipe:` is required and resolved via the normal Recipe cascade. `params:` lands as `engineParams` on the spawned ThinkProcess. Jeltz consumes `prompt`+`schema` directly; Ford/Vogon/Marvin read Recipe-specific fields.
+`recipe:` is required, resolved via the normal Recipe Cascade. `params:` lands as `engineParams` on the spawned ThinkProcess. Jeltz consumes `prompt`+`schema` directly; Ford/Vogon/Marvin read Recipe-specific fields.
+
+**`params.prompt` is delivered.** After `start()`, the Executor pushes the Prompt as `USER_CHAT_INPUT` into the spawned process's pending queue — the same seed that `SpawnActionExecutor` lays for `initialMessage`. Reactive Engines need this: they wait for a message and would otherwise idle. Jeltz reads its Prompt from `engineParams` and ignores the queue.
+
+**No delegation in the step.** The Executor takes `process_spawn` from the Agent's Tool surface. An Agent that opens its own workers builds a second plan next to the written one — invisible in the diagram, invisible in the Run view, and bypassing `bounds.maxTaskSpawns`, which counts Workflow Tasks and not agent-owned processes. Fan-out belongs in the Workflow: additional States or a `workflow_task`. Side effect, on which the completion criterion below depends: without delegation, `IDLE` is unambiguously "finished" and not "I'm waiting for my child".
 
 Outcome mapping:
 
 - **Jeltz**: Wrapper parse from the last Assistant message. `success: true` → `outcome=success`, `output=data`. `success: false` → `outcome=agent_error`, `output=lastInvalid`.
-- **Other Engines**: Terminal CloseReason to Outcome. `DONE`/`AUTO_CLOSE` → `success` with the last Assistant message as output. `STALE` → `technical_error`. `STOPPED`/`ARCHIVED`/`USER_DELETE`/`ABANDONED` → `cancelled`.
+- **Turn End (all other Engines)**: Only Jeltz terminates itself — Ford, Vogon, Marvin, and Arthur end a turn at `IDLE` or `BLOCKED` and wait for the next message, which never comes in the Workflow. Therefore, the **end of the turn** is the completion criterion, not the closing of the process: `RUNNING → IDLE` → `success`, `RUNNING → BLOCKED` → `needs_input`. Output is the last Assistant message; Magrathea closes the process itself afterwards. The **previous** status is crucial: `INIT → IDLE` is a started Agent that has not yet done anything, and should not count as completion.
+- **Terminal Close**: `DONE`/`AUTO_CLOSE` → `success`. `STALE` → `technical_error`. `STOPPED`/`ARCHIVED`/`USER_DELETE`/`ABANDONED` → `cancelled`.
 
-Sub-ThinkProcesses run in a dedicated system session `_magrathea_<runId>` analogous to the Scheduler pattern.
+**Judgments: `decide:` and `score:`.** An `agent_task` whose purpose is an assessment can declare how its answer should be read. The reading becomes the **Outcome**, so `on:` routes it like any other — no second branching vocabulary.
+
+```yaml
+classify:
+  type: agent_task
+  recipe: ford
+  params: { prompt: "Is the outline unambiguous, ambiguous, or contradictory?" }
+  decide:
+    options: [unambiguous, ambiguous, contradictory]   # without options: [yes, no]
+    maxCorrections: 2
+  storeAs: clarity
+  on: { unambiguous: write, ambiguous: ask_human, contradictory: rebuild }
+```
+
+```yaml
+review:
+  type: agent_task
+  recipe: ford
+  params: { prompt: "Rate. Respond as a JSON object with score 0.0–1.0." }
+  score:
+    bands:
+      - { atLeast: 0.7, outcome: approved }
+      - { atLeast: 0.2, outcome: revise }
+      - { default: true, outcome: rejected }
+    maxCorrections: 2
+  storeAs: review          # the entire object, not just the score
+  on: { approved: publish, revise: writer, rejected: escalate }
+```
+
+Rules:
+
+- **Exactly one of the two** per State. Two judgments from one step would contend for the Outcome; whoever needs both writes two States.
+- **The scale is fixed `[0.0, 1.0]`.** An answer outside is rejected instead of mapped — otherwise `0.7` would mean something different in every plan. The score is read from the **last** JSON object in the response.
+- **Bands are matched from top to bottom**, the first matching one wins. So write **descending**, `default:` last. Ascending thresholds or a `default:` before other bands are rejected when loading the plan — otherwise a `0.9` would silently fall into the lowest band, and the plan would route differently than it reads.
+- **`decide:` matches whole words**, case-insensitive, first occurrence wins. "noise" is not "no". A word also includes `_` and `-`: `needs_work` is **one** token, from which no `work` is read.
+- **Malformed answers are re-prompted**, not evaluated: up to `maxCorrections` times (default 2) in the **same** process, so the model sees its own attempt and the objection. Only then does the State end as `agent_error`. A model that provides prose instead of a token has not failed the task — it has misunderstood the question.
+- **No matching band and no `default:`** is an authoring gap, not a model error: the State ends as `agent_error`, re-prompting could not change anything.
+
+`needs_input` is **not** an Error Kind, but a regular Outcome for `on:` — the Agent asked a clarifying question instead of failing. The Workflow typically routes it to a `gate_task`:
+
+```yaml
+  work:
+    type: agent_task
+    recipe: ford
+    params:
+      prompt: "…"
+    on:
+      success: review
+      needs_input: ask_human
+```
+
+Sub-ThinkProcesses run in a dedicated system Session `_magrathea_<runId>` analogous to the Scheduler pattern.
 
 ### 3.2 `shell_task` & `script_task`
 
-Two separate Task types — historically, `script_task` was shell-only; JS execution is now its own type, and the Shell Executor is now called `shell_task` (rename in `MagratheaTaskType`, symmetrical to `trigger-actions.md` §4).
+Two separate Task types — historically `script_task` was shell-only; JS execution is now its own type, and the Shell Executor is now called `shell_task` (rename in `MagratheaTaskType`, symmetrical to `trigger-actions.md` §4).
 
 **`shell_task`** — Shell command via `ExecManager`:
 
@@ -265,7 +380,7 @@ Outcome mapping:
 | `RUNNING` | — | `timeout` (waitMs exhausted) |
 | `FAILED` / `ORPHANED` | — | `technical_error` |
 
-**`script_task`** — JS script via the Unified Script Executor (`ScriptActionExecutor`, the same path as Script Trigger Actions — see `trigger-actions.md` §4.4):
+**`script_task`** — JS script via the Unified Script Executor (`ScriptActionExecutor`, same path as Script Trigger Actions — see `trigger-actions.md` §4.4):
 
 ```yaml
 transform:
@@ -328,7 +443,7 @@ review:
 
 **`assignedTo` fallback:** Spec value → `startedBy` → `"@system"`.
 
-**Outcome mapping by Answer Outcome × InboxItemType:**
+**Outcome mapping by Answer Outcome × MaximegalonType:**
 
 | Type \ Answer | DECIDED | INSUFFICIENT_INFO | UNDECIDABLE |
 |---|---|---|---|
@@ -370,7 +485,7 @@ route_by_risk:
     - else: triage
 ```
 
-Pure SpEL evaluation. The first matching rule wins; `else:` must be the last rule (Loader validation).
+Pure SpEL evaluation. First matching rule wins; `else:` must be the last rule (Loader validation).
 
 SpEL variables:
 
@@ -378,7 +493,7 @@ SpEL variables:
 - `#params['<key>']` — Caller parameters (set at `start()`).
 - `#tasks['<state>']['output']` — reserved for future use.
 
-Sandbox: `T(...)`, `new ...` and method calls are blocked. Operators `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, `in {...}`, `matches '<regex>'`, ternary `? :`, Elvis `?:` are allowed.
+Sandbox: `T(...)`, `new ...`, and method calls are blocked. Operators `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, `in {...}`, `matches '<regex>'`, ternary `? :`, Elvis `?:` are allowed.
 
 ### 3.7 `workflow_task`
 
@@ -396,10 +511,10 @@ build_subprojects:
     failure: escalate
 ```
 
-Spawns a Sub-Run and waits for its Terminal. Variable transfer:
+Spawns a sub-Run and waits for its Terminal. Variable transfer:
 
 - **Incoming** (Parent → Sub): only via `params:`. No implicit inheritance mechanism.
-- **Outgoing** (Sub → Parent): the Terminal State of the Sub-Run writes `ResultRecord(result)`. The Parent captures this via `storeAs:`.
+- **Outgoing** (Sub → Parent): the Sub-Run's Terminal State writes `ResultRecord(result)`. The Parent captures this via `storeAs:`.
 
 Parent identity (`workflowRunId`, `state-name`) is persisted in `StartRecord.parentMagratheaProcessId` + `parentState` of the Sub-Run — audit chain through arbitrarily deep nesting.
 
@@ -430,7 +545,7 @@ Multiple Terminal States are allowed and common — typical names: `done`, `merg
 
 1. **`nextStateOverride`** — only `condition_task` sets this.
 2. **`on:`** — exact string match against Outcome.
-3. **`catch:`** — Outcome interpreted as `ErrorKind` enum.
+3. **`catch:`** — Outcome interpreted as `ErrorKind`-Enum.
 4. No Match → Run failed with `StatusRecord(FAILED, reason="no transition for outcome '<x>'")`.
 
 ### 4.2 ErrorKind Vocabulary
@@ -440,11 +555,11 @@ Seven categories that `catch:` can understand:
 | Kind | When |
 |---|---|
 | `technical_error` | Tool/API/Shell infra broken (IOException, 5xx, …). |
-| `business_error` | Expected business error (exit !=0, Validation fail). |
+| `business_error` | Expected business error (exit !=0, Validation Fail). |
 | `agent_error` | LLM produced invalid output (Jeltz `schema_violation`). |
 | `timeout` | Task timeout or Gate timeout. |
 | `permission_error` | Tool not allowed for this Workflow/Caller. |
-| `human_rejected` | Alias for gate-`rejected` for uniform catching. |
+| `human_rejected` | Alias for gate-`rejected` if uniform catching is desired. |
 | `cancelled` | Workflow stopped by `cancel`/Bounds exhaustion. |
 
 ### 4.3 Retry Preempts Resolution
@@ -468,9 +583,9 @@ Order in `handleCompletion`:
 1. `TaskResultRecord` writes (idempotent).
 2. `VarRecord` for `storeAs:`.
 3. Terminal special case (StatusRecord+ResultRecord if `type: terminal`).
-4. **Retry Check**: if Outcome matches `retry.on:` and `retryCount+1 < maxAttempts` → re-enqueue in the same State with `retryCount+1` and `backoffSeconds`. Catch is skipped.
-5. **Bounds Check** (§9).
-6. Transition Resolver (on → catch → fail).
+4. **Retry check**: if Outcome matches `retry.on:` and `retryCount+1 < maxAttempts` → re-enqueue in the same State with `retryCount+1` and `backoffSeconds`. Catch is skipped.
+5. **Bounds check** (§9).
+6. Transition resolver (on → catch → fail).
 
 `maxAttempts` counts **including** the first attempt. `maxAttempts: 3` = original + 2 retries.
 
@@ -499,8 +614,8 @@ handleCompletion (on the Project Lane):
   TaskResultRecord (idempotent appendIfAbsent)
   VarRecord for storeAs
   Terminal special case OR:
-    Retry Check → re-enqueue same state
-    Bounds Check → fail run
+    Retry check → re-enqueue same state
+    Bounds check → fail run
     Transition resolve → enqueue next state
   ↓
   ... until Terminal State
@@ -530,7 +645,7 @@ The Resolver reads directly from Mongo for each `start()`. There is **no** refre
 
 ## 7. Frozen Snapshot
 
-At `start()`, the Service copies the entire YAML body into `StartRecord.definitionYaml`. Each subsequent Task execution re-parses from this snapshot.
+At `start()`, the Service copies the entire YAML body into `StartRecord.definitionYaml`. Every subsequent Task execution re-parses from this snapshot.
 
 **Consequences:**
 
@@ -549,13 +664,18 @@ At `start()`, the Service copies the entire YAML body into `StartRecord.definiti
 # Tool Schema
 name: workflow_start
 params:
-  name:   { type: string }
+  name:   { type: string, optional }   # via the Cascade
+  path:   { type: string, optional }   # exactly this document (§8.7)
   params: { type: object, optional }
 ```
 
-Not in the Recipe Pool by default. Engines that are allowed to start Workflows (typically Marvin/Vogon, not Arthur-Chat) include it in `allowedToolsAdd`.
+Exactly one of `name` / `path` — both together is an error, none also. The schema does not state this (`required: []`) because an `anyOf` of models is poorly readable; `invoke()` enforces it with a clear message. A `name` that looks like a path (slash or `.yaml`/`.yml` ending) is read as a path instead of being rejected — the value already indicates how it wants to be resolved, and the alternative an Agent would otherwise resort to is copying the file.
 
-Return value: `{ workflowRunId, workflowName }`.
+Not in the Recipe pool by default. Engines that should be allowed to start Workflows (typically Marvin/Vogon, not Arthur-Chat) include it in `allowedToolsAdd`.
+
+Return value: `{ workflowRunId, workflowName }`, for path-start additionally `workflowPath`. `workflowName` is then the file stem.
+
+The Run is **always headless** (`MagratheaRunBinding.headless()`) — even if the caller is in a Session. Those waiting for the result spawn the `vogon` Recipe instead (§13a).
 
 ### 8.2 REST
 
@@ -571,7 +691,7 @@ GET  /brain/{tenant}/project/{project}/workflows/runs?workflow=<name>
   Reply: List<MagratheaProcessDto>, newest first, max 100
 ```
 
-`GET /runs/{runId}` performs a Tenant/Project cross-check and returns 404 (not 403) if the Run belongs to a different Scope — existence is not leaked.
+`GET /runs/{runId}` performs Tenant/Project cross-check and returns 404 (not 403) if the Run belongs to another Scope — existence is not leaked.
 
 ### 8.3 WebSocket
 
@@ -584,7 +704,7 @@ brain → client: { type: "workflow-start", data: { workflowRunId, workflowName 
 
 ### 8.4 Scheduler Trigger
 
-A Scheduler Doc (`_vance/scheduler/<name>.yaml`) can carry a `workflow:` field instead of `recipe:` — see [scheduler](scheduler.md) §4.2. On a Cron tick (or one-shot `at:`), the `UrsaSchedulerService` calls `MagratheaWorkflowService.start(tenantId, projectId, workflowName, params, runAs)`. The Scheduler Event Log receives the `workflowRunId` as a payload field, so the Web UI can reconstruct the connection between the Scheduler tick and the Workflow Run.
+A Scheduler Doc (`_vance/scheduler/<name>.yaml`) can carry a `workflow:` field instead of `recipe:` — see [scheduler](scheduler.md) §4.2. On a Cron tick (or one-shot `at:`), the `UrsaSchedulerService` calls `MagratheaWorkflowService.start(tenantId, projectId, workflowName, params, runAs)`. The Scheduler Event Log receives the `workflowRunId` as a payload field, so the Web UI can reconstruct the connection between Scheduler tick and Workflow Run.
 
 ```yaml
 # _vance/scheduler/daily-audit.yaml
@@ -616,13 +736,13 @@ log.info("started workflow", { runId });
 { "kind": "workflow.start", "name": "pr-review", "params": { "pr_url": "..." } }
 ```
 
-The UrsaHookDispatcher pins `tenantId`/`projectId` from the Ursahook Scope — scripts cannot spawn cross-tenant or cross-project. `startedBy` is set to `"hook:<hookName>"` so that the Workflow Run in the Journal can be uniquely attributed to the triggering Ursahook.
+The UrsaHookDispatcher pins `tenantId`/`projectId` from the Ursahook Scope — scripts cannot spawn cross-tenant or cross-project. `startedBy` is set to `"hook:<hookName>"` so the Workflow Run can be uniquely attributed to the triggering Ursahook in the Journal.
 
 If Magrathea is not active (`vance.services.magrathea=false`), `workflows.start()` returns `null` and logs WARN — the script decides how to react.
 
 ### 8.6 Event Trigger (External, REST)
 
-Events are the external, REST-accessible trigger path — `GET|POST /brain/{tenant}/event/{project}/{event}`, JWT-free, optionally Bearer-authenticated. An Event Doc carries only `workflow:` name + Auth Config + static params; a POST body is passed to the Workflow under `params.payload`. See [events](events.md).
+Events are the external, REST-accessible trigger path — `GET|POST /brain/{tenant}/event/{project}/{event}`, JWT-free, optionally Bearer-authenticated. An Event Doc carries only `workflow:` name + Auth Config + static params; a POST body is passed through to the Workflow under `params.payload`. See [events](events.md).
 
 ```yaml
 # _vance/events/github-pr.yaml
@@ -633,11 +753,141 @@ auth:
   tokenSetting: events.github.token
 ```
 
-Events are explicitly without rate limits, signature validation, or replay protection — operator responsibility, or via a dedicated provider receiver before the Brain.
+Events are explicitly without rate limit, signature validation, or replay protection — operator responsibility, or via a dedicated provider receiver before the Brain.
 
-### 8.7 Planned (Outside v1)
+### 8.7 Path-Based Start (Cortex "Start")
 
-- **Provider-specific Webhook Receivers** (GitHub `X-Hub-Signature-256`, Stripe signature, …) with built-in signature verification, pre-positioned before the Event Endpoint.
+```
+POST /brain/{tenant}/project/{project}/workflows/start-document
+  Body: { path, params?, startedBy? }
+  Reply: { workflowRunId, workflowName }
+```
+
+Starts the document **at this path**, instead of resolving a name via the Cascade. This is the
+path taken by the Flow view's start button (§13): the user looks at a definition and means
+*this one*, regardless of its location.
+
+The location was never a condition for execution — each Task re-parses the frozen YAML from the
+`StartRecord`, and the Cascade prefix never appears outside the Loader. Only the expression for it
+was missing.
+
+**Same-project by construction:** the project is in the URL path, the document is resolved within it —
+a cross-project start cannot be expressed via this route. Authorization is the same as for
+name-based start (`Project WRITE`).
+
+**What lands in the Journal:** `workflowName` is the file stem (so Runs continue to group in listings),
+additionally `StartRecord.sourcePath` holds the full path. As soon as a Run can start anywhere, the
+name no longer uniquely identifies the source — two `helloworld.yaml` in different folders have the
+same name. For name-based starts, `sourcePath` remains empty.
+
+**No Kind enforcement:** the parser is the gate, not the `$meta` header. If `kind: vance-workflow`
+were required, existing definitions without a header could no longer be started from Cortex, while the
+name-based path takes them without complaint. The Kind decides who *offers* the button (§2.5), not
+who is allowed to run.
+
+#### 8.7a Via the Tool, the Location is a Condition After All
+
+For `workflow_start(path=…)` — and **only** there, the REST route above remains unchanged — the
+document must either be located under `_vance/workflows/` **or** carry `$meta.privileged: true`.
+`WorkflowStartTool.requireAuthoredPlan` checks this before starting; otherwise, a `ToolException`
+that names both escape routes.
+
+The reason is the difference between the two callers. At the REST route, a **human** with `Project WRITE`
+is asking, and there the location was never a condition. At the Tool, an **Agent** is asking — and a
+plan is not an inert file: `shell_task` runs via the `ExecManager`, `tool_task` calls the
+Dispatcher directly, neither of them passes the Recipe's Tool filter. An Agent allowed to write
+`documents/foo.yaml` (any WRITER is allowed to) would have thereby built a way around the exact
+Tool set that its Recipe denied it — a `doc_write`, then a `workflow_start`.
+
+The two allowed locations are therefore those that an Agent cannot create itself: the
+`_vance/`-prefix is reserved (ADMIN, R4), and setting `$meta.privileged` is also ADMIN
+(`DocumentService.enforcePrivilegedAdmin`) — the same word the tree already uses for "this document
+may execute on behalf of others" (Ursa's `runAs`-gate). The name-based path always had this
+property for free; only the path parameter lost it.
+
+### 8.8 From a JavaScript Script — `vance.workflow`
+
+```js
+const run = vance.workflow.start({
+    path: "workflows/helloworld.yaml",   // OR: name: "release"
+    params: { ticket: vance.params.ticket }
+});
+run.workflowRunId;
+
+const s = vance.workflow.status(run.workflowRunId);   // null if unknown
+s.status;         // "RUNNING" | "WAITING" | "DONE" | …
+s.currentState;   // current State name
+s.vars.version;   // materialized variables
+
+vance.workflow.current;   // null — except in a script_task, see below
+```
+
+`start(...)` is a thin wrapper over `vance.tools.call("workflow_start", …)` — just like
+`vance.process.spawn` over `process_spawn`. The call therefore goes through the same `ToolDispatcher`, and
+thus Allow Set, Server Tool Cascade, quotas, and the trigger-scoped Spawn lock apply unchanged.
+A script cannot start anything via this path that the executing Process could not also start in the
+LLM Tool loop. Bypassing the Dispatcher would be more convenient and would hand over precisely the
+one capability that a Scheduler script should be denied.
+
+`status(...)` on the other hand reads directly the Journal projection (`MagratheaStateProjector`) — there is
+deliberately **no** `workflow_status` Tool. The Manual `plans` explicitly tells Agents *not* to poll a Run,
+and a Tool is precisely the invitation to do so; a script that started itself and needs the judgment
+is a different case than a model that wants to check. If Magrathea is missing on this Brain, `status`
+throws a named error instead of silently returning `null`. A Run from a foreign Tenant/Project reads
+as unknown (`null`) — the same form as the REST route, so existence does not leak across the Scope boundary.
+
+**A snapshot, no waiting.** A script runs straight through and ends; it cannot block on a Run.
+If a step needs to wait for another plan, that is a `workflow_task` (§3.7) in the
+surrounding plan.
+
+**Where `start` works is decided by the Scope level** of the script run, not the caller:
+`workflow_start` carries `@SpawnTool`, and in `TRIGGER_SCOPED` runs, Spawn Tools are strictly rejected
+(`trigger-actions.md` §8).
+
+| Script Context | Scope | `workflow_start` |
+|---|---|---|
+| Cortex-/Hactar-Run (`ExecutingPhase`) | `PROCESS_SCOPED` | yes |
+| `script_task` in a Workflow | `PROCESS_SCOPED` (`TriggerKind.WORKFLOW`) | yes |
+| Damogran-`js`-Task, Skill Script, `execute_javascript` | `PROCESS_SCOPED` (`TriggerKind.TOOL`) | yes |
+| Scheduler-, Hook-, Event-Trigger Script | `TRIGGER_SCOPED` | **no** — `ScriptHostException` |
+| Completion Guard Script | `PROCESS_SCOPED`, but Supervisor Tool Set | only with `allowTools: true` |
+
+Additionally, `vance.services.magrathea=true` must be set (otherwise the Tool Bean does not exist) and
+`workflow_start` must be in the effective Allow Set — an empty Allow Set means unrestricted, an
+`@allowTools`-header can only narrow (`script-engine.md` §3.5.6). The fact that the Tool is `deferred()`
+does not matter: the direct call activates it. `status` and `current` are **not** affected by the Spawn lock —
+they do not start anything.
+
+#### 8.8.1 `vance.workflow.current` — The Own Run in `script_task`
+
+In a `script_task`, `current` is populated, everywhere else `null`:
+
+```js
+const run = vance.workflow.current;
+if (run) {
+    run.runId;         // workflowRunId
+    run.workflowName;  // Definition name (file stem for path-start)
+    run.state;         // Name of the running State — i.e., this Task
+    run.taskId;        // Line in magrathea_tasks
+    run.startedBy;     // null for headless
+    run.params.version;  // Caller parameters of the Run
+    run.vars.sha;        // variables written so far via storeAs
+}
+```
+
+Until then, a Task only saw what the Plan author substituted into it via `params:` with `${state.X}`/`${params.X}` —
+a forgotten variable resolved to an empty string and appeared as bad data, not an error.
+`current` closes this on the **read** side.
+
+**There is no setter, and that is intentional.** Variables are a projection of the Journal, and
+`MagratheaTaskContext` formulates the rule on which the subsystem rests: Type Executors do not touch
+the Journal — the `MagratheaTaskExecutor` derives every persistent effect from the
+returned `TaskOutcome`. An out-of-band write from a script would require its own
+Record type and would weaken replayability. The write path remains return value + `storeAs:` (§3.2).
+
+### 8.9 Planned (Outside v1)
+
+- **Provider-specific Webhook Receivers** (GitHub `X-Hub-Signature-256`, Stripe signature, …) with built-in signature verification, pre-pended before the Event endpoint.
 - **Async/SSE response** for Events that want to wait for Workflow completion.
 
 ---
@@ -651,7 +901,9 @@ bounds:
   maxTaskSpawns:       100           # absolute cap including retries
 ```
 
-The Bounds Check runs **after each Task completion** and **before** the next enqueue. If a Bound is exceeded, the Service writes `StatusRecord(FAILED, reason="bounds exhausted: …")` and terminates the Run. Bounds do **not** route via `catch:` — they are a hard stop.
+The Bounds check runs **after each Task completion** and **before** the next enqueue. If a Bound is exceeded, the Service writes `StatusRecord(FAILED, reason="bounds exhausted: …")` and terminates the Run. Bounds do **not** route via `catch:` — they are a hard stop.
+
+> **Bounds are not a deadlock protection.** They are only evaluated when something completes — a Run in which nothing completes never reaches its `maxWallclockSeconds`. Deadlock is addressed by the deadlines and watchdog from §12a, which come from the scanner instead of the completion path.
 
 | Bound | What it checks |
 |---|---|
@@ -668,7 +920,7 @@ allowed = tenant.allowedTools  ∩  project.allowedTools  ∩  workflow.allowedT
 denied  = tenant.denied  ∪  project.denied  (overrides any allow)
 ```
 
-Three layers, AND-combined. Workflow definitions can only **narrow** the Project Pool, never expand it. If no `allowedTools:` is declared, the default pool is used without side effects (`web_search`, `doc_read`, `doc_list`, `inbox_read`).
+Three layers, AND-combined. Workflow definitions can only **narrow** the Project pool, never expand it. Those who do not declare `allowedTools:` get the default pool without side effects (`web_search`, `doc_read`, `doc_list`, `inbox_read`).
 
 Tool calls in `tool_task` and indirectly from `agent_task` sub-Engines are checked against this pool.
 
@@ -676,11 +928,11 @@ Tool calls in `tool_task` and indirectly from `agent_task` sub-Engines are check
 
 ## 11. Pod Lane Serialization
 
-A maximum of **one** `ProjectLane` runs simultaneously per Project — a single-thread executor per `(projectId)`. Each Task execution, each completion processing, and each transition resolution runs on this Lane. Race protection for the variable map and the Task queue comes from Lane serialization.
+A maximum of **one** `ProjectLane` runs simultaneously per Project — a single-thread Executor per `(projectId)`. Every Task execution, every completion processing, and every transition resolution runs on this Lane. Race protection for the variable map and the Task queue comes from Lane serialization.
 
 Tasks are claimed cross-pod via Mongo optimistic locking (CAS on `version`). A `TaskClaimer` runs per Pod (every 2s) that claims `PENDING` Tasks and throws them into the local ProjectLane. If a Pod dies, the next claim attempt by another Pod takes over (see §12).
 
-Within-Run serialization: for each `workflowRunId`, a maximum of one Task is in the queue at any time, because the next Task is only enqueued upon completion of the current one.
+Within-Run serialization: for each `workflowRunId`, at most one Task is in the queue at any time, because the next Task is only enqueued upon completion of the current one.
 
 ---
 
@@ -688,10 +940,54 @@ Within-Run serialization: for each `workflowRunId`, a maximum of one Task is in 
 
 Pod crash resilience:
 
-- **WAITING_*-Tasks** (`agent_task`/`gate_task`/`timer_task`/`workflow_task`) normally **do not** need reclaim — their completion listeners fire independently of the Pod. A 7-day Gate on a dead Pod is forwarded by the Inbox Listener on another Pod. **Exception `WAITING_SUBPROCESS`:** if the in-memory completion event is lost during a Pod crash, the Task would become permanently stuck — a recovery scanner (`ReclaimScanner.recoverLostSubprocessCompletions`, after a 5-minute grace period) reconciles such Tasks against the persisted ThinkProcess status.
-- **Sync-Tasks** (`condition_task`/`tool_task`/`shell_task`/`script_task`/`terminal`) with `runStatus = null` can become stale if the Pod dies in the middle of execution. The `ReclaimScanner` (every 60s, per Pod) finds `CLAIMED` Tasks with `claimedAt < now - 5min` and re-enqueues them as `PENDING` (Optimistic-CAS).
-- **Heartbeat** for long-running Sync Executors: the Dispatcher (`MagratheaTaskExecutor`) automatically pings `touchHeartbeat(taskId)` every 60s while a synchronous Type Executor is running — no Executor calls this itself. The Scanner respects `heartbeatAt`, so a Task running longer than the Reclaim Grace is not falsely executed twice; a crash stops the Heartbeat, so a truly dead Task will still become stale.
+- **WAITING_*-Tasks** (`agent_task`/`gate_task`/`timer_task`/`workflow_task`) normally **do not** need reclaim — their completion listeners fire independently of the Pod. A 7-day Gate on a dead Pod is carried forward by the Inbox Listener on another Pod. **Exception `WAITING_SUBPROCESS`:** if the in-memory completion event is lost during a Pod crash, the Task would permanently deadlock — a recovery scanner (`ReclaimScanner.recoverLostSubprocessCompletions`, after a 5-minute grace period) reconciles such Tasks against the persisted ThinkProcess status.
+- **Sync-Tasks** (`condition_task`/`tool_task`/`shell_task`/`script_task`/`terminal`) with `runStatus = null` can become stale if the Pod dies in the middle of execution. The `ReclaimScanner` (every 60s, per Pod) finds `CLAIMED` Tasks with `claimedAt < now - 5min` and re-queues them as `PENDING` (Optimistic-CAS).
+- **Heartbeat** for long-running Sync Executors: the Dispatcher (`MagratheaTaskExecutor`) automatically pings `touchHeartbeat(taskId)` every 60s while a synchronous Type Executor is running — no Executor calls this itself. The scanner respects `heartbeatAt`, so a Task running longer than the reclaim grace is not falsely executed twice; a crash stops the Heartbeat, so a truly dead Task will still become stale.
 - **Exhausted attempts**: after `maxClaimAttempts` (default 3), the Task fails terminally with `outcome=technical_error` — the `catch:` block routes if declared.
+
+---
+
+## 12a. Stagnation — The Two Nets
+
+§12 addresses **named** errors: the Pod died, the completion event was lost. However, the list of such errors is not finite — a defect in the Type Executor, a deadlocked Lane, a Timer that could not be inserted, a `catch:` that routes back into the same deadlock. Each leaves a Run that is alive but not moving, and each is a different bug. A net that only catches when the cause can be named will not catch the next cause.
+
+Therefore, two cause-blind barriers that only ask *how long*:
+
+### 12a.1 Default Deadline per Task Type (Recoverable)
+
+A **missing** `timeoutSeconds:` does not mean "no deadline". The three types that hand control outwards — `agent_task`, `gate_task`, `workflow_task` — receive the configured type-default deadline without declaration:
+
+| Property | Default | Waits for |
+|---|---|---|
+| `vance.magrathea.default-agent-timeout` | `2h` | a ThinkProcess |
+| `vance.magrathea.default-gate-timeout` | `7d` | a human |
+| `vance.magrathea.default-sub-workflow-timeout` | `24h` | a Sub-Run |
+
+The deadlines differ by orders of magnitude because the waiting party does. A declared `timeoutSeconds:` always wins — **even 0**, which is precisely for saying "this one is really allowed to wait forever".
+
+An expired Timer is **recoverable**: it carries `outcome: timeout` into the State's `on:`/`catch:` routing, so the Workflow can react instead of simply dying.
+
+### 12a.2 Watchdog (Terminal)
+
+Behind this is the `MagratheaWatchdogScanner` (`vance.magrathea.watchdog-interval`, default hourly): a Task that sits in a non-terminal status for longer than `vance.magrathea.stall-ceiling` (default `14d`) means its Run is stalled — no matter why. The Run is `FAILED` with the same handling as a stop (Agents closed, Gates discarded, Sub-Runs stopped) and the reason `watchdog: no progress for …` in the `StatusRecord`.
+
+The Ceiling is deliberately far beyond the type deadlines: they should take effect first. Reaching the Watchdog means that the net above it has also failed — therefore its judgment is terminal and not recoverable.
+
+Tick and Ceiling are two different questions: the tick decides how **late** a judgment may be, not when it is due. Compared to 14 days, an hour's delay is nothing — a run that has been stalled for two weeks is no more urgent because it has been stalled for two weeks and five minutes.
+
+All five values are available as defaults in `application.yml` under `vance.magrathea:`.
+
+`HELD`-Tasks are excluded: a paused Run is intentionally stalled.
+
+**Also excluded is a State with declared `timeoutSeconds: 0`** — for the same reason. 0 is the only way an author says "this one is really allowed to wait forever" (§12a.1); without this exception, the two nets would contradict each other, and the Watchdog would win: an intentionally open Gate would be terminated after the Ceiling with the reason "no progress", thus reported as a defect, even though it was the written intention. For this, the scan reads the frozen plan per candidate (one Journal read plus one YAML parse, hourly, maximum 64 lines). A plan that **cannot** be parsed is **not** considered excluded: an unreadable Run document is precisely the kind of defect this net is for.
+
+**Master-only.** The Watchdog runs — unlike Claimer and Reclaim Scanner — on **one** Pod. The other two may run pod-locally because each of their steps is a Mongo CAS, and a race simply produces a winner. Watchdog handling, however, is a chain of side effects without compare-and-set: closing processes, discarding Inbox Items, stopping Sub-Runs, appending a terminal Record. Two Pods simultaneously would handle the same Run twice and journal two terminal Records. It therefore takes the Master Lease like the other cluster-wide sweeps (`ClusterCleanupTick` & Co.); without `ClusterMasterService` (feature off ⇒ single-Pod), it runs unconditionally.
+
+Not Project Home Pod: Magrathea has no Project Pod affinity — Tasks are claimed cross-pod via CAS, the `ProjectLane` only serializes pod-locally. A Home Pod assignment just for the Watchdog would be a concept the subsystem has nowhere else.
+
+`FAILED` instead of `TERMINATED` is not a cosmetic difference. A stop is a decision someone made; a stagnation is a defect. A Run list that shows both equally hides precisely what needs to be examined.
+
+Setting any of these values to null disables the respective net.
 
 ---
 
@@ -700,20 +996,43 @@ Pod crash resilience:
 - **Listing**: `GET /workflows/runs` returns a MagratheaProcessDto list, newest first.
 - **Detail**: `GET /workflows/runs/{runId}` provides status, currentState, vars, params, result, timestamps.
 - **Workflow YAML Editor**: runs via the generic Document Editor (path `_vance/workflows/`).
+- **Flow View**: a document with `kind: vance-workflow` (§2.5) gets a View tab in Cortex that draws the State machine as a diagram (`WorkflowFlowView`, VueFlow + Dagre auto-layout, Top-Down or Left-Right). Read-only and purely derived: there are no stored node positions, editing is done in the Edit tab on the YAML. Nodes carry Task type, start marker, retry marker, and the type-specific core information (Recipe / Tool / Command / Duration / …); edges are distinguished by origin — `on:` solid, `catch:` dashed-warm, `condition:` branches in accent color. Structural problems that the image can show (transition to an undeclared State, unknown Task type, `start` without a target) appear as a banner above the canvas plus ghost nodes — the binding check remains server-side.
 
-Cancel, Event Stream, and Live Updates are v2 — the Snapshot Endpoint is sufficient for the v1 "what's running now?" view and is inexpensive (one Journal read).
+Cancel, Event Stream, and Live Updates are v2 — the snapshot endpoint is sufficient for the v1 "what's running now?" view and is inexpensive (one Journal read).
 
 ---
 
+## 13a. Process-Bound Operation (Vogon)
+
+The same Runner, the same grammar, a different start: if a Run is started by a **ThinkProcess** instead of a Scheduler, Event, or Tool, it belongs to that Session and that Process. This is the [Vogon Engine](vogon-engine.md).
+
+What depends on it:
+
+| | headless | process-bound |
+|---|---|---|
+| Gate | Inbox Item | Inbox Item **plus** `ProcessEvent(BLOCKED)` to the Owner; answer also as passed-through chat text |
+| Result | `ResultRecord` in the Journal | additionally `REPLY` to the Owner Process |
+| Progress | silent | a status per State entry (except `condition_task`/`terminal` — control flow, not progress) |
+| Session of the `agent_task` workers | `_magrathea_<runId>` (system) | the Owner's Session |
+| `inheritContext:` | not available | available |
+
+**Capabilities.** A State can declare that it *cannot* run without a specific binding (`MagratheaTypeExecutor.requires`) — today, exactly one case: `inheritContext:` requires an Owner Process. This is checked **at start**, across all States, not just reachable ones: a plan that runs or dies depending on the path is worse than one that is rejected while someone is looking.
+
+To handle the case, declare `catch: { capability_missing: <state> }` — then the start is allowed, and the impossibility is an Outcome that the author has planned for.
+
+Capabilities are frozen into the `StartRecord` at start. A later deleted Session must not retroactively make a running plan illegal.
+
+**Visibility.** A bound Run belongs to a human's Session; the `RunController`'s project check does not cover this. `MagratheaRunSource.visibleTo` therefore only allows it for the Session Owner or a Project Admin, and attaches a Session link to the detail view.
+
 ## 14. Implementation Notes
 
-Java implementation under `de.mhus.vance.brain.magrathea.*` (Service Layer) and `de.mhus.vance.shared.magrathea.*` (Persistence). The name **Magrathea** (Adams universe: a computer of sub-computers that solves tasks by composition) is the internal naming; user-facing, all surfaces remain named "Workflow".
+Java implementation under `de.mhus.vance.brain.magrathea.*` (Service Layer) and `de.mhus.vance.shared.magrathea.*` (Persistence). The designation **Magrathea** (Adams universe: a computer made of sub-computers that solves tasks by composition) is the internal naming; user-facing, all surfaces remain named "Workflow".
 
 Mongo Collections:
 
 | Collection | Content |
 |---|---|
-| `magrathea_journal` | Append-only Audit Records per Run. Indexed on `(tenantId, projectId, workflowRunId, createdAt)`, plus partial-unique index on `(tenantId, projectId, workflowRunId, taskId, type=TaskResultRecord)` for idempotent Completion append. Reads are consistently tenant/project-scoped (no longer purely via `workflowRunId`). |
+| `magrathea_journal` | Append-only audit records per Run. Indexed on `(tenantId, projectId, workflowRunId, createdAt)`, plus partial-unique index on `(tenantId, projectId, workflowRunId, taskId, type=TaskResultRecord)` for idempotent completion append. Reads are consistently tenant/project-scoped (no longer purely via `workflowRunId`). |
 | `magrathea_tasks` | Pending/Claimed/Done Tasks. Indexed on `(projectId, status, nextAttemptAt)` for Claim Scan, `(claimedBy, claimedAt)` for Reclaim. |
 | `magrathea_timers` | Pending Timers with `linkedTaskId` + `firedOutcome`. Indexed on `(firedAt, fireAt)` for Scanner, unique on `linkedTaskId`. |
 
@@ -723,10 +1042,10 @@ Full implementation details: `planning/workflow-service.md`.
 
 ---
 
-## 15. What v1 DOES NOT do
+## 15. What v1 Does NOT Do
 
 - **External Webhooks.** External HTTP calls would require a Gateway module with Auth/Rate Limit/Tenant Routing — the Event subsystem for this does not yet exist.
-- **Cross-Project Workflows.** A Workflow lives within the scope of a Project. Cross-Project is only possible via `workflow_start` Tool calls with explicit cross-project routing.
+- **Cross-Project Workflows.** A Workflow lives within the scope of a Project. Cross-Project is only possible via `workflow_start` Tool calls with explicit cross-Project routing.
 - **Inline Recipe Definitions** in YAML. Tasks only reference Recipe names.
 - **Parallel Branches** (Fan-Out / Fan-In). Currently only sequential transitions. For parallelism: multiple `workflow_task` sub-spawns + manual aggregation.
 - **Versioned Run Migration.** If a Workflow definition is changed, active Runs continue on their Frozen Snapshot.
@@ -738,9 +1057,9 @@ Full implementation details: `planning/workflow-service.md`.
 
 ## 16. Open Items
 
-- **Cross-Project Global Locks.** Variables live per Run; a "only one deploy at a time" lock across multiple Workflows requires a separate Project-Level Lock Collection.
-- **Cross-Pod ThinkProcess Termination.** Currently, the ThinkProcess must live on the same Pod as its parent-Workflow (Project Lane affinity). If ThinkProcesses are later deployed cross-pod, the `ThinkProcessCompletionListener` needs a Mongo-mediated sync path.
-- **`condition_task` Fast-Path.** v1 writes a `TaskStartedRecord` + `TaskResultRecord` for every 1-µs eval. A hot path could combine both records into a single Mongo write.
+- **Cross-Project Global Locks.** Variables live per Run; a "only one deploy at a time" lock across multiple Workflows requires a separate Project-level Lock Collection.
+- **Cross-Pod ThinkProcess Termination.** Currently, the ThinkProcess must live on the same Pod as its parent Workflow (Project Lane affinity). If ThinkProcesses are later deployed cross-pod, the `ThinkProcessCompletionListener` needs a Mongo-mediated sync path.
+- **`condition_task` Fast-Path.** v1 writes a `TaskStartedRecord` + `TaskResultRecord` for every 1-µs eval. A hot path could combine both Records into a single Mongo write.
 - **Auto-Default for `criticality: LOW` Gates.** Vogon §2.3 has the pattern; Magrathea v1 does not implement it.
 - **Listing Pagination.** `GET /runs` is capped at 100 results. True pagination will come when a Project regularly has many Runs.
 
@@ -748,6 +1067,6 @@ Full implementation details: `planning/workflow-service.md`.
 
 ## 17. Predecessor Concept (Historical)
 
-Before the Magrathea Workflow subsystem, there was another "Workflow" concept: **Templates for Marvin Task Trees** with `fixed:` nodes that the LLM was not allowed to restructure. This idea was absorbed into the Marvin Engine itself — see [marvin-engine](marvin-engine.md). The term "Workflow" has since belonged to the Magrathea State Machine subsystem.
+Before the Magrathea Workflow subsystem, there was another "Workflow" concept: **Templates for Marvin Task Trees** with `fixed:` nodes that the LLM was not allowed to restructure. This idea has been absorbed into the Marvin Engine itself — see [marvin-engine](marvin-engine.md). The term "Workflow" has since belonged to the Magrathea State Machine subsystem.
 
 `instructions/workflows.md` (design discussion from 2026-05-14) is the source of the Magrathea concept documented here.
