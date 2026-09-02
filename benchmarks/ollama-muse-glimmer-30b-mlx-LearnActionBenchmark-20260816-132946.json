@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T13:29:46.995717Z",
+  "completedAt" : "2026-08-16T13:33:32.391131Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call foreign_project_list] {}\n---\n[tool-call doc_grep_path] {\"caseInsensitive\":true,\"pathPrefix\":\"*\",\"pattern\":\"platform\"}\n---\n[tool-call doc_grep_path] {\"caseInsensitive\":true,\"pattern\":\"platfo…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 103573,
+      "tokensIn" : 816915,
+      "tokensOut" : 1066,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 816915
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User asked to remember team name and repo pattern\",\"scope\":\"fact\",\"content\":\"User's team is 'platform-core' and works on ms-* repositories.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 40719,
+      "tokensIn" : 39660,
+      "tokensOut" : 408,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39660
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\"type\":\"LEARN\",\"reason\":\"Persist user's formatting preference for future answers\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Always start answer with code block directly at beginning, no long intro…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 85030,
+      "tokensIn" : 40018,
+      "tokensOut" : 1253,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40018
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"type\":\"LEARN\",\"reason\":\"User explicitly requested a complete style replacement.\",\"scope\":\"persona\",\"mode\":\"replace\",\"content\":\"Communication style: concise bullet points only, no full sentences. Tec…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 26077,
+      "tokensIn" : 39973,
+      "tokensOut" : 385,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39973
+    }
+  } ]
+}

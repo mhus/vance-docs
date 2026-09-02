@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-08-16T02:07:02.714600Z",
+  "completedAt": "2026-08-16T02:18:07.987922Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversAmbiguousMetaphor",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": 0.7,
+      "effectiveScore": 0.7,
+      "reason": "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) \u2014 tools called: [doc_list, doc_find, arthur_action, doc_list_in_folder, doc_list_folders, doc_grep_path]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 8,
+        "elapsedMs": 31633,
+        "tokensIn": 398114,
+        "tokensOut": 932,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 398114
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversComposedUnknown",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model fired how_do_i tool \u2014 discovery reflex worked",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 20,
+        "elapsedMs": 133223,
+        "tokensIn": 1012033,
+        "tokensOut": 1112,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 1012033
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversInventedFeature",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model fired DISCOVER action \u2014 discovery reflex worked",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 66976,
+        "tokensIn": 249869,
+        "tokensOut": 845,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 249869
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversJargonRequest",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model fired DISCOVER action \u2014 discovery reflex worked",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 18545,
+        "tokensIn": 149379,
+        "tokensOut": 480,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 149379
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversUnknownTerm",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": 0.7,
+      "effectiveScore": 0.7,
+      "reason": "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) \u2014 tools called: [doc_find, file_read, file_list, arthur_action, file_find]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 357946,
+        "tokensIn": 298107,
+        "tokensOut": 1097,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 298107
+      }
+    }
+  ]
+}

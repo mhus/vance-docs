@@ -1,0 +1,193 @@
+{
+  "startedAt" : "2026-08-23T22:17:28.375678Z",
+  "completedAt" : "2026-08-23T22:24:59.304852Z",
+  "modelSlug" : "ollama-qwen3.6-35b__baseline",
+  "scoreModel" : "v2-graded",
+  "variant" : "baseline",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsCalendarCreateEvent",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'calendar_create_event' and explained the right alternative in prose; tools called: [arthur_action, doc_write] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-calendar_create_event",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "named it in prose"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 32780,
+      "tokensIn" : 121935,
+      "tokensOut" : 602,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 121935
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsDiagramTool",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'diagram_tool' and picked 'doc_write'; tools called: [file_read, doc_read, arthur_action, doc_getting_started, how_do_i, doc_write, doc_replace_lines] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-diagram_tool",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "called doc_write"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 40087,
+      "tokensIn" : 386675,
+      "tokensOut" : 2134,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 386675
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsDocSave",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'doc_save' and explained the right alternative in prose; tools called: [arthur_action] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-doc_save",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "named it in prose"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 28020,
+      "tokensIn" : 121608,
+      "tokensOut" : 216,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 121608
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsListAdd",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'list_add' and picked 'list_append'; tools called: [doc_edit, doc_read, arthur_action, list_get, doc_write, list_append] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-list_add",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "called list_append"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 39690,
+      "tokensIn" : 285996,
+      "tokensOut" : 545,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 285996
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsRecordsCreate",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'records_create' and explained the right alternative in prose; tools called: [invoke_tool, doc_list, arthur_action] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-records_create",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "named it in prose"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 37167,
+      "tokensIn" : 162664,
+      "tokensOut" : 556,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 162664
+    }
+  } ]
+}

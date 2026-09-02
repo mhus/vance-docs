@@ -1,0 +1,254 @@
+{
+  "startedAt" : "2026-08-16T11:32:04.530544Z",
+  "completedAt" : "2026-08-16T12:03:38.212595Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceAcronymExpansion",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "K8s expanded to Kubernetes in speakable text",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 21149,
+      "tokensIn" : 40124,
+      "tokensOut" : 243,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40124
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForCodePath",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "no long path/URL leaked into inline-code (voice-safe)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 78938,
+      "tokensIn" : 40144,
+      "tokensOut" : 264,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40144
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForLongList",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no new ASSISTANT chat-message appeared within 120s",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 155794,
+      "tokensIn" : 83759,
+      "tokensOut" : 851,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 83759
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForTable",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no new ASSISTANT chat-message appeared within 120s",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 84855,
+      "tokensIn" : 50907,
+      "tokensOut" : 454,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 50907
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceNotMisused",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "fence-not-misused (Paris in speakable); judge: The candidate directly and concisely answers the question.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 56370,
+      "tokensIn" : 40132,
+      "tokensOut" : 151,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40132
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceModeOffMidConversation",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=13 with markdown structure",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 585483,
+      "tokensIn" : 203258,
+      "tokensOut" : 883,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 203258
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceNumbersSpeakable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "no ISO date leaked into speakable text (numbers TTS-safe)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 38707,
+      "tokensIn" : 40143,
+      "tokensOut" : 526,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40143
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceQuestionEndsOpenly",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no new ASSISTANT chat-message appeared within 120s",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 83619,
+      "tokensIn" : 157733,
+      "tokensOut" : 1604,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 157733
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortBulletsAllowedInline",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "voice short-bullets (3 bullets); judge: The enumeration uses 'Eins, Zwei, Drei' instead of the more natural 'Erstens, zweitens, drittens'.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 46301,
+      "tokensIn" : 40135,
+      "tokensOut" : 281,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40135
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortProseReply",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no new ASSISTANT chat-message appeared within 120s",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 10,
+      "elapsedMs" : 132058,
+      "tokensIn" : 144153,
+      "tokensOut" : 1270,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 144153
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSpokenPartNoMarkdownLeak",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "speakable text has no markdown markers (1122 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 12,
+      "elapsedMs" : 228139,
+      "tokensIn" : 565272,
+      "tokensOut" : 1789,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 565272
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceCutWord",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no new ASSISTANT chat-message appeared within 120s",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 96252,
+      "tokensIn" : 106260,
+      "tokensOut" : 774,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 106260
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceHomophone",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "STT homophone tolerated, reply references Lissabon",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 43500,
+      "tokensIn" : 40135,
+      "tokensOut" : 487,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40135
+    }
+  } ]
+}

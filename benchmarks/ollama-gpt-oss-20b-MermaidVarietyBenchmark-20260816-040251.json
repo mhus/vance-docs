@@ -1,0 +1,178 @@
+{
+  "startedAt" : "2026-08-16T04:02:51.377355Z",
+  "completedAt" : "2026-08-16T04:40:50.100237Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsC4ContextDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=C4Context produced at benchmark/mermaid/c4-notifications.md (604 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 14,
+      "elapsedMs" : 214348,
+      "tokensIn" : 486928,
+      "tokensOut" : 14247,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 486928
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsErDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/er-shop.md has neither a ```mermaid fence nor a `source` field — content head: erDiagram\n  CUSTOMER ||--o{ ORDER : \"places\"\n  ORDER ||--o{ ORDERLINE : \"contains\"\n  ORDERLINE }o--|| PRODUCT : \"references\"\n",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 22,
+      "elapsedMs" : 445648,
+      "tokensIn" : 771212,
+      "tokensOut" : 29836,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 771212
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGanttDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=gantt produced at benchmark/mermaid/gantt-onboarding.md (392 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 283174,
+      "tokensIn" : 721125,
+      "tokensOut" : 18144,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 721125
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGitGraph",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/gitflow.md has neither a ```mermaid fence nor a `source` field — content head: gitGraph\n  commit\n  branch develop\n  commit\n  commit\n  checkout develop\n  commit\n  branch release/1.0\n  commit\n  merge feature/awesome\n  commit\n  checkout main\n  merge release/1.0\n  commit\n",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 400095,
+      "tokensIn" : 710671,
+      "tokensOut" : 26311,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 710671
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsJourneyDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=journey produced at benchmark/mermaid/journey-checkout.md (372 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 271144,
+      "tokensIn" : 714596,
+      "tokensOut" : 17212,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 714596
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsPieDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/pie-languages.md has neither a ```mermaid fence nor a `source` field — content head: pie:\n  title: Languages\n  Java: 40\n  Python: 25\n  TypeScript: 20\n  Go: 10\n  Rust: 5",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 275930,
+      "tokensIn" : 706623,
+      "tokensOut" : 17823,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 706623
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsSequenceDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=sequenceDiagram produced at benchmark/mermaid/sequence-oauth.md (638 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 219386,
+      "tokensIn" : 728687,
+      "tokensOut" : 13743,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 728687
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsStateDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/state-order.md has neither a ```mermaid fence nor a `source` field — content head: ---\ntitle: Order Lifecycle\nkind: diagram\n---\nstateDiagram-v2\n    [*] --> Created\n    Created --> Paid\n    Created --> Cancelled\n    Paid --> Shipped\n    Paid --> Cancelled\n    Shipped --> Delivered\n  …",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 25563,
+      "tokensIn" : 199921,
+      "tokensOut" : 1225,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 199921
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsTimelineDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/timeline-web.md has neither a ```mermaid fence nor a `source` field — content head: timeline\n    title Web History\n    1991::WWW\n    1995::JavaScript\n    2008::Chrome\n    2014::ES6\n    2020::WebAssembly stable\n",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 21,
+      "elapsedMs" : 292072,
+      "tokensIn" : 732151,
+      "tokensOut" : 18933,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 732151
+    }
+  } ]
+}

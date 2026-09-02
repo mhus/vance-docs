@@ -1,0 +1,488 @@
+{
+  "startedAt" : "2026-08-22T06:23:57.458122Z",
+  "completedAt" : "2026-08-22T07:01:41.529321Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceAcronymExpansion",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "K8s expanded to Kubernetes in speakable text — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "K8s expanded to Kubernetes in speakable text"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 20349,
+      "tokensIn" : 40969,
+      "tokensOut" : 225,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40969
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForCodePath",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "no long path/URL leaked into inline-code (voice-safe) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "no long path/URL leaked into inline-code (voice-safe)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 101256,
+      "tokensIn" : 41040,
+      "tokensOut" : 321,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 41040
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForLongList",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.25,
+    "effectiveScore" : 0.25,
+    "reason" : "no new ASSISTANT chat-message appeared within 300s — 25% — 1/3 checks · missed: assistant-reply, voice-discipline(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "no new ASSISTANT chat-message appeared within 300s"
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 16,
+      "elapsedMs" : 230465,
+      "tokensIn" : 232114,
+      "tokensOut" : 2493,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 232114
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForTable",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.25,
+    "effectiveScore" : 0.25,
+    "reason" : "no new ASSISTANT chat-message appeared within 300s — 25% — 1/3 checks · missed: assistant-reply, voice-discipline(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "no new ASSISTANT chat-message appeared within 300s"
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 24,
+      "elapsedMs" : 282716,
+      "tokensIn" : 888800,
+      "tokensOut" : 2789,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 888800
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceNotMisused",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "fence-not-misused (Paris in speakable); judge: The answer is stated directly and concisely. — 100% — 4/4 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "fence-not-misused (Paris in speakable)"
+    }, {
+      "name" : "style",
+      "kind" : "JUDGED",
+      "weight" : 3.0,
+      "earned" : 3.0,
+      "detail" : "The answer is stated directly and concisely."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 5842,
+      "tokensIn" : 40977,
+      "tokensOut" : 172,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40977
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceModeOffMidConversation",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "HttpTimeoutException: request timed out",
+    "artifacts" : [ ],
+    "checks" : [ ],
+    "usage" : {
+      "available" : false,
+      "roundTrips" : 0,
+      "elapsedMs" : 0,
+      "tokensIn" : 0,
+      "tokensOut" : 0,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 0
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceNumbersSpeakable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "no ISO date leaked into speakable text (numbers TTS-safe) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "no ISO date leaked into speakable text (numbers TTS-safe)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 14524,
+      "tokensIn" : 40988,
+      "tokensOut" : 478,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40988
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceQuestionEndsOpenly",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "voice reply ends without a clear turn signal (no question, open invitation, or decisive recommendation) — user is left guessing whether the model is done. tail: [source: https://en.wikipedia.org/wiki/Porto]\n\nWenn du magst, plane ich dir einen 3-Tage-Ablauf für die Stadt, die dir besser passt. — 50% — 2/3 checks · missed: voice-discipline",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "voice reply ends without a clear turn signal (no question, open invitation, or decisive recommendation) — user is left guessing whether the model is done. tail: [source: https://en.wikipedia.org/wiki/Porto]\n\nWenn du magst, plane ich dir einen 3-Tage-Ablauf für die Stadt, die dir besser passt."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 13,
+      "elapsedMs" : 228241,
+      "tokensIn" : 323873,
+      "tokensOut" : 2462,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 323873
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortBulletsAllowedInline",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.7857142857142857,
+    "effectiveScore" : 0.7857142857142857,
+    "reason" : "voice short-bullets (3 bullets); judge: The enumeration 'Eins, Zwei, Drei' is stilted and not the requested natural spoken form. — 79% — 3/4 checks · missed: style",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "voice short-bullets (3 bullets)"
+    }, {
+      "name" : "style",
+      "kind" : "JUDGED",
+      "weight" : 3.0,
+      "earned" : 1.5,
+      "detail" : "The enumeration 'Eins, Zwei, Drei' is stilted and not the requested natural spoken form."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 219111,
+      "tokensIn" : 106752,
+      "tokensOut" : 378,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 106752
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortProseReply",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.2857142857142857,
+    "effectiveScore" : 0.2857142857142857,
+    "reason" : "voice reply had 7 prose sentences (≤4 allowed); speakable head: Hier ist eine kurze deutschsprachige Übersicht der wichtigsten Sehenswürdigkeiten Lissabons:\n\nErstens: São Jorge Castle / Castelo de São Jorge – Mittelalterliche Festung auf einem Hügel über der Altst… — 29% — 2/4 checks · missed: voice-discipline, style(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "voice reply had 7 prose sentences (≤4 allowed); speakable head: Hier ist eine kurze deutschsprachige Übersicht der wichtigsten Sehenswürdigkeiten Lissabons:\n\nErstens: São Jorge Castle / Castelo de São Jorge – Mittelalterliche Festung auf einem Hügel über der Altst…"
+    }, {
+      "name" : "style",
+      "kind" : "JUDGED",
+      "weight" : 3.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 11,
+      "elapsedMs" : 134363,
+      "tokensIn" : 190839,
+      "tokensOut" : 2264,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 190839
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSpokenPartNoMarkdownLeak",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "speakable text has no markdown markers (1127 chars) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "speakable text has no markdown markers (1127 chars)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 13,
+      "elapsedMs" : 235537,
+      "tokensIn" : 631389,
+      "tokensOut" : 1677,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 631389
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceCutWord",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "STT cut-off word tolerated, reply references München — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "STT cut-off word tolerated, reply references München"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 185188,
+      "tokensIn" : 164704,
+      "tokensOut" : 465,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 164704
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceHomophone",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "STT homophone tolerated, reply references Lissabon — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "STT homophone tolerated, reply references Lissabon"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 25542,
+      "tokensIn" : 82079,
+      "tokensOut" : 786,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 82079
+    }
+  } ]
+}

@@ -1,0 +1,268 @@
+{
+  "startedAt": "2026-08-15T23:22:42.378185Z",
+  "completedAt": "2026-08-15T23:29:41.669481Z",
+  "modelSlug": "ollama-qwen3.6-35b__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceAcronymExpansion",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "K8s expanded to Kubernetes in speakable text",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 6570,
+        "tokensIn": 99971,
+        "tokensOut": 234,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 99971
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForCodePath",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "no long path/URL leaked into inline-code (voice-safe)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 5946,
+        "tokensIn": 99953,
+        "tokensOut": 121,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 99953
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForLongList",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no triple-backtick fence found \u2014 long list should sit inside a fence so TTS skips it. content head: Die folgenden zehn Restaurants liegen allesamt in Berlin-Mitte und decken die wichtigsten Stadtteile des Bezirks ab (Mitte proper, Prenzlauer Berg, Wedding, Moabit, Friedrichshain). Sie repr\u00e4sentieren eine Mischung aus Alltagsk\u00fcchen und bek\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 15173,
+        "tokensIn": 100289,
+        "tokensOut": 800,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 100289
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForTable",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "comparison routed into pipe-table",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 19,
+        "elapsedMs": 195728,
+        "tokensIn": 1418786,
+        "tokensOut": 3195,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 1418786
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceNotMisused",
+      "capability": "voice-style",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "fence-not-misused (Paris in speakable); judge: The answer is direct and concise, which is natural for a voice reply.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 5823,
+        "tokensIn": 150137,
+        "tokensOut": 128,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 150137
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceModeOffMidConversation",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=9 with markdown structure",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 64934,
+        "tokensIn": 199358,
+        "tokensOut": 960,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 199358
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceNumbersSpeakable",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "no ISO date leaked into speakable text (numbers TTS-safe)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 5489,
+        "tokensIn": 99946,
+        "tokensOut": 131,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 99946
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceQuestionEndsOpenly",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "last sentence closes the turn cleanly (question, invitation, or clear recommendation)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 14223,
+        "tokensIn": 150781,
+        "tokensOut": 718,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 150781
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceShortBulletsAllowedInline",
+      "capability": "voice-style",
+      "pass": true,
+      "score": 0.5,
+      "effectiveScore": 0.5,
+      "reason": "voice short-bullets (3 bullets); judge: The enumeration 'Eins, Zwei, Drei' is less natural in spoken form than the suggested 'Erstens, zweitens, drittens'.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 7748,
+        "tokensIn": 99999,
+        "tokensOut": 254,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 99999
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceShortProseReply",
+      "capability": "voice-style",
+      "pass": false,
+      "score": 0.5,
+      "effectiveScore": 0.5,
+      "reason": "voice short prose (1 sentences); judge: The response uses a robotic enumeration style that is unnatural for spoken language.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 9968,
+        "tokensIn": 100091,
+        "tokensOut": 457,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 100091
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSpokenPartNoMarkdownLeak",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "speakable text has no markdown markers (1171 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 50803,
+        "tokensIn": 100186,
+        "tokensOut": 678,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 100186
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSttToleranceCutWord",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "STT cut-off word tolerated, reply references M\u00fcnchen",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 15063,
+        "tokensIn": 309015,
+        "tokensOut": 398,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 309015
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSttToleranceHomophone",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "STT homophone tolerated, reply references Lissabon",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 5914,
+        "tokensIn": 99956,
+        "tokensOut": 172,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 99956
+      }
+    }
+  ]
+}

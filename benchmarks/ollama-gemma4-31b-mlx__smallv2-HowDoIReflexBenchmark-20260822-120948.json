@@ -1,0 +1,206 @@
+{
+  "startedAt" : "2026-08-22T12:09:48.353502Z",
+  "completedAt" : "2026-08-22T12:26:41.240832Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversAmbiguousMetaphor",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : 0.36363636363636365,
+    "effectiveScore" : 0.36363636363636365,
+    "reason" : "no discovery; model attempted tool(s): [arthur_action, doc_write] — likely proceeded as if it knew the unknown term — 36% — 2/4 checks · missed: discovery-fired, discovery-signalled",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 0.0,
+      "detail" : "no DISCOVER action and no how_do_i call"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0
+    }, {
+      "name" : "concrete-action-accepted",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "acted via [arthur_action, doc_write]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 120942,
+      "tokensIn" : 99464,
+      "tokensOut" : 312,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 99464
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversComposedUnknown",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired DISCOVER action — discovery reflex worked — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 2.5,
+      "detail" : "DISCOVER action"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 215589,
+      "tokensIn" : 118577,
+      "tokensOut" : 262,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118577
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversInventedFeature",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired DISCOVER action — discovery reflex worked — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 2.5,
+      "detail" : "DISCOVER action"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 37280,
+      "tokensIn" : 118656,
+      "tokensOut" : 291,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118656
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversJargonRequest",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired how_do_i tool — discovery reflex worked — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 2.5,
+      "detail" : "how_do_i tool"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "flagged the intent in prose"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 105551,
+      "tokensIn" : 62591,
+      "tokensOut" : 149,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 62591
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversUnknownTerm",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : 0.36363636363636365,
+    "effectiveScore" : 0.36363636363636365,
+    "reason" : "no discovery; model attempted tool(s): [arthur_action] — likely proceeded as if it knew the unknown term — 36% — 2/4 checks · missed: discovery-fired, discovery-signalled",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 0.0,
+      "detail" : "no DISCOVER action and no how_do_i call"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0
+    }, {
+      "name" : "concrete-action-accepted",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "acted via [arthur_action]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 17552,
+      "tokensIn" : 39035,
+      "tokensOut" : 73,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39035
+    }
+  } ]
+}

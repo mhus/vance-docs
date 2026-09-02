@@ -1,0 +1,229 @@
+{
+  "startedAt" : "2026-08-22T07:03:44.997212Z",
+  "completedAt" : "2026-08-22T07:05:08.684180Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersChartInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```chart fence, 317 chars; judge: All criteria were met. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-chart",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "All criteria were met."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 34103,
+      "tokensIn" : 83860,
+      "tokensOut" : 595,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 83860
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersDiagramInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mermaid fence, 191 chars; judge: The candidate provides a valid flowchart with all required nodes and connections. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-mermaid",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 4,
+      "want" : 4,
+      "detail" : "all 4 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "The candidate provides a valid flowchart with all required nodes and connections."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 6785,
+      "tokensIn" : 40528,
+      "tokensOut" : 263,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40528
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersGraphInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```graph fence, 232 chars; judge: The candidate correctly defines the four nodes and four directed edges as specified. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-graph",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 4,
+      "want" : 4,
+      "detail" : "all 4 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "The candidate correctly defines the four nodes and four directed edges as specified."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 71351,
+      "tokensIn" : 40532,
+      "tokensOut" : 399,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40532
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersMindmapInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mindmap fence, 137 chars; judge: All required branches and leaves are present in the correct structure. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-mindmap",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 12,
+      "want" : 12,
+      "detail" : "all 12 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "All required branches and leaves are present in the correct structure."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 20935,
+      "tokensIn" : 40546,
+      "tokensOut" : 305,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40546
+    }
+  } ]
+}

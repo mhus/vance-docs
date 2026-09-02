@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T12:05:33.129012Z",
+  "completedAt" : "2026-08-16T12:06:54.265340Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersChartInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```chart fence rendered (309 chars); judge: Candidate correctly provides all four requested data points in the specified chart format.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 37712,
+      "tokensIn" : 82170,
+      "tokensOut" : 814,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 82170
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersDiagramInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mermaid fence rendered (179 chars); judge: Candidate contains all required nodes and connections, with additional valid logic.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 7363,
+      "tokensIn" : 39683,
+      "tokensOut" : 256,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39683
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersGraphInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```graph fence rendered (232 chars); judge: Candidate correctly defines the four nodes and four directed edges.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 38953,
+      "tokensIn" : 39687,
+      "tokensOut" : 279,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39687
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersMindmapInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mindmap fence rendered (137 chars); judge: All required branches and leaves are present in the correct structure.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 16595,
+      "tokensIn" : 39701,
+      "tokensOut" : 238,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39701
+    }
+  } ]
+}

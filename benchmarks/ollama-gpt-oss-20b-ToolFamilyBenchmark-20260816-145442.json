@@ -1,0 +1,197 @@
+{
+  "startedAt" : "2026-08-16T14:54:42.245717Z",
+  "completedAt" : "2026-08-16T15:03:35.940795Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksCalendarFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'calendar_*' hit via: [calendar_create]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 20828,
+      "tokensIn" : 133102,
+      "tokensOut" : 1127,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 133102
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksDocFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'doc_*' hit via: [doc_write]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 7088,
+      "tokensIn" : 131615,
+      "tokensOut" : 419,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 131615
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksGraphFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'graph_*' was called within 30s; tools actually called: [doc_list, doc_read, arthur_action, project_list, doc_grep, doc_grep_path]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 62785,
+      "tokensIn" : 297566,
+      "tokensOut" : 2303,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 297566
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksHookFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'hook_*' was called within 30s; tools actually called: [invoke_tool, arthur_action, doc_write, doc_replace_lines]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 50173,
+      "tokensIn" : 198787,
+      "tokensOut" : 4033,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198787
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksListFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'list_*' hit via: [list_append]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 36881,
+      "tokensIn" : 164486,
+      "tokensOut" : 606,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 164486
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksRecordsFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'records_*' hit via: [records_add_column]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 33433,
+      "tokensIn" : 131873,
+      "tokensOut" : 442,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 131873
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSchedulerFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'scheduler_*' hit via: [scheduler_set]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 43274,
+      "tokensIn" : 198846,
+      "tokensOut" : 1136,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198846
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksScratchFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'scratchpad_*' was called within 30s; tools actually called: [arthur_action]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 5921,
+      "tokensIn" : 32668,
+      "tokensOut" : 478,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 32668
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSheetFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'sheet_*' hit via: [sheet_set_cell]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 161784,
+      "tokensIn" : 681307,
+      "tokensOut" : 7498,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 681307
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksTreeFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'tree_*' was called within 30s; tools actually called: [doc_read, doc_read_lines, arthur_action, doc_replace_lines]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 17715,
+      "tokensIn" : 164681,
+      "tokensOut" : 1157,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 164681
+    }
+  } ]
+}

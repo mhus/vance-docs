@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-15T11:20:49.334003Z",
+  "completedAt" : "2026-08-15T11:22:53.490921Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersChartInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```chart fence rendered (274 chars); judge: The chart contains all four correct data points.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 20568,
+      "tokensIn" : 101395,
+      "tokensOut" : 519,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 101395
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersDiagramInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mermaid fence rendered (119 chars); judge: All required nodes and connections are present and syntactically correct.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 7726,
+      "tokensIn" : 49272,
+      "tokensOut" : 289,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49272
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersGraphInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```graph fence rendered (217 chars); judge: Candidate correctly defines all required nodes and edges.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 65105,
+      "tokensIn" : 49276,
+      "tokensOut" : 559,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49276
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersMindmapInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mindmap fence rendered (163 chars); judge: Candidate correctly implements the required mindmap structure.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 31563,
+      "tokensIn" : 100485,
+      "tokensOut" : 732,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 100485
+    }
+  } ]
+}

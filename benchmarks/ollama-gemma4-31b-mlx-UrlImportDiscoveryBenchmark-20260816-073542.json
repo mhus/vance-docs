@@ -1,0 +1,64 @@
+{
+  "startedAt" : "2026-08-16T07:35:42.702152Z",
+  "completedAt" : "2026-08-16T07:38:35.463058Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun1",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called directly (tool was reachable without looking) — tools: [arthur_action, doc_import_url]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 149091,
+      "tokensIn" : 76922,
+      "tokensOut" : 78,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 76922
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun2",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called directly (tool was reachable without looking) — tools: [arthur_action, doc_import_url]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 74202,
+      "tokensIn" : 76920,
+      "tokensOut" : 94,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 76920
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun3",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called directly (tool was reachable without looking) — tools: [arthur_action, doc_import_url]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 97075,
+      "tokensIn" : 76920,
+      "tokensOut" : 94,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 76920
+    }
+  } ]
+}

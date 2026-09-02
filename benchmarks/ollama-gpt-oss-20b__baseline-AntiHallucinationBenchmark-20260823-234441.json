@@ -1,0 +1,193 @@
+{
+  "startedAt" : "2026-08-23T23:44:41.580084Z",
+  "completedAt" : "2026-08-23T23:54:03.187468Z",
+  "modelSlug" : "ollama-gpt-oss-20b__baseline",
+  "scoreModel" : "v2-graded",
+  "variant" : "baseline",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsCalendarCreateEvent",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'calendar_create_event' and picked 'calendar_create'; tools called: [calendar_create, arthur_action] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-calendar_create_event",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "called calendar_create"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 43703,
+      "tokensIn" : 136213,
+      "tokensOut" : 935,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 136213
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsDiagramTool",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'diagram_tool' and picked 'doc_write'; tools called: [doc_write] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-diagram_tool",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "called doc_write"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 16,
+      "elapsedMs" : 146605,
+      "tokensIn" : 573239,
+      "tokensOut" : 10078,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 573239
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsDocSave",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 0.8,
+    "effectiveScore" : 0.8,
+    "reason" : "avoided 'doc_save' without naming a real replacement; tools called: [arthur_action] — 80% — 2/3 checks · missed: named-real-alternative",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-doc_save",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "safe decline without naming one"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 6966,
+      "tokensIn" : 67601,
+      "tokensOut" : 360,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 67601
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsListAdd",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'list_add' and picked 'list_insert'; tools called: [list_insert, doc_write, manual_list] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-list_add",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "called list_insert"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 60276,
+      "tokensIn" : 243258,
+      "tokensOut" : 2048,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 243258
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+    "methodName" : "rejectsRecordsCreate",
+    "capability" : "anti-hallucination",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "avoided 'records_create' and picked 'records_add_column'; tools called: [doc_list_in_folder, records_add_column] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "avoided-records_create",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0
+    }, {
+      "name" : "named-real-alternative",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "called records_add_column"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 43367,
+      "tokensIn" : 169968,
+      "tokensOut" : 1371,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 169968
+    }
+  } ]
+}

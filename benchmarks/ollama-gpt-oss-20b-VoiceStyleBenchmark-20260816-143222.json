@@ -1,0 +1,254 @@
+{
+  "startedAt" : "2026-08-16T14:32:22.970732Z",
+  "completedAt" : "2026-08-16T14:35:12.327807Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceAcronymExpansion",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "K8s expanded to Kubernetes in speakable text",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 2043,
+      "tokensIn" : 33130,
+      "tokensOut" : 148,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33130
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForCodePath",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "long path/URL `git clone https://github.com/spring-projects/spring-petclinic.git` left in inline-backticks — TTS would either spell it or read with noise. Belongs in a fence in voice mode.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 2389,
+      "tokensIn" : 33151,
+      "tokensOut" : 172,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33151
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForLongList",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no triple-backtick fence found — long list should sit inside a fence so TTS skips it. content head: Hier die komplette Liste von zehn typischen Restaurants in Berlin‑Mitte, jeweils mit Stadtteil‑Schwerpunkt:\n\n1. **Restaurant Tim Raue** – Mitte, Michelin‑Sterne‑Asian‑Fusion\n2. **Zur letzten Instanz** – Mitte, traditionelles deutsches Hausr…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 9896,
+      "tokensIn" : 66769,
+      "tokensOut" : 773,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 66769
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForTable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "comparison routed into pipe-table",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 12918,
+      "tokensIn" : 66823,
+      "tokensOut" : 1042,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 66823
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceNotMisused",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "fence-not-misused (Paris in speakable); judge: The candidate provides the correct answer as a single, direct word.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 1274,
+      "tokensIn" : 33137,
+      "tokensOut" : 72,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33137
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceModeOffMidConversation",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=23 with markdown structure",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 51936,
+      "tokensIn" : 99631,
+      "tokensOut" : 2163,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 99631
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceNumbersSpeakable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "no ISO date leaked into speakable text (numbers TTS-safe)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 4433,
+      "tokensIn" : 33148,
+      "tokensOut" : 191,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33148
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceQuestionEndsOpenly",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "last sentence closes the turn cleanly (question, invitation, or clear recommendation)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 31441,
+      "tokensIn" : 134130,
+      "tokensOut" : 761,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 134130
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortBulletsAllowedInline",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "voice short-bullets (3 bullets); judge: The bullet enumeration 'Eins, Zwei, Drei' is stilted for spoken German.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 1418,
+      "tokensIn" : 33141,
+      "tokensOut" : 86,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33141
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortProseReply",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "voice short prose (0 sentences); judge: The numbered list format sounds robotic in spoken language.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 2689,
+      "tokensIn" : 33131,
+      "tokensOut" : 194,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33131
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSpokenPartNoMarkdownLeak",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "speakable text has no markdown markers (342 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 23406,
+      "tokensIn" : 33139,
+      "tokensOut" : 269,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33139
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceCutWord",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "STT cut-off word tolerated, reply references München",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4350,
+      "tokensIn" : 66389,
+      "tokensOut" : 303,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 66389
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceHomophone",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "STT homophone tolerated, reply references Lissabon",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 16569,
+      "tokensIn" : 100265,
+      "tokensOut" : 1312,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 100265
+    }
+  } ]
+}

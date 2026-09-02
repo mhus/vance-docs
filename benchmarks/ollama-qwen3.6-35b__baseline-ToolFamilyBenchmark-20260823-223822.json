@@ -1,0 +1,363 @@
+{
+  "startedAt" : "2026-08-23T22:38:22.171502Z",
+  "completedAt" : "2026-08-23T22:45:35.148560Z",
+  "modelSlug" : "ollama-qwen3.6-35b__baseline",
+  "scoreModel" : "v2-graded",
+  "variant" : "baseline",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksCalendarFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : 0.0,
+    "effectiveScore" : 0.0,
+    "reason" : "0% — 0/1 checks · missed: test-completed",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "test-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "IllegalStateException: No new chat-process appeared after /session-create — previous max _id=6a8b777b6cd5c9003ecd85fb"
+    } ],
+    "usage" : {
+      "available" : false,
+      "roundTrips" : 0,
+      "elapsedMs" : 0,
+      "tokensIn" : 0,
+      "tokensOut" : 0,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 0
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksDocFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'doc_*' hit via [doc_write] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-doc",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "doc_write"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 6184,
+      "tokensIn" : 121473,
+      "tokensOut" : 190,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 121473
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksGraphFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'graph_*' hit via [graph_find_node] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-graph",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "graph_find_node"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 39793,
+      "tokensIn" : 366862,
+      "tokensOut" : 621,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 366862
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksHookFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'hook_*' hit via [hook_list, hook_set] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-hook",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "hook_list, hook_set"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 14,
+      "elapsedMs" : 65936,
+      "tokensIn" : 609402,
+      "tokensOut" : 1303,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 609402
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksListFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'list_*' hit via [list_append, list_get] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-list",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "list_append, list_get"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 35333,
+      "tokensIn" : 162555,
+      "tokensOut" : 271,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 162555
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksRecordsFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'records_*' hit via [records_add_column] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-records",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "records_add_column"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 38499,
+      "tokensIn" : 121755,
+      "tokensOut" : 269,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 121755
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSchedulerFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'scheduler_*' hit via [scheduler_set] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-scheduler",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "scheduler_set"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 61306,
+      "tokensIn" : 162847,
+      "tokensOut" : 372,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 162847
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksScratchFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'scratchpad_*' hit via [scratchpad_set] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-scratchpad",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "scratchpad_set"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 69095,
+      "tokensIn" : 203237,
+      "tokensOut" : 380,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 203237
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSheetFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'sheet_*' hit via [sheet_set_cell] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-sheet",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "sheet_set_cell"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 74216,
+      "tokensIn" : 850324,
+      "tokensOut" : 2066,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 850324
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksTreeFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'tree_*' hit via [tree_add_child, tree_get] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-tree",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "tree_add_child, tree_get"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 48892,
+      "tokensIn" : 369560,
+      "tokensOut" : 884,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 369560
+    }
+  } ]
+}

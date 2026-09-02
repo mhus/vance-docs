@@ -1,0 +1,84 @@
+{
+  "startedAt" : "2026-08-16T17:51:49.142684Z",
+  "completedAt" : "2026-08-16T17:52:36.342268Z",
+  "modelSlug" : "ollama-gpt-oss-20b__large-tier",
+  "variant" : "large-tier",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User supplied new team stack details to record for future reference.\",\"scope\":\"fact\",\"content\":\"Team uses Java 25 + Spring Boot 4 as the base stack.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 23158,
+      "tokensIn" : 259531,
+      "tokensOut" : 1297,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 259531
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User provided team name and repo pattern to remember.\",\"scope\":\"fact\",\"content\":\"Team: platform-core, repos: ms-*\" }",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 17950,
+      "tokensIn" : 216180,
+      "tokensOut" : 932,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 216180
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: {\"type\":\"ANSWER\",\"reason\":\"User requested concise code-block-first style with no long intro.\",\"message\":\"Got it. From now on, code blocks will start each answer without a long intro.\"}\n---\n{\"type\":\"AN…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 16908,
+      "tokensIn" : 128034,
+      "tokensOut" : 926,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 128034
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"reason\":\"User requested change to short bullet points, technical tone, no small talk.\",\"message\":\"- Style: bullet points only\\n- Technical language\\n- No sm…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 4914,
+      "tokensIn" : 42503,
+      "tokensOut" : 131,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 42503
+    }
+  } ]
+}

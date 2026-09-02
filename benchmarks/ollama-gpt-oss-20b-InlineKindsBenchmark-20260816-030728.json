@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T03:07:28.946695Z",
+  "completedAt" : "2026-08-16T03:08:36.945110Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersChartInline",
+    "capability" : "inline-kinds",
+    "pass" : false,
+    "score" : 0.9,
+    "effectiveScore" : 0.9,
+    "reason" : "```chart fence rendered (128 chars); judge: The chart type key is 'type' instead of the required 'chartType'.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 10117,
+      "tokensIn" : 65605,
+      "tokensOut" : 746,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65605
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersDiagramInline",
+    "capability" : "inline-kinds",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "```mermaid fence rendered (139 chars); judge: The candidate uses an incorrect diagram type declaration instead of 'flowchart'.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4157,
+      "tokensIn" : 65595,
+      "tokensOut" : 277,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65595
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersGraphInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```graph fence rendered (165 chars); judge: Candidate correctly defines all nodes and edges.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 32111,
+      "tokensIn" : 65618,
+      "tokensOut" : 676,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65618
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersMindmapInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mindmap fence rendered (156 chars); judge: All required branches and leaves are present in the correct structure.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4859,
+      "tokensIn" : 65621,
+      "tokensOut" : 312,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65621
+    }
+  } ]
+}

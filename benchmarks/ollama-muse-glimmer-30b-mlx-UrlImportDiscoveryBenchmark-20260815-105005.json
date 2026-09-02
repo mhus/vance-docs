@@ -1,0 +1,64 @@
+{
+  "startedAt" : "2026-08-15T10:50:05.174544Z",
+  "completedAt" : "2026-08-15T10:53:11.900365Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun1",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called after discovery via [tool_description] — tools: [arthur_action, doc_import_url, tool_description]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 129411,
+      "tokensIn" : 149937,
+      "tokensOut" : 529,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 149937
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun2",
+    "capability" : "url-import-discovery",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no discovery and no doc_import_url. Tools: <none>",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 134264,
+      "tokensIn" : 220596,
+      "tokensOut" : 1055,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 220596
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun3",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called after discovery via [tool_description] — tools: [arthur_action, doc_import_url, tool_description]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 20413,
+      "tokensIn" : 149937,
+      "tokensOut" : 521,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 149937
+    }
+  } ]
+}

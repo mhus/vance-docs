@@ -1,0 +1,221 @@
+{
+  "startedAt" : "2026-08-22T12:28:59.937546Z",
+  "completedAt" : "2026-08-22T12:29:40.170337Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"content\":\"Basis-Stack: Java 25 + Spring Boot 4\",\"reason\":\"User provided durable information about their team's technical stack.\",\"scope\":\"fact\",\"type\":\"LEARN\"} — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"content\":\"Basis-Stack: Java 25 + Spring Boot 4\",\"reason\":\"User provided durable information about their team's technical stack.\",\"scope\":\"fact\",\"type\":\"LEARN\"}"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 23664,
+      "tokensIn" : 39367,
+      "tokensOut" : 109,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39367
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"reason\":\"The user volunteered durable personal/team information (\\\"my team is called 'platform-core' and works on the ms-* repos\\\") which should be persisted in per-user memory.\",\"scope\":\"fact\",\"con… — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"reason\":\"The user volunteered durable personal/team information (\\\"my team is called 'platform-core' and works on the ms-* repos\\\") which should be persisted in per-user memory.\",\"scope\":\"fact\",\"con…"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 92134,
+      "tokensIn" : 39036,
+      "tokensOut" : 82,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39036
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append): {\"content\":\"Code-Blöcke immer direkt am Anfang der Antwort, ohne lange Einleitung.\",\"mode\":\"append\",\"reason\":\"User requested a specific communication style preference to be persisted.\",\"scope\":\"person… — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"content\":\"Code-Blöcke immer direkt am Anfang der Antwort, ohne lange Einleitung.\",\"mode\":\"append\",\"reason\":\"User requested a specific communication style preference to be persisted.\",\"scope\":\"person…"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 10380,
+      "tokensIn" : 78406,
+      "tokensOut" : 129,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 78406
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : 0.6896551724137931,
+    "effectiveScore" : 0.6896551724137931,
+    "reason" : "LEARN(scope=persona, mode=replace): {\"reason\":\"User requested a complete change of persona/style to concise bullet points, technical tone, and no small talk.\",\"scope\":\"persona\",\"type\":\"LEARN\"} — 69% — 4/6 checks · missed: mode, content-present",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"reason\":\"User requested a complete change of persona/style to concise bullet points, technical tone, and no small talk.\",\"scope\":\"persona\",\"type\":\"LEARN\"}"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.0,
+      "detail" : "expected replace"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "missing or blank 'content'"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 4295,
+      "tokensIn" : 39133,
+      "tokensOut" : 49,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39133
+    }
+  } ]
+}

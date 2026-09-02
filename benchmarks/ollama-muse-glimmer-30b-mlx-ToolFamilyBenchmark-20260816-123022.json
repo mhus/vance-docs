@@ -1,0 +1,197 @@
+{
+  "startedAt" : "2026-08-16T12:30:22.723252Z",
+  "completedAt" : "2026-08-16T12:49:43.084951Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksCalendarFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'calendar_*' was called within 30s; tools actually called: [arthur_action, tool_description]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 134770,
+      "tokensIn" : 80925,
+      "tokensOut" : 887,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 80925
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksDocFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'doc_*' hit via: [doc_write]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 66270,
+      "tokensIn" : 50931,
+      "tokensOut" : 520,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 50931
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksGraphFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'graph_*' was called within 30s; tools actually called: [doc_list_trash, doc_list, doc_find, doc_list_in_folder, doc_list_folders, doc_grep_path]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 48426,
+      "tokensIn" : 812851,
+      "tokensOut" : 1193,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 812851
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksHookFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'hook_*' was called within 30s; tools actually called: [doc_list_trash, doc_find, doc_list, event_get, doc_list_in_folder, event_list, tool_description, doc_list_folders, project_current]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 280248,
+      "tokensIn" : 824981,
+      "tokensOut" : 1684,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 824981
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksListFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'list_*' was called within 30s; tools actually called: [doc_find, doc_append, doc_read, arthur_action, doc_list_in_folder]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 18862,
+      "tokensIn" : 239794,
+      "tokensOut" : 630,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 239794
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksRecordsFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'records_*' was called within 30s; tools actually called: [doc_info, doc_edit, doc_read, arthur_action]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 113924,
+      "tokensIn" : 113766,
+      "tokensOut" : 899,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 113766
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSchedulerFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'scheduler_*' was called within 30s; tools actually called: [arthur_action, tool_description]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 86032,
+      "tokensIn" : 79831,
+      "tokensOut" : 858,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79831
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksScratchFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'scratchpad_*' was called within 30s; tools actually called: [doc_list_trash, doc_find, doc_list, doc_read, doc_list_by_tag, doc_list_in_folder, doc_list_folders, doc_grep_path]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 138815,
+      "tokensIn" : 815737,
+      "tokensOut" : 1599,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 815737
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSheetFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no tool from family 'sheet_*' was called within 30s; tools actually called: [doc_info, doc_find, arthur_action, doc_list_in_folder, doc_list_folders]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 34488,
+      "tokensIn" : 199842,
+      "tokensOut" : 477,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 199842
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksTreeFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'tree_*' hit via: [tree_get]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 8,
+      "elapsedMs" : 70825,
+      "tokensIn" : 369567,
+      "tokensOut" : 1265,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 369567
+    }
+  } ]
+}

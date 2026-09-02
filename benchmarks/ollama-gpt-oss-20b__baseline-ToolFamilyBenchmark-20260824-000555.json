@@ -1,0 +1,373 @@
+{
+  "startedAt" : "2026-08-24T00:05:55.038818Z",
+  "completedAt" : "2026-08-24T00:33:04.966832Z",
+  "modelSlug" : "ollama-gpt-oss-20b__baseline",
+  "scoreModel" : "v2-graded",
+  "variant" : "baseline",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksCalendarFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'calendar_*' hit via [calendar_create] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-calendar",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "calendar_create"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 74167,
+      "tokensIn" : 102522,
+      "tokensOut" : 1708,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 102522
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksDocFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'doc_*' hit via [doc_write] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-doc",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "doc_write"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 8544,
+      "tokensIn" : 135753,
+      "tokensOut" : 373,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 135753
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksGraphFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'graph_*' hit via [graph_add_edge] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-graph",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "graph_add_edge"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 11,
+      "elapsedMs" : 115580,
+      "tokensIn" : 376190,
+      "tokensOut" : 2796,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 376190
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksHookFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : 0.3333333333333333,
+    "effectiveScore" : 0.3333333333333333,
+    "reason" : "no 'hook_*' tool within 300s; called: [arthur_action, event_set, doc_write, vance_notify] — 33% — 2/3 checks · missed: family-hook",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-hook",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 0.0,
+      "detail" : "called instead: [arthur_action, event_set, doc_write, vance_notify]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 102197,
+      "tokensIn" : 205615,
+      "tokensOut" : 5543,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 205615
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksListFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : 0.3333333333333333,
+    "effectiveScore" : 0.3333333333333333,
+    "reason" : "no 'list_*' tool within 300s; called: [doc_append] — 33% — 2/3 checks · missed: family-list",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-list",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 0.0,
+      "detail" : "called instead: [doc_append]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 14109,
+      "tokensIn" : 135604,
+      "tokensOut" : 752,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 135604
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksRecordsFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'records_*' hit via [records_add_column] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-records",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "records_add_column"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 120715,
+      "tokensIn" : 206957,
+      "tokensOut" : 3678,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 206957
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSchedulerFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'scheduler_*' hit via [scheduler_set] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-scheduler",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "scheduler_set"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 46854,
+      "tokensIn" : 170390,
+      "tokensOut" : 1540,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 170390
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksScratchFamily",
+    "capability" : "tool-family",
+    "pass" : false,
+    "score" : 0.3333333333333333,
+    "effectiveScore" : 0.3333333333333333,
+    "reason" : "no 'scratchpad_*' tool within 300s; called: [doc_append, doc_write] — 33% — 2/3 checks · missed: family-scratchpad",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-scratchpad",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 0.0,
+      "detail" : "called instead: [doc_append, doc_write]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 77172,
+      "tokensIn" : 169700,
+      "tokensOut" : 1117,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 169700
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksSheetFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'sheet_*' hit via [sheet_set_cell] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-sheet",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "sheet_set_cell"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 10,
+      "elapsedMs" : 131525,
+      "tokensIn" : 344119,
+      "tokensOut" : 4978,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 344119
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+    "methodName" : "picksTreeFamily",
+    "capability" : "tool-family",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "family 'tree_*' hit via [tree_add_child, tree_find, tree_get] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "any-tool-called",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "family-tree",
+      "kind" : "STAGE",
+      "weight" : 4.0,
+      "earned" : 4.0,
+      "detail" : "tree_add_child, tree_find, tree_get"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 61943,
+      "tokensIn" : 169601,
+      "tokensOut" : 2791,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 169601
+    }
+  } ]
+}

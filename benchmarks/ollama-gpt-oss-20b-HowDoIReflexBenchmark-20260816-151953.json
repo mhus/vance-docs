@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-16T15:19:53.514179Z",
+  "completedAt" : "2026-08-16T15:26:07.200861Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversAmbiguousMetaphor",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 0.7,
+    "effectiveScore" : 0.7,
+    "reason" : "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) — tools called: [project_current, doc_write]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 35066,
+      "tokensIn" : 231909,
+      "tokensOut" : 1181,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 231909
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversComposedUnknown",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [search, doc_list, doc_read, project_switch, project_list, doc_grep_path] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 16,
+      "elapsedMs" : 84096,
+      "tokensIn" : 536042,
+      "tokensOut" : 3128,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 536042
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversInventedFeature",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [arthur_action] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 13133,
+      "tokensIn" : 32670,
+      "tokensOut" : 1158,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 32670
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversJargonRequest",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [search, tool_list, ask_user, tool_description, doc_grep_path] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 8,
+      "elapsedMs" : 44765,
+      "tokensIn" : 269160,
+      "tokensOut" : 1658,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 269160
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversUnknownTerm",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 0.7,
+    "effectiveScore" : 0.7,
+    "reason" : "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) — tools called: [client_file_read, arthur_action, doc_list_in_folder, doc_move]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 83222,
+      "tokensIn" : 164655,
+      "tokensOut" : 1352,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 164655
+    }
+  } ]
+}

@@ -1,0 +1,511 @@
+{
+  "startedAt" : "2026-08-22T13:26:55.323456Z",
+  "completedAt" : "2026-08-22T13:30:20.042699Z",
+  "modelSlug" : "ollama-qwen3.6-35b__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceAcronymExpansion",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "K8s expanded to Kubernetes in speakable text — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "K8s expanded to Kubernetes in speakable text"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 13984,
+      "tokensIn" : 81920,
+      "tokensOut" : 901,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81920
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForCodePath",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "no long path/URL leaked into inline-code (voice-safe) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "no long path/URL leaked into inline-code (voice-safe)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 4120,
+      "tokensIn" : 40694,
+      "tokensOut" : 101,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40694
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForLongList",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "no triple-backtick fence found — long list should sit inside a fence so TTS skips it. content head: Ich habe keinen direkten Zugriff auf aktuelle Restaurantverzeichnisse. Zwei Optionen:\n\n1. **Web-Recherche starten** — ich suche live nach zehn typischen Restaurants in Berlin-Mitte mit ihren Stadtteil-Schwerpunkten und stelle sie dir als ko… — 50% — 2/3 checks · missed: voice-discipline",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "no triple-backtick fence found — long list should sit inside a fence so TTS skips it. content head: Ich habe keinen direkten Zugriff auf aktuelle Restaurantverzeichnisse. Zwei Optionen:\n\n1. **Web-Recherche starten** — ich suche live nach zehn typischen Restaurants in Berlin-Mitte mit ihren Stadtteil-Schwerpunkten und stelle sie dir als ko…"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 8040,
+      "tokensIn" : 81698,
+      "tokensOut" : 357,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81698
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForTable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "comparison routed into fence — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "comparison routed into fence"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 20444,
+      "tokensIn" : 123155,
+      "tokensOut" : 1255,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 123155
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceNotMisused",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "fence-not-misused (Paris in speakable); judge: The candidate directly and concisely answers the question. — 100% — 4/4 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "fence-not-misused (Paris in speakable)"
+    }, {
+      "name" : "style",
+      "kind" : "JUDGED",
+      "weight" : 3.0,
+      "earned" : 3.0,
+      "detail" : "The candidate directly and concisely answers the question."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 5701,
+      "tokensIn" : 81523,
+      "tokensOut" : 197,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81523
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceModeOffMidConversation",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=9 with markdown structure — 100% — 5/5 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-1-voice",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "reply-1",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "1 sentences"
+    }, {
+      "name" : "turn-2-text",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "reply-2",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "9 sentences"
+    }, {
+      "name" : "toggle-took-effect",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "markdown structure returned"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 54019,
+      "tokensIn" : 162688,
+      "tokensOut" : 1424,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 162688
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceNumbersSpeakable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "no ISO date leaked into speakable text (numbers TTS-safe) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "no ISO date leaked into speakable text (numbers TTS-safe)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 5161,
+      "tokensIn" : 122613,
+      "tokensOut" : 130,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 122613
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceQuestionEndsOpenly",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "last sentence closes the turn cleanly (question, invitation, or clear recommendation) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "last sentence closes the turn cleanly (question, invitation, or clear recommendation)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 9232,
+      "tokensIn" : 81753,
+      "tokensOut" : 516,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81753
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortBulletsAllowedInline",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.7857142857142857,
+    "effectiveScore" : 0.7857142857142857,
+    "reason" : "voice short-bullets (3 bullets); judge: The enumeration 'Eins, Zwei, Drei' is stilted for spoken German. — 79% — 3/4 checks · missed: style",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "voice short-bullets (3 bullets)"
+    }, {
+      "name" : "style",
+      "kind" : "JUDGED",
+      "weight" : 3.0,
+      "earned" : 1.5,
+      "detail" : "The enumeration 'Eins, Zwei, Drei' is stilted for spoken German."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 6383,
+      "tokensIn" : 81619,
+      "tokensOut" : 247,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81619
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortProseReply",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "voice short prose (3 sentences); judge: The response is natural, concise, and on-topic. — 100% — 4/4 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "voice short prose (3 sentences)"
+    }, {
+      "name" : "style",
+      "kind" : "JUDGED",
+      "weight" : 3.0,
+      "earned" : 3.0,
+      "detail" : "The response is natural, concise, and on-topic."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7874,
+      "tokensIn" : 81679,
+      "tokensOut" : 408,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81679
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSpokenPartNoMarkdownLeak",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "speakable text has no markdown markers (443 chars) — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "speakable text has no markdown markers (443 chars)"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 35937,
+      "tokensIn" : 81630,
+      "tokensOut" : 273,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81630
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceCutWord",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "STT cut-off word tolerated, reply references München — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "STT cut-off word tolerated, reply references München"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 8,
+      "elapsedMs" : 14023,
+      "tokensIn" : 330553,
+      "tokensOut" : 463,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 330553
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceHomophone",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "STT homophone tolerated, reply references Lissabon — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "voice-discipline",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "STT homophone tolerated, reply references Lissabon"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 17047,
+      "tokensIn" : 123164,
+      "tokensOut" : 1031,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 123164
+    }
+  } ]
+}

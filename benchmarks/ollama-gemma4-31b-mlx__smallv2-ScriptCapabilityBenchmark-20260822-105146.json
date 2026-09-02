@@ -1,0 +1,208 @@
+{
+  "startedAt" : "2026-08-22T10:51:46.590837Z",
+  "completedAt" : "2026-08-22T11:04:27.947013Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+    "methodName" : "executesJavaScriptJsonTransform",
+    "capability" : "script-javascript",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "tool=execute_javascript, expected output present — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "tool-executed",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tool=execute_javascript"
+    }, {
+      "name" : "expected-output",
+      "kind" : "COUNTED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "got" : 2,
+      "want" : 2,
+      "detail" : "all present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 149530,
+      "tokensIn" : 197855,
+      "tokensOut" : 491,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 197855
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+    "methodName" : "executesJavaScriptPrimes",
+    "capability" : "script-javascript",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "tool=execute_javascript, expected output present — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "tool-executed",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tool=execute_javascript"
+    }, {
+      "name" : "expected-output",
+      "kind" : "COUNTED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "got" : 2,
+      "want" : 2,
+      "detail" : "all present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 152564,
+      "tokensIn" : 118040,
+      "tokensOut" : 403,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118040
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+    "methodName" : "executesJavaScriptSum",
+    "capability" : "script-javascript",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "tool=execute_javascript, expected output present — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "tool-executed",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tool=execute_javascript"
+    }, {
+      "name" : "expected-output",
+      "kind" : "COUNTED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "got" : 1,
+      "want" : 1,
+      "detail" : "all present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 189395,
+      "tokensIn" : 117772,
+      "tokensOut" : 206,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 117772
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+    "methodName" : "executesPythonPrimes",
+    "capability" : "script-python",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "tool=execute_python, expected output present — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "tool-executed",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tool=execute_python"
+    }, {
+      "name" : "expected-output",
+      "kind" : "COUNTED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "got" : 2,
+      "want" : 2,
+      "detail" : "all present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 93781,
+      "tokensIn" : 158084,
+      "tokensOut" : 419,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 158084
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+    "methodName" : "executesPythonStringReverse",
+    "capability" : "script-python",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "tool=execute_python, expected output present — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "tool-executed",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tool=execute_python"
+    }, {
+      "name" : "expected-output",
+      "kind" : "COUNTED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "got" : 1,
+      "want" : 1,
+      "detail" : "all present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 266128,
+      "tokensIn" : 197383,
+      "tokensOut" : 299,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 197383
+    }
+  } ]
+}

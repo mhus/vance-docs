@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T15:27:28.849936Z",
+  "completedAt" : "2026-08-16T15:27:48.061723Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"Add fact about team stack\",\"scope\":\"fact\",\"content\":\"Team platform-core uses Java 25 + Spring Boot 4 as base stack.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 6121,
+      "tokensIn" : 65797,
+      "tokensOut" : 477,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65797
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"scope\":\"fact\",\"content\":\"Mein Team heißt platform-core und arbeitet auf ms-* Repos.\",\"reason\":\"User provided team name and repo context for future reference.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 10660,
+      "tokensIn" : 98281,
+      "tokensOut" : 671,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 98281
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"message\":\"```text\\nOK\\n```\",\"reason\":\"User requested code block at start, no intro.\"}\n---\n```text\nOK\n```",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7727,
+      "tokensIn" : 65640,
+      "tokensOut" : 609,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65640
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"message\":\"- Stil geändert: kurze Stichpunkte, technischer Ton, kein Smalltalk.\",\"reason\":\"Anpassung des Antwortstils gemäß Benutzeranweisung.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 3336,
+      "tokensIn" : 32748,
+      "tokensOut" : 92,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 32748
+    }
+  } ]
+}

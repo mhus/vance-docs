@@ -1,0 +1,206 @@
+{
+  "startedAt" : "2026-08-22T09:02:26.685530Z",
+  "completedAt" : "2026-08-22T09:21:49.158389Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversAmbiguousMetaphor",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : 0.36363636363636365,
+    "effectiveScore" : 0.36363636363636365,
+    "reason" : "no discovery; model attempted tool(s): [doc_find, arthur_action, doc_list_in_folder, doc_list_folders, doc_write] — likely proceeded as if it knew the unknown term — 36% — 2/4 checks · missed: discovery-fired, discovery-signalled",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 0.0,
+      "detail" : "no DISCOVER action and no how_do_i call"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0
+    }, {
+      "name" : "concrete-action-accepted",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "acted via [doc_find, arthur_action, doc_list_in_folder, doc_list_folders, doc_write]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 45259,
+      "tokensIn" : 245136,
+      "tokensOut" : 1036,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 245136
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversComposedUnknown",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : 0.2222222222222222,
+    "effectiveScore" : 0.2222222222222222,
+    "reason" : "no discovery; model attempted tool(s): [doc_list_trash, kit_status, doc_list, doc_find, doc_read, arthur_action, doc_list_in_folder, project_current, doc_list_folders, doc_grep_path] — likely proceeded as if it knew the unknown term — 22% — 1/3 checks · missed: discovery-fired, discovery-signalled",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 0.0,
+      "detail" : "no DISCOVER action and no how_do_i call"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 17,
+      "elapsedMs" : 38045,
+      "tokensIn" : 704922,
+      "tokensOut" : 1220,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 704922
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversInventedFeature",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired DISCOVER action — discovery reflex worked — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 2.5,
+      "detail" : "DISCOVER action"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "flagged the intent in prose"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 119061,
+      "tokensIn" : 205004,
+      "tokensOut" : 566,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 205004
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversJargonRequest",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired DISCOVER action — discovery reflex worked — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 2.5,
+      "detail" : "DISCOVER action"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 27606,
+      "tokensIn" : 164973,
+      "tokensOut" : 600,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 164973
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversUnknownTerm",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : 0.36363636363636365,
+    "effectiveScore" : 0.36363636363636365,
+    "reason" : "no discovery; model attempted tool(s): [file_list, arthur_action, file_find] — likely proceeded as if it knew the unknown term — 36% — 2/4 checks · missed: discovery-fired, discovery-signalled",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "discovery-fired",
+      "kind" : "CHECK",
+      "weight" : 2.5,
+      "earned" : 0.0,
+      "detail" : "no DISCOVER action and no how_do_i call"
+    }, {
+      "name" : "discovery-signalled",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0
+    }, {
+      "name" : "concrete-action-accepted",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "acted via [file_list, arthur_action, file_find]"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 121565,
+      "tokensIn" : 121998,
+      "tokensOut" : 644,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 121998
+    }
+  } ]
+}

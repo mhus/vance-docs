@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-14T18:52:21.343992Z",
+  "completedAt" : "2026-08-14T18:56:26.537757Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversAmbiguousMetaphor",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 0.7,
+    "effectiveScore" : 0.7,
+    "reason" : "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) — tools called: [arthur_action, scratchpad_set]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 48284,
+      "tokensIn" : 198656,
+      "tokensOut" : 317,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198656
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversComposedUnknown",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action, no how_do_i tool call, no other tool, no discovery prose — head: {type: \"ASK_USER\", reason: \"Benötige Klärung, welches Board/Tool gemeint ist — es gibt keine kanban-Integration in diesem Projekt.\", message: \"Welches Board meinst du?\\n\\n- **Jira** (Projektname?)\\n- …",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 7151,
+      "tokensIn" : 148689,
+      "tokensOut" : 279,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 148689
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversInventedFeature",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "model fired how_do_i tool — discovery reflex worked",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 45790,
+      "tokensIn" : 198823,
+      "tokensOut" : 624,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198823
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversJargonRequest",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [doc_list, file_list, arthur_action, ASK_USER] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 12937,
+      "tokensIn" : 198569,
+      "tokensOut" : 450,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198569
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversUnknownTerm",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 0.7,
+    "effectiveScore" : 0.7,
+    "reason" : "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) — tools called: [file_read, arthur_action, file_find]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 52555,
+      "tokensIn" : 198491,
+      "tokensOut" : 507,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198491
+    }
+  } ]
+}

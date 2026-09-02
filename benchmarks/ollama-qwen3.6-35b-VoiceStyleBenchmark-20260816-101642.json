@@ -1,0 +1,254 @@
+{
+  "startedAt" : "2026-08-16T10:16:42.054716Z",
+  "completedAt" : "2026-08-16T10:21:00.060184Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceAcronymExpansion",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "K8s expanded to Kubernetes in speakable text",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7066,
+      "tokensIn" : 79817,
+      "tokensOut" : 373,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79817
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForCodePath",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "no long path/URL leaked into inline-code (voice-safe)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 5128,
+      "tokensIn" : 79730,
+      "tokensOut" : 127,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79730
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForLongList",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "long list routed into a fence; speakable kept 0 inline bullets",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 15171,
+      "tokensIn" : 120462,
+      "tokensOut" : 828,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 120462
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceForTable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "comparison routed into fence",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 13,
+      "elapsedMs" : 91134,
+      "tokensIn" : 713908,
+      "tokensOut" : 2677,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 713908
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceFenceNotMisused",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "fence-not-misused (Paris in speakable); judge: The candidate provides a short, direct answer.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4239,
+      "tokensIn" : 79677,
+      "tokensOut" : 145,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79677
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceModeOffMidConversation",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=8 with markdown structure",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 50488,
+      "tokensIn" : 159002,
+      "tokensOut" : 1226,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 159002
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceNumbersSpeakable",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "no ISO date leaked into speakable text (numbers TTS-safe)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4153,
+      "tokensIn" : 79722,
+      "tokensOut" : 132,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79722
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceQuestionEndsOpenly",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "last sentence closes the turn cleanly (question, invitation, or clear recommendation)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 8801,
+      "tokensIn" : 79908,
+      "tokensOut" : 511,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79908
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortBulletsAllowedInline",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "voice short-bullets (3 bullets); judge: The enumeration 'Eins, Zwei, Drei' sounds stilted in spoken German.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 6681,
+      "tokensIn" : 79765,
+      "tokensOut" : 245,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79765
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceShortProseReply",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "voice short prose (1 sentences); judge: The response is on-topic but sounds robotic and the final question uses the wrong pronoun.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7411,
+      "tokensIn" : 79887,
+      "tokensOut" : 393,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79887
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSpokenPartNoMarkdownLeak",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "speakable text has no markdown markers (826 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 30342,
+      "tokensIn" : 79893,
+      "tokensOut" : 500,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79893
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceCutWord",
+    "capability" : "voice-style",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "STT cut-off 'münch' should be tolerated as München — reply neither names the full city nor asks for clarification. stripped head: Ich kann leider nicht direkt auf Live-Wetterdaten zugreifen, da dafür kein Tool konfiguriert ist. Du kannst aber schnell wetter.com oder einen ähnlichen Dienst aufrufen – oder sag mir, ob ich dir etwas anderes dazu erstellen soll (z.B. eine…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 6620,
+      "tokensIn" : 79742,
+      "tokensOut" : 249,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79742
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+    "methodName" : "voiceSttToleranceHomophone",
+    "capability" : "voice-style",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "STT homophone tolerated, reply references Lissabon",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 5322,
+      "tokensIn" : 79755,
+      "tokensOut" : 232,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79755
+    }
+  } ]
+}

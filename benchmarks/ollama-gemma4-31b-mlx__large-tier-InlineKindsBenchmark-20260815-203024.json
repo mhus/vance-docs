@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-08-15T20:30:24.439834Z",
+  "completedAt": "2026-08-15T20:32:29.326727Z",
+  "modelSlug": "ollama-gemma4-31b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.InlineKindsBenchmark",
+      "methodName": "rendersChartInline",
+      "capability": "inline-kinds",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "```chart fence rendered (254 chars); judge: Candidate provided all four required data points correctly.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 48784,
+        "tokensIn": 152328,
+        "tokensOut": 508,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 152328
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.InlineKindsBenchmark",
+      "methodName": "rendersDiagramInline",
+      "capability": "inline-kinds",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no ```mermaid fence found in assistant reply \u2014 head: Hi, I'm Arthur. What are we working on?\n---\nHier ist der gew\u00fcnschte Login-Flow.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 15940,
+        "tokensIn": 97498,
+        "tokensOut": 204,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 97498
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.InlineKindsBenchmark",
+      "methodName": "rendersGraphInline",
+      "capability": "inline-kinds",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no ```graph fence found in assistant reply \u2014 head: Hi, I'm Arthur. What are we working on?\n---\nUser requested an inline graph; provided the YAML structure within a graph fence as requested.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 30604,
+        "tokensIn": 48621,
+        "tokensOut": 140,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 48621
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.InlineKindsBenchmark",
+      "methodName": "rendersMindmapInline",
+      "capability": "inline-kinds",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no ```mindmap fence found in assistant reply \u2014 head: Hi, I'm Arthur. What are we working on?\n---\nHier ist die gew\u00fcnschte Mindmap zu den Programmiersprachen.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 17744,
+        "tokensIn": 97549,
+        "tokensOut": 240,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 97549
+      }
+    }
+  ]
+}

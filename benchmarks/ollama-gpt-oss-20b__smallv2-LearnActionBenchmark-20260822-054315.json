@@ -1,0 +1,231 @@
+{
+  "startedAt" : "2026-08-22T05:43:15.070768Z",
+  "completedAt" : "2026-08-22T05:43:34.885894Z",
+  "modelSlug" : "ollama-gpt-oss-20b__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"type\":\"LEARN\",\"scope\":\"fact\",\"content\":\"Java 25 + Spring Boot 4 as the base stack.\",\"reason\":\"User requested to add team info about Java and Spring Boot versions.\"} — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"type\":\"LEARN\",\"scope\":\"fact\",\"content\":\"Java 25 + Spring Boot 4 as the base stack.\",\"reason\":\"User requested to add team info about Java and Spring Boot versions.\"}"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7936,
+      "tokensIn" : 33844,
+      "tokensOut" : 706,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33844
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"type\":\"LEARN\",\"reason\":\"Store user-provided fact about team and repo scope\",\"scope\":\"fact\",\"content\":\"User’s team name: platform-core; working on ms-* repos\"} — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"type\":\"LEARN\",\"reason\":\"Store user-provided fact about team and repo scope\",\"scope\":\"fact\",\"content\":\"User’s team name: platform-core; working on ms-* repos\"}"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 26842,
+      "tokensIn" : 101088,
+      "tokensOut" : 370,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 101088
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : 0.20689655172413793,
+    "effectiveScore" : 0.20689655172413793,
+    "reason" : "no LEARN action emitted — 21% — 2/6 checks · missed: learn-envelope, scope-persona(skipped), mode(skipped), content-present(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "no `{\"type\":\"LEARN\"…}` JSON — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"message\":\"```markdown\\nHier ein Beispiel, wie du das machen könntest:\\n\\n```java\\npublic class HelloWorld {\\n    public static void main(String[] args) {\\n …"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 3687,
+      "tokensIn" : 33573,
+      "tokensOut" : 289,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33573
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : 0.20689655172413793,
+    "effectiveScore" : 0.20689655172413793,
+    "reason" : "no LEARN action emitted — 21% — 2/6 checks · missed: learn-envelope, scope-persona(skipped), mode(skipped), content-present(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "no `{\"type\":\"LEARN\"…}` JSON — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"message\":\"- Stil: knappe Stichpunkte\\n- Ton: technisch\\n- Kein Smalltalk\\n- Umsetzung: Alle zukünftigen Antworten im genannten Format\\n- Status: Bestätigt, …"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 6290,
+      "tokensIn" : 67368,
+      "tokensOut" : 455,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 67368
+    }
+  } ]
+}

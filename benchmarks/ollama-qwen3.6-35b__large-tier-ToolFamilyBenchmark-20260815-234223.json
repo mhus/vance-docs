@@ -1,0 +1,208 @@
+{
+  "startedAt": "2026-08-15T23:42:23.723066Z",
+  "completedAt": "2026-08-15T23:51:57.306945Z",
+  "modelSlug": "ollama-qwen3.6-35b__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksCalendarFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'calendar_*' hit via: [calendar_create]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 77125,
+        "tokensIn": 253342,
+        "tokensOut": 1289,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 253342
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksDocFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'doc_*' hit via: [doc_write]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 8555,
+        "tokensIn": 148656,
+        "tokensOut": 261,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 148656
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksGraphFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'graph_*' hit via: [graph_find_node, graph_get]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 58306,
+        "tokensIn": 348125,
+        "tokensOut": 752,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 348125
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksHookFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'hook_*' hit via: [hook_set]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 11,
+        "elapsedMs": 82332,
+        "tokensIn": 557573,
+        "tokensOut": 1302,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 557573
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksListFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'list_*' hit via: [list_append]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 48440,
+        "tokensIn": 149004,
+        "tokensOut": 244,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 149004
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksRecordsFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'records_*' hit via: [records_add_column, records_get_schema]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 61952,
+        "tokensIn": 248444,
+        "tokensOut": 365,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 248444
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksSchedulerFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'scheduler_*' hit via: [scheduler_list]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 10846,
+        "tokensIn": 62278,
+        "tokensOut": 301,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 62278
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksScratchFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'scratchpad_*' hit via: [scratchpad_set]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 102817,
+        "tokensIn": 248648,
+        "tokensOut": 316,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 248648
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksSheetFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'sheet_*' hit via: [sheet_set_cell]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 64034,
+        "tokensIn": 301479,
+        "tokensOut": 530,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 301479
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksTreeFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'tree_*' hit via: [tree_add_child, tree_get]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 62043,
+        "tokensIn": 248873,
+        "tokensOut": 346,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 248873
+      }
+    }
+  ]
+}

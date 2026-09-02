@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-14T17:18:27.458596Z",
+  "completedAt" : "2026-08-14T17:21:25.321033Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"content\":\"Basis-Stack: Java 25 + Spring Boot 4.\",\"reason\":\"User provided technical stack details for their team; persisting as a fact.\",\"scope\":\"fact\",\"type\":\"LEARN\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 29776,
+      "tokensIn" : 48872,
+      "tokensOut" : 116,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 48872
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"content\":\"Team-Name: platform-core; Arbeitet auf den ms-* Repos.\",\"reason\":\"User provided stable facts about their team and workspace.\",\"scope\":\"fact\",\"type\":\"LEARN\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 111109,
+      "tokensIn" : 48534,
+      "tokensOut" : 59,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 48534
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\"content\":\"Code-Blöcke immer direkt am Anfang der Antwort, ohne Einleitung.\",\"mode\":\"append\",\"reason\":\"User requested a specific response style preference.\",\"scope\":\"persona\",\"type\":\"LEARN\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 131430,
+      "tokensIn" : 97767,
+      "tokensOut" : 155,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 97767
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"content\":\"Antwortstil: Knappe Stichpunkte statt ganzer Sätze. Technischer Ton. Kein Smalltalk.\",\"mode\":\"replace\",\"reason\":\"User requested a complete change of communication style to technical bullet…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 14663,
+      "tokensIn" : 97703,
+      "tokensOut" : 169,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 97703
+    }
+  } ]
+}

@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T11:02:00.375742Z",
+  "completedAt" : "2026-08-16T11:02:20.650075Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"content\":\"Das Team nutzt Java 25 + Spring Boot 4 als Basis-Stack.\",\"message\":\"Team-Infos aktualisiert: Java 25 + Spring Boot 4 hinzugefügt.\",\"reason\":\"User hat ein neues Detail zum Team-Stack hinzug…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 6324,
+      "tokensIn" : 79154,
+      "tokensOut" : 297,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79154
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"scope\":\"fact\",\"type\":\"LEARN\",\"reason\":\"Der Nutzer hat explizit gebeten, diese Info zu speichern.\",\"content\":\"Das Team des Nutzers heißt 'platform-core' und es arbeitet an Repos mit dem Präfix ms-*.\"…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 27628,
+      "tokensIn" : 118587,
+      "tokensOut" : 233,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118587
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\"content\":\"Der Nutzer erwartet, dass Code-Blöcke direkt am Anfang der Antwort stehen, ohne lange Einleitung. Die Antwort soll knapp in Stichpunkten sein, technisch und sachlich.\",\"mode\":\"append\",\"rea…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 6207,
+      "tokensIn" : 79345,
+      "tokensOut" : 270,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79345
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"content\":\"- Antwortstil: knappe Stichpunkte, keine ganzen Sätze\\n- Ton: technisch, sachlich\\n- Kein Smalltalk\",\"mode\":\"replace\",\"scope\":\"persona\",\"type\":\"LEARN\",\"reason\":\"User requested new communic…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 5621,
+      "tokensIn" : 79198,
+      "tokensOut" : 227,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 79198
+    }
+  } ]
+}

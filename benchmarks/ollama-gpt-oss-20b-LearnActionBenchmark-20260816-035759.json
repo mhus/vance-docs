@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T03:57:59.926081Z",
+  "completedAt" : "2026-08-16T03:58:30.319324Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\n  \"type\": \"LEARN\",\n  \"scope\": \"fact\",\n  \"content\": \"Team 'platform-core' uses Java 25 + Spring Boot 4 as base stack.\",\n  \"reason\": \"Record the team's technology stack for future reference.\"\n}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 16451,
+      "tokensIn" : 198214,
+      "tokensOut" : 1173,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 198214
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"Storing user-provided fact about team and repo scope\",\"scope\":\"fact\",\"content\":\"Team \\\"platform-core\\\" works on ms-* repos.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 9788,
+      "tokensIn" : 131422,
+      "tokensOut" : 522,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 131422
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"message\":\"```bash\\n# Hier kommt dein Code – so wie du es brauchst\\n```\\n\",\"reason\":\"User requested code block first, no long intro, keep style.\"}\n---\n{\"type…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 8389,
+      "tokensIn" : 65649,
+      "tokensOut" : 657,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65649
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ANSWER\",\"message\":\"- Stiländerung bestätigt.\\n- Ab jetzt: kurze Stichpunkte, technischer Ton, kein Smalltalk.\\n- Weiterverarbeitung in diesem Format.\\n\",\"reason\":\"Us…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 3367,
+      "tokensIn" : 65649,
+      "tokensOut" : 205,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 65649
+    }
+  } ]
+}

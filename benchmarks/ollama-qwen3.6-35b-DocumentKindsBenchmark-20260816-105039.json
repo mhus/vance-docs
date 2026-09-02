@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-16T10:50:39.833511Z",
+  "completedAt" : "2026-08-16T10:55:12.355864Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsApplicationKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no document of kind=application produced within 120s; kinds in project: [chart, text]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 42775,
+      "tokensIn" : 239191,
+      "tokensOut" : 626,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 239191
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsChartKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=chart at benchmark/chart-sales.json (383 chars); judge: All required data points are present and correct.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 42647,
+      "tokensIn" : 289507,
+      "tokensOut" : 1100,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 289507
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsDiagramKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=diagram at benchmark/diagram-login-flow.mmd (133 chars); judge: The diagram contains all required nodes in the correct order with valid syntax.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 16,
+      "elapsedMs" : 37811,
+      "tokensIn" : 688308,
+      "tokensOut" : 2004,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 688308
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsGraphKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=graph at benchmark/graph-diamond.json (321 chars); judge: Candidate correctly implements the required nodes and edges.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 8294,
+      "tokensIn" : 118688,
+      "tokensOut" : 438,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118688
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsMindmapKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 0.9,
+    "effectiveScore" : 0.9,
+    "reason" : "kind=mindmap at benchmark/mindmap-languages.md (1579 chars); judge: The required languages were included as branches, not leaves.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 8,
+      "elapsedMs" : 33986,
+      "tokensIn" : 333824,
+      "tokensOut" : 2041,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 333824
+    }
+  } ]
+}

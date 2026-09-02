@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-16T03:50:57.172700Z",
+  "completedAt" : "2026-08-16T03:57:08.840323Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversAmbiguousMetaphor",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 0.7,
+    "effectiveScore" : 0.7,
+    "reason" : "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) — tools called: [arthur_action, doc_write]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 8096,
+      "tokensIn" : 131936,
+      "tokensOut" : 453,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 131936
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversComposedUnknown",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action and no how_do_i tool call; model attempted tool(s): [search, doc_list, doc_find, doc_read, arthur_action, project_current] — likely hallucinated against an unknown term in the prompt",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 14,
+      "elapsedMs" : 47179,
+      "tokensIn" : 463272,
+      "tokensOut" : 2836,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 463272
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversInventedFeature",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action, no how_do_i tool call, no other tool, no discovery prose — head: {\"type\":\"REJECT\",\"message\":\"Der Synchron-Modus für Live-Broadcasts ist in dieser Version nicht verfügbar.\",\"reason\":\"Feature unsupported\"}\n---\n{\"type\":\"REJECT\",\"message\":\"Der Synchron-Modus für Live-B…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 13250,
+      "tokensIn" : 98575,
+      "tokensOut" : 878,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 98575
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversJargonRequest",
+    "capability" : "how-do-i-reflex",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no DISCOVER action, no how_do_i tool call, no other tool, no discovery prose — head: {\"type\":\"ASK_USER\",\"message\":\"Um die Drift‑Detection einzurichten, brauche ich ein paar Details: \\n1. Welches Dokument soll als Referenz‑Spezifikation dienen? \\n2. Welche Dokumente (oder Ordner) solle…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 20255,
+      "tokensIn" : 99009,
+      "tokensOut" : 1118,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 99009
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+    "methodName" : "discoversUnknownTerm",
+    "capability" : "how-do-i-reflex",
+    "pass" : true,
+    "score" : 0.7,
+    "effectiveScore" : 0.7,
+    "reason" : "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) — tools called: [work_target_get, client_file_read, doc_find, doc_read, arthur_action, doc_list_in_folder, project_current, client_file_list, transfer_client_to_work]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 11,
+      "elapsedMs" : 169740,
+      "tokensIn" : 365238,
+      "tokensOut" : 3759,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 365238
+    }
+  } ]
+}

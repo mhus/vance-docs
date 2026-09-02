@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-08-15T22:32:38.546075Z",
+  "completedAt": "2026-08-15T22:35:44.550462Z",
+  "modelSlug": "ollama-gemma4-31b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactAppend",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"content\":\"Nutzt Java 25 und Spring Boot 4 als Basis-Stack.\",\"reason\":\"User provided technical stack details for the team, which is a durable fact.\",\"scope\":\"fact\",\"type\":\"LEARN\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 31023,
+        "tokensIn": 48930,
+        "tokensOut": 119,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 48930
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"content\":\"Team: platform-core. Arbeitet auf den ms-* Repos.\",\"reason\":\"User provided team name and repository pattern, which are stable facts about their professional context.\",\"scope\":\"fact\",\"type\"\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 116233,
+        "tokensIn": 48594,
+        "tokensOut": 64,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 48594
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaAppend",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=persona, mode=append) emitted: {\"content\":\"Code-Bl\u00f6cke immer direkt am Anfang der Antwort, ohne Einleitung.\",\"mode\":\"append\",\"reason\":\"User requested a specific response style preference.\",\"scope\":\"persona\",\"type\":\"LEARN\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 137800,
+        "tokensIn": 97890,
+        "tokensOut": 156,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 97890
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=persona, mode=replace) emitted: {\"content\":\"Antwortstil: Knappe Stichpunkte, technischer Ton, kein Smalltalk. Ganze S\u00e4tze vermeiden.\",\"mode\":\"replace\",\"reason\":\"User requested a complete change of communication style to concise bull\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 15033,
+        "tokensIn": 97824,
+        "tokensOut": 170,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 97824
+      }
+    }
+  ]
+}

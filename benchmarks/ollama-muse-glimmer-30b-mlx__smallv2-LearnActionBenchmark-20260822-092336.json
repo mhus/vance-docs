@@ -1,0 +1,219 @@
+{
+  "startedAt" : "2026-08-22T09:23:36.048476Z",
+  "completedAt" : "2026-08-22T09:26:54.216510Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"type\":\"LEARN\",\"reason\":\"User provided durable team stack detail to persist.\",\"scope\":\"fact\",\"content\":\"Team platform-core uses Java 25 + Spring Boot 4 as base stack, works on ms-* repos.\"} — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"type\":\"LEARN\",\"reason\":\"User provided durable team stack detail to persist.\",\"scope\":\"fact\",\"content\":\"Team platform-core uses Java 25 + Spring Boot 4 as base stack, works on ms-* repos.\"}"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 12,
+      "elapsedMs" : 84017,
+      "tokensIn" : 453578,
+      "tokensOut" : 1320,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 453578
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"type\":\"LEARN\",\"reason\":\"User volunteered durable team context to remember.\",\"scope\":\"fact\",\"content\":\"Mein Team heißt 'platform-core' und arbeitet auf den ms-* Repos.\"} — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"type\":\"LEARN\",\"reason\":\"User volunteered durable team context to remember.\",\"scope\":\"fact\",\"content\":\"Mein Team heißt 'platform-core' und arbeitet auf den ms-* Repos.\"}"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 64560,
+      "tokensIn" : 40505,
+      "tokensOut" : 399,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40505
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append): {\"type\":\"LEARN\",\"reason\":\"User wants style change persisted to persona\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Antworten immer mit Code-Block direkt am Anfang, ohne lange Einleitung.\"} — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"type\":\"LEARN\",\"reason\":\"User wants style change persisted to persona\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Antworten immer mit Code-Block direkt am Anfang, ohne lange Einleitung.\"}"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 59252,
+      "tokensIn" : 40977,
+      "tokensOut" : 790,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40977
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace): {\"type\":\"LEARN\",\"reason\":\"User explicitly changes communication style preference.\",\"scope\":\"persona\",\"mode\":\"replace\",\"content\":\"Antwortstil: knappe Stichpunkte statt ganzer Sätze\\nTon: technisch\\nSma… — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"type\":\"LEARN\",\"reason\":\"User explicitly changes communication style preference.\",\"scope\":\"persona\",\"mode\":\"replace\",\"content\":\"Antwortstil: knappe Stichpunkte statt ganzer Sätze\\nTon: technisch\\nSma…"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 51965,
+      "tokensIn" : 40830,
+      "tokensOut" : 522,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40830
+    }
+  } ]
+}

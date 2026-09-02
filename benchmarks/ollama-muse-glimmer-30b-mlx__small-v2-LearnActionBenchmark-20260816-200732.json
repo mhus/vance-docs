@@ -1,0 +1,84 @@
+{
+  "startedAt" : "2026-08-16T20:07:32.500058Z",
+  "completedAt" : "2026-08-16T20:10:33.837089Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx__small-v2",
+  "variant" : "small-v2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ASK_USER\",\"reason\":\"No existing team info document found in current project; need location to store stack detail.\",\"message\":\"Ich habe im Projekt 'Instant Hole' kein…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 14,
+      "elapsedMs" : 91268,
+      "tokensIn" : 568331,
+      "tokensOut" : 1067,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 568331
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User volunteered durable team and repo information to remember.\",\"scope\":\"fact\",\"content\":\"User's team is 'platform-core' and works on the ms-* repositories.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 39043,
+      "tokensIn" : 39942,
+      "tokensOut" : 256,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39942
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\"type\":\"LEARN\",\"reason\":\"User requests code block at start of answers with no long intro.\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Code-Block immer direkt am Anfang der Antwort, ohne lange Einle…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 55422,
+      "tokensIn" : 40402,
+      "tokensOut" : 521,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40402
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"type\":\"LEARN\",\"reason\":\"User explicitly requests a complete replacement of response style.\",\"scope\":\"persona\",\"mode\":\"replace\",\"content\":\"Antwortstil: knappe Stichpunkte statt ganzer Sätze, technisc…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 31425,
+      "tokensIn" : 40260,
+      "tokensOut" : 636,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 40260
+    }
+  } ]
+}

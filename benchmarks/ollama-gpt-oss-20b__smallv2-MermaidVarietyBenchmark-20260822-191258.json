@@ -1,0 +1,581 @@
+{
+  "startedAt" : "2026-08-22T19:12:58.649927Z",
+  "completedAt" : "2026-08-22T19:52:09.761912Z",
+  "modelSlug" : "ollama-gpt-oss-20b__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsC4ContextDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=C4Context at benchmark/mermaid/c4-notifications.md (600 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-C4Context(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (600 chars) ===\n---\ndiagram: |\n  c4Context\n    title Notification System\n    Person(user, \"User\")\n    System_Boundary(notificationAPI, \"Notification API\") {\n        System(notificationService, \"Notification Service\")\n    }\n    System(emailProvider, \"Email Provider\")\n    System(smsProvider, \"SMS Provider\")\n    System(pushProvider, \"Push Provider\")\n    Rel(user, notificationAPI, \"Sends notification requests\")\n    Rel(notificationAPI, emailProvider, \"Sends email notifications\")\n    Rel(notificationAPI, smsProvider, \"Sends SMS notifications\")\n    Rel(notificationAPI, pushProvider, \"Sends push notifications\")\n---\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/c4-notifications.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-C4Context",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 71368,
+      "tokensIn" : 207278,
+      "tokensOut" : 3267,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 207278
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsErDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=erDiagram at benchmark/mermaid/er-shop.md (454 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-erDiagram(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (454 chars) ===\nerDiagram\n    CUSTOMER {\n        int id\n        string name\n        string email\n    }\n    ORDER {\n        int id\n        date orderDate\n        int customerId\n    }\n    ORDERLINE {\n        int id\n        int orderId\n        int productId\n        int quantity\n    }\n    PRODUCT {\n        int id\n        string name\n        decimal price\n    }\n    CUSTOMER ||--o{ ORDER : places\n    ORDER ||--o{ ORDERLINE : contains\n    ORDERLINE }o--|| PRODUCT : refers\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/er-shop.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-erDiagram",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 323169,
+      "tokensIn" : 720533,
+      "tokensOut" : 19561,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 720533
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGanttDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.13333333333333333,
+    "effectiveScore" : 0.13333333333333333,
+    "reason" : "no document at path=benchmark/mermaid/gantt-onboarding.md (opener=gantt); kinds in project: [diagram]; paths: [benchmark/mermaid/c4-notifications.md, benchmark/mermaid/pie-languages.md, benchmark/mermaid/state-order.md, benchmark/mermaid/timeline-web.md, notes/welcome.md, specs/deployment-checklist.md] — 13% — 1/7 checks · missed: document-at-path, kind-diagram(skipped), body-not-empty(skipped), mermaid-form(skipped), opener-gantt(skipped), elements(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "nothing at benchmark/mermaid/gantt-onboarding.md within 300s"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "opener-gantt",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 28641,
+      "tokensIn" : 170726,
+      "tokensOut" : 821,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 170726
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGitGraph",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=gitGraph at benchmark/mermaid/gitflow.md (398 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-gitGraph(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (398 chars) ===\ngitGraph\n  commit id: \"Start\"\n  branch develop\n  commit id: \"dev1\"\n  branch feature-1\n  commit id: \"feat1-1\"\n  commit id: \"feat1-2\"\n  checkout develop\n  merge feature-1\n  commit id: \"dev2\"\n  branch feature-2\n  commit id: \"feat2-1\"\n  checkout develop\n  merge feature-2\n  commit id: \"dev3\"\n  branch release\n  commit id: \"rel1\"\n  commit id: \"rel2\"\n  checkout main\n  merge release\n  commit id: \"main1\"\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/gitflow.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-gitGraph",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 306990,
+      "tokensIn" : 737619,
+      "tokensOut" : 20597,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 737619
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsJourneyDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=journey at benchmark/mermaid/journey-checkout.md (116 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/journey-checkout.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-journey",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 207372,
+      "tokensIn" : 727388,
+      "tokensOut" : 13984,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 727388
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsPieDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=pie at benchmark/mermaid/pie-languages.md (119 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-pie(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (119 chars) ===\npie:\n    title: \"Language Distribution\"\n    \"Java\": 40\n    \"Python\": 25\n    \"TypeScript\": 20\n    \"Go\": 10\n    \"Rust\": 5" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/pie-languages.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-pie",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 19,
+      "elapsedMs" : 210333,
+      "tokensIn" : 686401,
+      "tokensOut" : 11873,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 686401
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsSequenceDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=sequenceDiagram at benchmark/mermaid/sequence-oauth.md (688 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-sequenceDiagram(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (688 chars) ===\nsequenceDiagram\n    participant User\n    participant App\n    participant Auth-Server\n    participant Resource-Server\n\n    User->>App: Open login page\n    App->>Auth-Server: Redirect to authorization endpoint (client_id, redirect_uri, scope, state)\n    Auth-Server->>User: Prompt login & consent\n    User->>Auth-Server: Submit credentials & consent\n    Auth-Server->>App: Redirect with authorization code (state)\n    App->>Auth-Server: Exchange code for access token (client_secret, redirect_uri)\n    Auth-Server->>App: Return access token (and optionally refresh token)\n    App->>Resource-Server: Access protected resource with Bearer token\n    Resource-Server->>App: Return resource data" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/sequence-oauth.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-sequenceDiagram",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 392351,
+      "tokensIn" : 758127,
+      "tokensOut" : 27051,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 758127
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsStateDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=stateDiagram at benchmark/mermaid/state-order.md (152 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-stateDiagram(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (152 chars) ===\nstateDiagram-v2\n    [*] --> Created\n    Created --> Paid\n    Created --> Cancelled\n    Paid --> Shipped\n    Paid --> Cancelled\n    Shipped --> Delivered" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/state-order.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-stateDiagram",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 156176,
+      "tokensIn" : 717035,
+      "tokensOut" : 11087,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 717035
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsTimelineDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.4666666666666667,
+    "effectiveScore" : 0.4666666666666667,
+    "reason" : "opener=timeline at benchmark/mermaid/timeline-web.md (139 chars) — 47% — 4/7 checks · missed: mermaid-form, opener-timeline(skipped), elements(skipped)",
+    "artifacts" : [ "=== full body (139 chars) ===\ntimeline\n  title Web History\n  \"1991\" : World Wide Web\n  \"1995\" : JavaScript\n  \"2008\" : Chrome\n  \"2014\" : ES6\n  \"2020\" : WebAssembly stable" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/timeline-web.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "neither a ```mermaid fence nor a `source` field"
+    }, {
+      "name" : "opener-timeline",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 21,
+      "elapsedMs" : 336774,
+      "tokensIn" : 754826,
+      "tokensOut" : 25445,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 754826
+    }
+  } ]
+}

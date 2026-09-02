@@ -1,0 +1,102 @@
+{
+  "startedAt" : "2026-08-16T13:03:56.135449Z",
+  "completedAt" : "2026-08-16T13:15:56.172003Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsApplicationKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no document of kind=application produced within 120s; kinds in project: [chart]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 133783,
+      "tokensIn" : 85840,
+      "tokensOut" : 1606,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 85840
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsChartKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=chart at benchmark/chart-sales.json (353 chars); judge: The candidate correctly represents all four required data points as a bar chart.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 75661,
+      "tokensIn" : 124928,
+      "tokensOut" : 875,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 124928
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsDiagramKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no document of kind=diagram produced within 120s; kinds in project: [application, chart]",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 117314,
+      "tokensIn" : 39690,
+      "tokensOut" : 353,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 39690
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsGraphKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=graph at benchmark/graph-diamond.json (276 chars); judge: The candidate correctly implements the requested diamond graph structure.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 142649,
+      "tokensIn" : 123862,
+      "tokensOut" : 712,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 123862
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsMindmapKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=mindmap at benchmark/mindmap-languages.md (163 chars); judge: The candidate correctly implements the required nested structure.",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 81704,
+      "tokensIn" : 165391,
+      "tokensOut" : 709,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 165391
+    }
+  } ]
+}

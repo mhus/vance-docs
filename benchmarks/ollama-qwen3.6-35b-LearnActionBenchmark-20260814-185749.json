@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-14T18:57:49.415763Z",
+  "completedAt" : "2026-08-14T18:58:12.222905Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User added team tech stack details (Java 25 + Spring Boot 4).\",\"scope\":\"fact\",\"content\":\"Tech stack: Java 25 + Spring Boot 4.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4845,
+      "tokensIn" : 49625,
+      "tokensOut" : 143,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49625
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"message\":\"Ich habe mir gemerkt, dass dein Team **platform-core** heißt und auf den **ms-*** Repos arbeitet.\",\"reason\":\"User shared team name and repo convention as a persistent preference/fact.\",\"sc…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 36590,
+      "tokensIn" : 49308,
+      "tokensOut" : 122,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49308
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\n  \"type\": \"LEARN\",\n  \"reason\": \"User requested that I always start responses with a code block directly at the beginning, without long introductions — this is a persistent formatting preference.\",\n …",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 6860,
+      "tokensIn" : 149045,
+      "tokensOut" : 197,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 149045
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"content\":\"Prefers responses in brief bullet points only, technical tone, no smalltalk or pleasantries.\",\"mode\":\"replace\",\"reason\":\"User explicitly requested a permanent change to their communication…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 8929,
+      "tokensIn" : 149135,
+      "tokensOut" : 370,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 149135
+    }
+  } ]
+}

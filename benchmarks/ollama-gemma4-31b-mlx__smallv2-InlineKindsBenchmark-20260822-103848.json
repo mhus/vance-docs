@@ -1,0 +1,229 @@
+{
+  "startedAt" : "2026-08-22T10:38:48.049258Z",
+  "completedAt" : "2026-08-22T10:40:19.208763Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersChartInline",
+    "capability" : "inline-kinds",
+    "pass" : false,
+    "score" : 0.6857142857142857,
+    "effectiveScore" : 0.6857142857142857,
+    "reason" : "```chart fence, 96 chars; judge: Candidate is not valid Vance chart-YAML and is missing the chart type. — 69% — 4/6 checks · missed: elements(4/5), quality",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-chart",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.8,
+      "got" : 4,
+      "want" : 5,
+      "detail" : "4/5 (missing: bar)"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "Candidate is not valid Vance chart-YAML and is missing the chart type."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 30277,
+      "tokensIn" : 118192,
+      "tokensOut" : 431,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118192
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersDiagramInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mermaid fence, 164 chars; judge: The candidate provides a valid flowchart with all required nodes and connections. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-mermaid",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 4,
+      "want" : 4,
+      "detail" : "all 4 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "The candidate provides a valid flowchart with all required nodes and connections."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 21472,
+      "tokensIn" : 118007,
+      "tokensOut" : 292,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118007
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersGraphInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```graph fence, 232 chars; judge: Candidate correctly defines all required nodes and edges. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-graph",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 4,
+      "want" : 4,
+      "detail" : "all 4 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "Candidate correctly defines all required nodes and edges."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 49534,
+      "tokensIn" : 118310,
+      "tokensOut" : 517,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 118310
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersMindmapInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mindmap fence, 171 chars; judge: The candidate provides the complete and correct mindmap structure. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-mindmap",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 12,
+      "want" : 12,
+      "detail" : "all 12 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "The candidate provides the complete and correct mindmap structure."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 13985,
+      "tokensIn" : 78410,
+      "tokensOut" : 190,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 78410
+    }
+  } ]
+}

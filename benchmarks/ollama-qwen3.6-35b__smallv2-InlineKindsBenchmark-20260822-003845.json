@@ -1,0 +1,234 @@
+{
+  "startedAt" : "2026-08-22T00:38:45.951732Z",
+  "completedAt" : "2026-08-22T00:39:46.577070Z",
+  "modelSlug" : "ollama-qwen3.6-35b__smallv2",
+  "scoreModel" : "v2-graded",
+  "variant" : "smallv2",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersChartInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 0.9428571428571428,
+    "effectiveScore" : 0.9428571428571428,
+    "reason" : "```chart fence, 211 chars; judge: Candidate used 'type: bar' instead of the required 'chart.chartType: bar'. — 94% — 4/6 checks · missed: elements(4/5), quality",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-chart",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.8,
+      "got" : 4,
+      "want" : 5,
+      "detail" : "4/5 (missing: März)"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 1.8,
+      "detail" : "Candidate used 'type: bar' instead of the required 'chart.chartType: bar'."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 7039,
+      "tokensIn" : 80591,
+      "tokensOut" : 350,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 80591
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersDiagramInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 0.9285714285714286,
+    "effectiveScore" : 0.9285714285714286,
+    "reason" : "```mermaid fence, 111 chars; judge: The candidate provides a well-formed flowchart with all required nodes connected in the correct order. — 93% — 5/6 checks · missed: elements(2/4)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-mermaid",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.5,
+      "got" : 2,
+      "want" : 4,
+      "detail" : "2/4 (missing: Form, Validate)"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "The candidate provides a well-formed flowchart with all required nodes connected in the correct order."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4712,
+      "tokensIn" : 80521,
+      "tokensOut" : 175,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 80521
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersGraphInline",
+    "capability" : "inline-kinds",
+    "pass" : false,
+    "score" : 0.2857142857142857,
+    "effectiveScore" : 0.2857142857142857,
+    "reason" : "```graph fence, 0 chars — 29% — 2/6 checks · missed: fence-graph, fence-body(skipped), elements(skipped), quality(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-graph",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no ```graph fence — head: Hi, I'm Arthur. What are we working on?\n---\n```yaml\nkind: graph\ndirected: true\nnodes:\n  - id: A\n    label: \"A\"\n  - id: B\n    label: \"B\"\n  - id: C\n    label: \"C\"\n  - id: D\n    label: \"D\"\nedges:\n  - sou…"
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 30405,
+      "tokensIn" : 80592,
+      "tokensOut" : 309,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 80592
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.InlineKindsBenchmark",
+    "methodName" : "rendersMindmapInline",
+    "capability" : "inline-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "```mindmap fence, 145 chars; judge: Candidate correctly implements the required mindmap structure and content. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-reply",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "fence-mindmap",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "fence-body",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 12,
+      "want" : 12,
+      "detail" : "all 12 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "Candidate correctly implements the required mindmap structure and content."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4770,
+      "tokensIn" : 80547,
+      "tokensOut" : 178,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 80547
+    }
+  } ]
+}

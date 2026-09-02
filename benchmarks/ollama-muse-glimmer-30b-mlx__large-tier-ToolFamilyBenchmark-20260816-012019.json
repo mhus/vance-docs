@@ -1,0 +1,208 @@
+{
+  "startedAt": "2026-08-16T01:20:19.031899Z",
+  "completedAt": "2026-08-16T01:39:07.446559Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksCalendarFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'calendar_*' hit via: [calendar_aggregate]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 9,
+        "elapsedMs": 110816,
+        "tokensIn": 470504,
+        "tokensOut": 1802,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 470504
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksDocFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'doc_*' hit via: [doc_write]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 46927,
+        "tokensIn": 98802,
+        "tokensOut": 330,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 98802
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksGraphFamily",
+      "capability": "tool-family",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no tool from family 'graph_*' was called within 30s; tools actually called: [doc_find, doc_read, arthur_action, doc_list_in_folder, doc_list_folders]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 27530,
+        "tokensIn": 247624,
+        "tokensOut": 460,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 247624
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksHookFamily",
+      "capability": "tool-family",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no tool from family 'hook_*' was called within 30s; tools actually called: [arthur_action]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 34374,
+        "tokensIn": 49339,
+        "tokensOut": 916,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49339
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksListFamily",
+      "capability": "tool-family",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no tool from family 'list_*' was called within 30s; tools actually called: [doc_append, doc_read, arthur_action]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 9304,
+        "tokensIn": 148364,
+        "tokensOut": 333,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 148364
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksRecordsFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'records_*' hit via: [records_get_rows, records_get_schema]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 11,
+        "elapsedMs": 426759,
+        "tokensIn": 550124,
+        "tokensOut": 713,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 550124
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksSchedulerFamily",
+      "capability": "tool-family",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no tool from family 'scheduler_*' was called within 30s; tools actually called: [arthur_action]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 97249,
+        "tokensIn": 49328,
+        "tokensOut": 460,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49328
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksScratchFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'scratchpad_*' hit via: [scratchpad_set]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 62197,
+        "tokensIn": 148702,
+        "tokensOut": 823,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 148702
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksSheetFamily",
+      "capability": "tool-family",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no tool from family 'sheet_*' was called within 30s; tools actually called: [doc_info, doc_list, doc_find, arthur_action, doc_list_in_folder, doc_list_folders]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 223784,
+        "tokensIn": 298333,
+        "tokensOut": 540,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 298333
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ToolFamilyBenchmark",
+      "methodName": "picksTreeFamily",
+      "capability": "tool-family",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "family 'tree_*' hit via: [tree_add_child, tree_get]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 56034,
+        "tokensIn": 198789,
+        "tokensOut": 708,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 198789
+      }
+    }
+  ]
+}

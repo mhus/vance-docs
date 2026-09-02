@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-15T12:35:32.755912Z",
+  "completedAt" : "2026-08-15T12:37:36.022525Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "no `{\"type\":\"LEARN\"...}` JSON found in assistant text — head: [tool-call arthur_action] {\"type\":\"ASK_USER\",\"reason\":\"No team document found yet; need to know where to store the stack info.\",\"message\":\"Ich habe noch keine Team-Infos im Projekt gefunden. Soll ich …",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 54880,
+      "tokensIn" : 346874,
+      "tokensOut" : 473,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 346874
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User volunteered stable team information worth remembering.\",\"scope\":\"fact\",\"content\":\"Team is 'platform-core' and works on ms-* repositories.\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 81357,
+      "tokensIn" : 49249,
+      "tokensOut" : 293,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49249
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append) emitted: {\"type\":\"LEARN\",\"reason\":\"User explicitly requests code block at start of answers with no long intro.\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Prefers answers to start directly with a code block,…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 55315,
+      "tokensIn" : 49614,
+      "tokensOut" : 529,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49614
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=replace) emitted: {\"type\":\"LEARN\",\"reason\":\"User explicitly wants a complete style reset to bullet points, technical tone, no small talk.\",\"scope\":\"persona\",\"mode\":\"replace\",\"content\":\"- Response style: concise bullet …",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 10639,
+      "tokensIn" : 49563,
+      "tokensOut" : 382,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 49563
+    }
+  } ]
+}

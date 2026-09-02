@@ -1,0 +1,68 @@
+{
+  "startedAt": "2026-08-15T23:20:57.584066Z",
+  "completedAt": "2026-08-15T23:21:10.256047Z",
+  "modelSlug": "ollama-qwen3.6-35b__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+      "methodName": "reachesImportToolRun1",
+      "capability": "url-import-discovery",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "doc_import_url was called directly (tool was reachable without looking) \u2014 tools: [arthur_action, doc_import_url]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 84699,
+        "tokensIn": 149568,
+        "tokensOut": 185,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 149568
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+      "methodName": "reachesImportToolRun2",
+      "capability": "url-import-discovery",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "doc_import_url was called directly (tool was reachable without looking) \u2014 tools: [arthur_action, doc_import_url]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 6295,
+        "tokensIn": 149571,
+        "tokensOut": 174,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 149571
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+      "methodName": "reachesImportToolRun3",
+      "capability": "url-import-discovery",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "doc_import_url was called directly (tool was reachable without looking) \u2014 tools: [arthur_action, doc_import_url]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 4826,
+        "tokensIn": 199982,
+        "tokensOut": 237,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 199982
+      }
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "startedAt" : "2026-08-16T09:35:34.679775Z",
+  "completedAt" : "2026-08-16T09:36:19.902232Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"content\":\"Team 'platform-core' nutzt Java 25 und Spring Boot 4 als Basis-Stack.\",\"reason\":\"The user provided technical stack details for their team and requested to add them to the team information.…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 22093,
+      "tokensIn" : 38503,
+      "tokensOut" : 136,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 38503
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact) emitted: {\"reason\":\"User provided persona/fact information about their team and work focus.\",\"scope\":\"fact\",\"content\":\"User's team is 'platform-core' and they work on ms-* repositories.\",\"type\":\"LEARN\"}",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 79510,
+      "tokensIn" : 38156,
+      "tokensOut" : 63,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 38156
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "LEARN JSON has wrong mode (expected 'append') — json: {\"content\":\"Stil: Knappe Stichpunkte. Kein Smalltalk. Technischer Ton. Keine ganzen Sätze. Code-Blöcke immer direkt am Anfang der Antwort, ohne Einleitung.\",\"mode\":\"replace\",\"reason\":\"Update persona w…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 15617,
+      "tokensIn" : 77057,
+      "tokensOut" : 203,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 77057
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "LEARN JSON has wrong mode (expected 'replace') — json: {\"reason\":\"User requested a complete change in communication style to concise bullet points and technical tone.\",\"scope\":\"persona\",\"content\":\"Stil: Knappe Stichpunkte. Kein Smalltalk. Technischer Ton.…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 5517,
+      "tokensIn" : 38265,
+      "tokensOut" : 69,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 38265
+    }
+  } ]
+}

@@ -1,0 +1,178 @@
+{
+  "startedAt" : "2026-08-16T15:31:01.424616Z",
+  "completedAt" : "2026-08-16T16:07:12.476501Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsC4ContextDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/c4-notifications.md has neither a ```mermaid fence nor a `source` field — content head: ---\ntitle: Notification System Context\n---\nc4Context\n    title Notification System Context\n    Person(user, \"User\", \"Uses the Notification API to receive updates via various channels.\")\n    System_Bou…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 117556,
+      "tokensIn" : 304615,
+      "tokensOut" : 4663,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 304615
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsErDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/er-shop.md has neither a ```mermaid fence nor a `source` field — content head: erDiagram\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--o{ ORDERLINE : contains\n  ORDERLINE }o--|| PRODUCT : references",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 236835,
+      "tokensIn" : 697820,
+      "tokensOut" : 15632,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 697820
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGanttDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/gantt-onboarding.md has neither a ```mermaid fence nor a `source` field — content head: ---\nkind: diagram\n---\ngantt\n    title Einwöchiges Onboarding\n    dateFormat  YYYY-MM-DD\n    section Setup\n    Installieren von Tools          :a1, 2024-08-20, 1d\n    Accounts erstellen              :a…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 15,
+      "elapsedMs" : 205872,
+      "tokensIn" : 534895,
+      "tokensOut" : 12142,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 534895
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGitGraph",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/gitflow.md has neither a ```mermaid fence nor a `source` field — content head: ---\nkind: diagram\ntitle: GitFlow Diagram\n---\n\ngitGraph\n  commit id:main tag:main\n  branch develop\n  commit id:develop tag:develop\n  branch feature/xyz\n  commit id:feature-xyz\n  branch feature/xyz2\n  c…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 190187,
+      "tokensIn" : 700889,
+      "tokensOut" : 12364,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 700889
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsJourneyDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : null,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=journey produced at benchmark/mermaid/journey-checkout.md (316 chars)",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 23,
+      "elapsedMs" : 516144,
+      "tokensIn" : 818200,
+      "tokensOut" : 35267,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 818200
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsPieDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/pie-languages.md has neither a ```mermaid fence nor a `source` field — content head: ---\nkind: diagram\n---\npie\n    title \"Language distribution\"\n    \"Java\" : 40\n    \"Python\" : 25\n    \"TypeScript\" : 20\n    \"Go\" : 10\n    \"Rust\" : 5",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 30,
+      "elapsedMs" : 271941,
+      "tokensIn" : 1095173,
+      "tokensOut" : 14793,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 1095173
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsSequenceDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/sequence-oauth.md has neither a ```mermaid fence nor a `source` field — content head: kind: diagram\ndiagram: |\n  sequenceDiagram\n    participant U as User\n    participant A as App\n    participant AS as Auth-Server\n    participant RS as Resource-Server\n\n    U->>A: Opens app\n    A->>AS: …",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 19,
+      "elapsedMs" : 330565,
+      "tokensIn" : 698006,
+      "tokensOut" : 18807,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 698006
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsStateDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/state-order.md has neither a ```mermaid fence nor a `source` field — content head: diagram: |\n  stateDiagram-v2\n  [*] --> Created\n  Created --> Paid\n  Created --> Cancelled\n  Paid --> Shipped\n  Paid --> Cancelled\n  Shipped --> Delivered",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 33723,
+      "tokensIn" : 165877,
+      "tokensOut" : 1937,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 165877
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsTimelineDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : null,
+    "effectiveScore" : 0.0,
+    "reason" : "kind=diagram at benchmark/mermaid/timeline-web.md has neither a ```mermaid fence nor a `source` field — content head: timeline\n    title Web History Timeline\n    1991 : World Wide Web invented\n    1995 : JavaScript released\n    2008 : Chrome launched\n    2014 : ES6 (ECMAScript 2015) released\n    2020 : WebAssembly st…",
+    "artifacts" : [ ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 20,
+      "elapsedMs" : 336247,
+      "tokensIn" : 708426,
+      "tokensOut" : 22014,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 708426
+    }
+  } ]
+}

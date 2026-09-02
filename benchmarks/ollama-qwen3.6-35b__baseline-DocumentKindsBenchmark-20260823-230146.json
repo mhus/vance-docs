@@ -1,0 +1,302 @@
+{
+  "startedAt" : "2026-08-23T23:01:46.753385Z",
+  "completedAt" : "2026-08-23T23:08:39.658667Z",
+  "modelSlug" : "ollama-qwen3.6-35b__baseline",
+  "scoreModel" : "v2-graded",
+  "variant" : "baseline",
+  "judgeSlug" : "gemini-gemini-2.5-pro",
+  "knobs" : {
+    "chatTimeoutS" : 600,
+    "waitBudgetMinS" : 300
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsApplicationKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : 0.14285714285714285,
+    "effectiveScore" : 0.14285714285714285,
+    "reason" : "kind=application (0 chars) — 14% — 1/6 checks · missed: document-of-kind, body-not-empty(skipped), structural-shape(skipped), elements(skipped), quality(skipped)",
+    "artifacts" : [ "=== full body (0 chars) ===\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "nothing of kind=application within 300s; kinds in project: [chart, text]"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 38626,
+      "tokensIn" : 163155,
+      "tokensOut" : 437,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 163155
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsChartKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 0.9714285714285714,
+    "effectiveScore" : 0.9714285714285714,
+    "reason" : "kind=chart at benchmark/chart-sales.json (399 chars); judge: All required data points are present and correctly labelled. — 97% — 5/6 checks · missed: elements(4/5)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/chart-sales.json"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must be JSON or YAML with a top-level `chart.chartType` and a non-empty `series[]` array"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.8,
+      "got" : 4,
+      "want" : 5,
+      "detail" : "4/5 (missing: März)"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "All required data points are present and correctly labelled."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 41720,
+      "tokensIn" : 254748,
+      "tokensOut" : 939,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 254748
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsDiagramKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : 0.35714285714285715,
+    "effectiveScore" : 0.35714285714285715,
+    "reason" : "kind=diagram at benchmark/diagram-login-flow.md (123 chars) — 36% — 3/6 checks · missed: structural-shape, elements(skipped), quality(skipped)",
+    "artifacts" : [ "=== full body (123 chars) ===\nflowchart TD\n    A[User] --> B[Login-Formular]\n    B --> C{Validierung}\n    C -->|Fehler| B\n    C -->|Erfolg| D[Dashboard]\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/diagram-login-flow.md"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "body must contain a parseable Mermaid flowchart (either inside a ```mermaid fence in markdown, or as a `source` string in a JSON/YAML body); miss: parsed as JSON/YAML but no `source` string holds the Mermaid DSL"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 43738,
+      "tokensIn" : 291983,
+      "tokensOut" : 882,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 291983
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsGraphKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=graph at benchmark/graph-diamond.json (393 chars); judge: Candidate correctly implements the required diamond graph structure. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/graph-diamond.json"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must be JSON or YAML with top-level `nodes[]` and `edges[]` arrays"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 4,
+      "want" : 4,
+      "detail" : "all 4 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "Candidate correctly implements the required diamond graph structure."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 8781,
+      "tokensIn" : 121919,
+      "tokensOut" : 457,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 121919
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsMindmapKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : 0.35714285714285715,
+    "effectiveScore" : 0.35714285714285715,
+    "reason" : "kind=mindmap at benchmark/mindmap-languages.md (127 chars) — 36% — 3/6 checks · missed: structural-shape, elements(skipped), quality(skipped)",
+    "artifacts" : [ "=== full body (127 chars) ===\ntitle: Programmiersprachen\n\nCompiled:\n  C\n  Rust\n  Go\n\nInterpreted:\n  Python\n  Ruby\n  JavaScript\n\nJVM:\n  Java\n  Kotlin\n  Scala\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mindmap-languages.md"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "body must carry an `items[]` hierarchy (JSON/YAML) OR a nested markdown bullet list; miss: no recognisable hierarchy form (items[], bullets, tree-drawing, numbered list, or header outline)"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 11910,
+      "tokensIn" : 204874,
+      "tokensOut" : 627,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 204874
+    }
+  } ]
+}

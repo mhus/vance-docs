@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-08-16T02:20:15.051842Z",
+  "completedAt": "2026-08-16T02:24:23.818222Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactAppend",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User provided additional team stack detail to remember.\",\"scope\":\"fact\",\"content\":\"Team platform-core uses Java 25 + Spring Boot 4 as base stack.\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 18,
+        "elapsedMs": 107512,
+        "tokensIn": 855143,
+        "tokensOut": 2024,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 855143
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User provided team name and repository pattern to remember for future context.\",\"scope\":\"fact\",\"content\":\"Team: platform-core; works on ms-* repositories.\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 81772,
+        "tokensIn": 49314,
+        "tokensOut": 332,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49314
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaAppend",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=persona, mode=append) emitted: {\"type\":\"LEARN\",\"reason\":\"User requested a persistent style preference to start answers with a code block and no long intro.\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Prefers code block directly a\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 80890,
+        "tokensIn": 49705,
+        "tokensOut": 1197,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49705
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=persona, mode=replace) emitted: {\"type\":\"LEARN\",\"reason\":\"User explicitly requested a complete style replacement to bullet-point technical output.\",\"scope\":\"persona\",\"mode\":\"replace\",\"content\":\"Response style: short bullet points on\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 56830,
+        "tokensIn": 49650,
+        "tokensOut": 474,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49650
+      }
+    }
+  ]
+}

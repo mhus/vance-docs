@@ -1,0 +1,268 @@
+{
+  "startedAt": "2026-08-16T00:31:29.929689Z",
+  "completedAt": "2026-08-16T00:47:56.535126Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceAcronymExpansion",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "K8s expanded to Kubernetes in speakable text",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 10543,
+        "tokensIn": 49778,
+        "tokensOut": 248,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49778
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForCodePath",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "long path/URL `https://github.com/spring-projects/spring-petclinic.git` left in inline-backticks \u2014 TTS would either spell it or read with noise. Belongs in a fence in voice mode.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 48633,
+        "tokensIn": 49798,
+        "tokensOut": 309,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49798
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForLongList",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no new ASSISTANT chat-message appeared within 120s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 69359,
+        "tokensIn": 97485,
+        "tokensOut": 1375,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 97485
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForTable",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no new ASSISTANT chat-message appeared within 120s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 10,
+        "elapsedMs": 112154,
+        "tokensIn": 195838,
+        "tokensOut": 1555,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 195838
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceNotMisused",
+      "capability": "voice-style",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "fence-not-misused (Paris in speakable); judge: The answer is direct and concise, which is natural for a voice reply.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 7823,
+        "tokensIn": 49786,
+        "tokensOut": 194,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49786
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceModeOffMidConversation",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=20 with markdown structure",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 329917,
+        "tokensIn": 200627,
+        "tokensOut": 988,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 200627
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceNumbersSpeakable",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "no ISO date leaked into speakable text (numbers TTS-safe)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 20554,
+        "tokensIn": 49797,
+        "tokensOut": 502,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49797
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceQuestionEndsOpenly",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "last sentence closes the turn cleanly (question, invitation, or clear recommendation)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 21612,
+        "tokensIn": 49789,
+        "tokensOut": 581,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49789
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceShortBulletsAllowedInline",
+      "capability": "voice-style",
+      "pass": false,
+      "score": 0.5,
+      "effectiveScore": 0.5,
+      "reason": "voice short-bullets (3 bullets); judge: The enumeration 'Eins, Zwei, Drei' is stilted for spoken delivery compared to the more natural 'Erstens, Zweitens, Drittens'.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 78611,
+        "tokensIn": 49789,
+        "tokensOut": 295,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49789
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceShortProseReply",
+      "capability": "voice-style",
+      "pass": true,
+      "score": 0.5,
+      "effectiveScore": 0.5,
+      "reason": "voice short prose (1 sentences); judge: The repetitive enumeration sounds robotic and unnatural for spoken language.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 19145,
+        "tokensIn": 49782,
+        "tokensOut": 460,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49782
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSpokenPartNoMarkdownLeak",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "speakable text has no markdown markers (1219 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 10,
+        "elapsedMs": 234680,
+        "tokensIn": 544714,
+        "tokensOut": 1276,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 544714
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSttToleranceCutWord",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "STT cut-off word tolerated, reply references M\u00fcnchen",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 130661,
+        "tokensIn": 220072,
+        "tokensOut": 1148,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 220072
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSttToleranceHomophone",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "STT homophone tolerated, reply references Lissabon",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 22277,
+        "tokensIn": 49789,
+        "tokensOut": 555,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49789
+      }
+    }
+  ]
+}
