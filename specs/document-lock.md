@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/document-lock
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/document-lock.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/document-lock.md (translated from the German specification/public/document-lock.md) — do not edit here. -->
 
----
 # Vancetope — Document Lock
 
 > A soft, voluntary edit protection mechanism per document. Each document carries a `lockedFor: Set<WriterRole>` with the blocked writer classes (`AI`, `USER`, `KIT`); a write attempt by a blocked class is rejected by the `DocumentService`. The lock is orthogonal to the actual permissions system — it prevents accidents, not malicious access. Any participant can release it at any time.

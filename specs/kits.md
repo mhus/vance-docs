@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/kits
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/kits.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/kits.md (translated from the German specification/public/kits.md) — do not edit here. -->
 
----
 # Vancetope — Project Kits
 
 > A **Kit** is a bundle of Skills, Recipes, Documents, Settings, and Server Tools imported into a Project from a Git repository. Kits are the clean answer to "my colleague has a good setup, give it to me" and to reusable setups like `kernel-security`, `python-data-science`, `c-development`. Kit contents are persisted in Vancetope's persistence via their respective services — not in the Project's filesystem. The Kit source tree is merely a transport format.

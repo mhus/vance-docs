@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/knowledge-graph
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/knowledge-graph.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/knowledge-graph.md (translated from the German specification/public/knowledge-graph.md) — do not edit here. -->
 
----
 # Vancetope — Knowledge Graph & Insights
 
 > How Vancetope not only stores knowledge but maps relationships and actively finds connections from a perspective.

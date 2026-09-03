@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/prompt-caching
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/prompt-caching.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/prompt-caching.md (translated from the German specification/public/prompt-caching.md) — do not edit here. -->
 
----
 # Vancetope — Prompt Caching
 
 > Anthropic prompt caching for the `vance-brain` LLM layer. Goal: 60–85% token cost reduction for medium to long Sessions, without Engines (Eddie, Arthur, Ford, Marvin, …) having to modify their code.

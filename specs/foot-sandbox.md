@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/foot-sandbox
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/foot-sandbox.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/foot-sandbox.md (translated from the German specification/public/foot-sandbox.md) — do not edit here. -->
 
----
 # Vancetope — Foot Sandbox
 
 > Permission gate for the Brain-driven **file** and **exec tools** of the Foot-CLI. Every incoming `client-tool-invoke` is checked against a central rule policy: `deny` → `allow` → otherwise **interactive prompt** in the REPL (allow/deny, once/always). Without the sandbox (`--no-sandbox`), everything runs unchecked. The protection catches mistakes — it is **not** an OS security boundary.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/plan-mode
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/plan-mode.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/plan-mode.md (translated from the German specification/public/plan-mode.md) — do not edit here. -->
 
----
 # Vancetope — Plan-Mode
 
 > **Plan-Mode** is Vance's mechanism for *explore-before-execute* in

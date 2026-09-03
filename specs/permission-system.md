@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/permission-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/permission-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/permission-system.md (translated from the German specification/public/permission-system.md) — do not edit here. -->
 
----
 # Permission System — Authorization via Pluggable Providers
 
 > Vancetope authorizes every access via a narrow, abstract interface

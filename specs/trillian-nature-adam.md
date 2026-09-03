@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/trillian-nature-adam
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/trillian-nature-adam.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/trillian-nature-adam.md (translated from the German specification/public/trillian-nature-adam.md) — do not edit here. -->
 
----
 # Trillian Nature-A — `adam`
 
 > The first Nature with its own behavior. What is written here is adam's

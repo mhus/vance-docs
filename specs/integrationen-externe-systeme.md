@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/integrationen-externe-systeme
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/integrationen-externe-systeme.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/integrationen-externe-systeme.md (translated from the German specification/public/integrationen-externe-systeme.md) — do not edit here. -->
 
----
 # Vancetope — Integrations & External Systems
 
 > Defines what Vancetope itself does, what external tools do, and how the connection looks.

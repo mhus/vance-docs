@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/addon-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/addon-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/addon-system.md (translated from the German specification/public/addon-system.md) — do not edit here. -->
 
----
 # Addon System
 
 > Status: v1 production since 2026-06-03 (slideshow as reference Addon).

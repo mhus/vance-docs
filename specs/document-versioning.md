@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/document-versioning
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/document-versioning.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/document-versioning.md (translated from the German specification/public/document-versioning.md) — do not edit here. -->
 
----
 # Vancetope — Document Versioning
 
 > Every overwritten document leaves an archived version. Versions reside in their own Mongo collection, are linked to the active document by a stable `lineageId`, and can be viewed, restored, or deleted individually. This feature can be disabled per Project via a setting cascade.

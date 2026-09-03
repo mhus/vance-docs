@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/work-target
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/work-target.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/work-target.md (translated from the German specification/public/work-target.md) — do not edit here. -->
 
----
 # Vancetope — WorkTarget & Generic File/Exec Tool-Layer
 
 > A **WorkTarget** describes, per `ThinkProcess`, which backend the

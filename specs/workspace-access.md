@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/workspace-access
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/workspace-access.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/workspace-access.md (translated from the German specification/public/workspace-access.md) — do not edit here. -->
 
----
 # Vancetope — Workspace Access (Web-UI ↔ Brain)
 
 > Defines how the Web-UI accesses a Project's Workspace. Workspaces are **pod-sticky** (Folder + Snapshots live on a specific Brain process — the Project's Home Pod), but the Web-UI hits any Brain replica. This spec describes the two-tier routing architecture, pod discovery, routing cache, REST endpoints, and failure behavior.

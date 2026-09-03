@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-binder
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-binder.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-binder.md (translated from the German specification/public/app-binder.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: binder`
 
 > Lightweight **reference binder** built on the [doc-kind-application](/specs/doc-kind-application)

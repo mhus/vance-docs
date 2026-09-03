@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-data
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-data.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-data.md (translated from the German specification/public/doc-kind-data.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `data`
 
 > Specifies the **`data` payload** for documents that carry an arbitrary, free-form data tree — objects, arrays, and primitive types. Designed as a **container that other tools or processes consume**, not as a thing humans hand-edit through a structured editor. The Web-UI offers a Preview-only viewer; raw editing is the only write path.

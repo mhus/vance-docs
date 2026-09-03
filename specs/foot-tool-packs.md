@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/foot-tool-packs
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/foot-tool-packs.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/foot-tool-packs.md (translated from the German specification/public/foot-tool-packs.md) — do not edit here. -->
 
----
 # Foot Tool Packs — Two Levels, One Selection, One Trust Gate
 
 > How `vance-foot` loads MCP servers and REST APIs as client tools: definitions from the global **and** project-local `.vancetope`, selection via `.vancetope/config.yaml`, consent required for packs originating from the working directory.

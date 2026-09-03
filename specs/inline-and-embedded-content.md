@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/inline-and-embedded-content
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/inline-and-embedded-content.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/inline-and-embedded-content.md (translated from the German specification/public/inline-and-embedded-content.md) — do not edit here. -->
 
----
 # Vancetope — Inline & Embedded Content
 
 > Defines how structured content (tables, mindmaps, graphs, code, images, PDFs, ...) is displayed in chat messages and document bodies. Two delivery channels, one common render path in the frontend.

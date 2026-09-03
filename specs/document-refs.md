@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/document-refs
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/document-refs.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/document-refs.md (translated from the German specification/public/document-refs.md) — do not edit here. -->
 
----
 # Vancetope — Document References
 
 > A **Document Reference** addresses a document from within another document — in a Recipe, Skill, Guard, Embed, Link. There is **one** grammar for this, deterministically (no LLM) resolved by a central `DocumentRefResolver`. On a web interface, the same grammar is used as a **URI** with schema `vance:`; in Config/YAML, it's a **bare path** without a schema. The path part is identical.

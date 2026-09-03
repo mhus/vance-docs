@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/audit-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/audit-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/audit-system.md (translated from the German specification/public/audit-system.md) — do not edit here. -->
 
----
 # Vancetope — Audit System
 
 > Central audit pipeline for Vancetope Server (Brain + Anus). Producers emit typed audit events; an `AuditService` normalizes, buffers, and fans them out to a configurable list of `AuditConsumer` implementations. Synchronous or asynchronous, switchable at runtime, with a bounded queue + drop counter and guaranteed drain on shutdown.

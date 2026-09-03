@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-tree
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-tree.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-tree.md (translated from the German specification/public/doc-kind-tree.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `tree`
 
 > Specifies the **`tree` payload** for documents that carry a hierarchical, ordered set of items. Builds directly on the `list` schema — same per-item shape, same three on-disk formats — and adds `children`-based nesting.

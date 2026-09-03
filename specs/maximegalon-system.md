@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/maximegalon-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/maximegalon-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/maximegalon-system.md (translated from the German specification/public/maximegalon-system.md) — do not edit here. -->
 
----
 # Maximegalon — Concerns with Clarification
 
 > The entity behind the Inbox: a **concern leading to exactly one decision**, with a

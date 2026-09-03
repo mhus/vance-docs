@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/architektur-scopes-clients
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/architektur-scopes-clients.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/architektur-scopes-clients.md (translated from the German specification/public/architektur-scopes-clients.md) — do not edit here. -->
 
----
 # Vancetope — Architecture: Scopes & Clients
 
 > Defines the hierarchy of Scopes, the Client model, and the Session concept.

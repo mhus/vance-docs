@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/responsive-focus-layout
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/responsive-focus-layout.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/responsive-focus-layout.md (translated from the German specification/public/responsive-focus-layout.md) — do not edit here. -->
 
----
 # Responsive Focus Layout
 
 > Layout pattern for multi-zone editors with fluid resizing based on user attention. Implemented in `<EditorShell>` (`specification/web-ui.md` §7.2.1) and validated in the pilot at `/chat` (`planning/web-ui-focus-pilot.md`).

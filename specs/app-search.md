@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-search
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-search.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-search.md (translated from the German specification/public/app-search.md) — do not edit here. -->
 
----
 # Application `app: search` — Search for Humans
 
 > Addon `vance-addon-brain-zarniwoop`. An interface over the existing

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/fook-upstream
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/fook-upstream.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/fook-upstream.md (translated from the German specification/public/fook-upstream.md) — do not edit here. -->
 
----
 # Vancetope — Fook Upstream Transport
 
 > Locally triaged Fook tickets are forwarded to an external ticket system

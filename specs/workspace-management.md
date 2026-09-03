@@ -4,7 +4,7 @@ parent: Specs
 permalink: /specs/workspace-management
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/workspace-management.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/workspace-management.md (translated from the German specification/public/workspace-management.md) — do not edit here. -->
 
 # Vancetope — Workspace Management
 

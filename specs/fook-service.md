@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/fook-service
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/fook-service.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/fook-service.md (translated from the German specification/public/fook-service.md) — do not edit here. -->
 
----
 # Vancetope — Fook Service
 
 > Built-in bug/feature triage system: a reporter (LLM or user) sends

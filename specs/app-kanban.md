@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-kanban
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-kanban.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-kanban.md (translated from the German specification/public/app-kanban.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: kanban`
 
 > Self-contained Kanban-board pattern built on the `kind: application` foundation (see `doc-kind-application.md`). One folder = one board. Sub-folders = columns. One `kind: card` file per ticket. Derived artifacts (`_board.md`, `_stats.yaml`) regenerate from the source cards.

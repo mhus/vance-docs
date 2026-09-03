@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/trillian-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/trillian-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/trillian-engine.md (translated from the German specification/public/trillian-engine.md) — do not edit here. -->
 
----
 # Vancetope — Trillian Engine
 
 > **Trillian** is Vancetope's **Agentic User Loop** — a layer above

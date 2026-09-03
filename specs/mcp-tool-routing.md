@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/mcp-tool-routing
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/mcp-tool-routing.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/mcp-tool-routing.md (translated from the German specification/public/mcp-tool-routing.md) — do not edit here. -->
 
----
 # Vancetope — MCP & Tool-Routing
 
 > Defines where MCP tools reside (server vs. client), how routing works, and what happens when no client is present.

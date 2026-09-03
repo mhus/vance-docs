@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-journal
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-journal.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-journal.md (translated from the German specification/public/app-journal.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: journal`
 
 > Journal container for `kind: journal-entry` pages, built on the

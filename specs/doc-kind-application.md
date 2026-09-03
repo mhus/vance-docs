@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-application
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-application.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-application.md (translated from the German specification/public/doc-kind-application.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `application`
 
 > Specifies the **`application` payload** for documents named `_app.yaml` — the manifest at the root of a Vancetope "application folder". The folder + manifest convention turns an otherwise-flat tree of documents into a self-contained domain workspace (calendar suite, kanban board, wiki, …) with its own derived artifacts and per-app Java service.

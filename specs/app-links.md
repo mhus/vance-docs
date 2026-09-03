@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-links
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-links.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-links.md (translated from the German specification/public/app-links.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: links`
 
 > **Link Manager** built on the [doc-kind-application](/specs/doc-kind-application) foundation.

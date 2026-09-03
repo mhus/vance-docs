@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/hactar-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/hactar-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/hactar-engine.md (translated from the German specification/public/hactar-engine.md) — do not edit here. -->
 
----
 # Hactar Engine — Script Executor
 
 > **Status: production (v2.0).** Hactar is the pure script-execution

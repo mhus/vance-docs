@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/client-protokoll-erweiterbarkeit
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/client-protokoll-erweiterbarkeit.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/client-protokoll-erweiterbarkeit.md (translated from the German specification/public/client-protokoll-erweiterbarkeit.md) — do not edit here. -->
 
----
 # Vancetope — Client Protocol & Extensibility
 
 > Defines the WebSocket protocol, how external systems connect as clients, and how Vancetope thereby becomes an open platform.

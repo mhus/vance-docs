@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/recipes
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/recipes.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/recipes.md (translated from the German specification/public/recipes.md) — do not edit here. -->
 
----
 # Vancetope — Recipes
 
 > A **Recipe** is a named, reusable blueprint for a worker process: Engine + Default-Params + Prompt-Prefix + Tool-Adjustments. When spawned (e.g., by Arthur via `process_spawn`), the Recipe is resolved into a concrete `ThinkProcessDocument`. The separation of Engine ↔ Recipe is the clean two-layer architecture that allows Vancetope to scale without engine proliferation.

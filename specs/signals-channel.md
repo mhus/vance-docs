@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/signals-channel
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/signals-channel.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/signals-channel.md (translated from the German specification/public/signals-channel.md) — do not edit here. -->
 
----
 # Signals Channel — Generic Ephemeral Per-Document Signals
 
 > Live WS channel `signals`: subscribe per document path and receive **ephemeral,

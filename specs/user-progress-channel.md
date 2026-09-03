@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/user-progress-channel
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/user-progress-channel.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/user-progress-channel.md (translated from the German specification/public/user-progress-channel.md) — do not edit here. -->
 
----
 # Vancetope — User Progress Channel
 
 > Live status for the user while Engines are working. **One** message class `PROCESS_PROGRESS` with three payload variants, separate from the authoritative chat stream. Ephemeral, not in conversation history.

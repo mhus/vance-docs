@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-records
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-records.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-records.md (translated from the German specification/public/doc-kind-records.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `records`
 
 > Specifies the **`records` payload** for documents that carry a flat, ordered table — a fixed schema in the metadata plus one record per item, with each record holding values for the schema's fields. Direct extension of [`kind: list`](/specs/doc-kind-items): same flat structure, same Bullet-per-Item-Form in Markdown, but per item a map of schema fields instead of a single `text` string.

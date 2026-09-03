@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/session-crop
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/session-crop.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/session-crop.md (translated from the German specification/public/session-crop.md) — do not edit here. -->
 
----
 # Vancetope — Session Modify / Crop
 
 > "Crop" removes messages from a Session's **memory** without deleting them.

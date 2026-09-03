@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/process-delegate
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/process-delegate.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/process-delegate.md (translated from the German specification/public/process-delegate.md) — do not edit here. -->
 
----
 # Vancetope — `process_create_delegate`
 
 > A tool that starts a new Think Process **without the caller needing to know the Recipe name**. Instead, the caller describes the task in natural language; a bundled Selector Recipe selects the appropriate entry from the Project Recipe inventory and delegates to the existing `process_spawn` spawn path. If nothing matches: `decision: NONE` — the caller decides on the fallback (typically: spawn Slartibartfast for a freshly generated Strategy, or ask the user for clarification).

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/execution-modes-trigger
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/execution-modes-trigger.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/execution-modes-trigger.md (translated from the German specification/public/execution-modes-trigger.md) — do not edit here. -->
 
----
 # Vancetope — Execution Modes & Triggers
 
 > Defines how Think Processes are triggered and how the unified client session model works.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/agrajag-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/agrajag-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/agrajag-engine.md (translated from the German specification/public/agrajag-engine.md) — do not edit here. -->
 
----
 # Vancetope — Agrajag (Tool Health Diagnosis Engine)
 
 > Agrajag checks tools, classifies their errors, and writes their health state. In the Adams universe, Agrajag is one half of the diagnostic duo "Agrajag & Frankie"; in Vancetope, it is the first **Service Engine** (see [think-engines §7b](/specs/think-engines)) — an Engine that does not live in the user chat but works asynchronously as a system-driven specialist.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/marvin-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/marvin-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/marvin-engine.md (translated from the German specification/public/marvin-engine.md) — do not edit here. -->
 
----
 # Vancetope — Marvin Think Engine
 
 > **Marvin** is the **deep-think** Engine. It builds a

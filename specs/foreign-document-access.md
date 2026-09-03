@@ -4,7 +4,7 @@ parent: Specs
 permalink: /specs/foreign-document-access
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/foreign-document-access.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/foreign-document-access.md (translated from the German specification/public/foreign-document-access.md) — do not edit here. -->
 
 # Foreign Document Access
 

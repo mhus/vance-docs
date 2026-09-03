@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/events
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/events.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/events.md (translated from the German specification/public/events.md) — do not edit here. -->
 
----
 # Vancetope — Events
 
 > An **Event** is an externally triggerable, REST-accessible trigger that starts a workflow run. Events are YAML documents located under `_vance/events/<name>.yaml` in the Document Layer, are resolved via the usual cascade (`Project → _tenant`), and are addressable via a JWT-free endpoint: `GET|POST /brain/{tenant}/event/{project}/{event}`.

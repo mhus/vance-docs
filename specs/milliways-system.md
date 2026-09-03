@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/milliways-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/milliways-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/milliways-system.md (translated from the German specification/public/milliways-system.md) — do not edit here. -->
 
----
 # Vancetope — Milliways (Sharing System)
 
 > Persona: **Milliways**, the Restaurant at the End of the Universe (*The Hitchhiker's Guide to the Galaxy*) — the place where you sit down at a table to watch something together.

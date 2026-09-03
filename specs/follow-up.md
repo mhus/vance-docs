@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/follow-up
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/follow-up.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/follow-up.md (translated from the German specification/public/follow-up.md) — do not edit here. -->
 
----
 # Vancetope — Follow-Up Service
 
 > REST endpoint that generates context-aware follow-up suggestions from a text fragment plus cursor position. Single-shot, no Process-Spawn — built on the [LightLlmService](/specs/light-llm-service) with Recipe `follow-up` as the configuration profile.

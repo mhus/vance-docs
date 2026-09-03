@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/mcp-server
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/mcp-server.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/mcp-server.md (translated from the German specification/public/mcp-server.md) — do not edit here. -->
 
----
 # Vancetope — MCP Server
 
 > Vancetope exposes its **own** tool inventory as an **MCP server** under

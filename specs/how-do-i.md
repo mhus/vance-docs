@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/how-do-i
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/how-do-i.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/how-do-i.md (translated from the German specification/public/how-do-i.md) — do not edit here. -->
 
----
 # Vancetope — `how_do_i` Discovery Tool
 
 > A discovery tool that allows Engines, when uncertain about the correct procedure, to provide a natural language intent description to an internal `DiscoveryService`. The service uses a Recipe (`how-do-i`) as a config layer (model alias + Pebble template), calls the LLM **directly** (no Process spawn), and passes the full source catalog (all Engine Manuals + Skills + Tool Descriptions) via the Pebble variable `&#123;{ sources }}`.

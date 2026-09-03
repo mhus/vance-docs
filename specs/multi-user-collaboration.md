@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/multi-user-collaboration
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/multi-user-collaboration.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/multi-user-collaboration.md (translated from the German specification/public/multi-user-collaboration.md) — do not edit here. -->
 
----
 # Vancetope — Multi-User, Teams & Collaboration
 
 > Defines how Tenants, Teams, Users, and Project sharing work.

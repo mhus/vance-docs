@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-map
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-map.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-map.md (translated from the German specification/public/doc-kind-map.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `map`
 
 > Specifies the **`map` payload** for documents that carry geospatial features — markers (points), areas (polygons) and routes (polylines). Rendered in the Web-UI with Leaflet on top of OpenStreetMap tiles by default. JSON and YAML only on disk; markdown is intentionally **not** supported.

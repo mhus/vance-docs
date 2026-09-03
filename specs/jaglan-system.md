@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/jaglan-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/jaglan-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/jaglan-system.md (translated from the German specification/public/jaglan-system.md) — do not edit here. -->
 
----
 # Vancetope — Jaglan (Mounted Docs)
 
 > Persona: **Jaglan Beta** (*The Hitchhiker's Guide to the Galaxy*) — the planet where all the rubbish collects. This fits for an unsorted heap of foreign files that we do not curate.

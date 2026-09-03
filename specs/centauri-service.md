@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/centauri-service
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/centauri-service.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/centauri-service.md (translated from the German specification/public/centauri-service.md) — do not edit here. -->
 
----
 # Vancetope — Centauri Service (Feed-Stream-System)
 
 > Persona: **Alpha Centauri** (*The Hitchhiker's Guide to the Galaxy*) — the place where Earth's demolition plans "have been on public display for fifty of your Earth years." Available information that no one has read.

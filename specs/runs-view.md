@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/runs-view
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/runs-view.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/runs-view.md (translated from the German specification/public/runs-view.md) — do not edit here. -->
 
----
 # Vancetope — Run View
 
 > A **Run View** (`runs.html`) displays the *instances* of all runtimes that produce them: Magrathea workflow runs, plan-shaped ThinkProcesses (Vogon, Marvin), and Damogran Compose runs. It never shows definitions — those have their own editors.

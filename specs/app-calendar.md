@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-calendar
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-calendar.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-calendar.md (translated from the German specification/public/app-calendar.md) — do not edit here. -->
 
----
 # Vancetope — Application `app: calendar`
 
 > Specifies the **calendar-suite application** — the first Reference Implementation of the `kind: application` pattern. A folder with `_app.yaml` (`$meta.app: calendar`) becomes a project planning app with one Calendar file per Lane, auto-generated Gantt, and conflict overview.

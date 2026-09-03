@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/identity-credentials
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/identity-credentials.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/identity-credentials.md (translated from the German specification/public/identity-credentials.md) — do not edit here. -->
 
----
 # Vancetope — Identity, Credentials & Tool-Auth
 
 > Defines the unified account model, how credentials work, and why everything is tied to an account.

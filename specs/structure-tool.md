@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/structure-tool
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/structure-tool.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/structure-tool.md (translated from the German specification/public/structure-tool.md) — do not edit here. -->
 
----
 # Structure Tool
 
 > The **`structure` tool** converts unstructured content into a schema-compliant JSON object. Input is a free-text prompt plus a target structure; output is validated JSON. The schema can be provided directly, loaded by name from a Schema Registry, or inferred from a textual description. The tool is a **Built-in Server Tool** (not an Engine, not a Process) — atomic, synchronous from the caller's perspective, no lifecycle. In case of schema violation, an internal validation loop runs with reason feedback to the LLM; if there's insufficient input information, the tool returns a `need-more-input` result, which the caller (typically a Chat Engine) relays to the user verbally.

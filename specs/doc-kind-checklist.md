@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-checklist
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-checklist.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-checklist.md (translated from the German specification/public/doc-kind-checklist.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `checklist`
 
 > Specifies the **`checklist` payload** for documents that carry a flat list of actionable items with per-item status — todos, action-items from meetings, Review-Checklists, Recipes, Pre-Flight-Checks. Extends the `kind: list` family with a `status` field. Markdown round-trip uses extended GFM checkbox syntax (`- [<char>] text`).

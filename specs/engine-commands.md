@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/engine-commands
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/engine-commands.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/engine-commands.md (translated from the German specification/public/engine-commands.md) — do not edit here. -->
 
----
 # Vancetope — Engine Commands
 
 > An **Engine Command** is a generic, named function call to a **running** Think Process — the runtime-mutable control layer above the spawn-static Recipe. Where a Recipe seeds the initial state at spawn and then remains unchanged, the Command channel allows setting, reconfiguring, and cleaning up behavior *during operation* — without respawn. The channel **deliberately has no fixed command vocabulary**: it transports `name` + `args`; *which* verbs exist and *what* an Engine does with them is up to the Engine.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/tool-availability
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/tool-availability.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/tool-availability.md (translated from the German specification/public/tool-availability.md) — do not edit here. -->
 
----
 # Vancetope — Tool Availability
 
 > Model for the **health status of tools** at runtime: when a tool is usable, when it is not, for how long, and why. This is the state layer on which the Agrajag Service Engine (see [agrajag-engine](/specs/agrajag-engine)) operates. This spec exclusively defines the **data model** and the **read/write paths** — diagnostic logic belongs in agrajag-engine.md.

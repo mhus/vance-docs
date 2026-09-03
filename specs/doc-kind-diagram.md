@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-diagram
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-diagram.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-diagram.md (translated from the German specification/public/doc-kind-diagram.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `diagram`
 
 > Specifies the **`diagram` payload** for documents that carry a single, text-defined diagram (flowchart, sequence, state, ER, gantt, gitGraph, …) rendered to SVG. The renderer is **Mermaid** (`mermaid`, MIT) — a text-DSL → SVG library. The diagram source is an opaque string in Mermaid syntax; the renderer parses it at display time, the codec does not.

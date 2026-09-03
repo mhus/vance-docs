@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/user-notification-channel
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/user-notification-channel.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/user-notification-channel.md (translated from the German specification/public/user-notification-channel.md) — do not edit here. -->
 
----
 # User Notification Side-Channel
 
 > Short, attention-grabbing user pings — "BEEP, finished XXX". Separate

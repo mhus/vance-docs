@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/webdav
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/webdav.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/webdav.md (translated from the German specification/public/webdav.md) — do not edit here. -->
 
----
 # Vancetope — WebDAV Access
 
 > Access Project documents via **WebDAV** at `/brain/{tenant}/webdav/{project}/{path...}`. The target clients are standard clients like **macOS Finder** (mounted volume) and **Obsidian** (WebDAV Sync plugin). WebDAV is a pure **View** on the document store — not a new data store, no separate authorization model.

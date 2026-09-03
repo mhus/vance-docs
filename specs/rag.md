@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/rag
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/rag.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/rag.md (translated from the German specification/public/rag.md) — do not edit here. -->
 
----
 # Vancetope — RAG (Retrieval-Augmented Generation)
 
 > How Vancetope places documents into a vector index, how the index is synchronized with the Project lifecycle, and how LLM Engines query hits from this index. Builds upon the existing, low-level RAG subsystem (`RagDocument`/`RagChunkDocument`/`RagBackend`) and adds a canonical **Project RAG layer** on top.

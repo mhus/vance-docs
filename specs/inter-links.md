@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/inter-links
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/inter-links.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/inter-links.md (translated from the German specification/public/inter-links.md) — do not edit here. -->
 
----
 # Vancetope — Inter-Links
 
 > A link points not just to a **document**, but to a **location within an app**: page 3 of a Workbook, a page in the Wiki, a board in the Canvasbook. No separate data model is stored for this; instead, **a parameter** is added to the existing [`vance:` grammar](/specs/document-refs) — `?entry=<handle>`. Only the app that issued the handle knows what it means.

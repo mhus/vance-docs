@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-timeline
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-timeline.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-timeline.md (translated from the German specification/public/doc-kind-timeline.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `timeline`
 
 > Periods and points in time on a **self-declared axis** — geological eras in

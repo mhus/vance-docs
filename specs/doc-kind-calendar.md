@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-calendar
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-calendar.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-calendar.md (translated from the German specification/public/doc-kind-calendar.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `calendar`
 
 > Specifies the **`calendar` payload** for documents that carry a flat list of events — meetings, deadlines, holidays, recurring activities. The renderer is a Vancetope-internal Vue component (`CalendarView.vue`) with **agenda** (chronological list) and **month** (grid) views. Read-only in v1; edits go through the `Raw` tab.

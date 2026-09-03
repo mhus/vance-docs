@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/mobile-ui
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/mobile-ui.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/mobile-ui.md (translated from the German specification/public/mobile-ui.md) — do not edit here. -->
 
----
 # Vancetope Mobile-UI — Specification
 
 > Status: v1 Initial Draft. Binding for the development of the Mobile App under `repos/vance/client/packages/vance-fingers/`.

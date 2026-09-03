@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-canvasbook
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-canvasbook.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-canvasbook.md (translated from the German specification/public/app-canvasbook.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: canvasbook`
 
 > Folder container for multiple `kind: canvas` pages — a "book" of

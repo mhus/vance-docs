@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/slartibartfast-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/slartibartfast-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/slartibartfast-engine.md (translated from the German specification/public/slartibartfast-engine.md) — do not edit here. -->
 
----
 # Slartibartfast Engine — Plan-Architect
 
 > **Status: Implemented (M0–M6).** This spec describes the

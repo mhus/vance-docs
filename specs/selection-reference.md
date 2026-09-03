@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/selection-reference
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/selection-reference.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/selection-reference.md (translated from the German specification/public/selection-reference.md) — do not edit here. -->
 
----
 # Selection Reference — what a message pointed to
 
 > An app selection travels as a **per-turn hint** and is then forgotten.

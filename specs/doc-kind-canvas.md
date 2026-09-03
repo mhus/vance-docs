@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-canvas
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-canvas.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-canvas.md (translated from the German specification/public/doc-kind-canvas.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `canvas`
 
 > First **2D spatial** surface in Vancetope: an area where notes,

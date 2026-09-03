@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/recipe-routing
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/recipe-routing.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/recipe-routing.md (translated from the German specification/public/recipe-routing.md) — do not edit here. -->
 
----
 # Vancetope — Recipe Routing
 
 > How a Spawn call reaches a specific **Recipe**. The standard trio **eddie / arthur / ford** handles the default path without LLM dispatch; all other Engines are loaded via their Recipes only upon **explicit request**. Without an explicit `recipe=`, the `RecipeSelectorService` decides: a **curated trigger keyword match** routes deterministically (no LLM), otherwise a **semantic LLM call over the full inventory**. A blind Recipe **name** match on free goal text is deliberately **not** implemented (it cannot separate intent from content — "a mind map *about* Python" is not a Python task).

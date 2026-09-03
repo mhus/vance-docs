@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/fenchurch-service
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/fenchurch-service.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/fenchurch-service.md (translated from the German specification/public/fenchurch-service.md) — do not edit here. -->
 
----
 # Vancetope — Fenchurch Image-Generation Service
 
 > Vancetope's sole path for **newly generated images**. Persona: Fenchurch (Arthur Dent's great love, *So Long, and Thanks for All the Fish*) — intuition, creative images. Implemented as a **service + tool-set**, not a worker engine: synchronous, single provider call per image, no dedicated `ThinkProcess` lifecycle.

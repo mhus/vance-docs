@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/prompts-and-manuals
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/prompts-and-manuals.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/prompts-and-manuals.md (translated from the German specification/public/prompts-and-manuals.md) — do not edit here. -->
 
----
 # Vancetope — Prompts and Manuals
 
 > How Engine and Recipe Prompts stay compact: Capabilities, How-Tos, and domain knowledge reside in **Manuals**, which the LLM loads on demand via `manual_read('name')`. The Prompt only states **what exists** and **when to load it**, not the content itself.

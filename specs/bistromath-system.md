@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/bistromath-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/bistromath-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/bistromath-system.md (translated from the German specification/public/bistromath-system.md) — do not edit here. -->
 
----
 # Vancetope — Bistromath (Application Runtime)
 
 > Status: **Iteration 3 built, verified in browser** — Hello World, the data path from the guest, the Brain REST surface `vance.rest` (§7.1b), agent access to the running app (§7.1c), five libraries (§9), and **governance** including the approval request via the Inbox (§10a). This spec defines the seam, data model, and contracts.

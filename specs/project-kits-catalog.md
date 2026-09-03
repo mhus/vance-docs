@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/project-kits-catalog
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/project-kits-catalog.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/project-kits-catalog.md (translated from the German specification/public/project-kits-catalog.md) — do not edit here. -->
 
----
 # Vancetope — Project Kits Catalog
 
 > Tenant-wide catalog of pre-configured Kits, serving as a selection list

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/vault-access
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/vault-access.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/vault-access.md (translated from the German specification/public/vault-access.md) — do not edit here. -->
 
----
 # Vault Access — Secret Manager (External or Settings)
 
 > A Secret channel with **one** reference form, integrated into the existing

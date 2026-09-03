@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/session-compact
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/session-compact.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/session-compact.md (translated from the German specification/public/session-compact.md) — do not edit here. -->
 
----
 # Vancetope — Session Compact (manual)
 
 > "Compact" manually triggers memory compaction for a Session: older chat turns

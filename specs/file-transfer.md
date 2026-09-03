@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/file-transfer
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/file-transfer.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/file-transfer.md (translated from the German specification/public/file-transfer.md) — do not edit here. -->
 
----
 # Vancetope — File Transfer (Foot ↔ Brain)
 
 > Defines the protocol for transferring files between a Foot client and a Brain server in both directions. Data lands on the respective receiver's disk (Brain: Workspace-RootDir, Foot: Foot-Workspace). What the agent does with received files (e.g., Document-Import) is explicitly *not* part of this spec — transfer ends on the HDD.

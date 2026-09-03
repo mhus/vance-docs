@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/foot-remote-control
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/foot-remote-control.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/foot-remote-control.md (translated from the German specification/public/foot-remote-control.md) — do not edit here. -->
 
----
 # Vancetope — Foot Remote Control
 
 > Remote control of running CLI clients via the existing Brain WebSocket.

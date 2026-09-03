@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-wiki
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-wiki.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-wiki.md (translated from the German specification/public/app-wiki.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: wiki`
 
 > Name-addressed link-graph wiki over `kind: workpage` pages, built on the

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/llm-resource-management
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/llm-resource-management.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/llm-resource-management.md (translated from the German specification/public/llm-resource-management.md) — do not edit here. -->
 
----
 # Vancetope — LLM Resource Management
 
 > Defines how LLM access is managed: providers, keys, quotas, routing.

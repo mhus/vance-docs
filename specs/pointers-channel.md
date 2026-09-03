@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/pointers-channel
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/pointers-channel.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/pointers-channel.md (translated from the German specification/public/pointers-channel.md) — do not edit here. -->
 
----
 # Pointers Channel — Ephemeral Live Cursors
 
 > Live WS channel `pointers`: subscribe per document path, send your own

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/completion-guard
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/completion-guard.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/completion-guard.md (translated from the German specification/public/completion-guard.md) — do not edit here. -->
 
----
 # Vancetope — Completion Guard
 
 > A **Completion Guard** ensures that—especially with simpler models—"everything is truly done" at the end of a work unit. *What* "done" means and *how* it is reacted to is freely defined by a **JS Guard script**; the **mechanism** is generic: at the point where an Engine completes a work unit and would *deliver/yield*, the Guard script runs. It decides imperatively (LLM-Judge, Doc-Reads, real checks via Tools) and acts imperatively—typically, it injects a follow-up into its own Pending-Queue via `vance.guard.continueWith(prompt)`, so that the Engine continues working instead of yielding.

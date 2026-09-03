@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/user-interaction
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/user-interaction.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/user-interaction.md (translated from the German specification/public/user-interaction.md) — do not edit here. -->
 
----
 # Vancetope — User Interaction
 
 > How the system communicates with humans when non-chat mechanisms are needed — decision templates, free-text feedback, ordering inputs, structured outputs (texts, images, documents). Plus: how the user is notified of new items, across channels.

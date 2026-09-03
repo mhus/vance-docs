@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/jeltz-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/jeltz-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/jeltz-engine.md (translated from the German specification/public/jeltz-engine.md) — do not edit here. -->
 
----
 # Vancetope — Jeltz Think Engine
 
 > **Jeltz** is the structured single-shot engine of the Vancetope engine set — the Vogon Constructor Captain who does nothing without a form. It takes a question and a JSON schema, calls an LLM, validates the response against the schema, and returns the validated JSON as a result. In case of schema violations, it retries up to a configurable limit; otherwise, it returns a structured error.

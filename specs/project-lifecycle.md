@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/project-lifecycle
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/project-lifecycle.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/project-lifecycle.md (translated from the German specification/public/project-lifecycle.md) — do not edit here. -->
 
----
 # Vancetope — Project Lifecycle
 
 > Defines the status set of a Project, Pod ownership, the `bring` / `suspend` / `close` transitions, and the relationship to the Workspace. It complements [workspace-management.md](/specs/workspace-management) (what happens *within* a Project on disk) and [session-lifecycle.md](/specs/session-lifecycle) (what runs *within* a Session) — this spec is the overarching framework. Cluster-wide distribution of Projects to Pods (who calls `bring` when on which Pod) is covered in cluster-project-management.md, which sits one layer above.

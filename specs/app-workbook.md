@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-workbook
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-workbook.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-workbook.md (translated from the German specification/public/app-workbook.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: workbook`
 
 > Notion-style Workbook built on the `kind: application` foundation (see

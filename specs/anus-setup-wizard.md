@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/anus-setup-wizard
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/anus-setup-wizard.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/anus-setup-wizard.md (translated from the German specification/public/anus-setup-wizard.md) — do not edit here. -->
 
----
 # Vancetope — Anus Setup Wizard
 
 > Interactive bootstrap mode of the Anus Admin Shell for **initial provisioning of a fresh Vancetope deployment**: creates Tenant + User, configures AI Provider (API Key, Model, Aliases, Embeddings) and optionally the complete Research Endpoint Cascade (Serper + keyless providers). Call: `anus --setup`. One-shot mode like [`--sudo`](#) — the process terminates after Save or Quit.

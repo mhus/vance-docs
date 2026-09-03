@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/voice-mode
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/voice-mode.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/voice-mode.md (translated from the German specification/public/voice-mode.md) — do not edit here. -->
 
----
 # Vancetope — Voice Mode
 
 > A dynamic per-turn toggle that signals Engines (Arthur, Eddie, later Foot-with-TTS): *"User hears this response and/or speaks the next input."* Output becomes shorter, long/structured parts are wrapped in Markdown constructs that the existing `MarkdownToSpeech` stripper skips. Input is interpreted tolerantly for STT artifacts. The toggle is a single boolean — the UI may have multiple switches, but the Brain receives **one** signal.

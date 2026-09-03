@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-gtd
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-gtd.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-gtd.md (translated from the German specification/public/app-gtd.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: gtd`
 
 > Getting-Things-Done container via `kind: action` pages, in the **Things** paradigm

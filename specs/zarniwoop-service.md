@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/zarniwoop-service
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/zarniwoop-service.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/zarniwoop-service.md (translated from the German specification/public/zarniwoop-service.md) — do not edit here. -->
 
----
 # Vancetope — Zarniwoop Service (Research / Search Provider System)
 
 > Persona: **Zarniwoop** (*The Hitchhiker's Guide to the Galaxy*) — the Imperial employee who has an electronic model of the universe in his office. If you want to know something, you don't ask the universe directly — you ask Zarniwoop, and he knows which sub-index is responsible.

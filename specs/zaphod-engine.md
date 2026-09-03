@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/zaphod-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/zaphod-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/zaphod-engine.md (translated from the German specification/public/zaphod-engine.md) — do not edit here. -->
 
----
 # Vancetope — Zaphod Think Engine
 
 > **Zaphod** is the **Multi-Head** engine: several independent agents ("heads") work on the same question, and Zaphod synthesizes their views into one answer. While Marvin decomposes **vertically** (sub-tasks deeper) and Vogon structures **temporally** (phases with gates), Zaphod works **horizontally**: parallel perspectives on the same matter. Two heads, three brains, one answer.

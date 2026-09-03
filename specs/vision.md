@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/vision
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/vision.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/vision.md (translated from the German specification/public/vision.md) — do not edit here. -->
 
----
 # Vancetope — Vision & Idea
 
 > What Vancetope is, why it exists, and how it is structured.

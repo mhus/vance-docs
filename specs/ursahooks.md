@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/ursahooks
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/ursahooks.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/ursahooks.md (translated from the German specification/public/ursahooks.md) — do not edit here. -->
 
----
 # Vancetope — Ursahooks
 
 > **Ursahooks** are project-specific, lifecycle-event-driven triggers.

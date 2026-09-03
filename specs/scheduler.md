@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/scheduler
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/scheduler.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/scheduler.md (translated from the German specification/public/scheduler.md) — do not edit here. -->
 
----
 # Vancetope — Scheduler
 
 > A **Scheduler** is a time-based trigger definition that spawns a Think Process via a Recipe. Schedulers are stored as YAML documents under `_vance/scheduler/<name>.yaml` in the Document Layer, are loaded during project bootstrap, and re-read via a `scheduler_refresh` trigger. Each run executes in a dedicated system Session of the Scheduler, with a configured `runAs` identity.

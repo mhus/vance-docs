@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/live-ws
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/live-ws.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/live-ws.md (translated from the German specification/public/live-ws.md) — do not edit here. -->
 
----
 # Vancetope — Live-WS (Multi-Channel WebSocket)
 
 > Multi-channel envelope protocol for external Vancetope clients (Web, Foot, Mobile)

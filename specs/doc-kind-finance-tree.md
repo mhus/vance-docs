@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-finance-tree
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-finance-tree.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-finance-tree.md (translated from the German specification/public/doc-kind-finance-tree.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `finance-tree`
 
 > Hierarchical financial modeling tool: a tree of income/expense nodes,

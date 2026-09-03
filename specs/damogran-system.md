@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/damogran-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/damogran-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/damogran-system.md (translated from the German specification/public/damogran-system.md) — do not edit here. -->
 
----
 # Damogran — Workspace Compose
 
 > A lightweight, linear batch runner over a named Workspace:

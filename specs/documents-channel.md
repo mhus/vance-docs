@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/documents-channel
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/documents-channel.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/documents-channel.md (translated from the German specification/public/documents-channel.md) — do not edit here. -->
 
----
 # Documents Channel — Live Presence + Changed Events
 
 > Live WS channel `documents`: subscribe/unsubscribe per path, viewer roster

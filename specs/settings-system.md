@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/settings-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/settings-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/settings-system.md (translated from the German specification/public/settings-system.md) — do not edit here. -->
 
----
 # Vancetope — Settings System
 
 > Unified, typed settings system for all configurations.

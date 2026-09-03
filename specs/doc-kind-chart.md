@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-chart
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-chart.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-chart.md (translated from the German specification/public/doc-kind-chart.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `chart`
 
 > Specifies the **`chart` payload** for documents that carry one or more data series with chart-rendering metadata. **One kind for all chart types** — the variant (`line`, `bar`, `candlestick`, …) is a discriminator inside the document, not a separate kind. Only JSON and YAML; Markdown is intentionally not supported.

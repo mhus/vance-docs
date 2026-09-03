@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-sheet
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-sheet.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-sheet.md (translated from the German specification/public/doc-kind-sheet.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `sheet`
 
 > Specifies the **`sheet` payload** for documents that carry a 2D table with A1 cell addresses — a table with named columns and numbered rows, sparse cell storage, and optional per-cell formatting. Excel-compatible addressing. Formula strings are round-trip stable; evaluation is server-side (Apache POI) via a `$computed` overlay. Markdown is intentionally **not** supported; only JSON and YAML.

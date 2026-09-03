@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/web-ui
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/web-ui.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/web-ui.md (translated from the German specification/public/web-ui.md) — do not edit here. -->
 
----
 # Vancetope Web-UI — Specification
 
 > Status: v1 Initial Draft. This spec is binding for the development of the Web-UI under `repos/vance/client/` (symlink `client_web/`).

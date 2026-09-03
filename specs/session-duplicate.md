@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/session-duplicate
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/session-duplicate.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/session-duplicate.md (translated from the German specification/public/session-duplicate.md) — do not edit here. -->
 
----
 # Vancetope — Session Duplicate
 
 > "Duplicate" creates an independent, continuable copy from an existing Session — including the **Chat Memory** (Chat Process, complete message history, and associated Memory entries such as Compaction Summaries, Scratchpad, Plan, Insight). The copy resides in the same Project and can be continued independently of the original. The action is located in the Session menu of the Chat list (`⧉`), not only within the opened chat.

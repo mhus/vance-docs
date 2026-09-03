@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/memory-knowledge-management
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/memory-knowledge-management.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/memory-knowledge-management.md (translated from the German specification/public/memory-knowledge-management.md) — do not edit here. -->
 
----
 # Vancetope — Memory & Knowledge Management
 
 > Defines how knowledge is structured, stored, tagged, and made searchable in Vancetope.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/vance-facelift
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/vance-facelift.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/vance-facelift.md (translated from the German specification/public/vance-facelift.md) — do not edit here. -->
 
----
 # Vancetope Facelift — Specification
 
 > Status: v1. This spec is binding for the Capacitor shell

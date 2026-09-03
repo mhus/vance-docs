@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/memory-compaction
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/memory-compaction.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/memory-compaction.md (translated from the German specification/public/memory-compaction.md) — do not edit here. -->
 
----
 # Vancetope — Memory Compaction
 
 > Long Sessions accumulate more chat history than any model's context window can hold. Memory Compaction folds older turns into an **`ARCHIVED_CHAT` summary** and replays it in every subsequent prompt — the LLM continues to follow the thread without the prompt exploding. This spec describes **triggers, selection, persistence, replay, and the Pinned convention**, which guarantees that critical messages never have to survive compaction because it never affects them.

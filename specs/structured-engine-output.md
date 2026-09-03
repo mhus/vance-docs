@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/structured-engine-output
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/structured-engine-output.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/structured-engine-output.md (translated from the German specification/public/structured-engine-output.md) — do not edit here. -->
 
----
 # Vancetope — Structured Engine Output
 
 > How a conversational Think Engine **ends** a turn and derives its post-turn status (`BLOCKED` vs. `IDLE`) from it. Two mechanisms are currently in production: **structured action** (Arthur, Eddie) and **Natural-Stop** (Ford). Both are language-agnostic — the turn-end and the "am I waiting for the user?" signal are determined **structurally**, not guessed from free text.

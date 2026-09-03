@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/agent-document
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/agent-document.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/agent-document.md (translated from the German specification/public/agent-document.md) — do not edit here. -->
 
----
 # Agent Document — `agent.md` per Project
 
 > A Markdown document in the **project root** that is provided to every Think Process

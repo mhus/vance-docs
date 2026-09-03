@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-items
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-items.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-items.md (translated from the German specification/public/doc-kind-items.md) — do not edit here. -->
 
----
 # Vancetope — Document Kinds with Items
 
 > Specifies the **`items` payload** for documents that carry an ordered list of small records — currently the privileged `kind: list`. Defines a single canonical model that maps to three on-disk formats (markdown, JSON, YAML) and round-trips losslessly.

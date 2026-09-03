@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/websocket-protokoll
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/websocket-protokoll.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/websocket-protokoll.md (translated from the German specification/public/websocket-protokoll.md) — do not edit here. -->
 
----
 # Vancetope — WebSocket Protocol
 
 > Chat frame wire format (`WebSocketEnvelope`) between local clients (CLI, Desktop, Mobile) and the Vancetope Brain. **This document describes only the inner frame** — the outer multi-channel envelope, endpoint topology, and cross-pod routing are in [live-ws](/specs/live-ws). Frames, as described here, are the `payload` field of the `LiveEnvelope` with `channel="session"`.

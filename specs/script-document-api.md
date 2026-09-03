@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/script-document-api
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/script-document-api.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/script-document-api.md (translated from the German specification/public/script-document-api.md) — do not edit here. -->
 
----
 # Script Document API — Specification
 
 > Status: v1. Binding product specification for running Cortex scripts

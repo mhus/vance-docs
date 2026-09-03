@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/workbook-forms
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/workbook-forms.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/workbook-forms.md (translated from the German specification/public/workbook-forms.md) — do not edit here. -->
 
----
 # Vancetope — Workbook Reactive Forms (Fence `form` + `saveScript`)
 
 > Editable, typed forms over a data document plus a server-side executed

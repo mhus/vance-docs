@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/think-engines
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/think-engines.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/think-engines.md (translated from the German specification/public/think-engines.md) — do not edit here. -->
 
----
 # Vancetope — Think Engines and Think Processes
 
 > A **Think Engine** is an interchangeable algorithm. A **Think Process** is a running instance that operates according to the algorithm of a Think Engine. Vancetope starts with **`arthur`** (reactive Session-Chat) and **`ford`** (Generalist-Worker); `vogon` (deterministic multi-phase runner) and `marvin` (deep-think — dynamic task tree) will follow. The architecture is designed for multiple, named and registered Think Engines.

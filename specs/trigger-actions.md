@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/trigger-actions
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/trigger-actions.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/trigger-actions.md (translated from the German specification/public/trigger-actions.md) — do not edit here. -->
 
----
 # Trigger Actions — Unified Spawning Model
 
 > Binding schema for all spawn actions triggered from outside the

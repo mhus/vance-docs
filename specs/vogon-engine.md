@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/vogon-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/vogon-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/vogon-engine.md (translated from the German specification/public/vogon-engine.md) — do not edit here. -->
 
----
 # Vancetope — Vogon Think Engine
 
 > **Vogon** is the Engine for a **Plan that belongs to someone**. It executes a written state machine—the same one used by workflows—but bound to the Session from which it was started: it can ask questions there and replies back to it.

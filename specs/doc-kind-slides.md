@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-slides
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-slides.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-slides.md (translated from the German specification/public/doc-kind-slides.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `slides`
 
 > Specifies the **`slides` payload** for documents that carry a sequence of presentation slides, written as Markdown sections separated by CommonMark thematic breaks (`---`). The renderer is **Marpit** (`@marp-team/marpit`) — a pure markdown→HTML+CSS library, no runtime framework.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-workpage
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-workpage.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-workpage.md (translated from the German specification/public/doc-kind-workpage.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `workpage`
 
 > Notion-like linear block document. One file = one WorkPage. Markdown superset

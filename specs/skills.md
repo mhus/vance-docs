@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/skills
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/skills.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/skills.md (translated from the German specification/public/skills.md) — do not edit here. -->
 
----
 # Vancetope — Skills
 
 > A **Skill** is a reusable capability bundle that focuses on a single LLM turn: description + auto-trigger + prompt extension + tool whitelist + reference docs. Skills activate either **implicitly** (Arthur recognizes a suitable Skill based on user intent) or **explicitly** (user types `/skill <name>`). Both paths lead to the same Ford loading code. Skills are orthogonal to Recipes: Recipes configure *how* an Engine runs (Engine choice, defaults, lock), while Skills are integrated capabilities that define *what* it does.

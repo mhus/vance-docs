@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/script-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/script-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/script-engine.md (translated from the German specification/public/script-engine.md) — do not edit here. -->
 
----
 # Vancetope — Script Engine
 
 > A **Script Engine** is the JVM-internal runtime for inline code that tools, Engines, or Recipes execute. v1 provides **GraalJS as a library** (JavaScript), encapsulated behind central `ScriptExecutor` services with their own host API, sandbox policy, and resource limits. There are **two** independent implementations—one in the Brain server and one in the Foot client—with different host APIs because the available tooling differs per side. Other languages (GraalPy) are explicitly not part of v1.

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/doc-kind-mindmap
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/doc-kind-mindmap.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/doc-kind-mindmap.md (translated from the German specification/public/doc-kind-mindmap.md) — do not edit here. -->
 
----
 # Vancetope — Document Kind `mindmap`
 
 > Specifies the **`mindmap` payload** for documents that carry a hierarchical, ordered set of items rendered as a radial mindmap. Reuses the `tree` schema 1:1 and adds optional per-node visual metadata (color, icon, link, tags) plus document-level rendering options.

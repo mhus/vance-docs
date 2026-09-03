@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/user-maintenance
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/user-maintenance.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/user-maintenance.md (translated from the German specification/public/user-maintenance.md) — do not edit here. -->
 
----
 # Vancetope — User Maintenance (Deletion and Renaming)
 
 > The same concept as [Project Maintenance](/specs/project-maintenance), for accounts: one handler per entity, a service that aggregates them, commands in the admin shell. The difference is not in the mechanics, but in **what a user reference means**.

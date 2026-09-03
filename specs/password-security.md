@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/password-security
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/password-security.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/password-security.md (translated from the German specification/public/password-security.md) — do not edit here. -->
 
----
 # Password Security — Hashing, Policy & Brute-Force Protection
 
 > Vancetope authenticates local user accounts via a password stored as a

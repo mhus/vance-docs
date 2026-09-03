@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/frankie-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/frankie-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/frankie-engine.md (translated from the German specification/public/frankie-engine.md) — do not edit here. -->
 
----
 # Vancetope — Frankie Think Engine
 
 > **Frankie** is the **generic Pi-style Executor Engine**. It

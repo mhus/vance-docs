@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/arthur-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/arthur-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/arthur-engine.md (translated from the German specification/public/arthur-engine.md) — do not edit here. -->
 
----
 # Vancetope — Arthur Think Engine
 
 > **Arthur** is the reactive **Session Chat Think Engine** — the default engine of the Chat Think Process, which is automatically created when an Interactive Session is established. Arthur also serves as the **reference implementation example**, thoroughly demonstrating the general Think Engine framework. Those building a new Think Engine will find the concrete API Arthur uses here — other engines (e.g., `deep-think`) implement the same framework.

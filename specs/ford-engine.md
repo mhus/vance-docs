@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/ford-engine
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/ford-engine.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/ford-engine.md (translated from the German specification/public/ford-engine.md) — do not edit here. -->
 
----
 # Vancetope — Ford Think Engine
 
 > **Ford** is the full-fledged single-LLM engine — the Guide's Field Researcher. Quick response, no frills, knows where its towel is: It receives a user message, calls an LLM (with tools, memory access, RAG/Knowledge-Graph), and writes the answer to the chat. **No workflow properties** — no orchestration of sub-processes, no task tree, no phase gates. Default worker for all orchestrator engines (Arthur/Marvin/Vogon/Zaphod) and also directly usable when no workflow is needed.

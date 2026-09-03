@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/megadodo-system
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/megadodo-system.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/megadodo-system.md (translated from the German specification/public/megadodo-system.md) — do not edit here. -->
 
----
 # Megadodo — Activity Feed per Project
 
 > **Megadodo** is the coarse activity log of a Project: what happened, and most importantly — what went wrong. Named after Megadodo Publications, the publishing house of the Guide on Ursa Minor Beta: a place that publishes without being smart itself.

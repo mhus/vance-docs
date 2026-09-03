@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/project-maintenance
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/project-maintenance.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/project-maintenance.md (translated from the German specification/public/project-maintenance.md) — do not edit here. -->
 
----
 # Vancetope — Project Maintenance (Deletion and Renaming)
 
 > The service tasks that touch **all** data of a Project: counting, deleting, propagating the name. One handler per Entity, one service that aggregates them, three commands in the Admin Shell.

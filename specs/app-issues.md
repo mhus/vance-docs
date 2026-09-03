@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/app-issues
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/app-issues.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/app-issues.md (translated from the German specification/public/app-issues.md) — do not edit here. -->
 
----
 # Vancetope Application — `app: issues`
 
 > A lightweight **GitHub-Issues-style** issue tracker, built on the

@@ -4,9 +4,8 @@ parent: Specs
 permalink: /specs/wizards
 ---
 
-<!-- AUTO-GENERATED from specification/public/en/wizards.md — do not edit here. -->
+<!-- AUTO-GENERATED from llm/specification/wizards.md (translated from the German specification/public/wizards.md) — do not edit here. -->
 
----
 # Vancetope — Prompt Wizards
 
 > A **Wizard** is a named form that guides the user step-by-step through the input parameters of a complex prompt and, at the end, injects a complete prompt text into the chat input field. This solves the "empty input field" problem: special workflows like "Create a council" or "Plan Vogon strategy" are discoverable via visible cards/tabs, without the user needing to know Engine names (`slart`, `vogon`, `marvin`, …) or Recipe conventions.
