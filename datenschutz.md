@@ -8,7 +8,9 @@ lang: de
 # Datenschutzerklärung
 {: .no_toc }
 
-Für die Dokumentations-Website <www.vancetope.com>.
+Für die Dokumentations-Website <www.vancetope.com>. Für die Vancetope-App
+(iOS) und die Browser-Erweiterung Vancetope Capture gilt eine eigene
+Erklärung: [App Privacy](/privacy-apps).
 {: .fs-5 .fw-300 }
 
 ## Inhalt

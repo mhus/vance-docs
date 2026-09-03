@@ -25,7 +25,8 @@ footer_content: >-
   <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
   Source on <a href="https://github.com/mhus/vance-docs">GitHub</a> ·
   <a href="/impressum">Impressum</a> ·
-  <a href="/datenschutz">Datenschutz</a>.
+  <a href="/datenschutz">Datenschutz</a> ·
+  <a href="/privacy-apps">App Privacy</a>.
 
 plugins:
   - jekyll-remote-theme
