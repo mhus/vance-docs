@@ -2,33 +2,32 @@
 
 > **Link Manager** built on the [doc-kind-application](doc-kind-application.md) foundation.
 > A folder + `_app.yaml` = a link collection: an ordered list of **external URLs**,
-> grouped by headings, displayed as preview cards in a hit list format.
+> grouped and overridden, displayed as preview cards in a hit-list format.
 > The existing Link Preview Proxy of the Brain fetches the image and teaser;
 > they are only saved if someone types them manually.
 > See also: [app-binder](app-binder.md) (internal counterpart),
 > [app-search](app-search.md) (card view model),
 > [doc-kind-application](doc-kind-application.md).
 > Implementation track: [`planning/app-links.md`](../../planning/app-links.md).
-> Standalone Addon `vance-addon-brain-links`.
+> Standalone addon `vance-addon-brain-links`.
 
 ---
 
 ## 1. Purpose and Scope
 
-The [binder](app-binder.md) collects references to **Project documents**, while
-`links` collects references to **external resources**. These are intentionally
-two separate apps and not just another entry type in the Binder: a Project
-document has a path and a kind (and thus an embed renderer and an editing target),
-whereas an external page has neither. It has a host, a preview image, and a
-description that *it* provides about itself. A single Entry model for both would
-be incorrect for each half.
+The [binder](app-binder.md) collects references to **Project documents**, while `links`
+collects references to **external resources**. These are intentionally two separate
+apps and not just another entry type in the Binder: a Project document has a path
+and a kind (and thus an embed renderer and an editing target), while an external
+page has neither—it has a host, a preview image, and a description *it* provides
+about itself. A single entry model for both would be incorrect for each half.
 
 Use cases: reading list, tool collection, research repository for a topic,
 bundle of sources alongside a spec.
 
-What `links` is **not**: an archive. The content of the linked page is not
-copied. To retain a page, fetch it with `web_fetch` and create a document – that
-is the clip path, and the search app is responsible for it, not this app.
+What `links` is **not**: an archive. The content of the linked page is not copied.
+To keep a page, fetch it with `web_fetch` and create a document—that is the clip
+path, and the search app is responsible for it, not this app.
 
 ## 2. Folder Layout & Manifest
 
@@ -58,10 +57,10 @@ links:
 ```
 
 The manifest is written via `ApplicationDocument` + `ApplicationCodec` (never
-manually). For the web create dialog, the Addon provides a bundled
+manually). For the web create dialog, the addon provides a bundled
 [Document Template](document-templates.md) `links` (`name: { mode: fixed, value:
-_app.yaml }`) with only two fields — title and description. Links and groups are
-then created within the app or via the Agent; a form field for this would be a
+_app.yaml }`) with only two fields—title and description. Links and groups are
+then created within the app or via the agent; a form field for them would be a
 second input path for the same data.
 
 ### 2.1 Entry Model — What is Saved and What is Not
@@ -72,92 +71,96 @@ second input path for the same data.
 | `title` | yes | Snapshot: fetched once from the page on creation (or typed). |
 | `teaser` | **only if typed** | Custom text. Empty ⇒ live description from the page. |
 | `image` | **only if typed** | Custom image. Empty ⇒ live `og:image` from the page. |
-| `group` | yes | Heading. **Pure UI ordering — no Scope**, no rights/cascade. Empty ⇒ the leading "ungrouped" section. |
+| `group` | yes | Heading. **Pure UI ordering — not a Scope**, no rights/cascade. Empty ⇒ the leading "ungrouped" section. |
 | `tags` | yes | Free labels, filters within the app. |
-| `note` | yes | Custom annotation. Deliberately **separate** from the teaser: the teaser describes the page, the note describes why *this* list includes it. |
+| `note` | yes | Custom annotation. Intentionally **separate** from the teaser: the teaser describes the page, the note describes why *this* list includes it. |
 | `addedAt` | yes | Time of creation. |
+| `viewedAt` | yes | When the reader last marked it as viewed. Missing ⇒ still on the stack. |
+
+`viewedAt` is a **timestamp, not `viewed: true`**. The boolean is derivable from
+the timestamp (`viewedAt != null`), but the timestamp is not derivable from the
+boolean—it costs the same byte in YAML and conveys "seen a week ago" and a sort
+order that a flag could not return.
 
 This asymmetry is the core design decision of this app. Teaser and image come
-from the [Link Preview Proxy](#4-teaser-und-bild--der-hybride-pfad), which
-caches OG data per URL **tenant-wide** for one week. A second copy in the
-manifest would become stale precisely where no one refreshes it. The title is
-the exception because it is the field that must remain readable in a list if the
-page is gone.
+from the [Link Preview Proxy](#4-teaser-und-bild--der-hybride-pfad), which caches
+OG data per URL **tenant-wide** for one week—a second copy in the manifest would
+become stale exactly where no one refreshes it. The title is the exception
+because it is the field that a list must retain to remain readable if the page
+is gone.
 
-This implies for Agents and the UI: **an empty `teaser` does not mean "no
-teaser," but "what the page says today."** Anyone who writes a teaser without
-instruction freezes a guess at the point where the current text would otherwise
-be.
+This implies for agents and the UI: **an empty `teaser` does not mean "no
+teaser," but "what the page says today."** Writing a teaser without instruction
+freezes a presumption at the point where the current text would otherwise be.
 
 ### 2.2 URL Normalization and Identity
 
-`LinkUrls` is the sole authority that determines what a link *is*. A cleaned
-form is saved; addressing (and deduplication) occurs via precisely this form,
-so that "remove the link I see" cannot miss its target.
+`LinkUrls` is the only place that decides what a link *is*. A sanitized form is
+saved; addressing (and deduplication) is done using precisely this form, so that
+"remove the link I see" cannot miss its target.
 
-- **Only `http`/`https`.** A `javascript:` or `data:` value in a list rendered
-  by the browser as clickable cards is an attack on the reader; the `safeUrl`
+- **Only `http`/`https`.** A `javascript:` or `data:` value in a list that the
+  browser renders as clickable cards is an attack on the reader; the `safeUrl`
   guard in the client is the second line of defense, not the first. An address
-  without a scheme gets `https://` – this is what a human means, and a rejection
+  without a scheme gets `https://`—that is what a human means, and a rejection
   would turn the normal case into an error.
 - **Host lowercase, path not** (`/Guide` and `/guide` can be two pages).
   Default port is removed, empty path becomes `/`.
 - **Fragment and query remain.** `…/guide#chapter-3` and `…/guide` are two
-  entries – otherwise, bookmarking a section would be impossible, and "add did
-  nothing" is the hardest-to-explain failure a list can have. Guessing and
+  entries—otherwise, bookmarking a section would be impossible, and "add did
+  nothing" is the hardest failure to explain that a list can have. Guessing and
   stripping tracking parameters is not our decision.
 
 ### 2.3 Groups
 
-`groups` exists **alongside** the entries and is not derived from them – for one
+`groups` exists **alongside** the entries and is not derived from them—for one
 reason: an **empty** group must be able to exist (e.g., create "Later" before
-anything is in it). Groups that only appear on one entry are appended by
-`orderedGroups()`; a manually written manifest therefore does not need to
-declare anything.
+anything is in it). Groups that only appear on an entry are appended by
+`orderedGroups()`; a manually written manifest therefore does not need to declare
+anything.
 
-The flat list remains **group-contiguous**: a new entry lands at the end of
-*its* group, a group change re-anchors it at the end of the new one. The
-generated `_index.md` and every reorder round-trip read it this way.
+The flat list remains **group-contiguous**: a new entry lands at the end of *its*
+group, a group change re-anchors it at the end of the new one. The generated
+`_index.md` and every reorder round-trip read it this way.
 
 ## 3. Generated Artifact — `_index.md`
 
 A `kind: workpage` document (link list grouped by group, ungrouped leading),
 deterministically generated from the manifest, only `LinksApplication.refresh`
 writes to it. It exists so that the collection is readable outside the app
-(Chat, Workpage embed, export) and discoverable for RAG.
+(Chat, Workpage Embed, Export) and discoverable for RAG.
 
 Per entry: title as a link, followed by **teaser and note** in that order,
 separated by ` · `, the note *italicized*. The note is included because it is
-the half that **cannot** be retrieved from the page – omitting it from the one
-artifact that carries the collection outwards (Chat, Workpage embed, export)
-loses precisely what someone wrote themselves.
+the half that **cannot** be retrieved from the page—omitting it from the one
+artifact that carries the collection outwards (Chat, Workpage Embed, Export)
+loses exactly what someone wrote themselves.
 
-Title and teaser are **external text** — `[`, `]`, `\`, `*`, `_`, and `<` are
-escaped, multi-line texts are collapsed to a single line. Without this, a `]` in
-the `og:title` would prematurely end the link label and place the rest as loose
-text next to a broken URL; and because the note is wrapped in `*…*`, a single
-`*` within it would close the italics and take the rest of the line with it.
+Title and teaser are **external text**—`[`, `]`, `\`, `*`, `_`, and `<` are
+escaped, multi-line texts are collapsed into a single line. Without this, a `]`
+in the `og:title` would prematurely end the link label and place the rest as
+loose text next to a broken URL; and because the note is wrapped in `*…*`, a
+single `*` within it would close the italics and take the rest of the line.
 
 ## 4. Teaser and Image — The Hybrid Path
 
-Both run via `GET /brain/{tenant}/link-preview?url=…`
-(`LinkPreviewService`, see [llm-resource-management](llm-resource-management.md)
-for the provider context) — the same proxy used by link cards in Chat and hit
-images in the [Search App](app-search.md). No second fetch path and nothing the
-product doesn't already do.
+Both use `GET /brain/{tenant}/link-preview?url=…` (`LinkPreviewService`, see
+[llm-resource-management](llm-resource-management.md) for the provider context)—the
+same proxy used by link cards in chat and hit images in the [Search App](app-search.md).
+No second fetch path and nothing the product doesn't already do.
 
 - **Server-side**, it is queried **once**: on creation, for the title. An
-  unreachable page is a normal response, not an error – the entry is still
-  created, the card falls back to the hostname. Adding a link must not depend
-  on the link currently responding.
+  unreachable page is a normal response, not an error—the entry is still created,
+  the card falls back to the hostname. Adding a link must not depend on the link
+  currently responding.
 - **Client-side** (`linkPreview.ts`) lazy per card on visibility
-  (`IntersectionObserver`, `rootMargin: 200px`). A list of eighty bookmarks,
-  of which a reader scrolls a third, must not issue eighty external requests
-  for twenty lines. The **negative** response is also saved – otherwise, a page
+  (`IntersectionObserver`, `rootMargin: 200px`). A list of eighty bookmarks, of
+  which a reader scrolls a third, must not issue eighty external requests for
+  twenty lines. The **negative** response is also saved—otherwise, a page
   without OG tags would be queried again on every re-render.
 - "Refresh preview" in the ⋯ menu discards the local response and queries again;
-  the server cache holds a success for a week, and someone who just fixed a page
-  wants to see that now.
+  the server cache holds a success for one week, and someone who just fixed a
+  page wants to see that now.
 
 ## 5. Java Foundation
 
@@ -166,7 +169,7 @@ product doesn't already do.
 - `LinksApplication` (`@Service implements VanceApplication`, `appName()="links"`)
   — `create()` writes the manifest, `refresh()` regenerates `_index.md`,
   `promptInject()` provides the Active-App-Hint, `describe()` + `status()` feed
-  the [Common Desktop](damogran-system.md) card (icon 🔗, "N links").
+  the [Common-Desktop](damogran-system.md) card (icon 🔗, "N links").
 - `LinksStore` — the only place that reads and writes `_app.yaml`; all document
   access via `DocumentService` (data sovereignty).
 - `LinksConfig` / `LinkEntry` — typed, **lenient** view of `config.links`. A
@@ -176,61 +179,119 @@ product doesn't already do.
 - `LinksManifestOps` — read-modify-write (add/remove/update/reorder/groups/
   rename-group) via `ApplicationCodec` + `LinksStore`, never a YAML partial patch.
   `addEntry` appends **at the end of the group**: insertion is group-relative
-  because the app renders ungrouped entries first and then groups in declared
-  order — where a group block lies in the flat list is not visible anywhere,
-  only the order *within* the group.
+  because the app renders ungrouped entries first, then groups in declared order
+  — where a group block lies in the flat list is not visible anywhere, only the
+  order *within* the group.
 
-`LinksApplication` also implements the [Milliways](milliways-system.md)
-capability `acceptsShare`/`acceptShare` (§7a there): a shared **link** becomes
-an entry in the leading, ungrouped section — which the app renders first, so the
-new entry is visible without having to expand anything. It is written via
-`LinksManifestOps.addEntry`, not bypassing the manifest; `teaser` and `image`
-are deliberately left empty (§4). A share **without** a link is rejected — that
-is what the [Binder](app-binder.md) is for. The share dialog does not ask for
-group and position: it is uniform across all accepting apps, and sorting is done
-within the app.
+`LinksApplication` also implements the [Milliways](milliways-system.md) capability
+`acceptsShare`/`acceptShare` (§7a there): a shared **link** becomes an entry in
+the leading, ungrouped section—which the app renders first, so the new entry is
+visible without expanding anything. It is written via `LinksManifestOps.addEntry`,
+not bypassing the manifest; `teaser` and `image` are intentionally left empty (§4).
+A share **without** a link is rejected—that's what the [Binder](app-binder.md) is for.
+The share dialog does not ask for group and position: it is uniform across all
+accepting apps, and sorting is done within the app.
 - `LinksAppController` — REST under `/brain/{tenant}/addon/links/...`
   (`RequestAuthority`-Enforcement).
 
 ### 5.1 The null/blank Convention
 
-Through every update method (and thus through `PATCH` and `links_entry_update`),
-the same rule applies as in the Binder: **`null` leaves a field untouched, an
-empty string deletes it.** Here, it is not cosmetic — a link list is edited in
-small touches, and a teaser silently lost during a group change is the error
-no one notices until it's gone.
+Every update method (and thus `PATCH` and `links_entry_update`) follows the same
+rule as in the Binder: **`null` leaves a field untouched, an empty string deletes
+it.** This is not cosmetic here—a link list is edited with small touches, and a
+teaser silently lost during a group change is the error no one notices until it's
+gone.
 
-One exception: for `title`, "delete" means **fetch anew from the page**. The
-title is the field for which the app has promised readability; setting it to
-nothing would be the only interpretation that breaks this promise.
+One exception: for `title`, "delete" means **fetch anew from the page**. The title
+is the field for which the app has promised readability; setting it to nothing
+would be the only interpretation that breaks this promise.
 
 ## 6. REST
 
 All with `?projectId=&folder=`, `RequestAuthority.enforce`. Authorization is that
-of the **Project** — `READ` to view, `WRITE` to modify. There is no right per
-link: the manifest is *one* document, and claiming otherwise would be a rights
-model that the storage cannot support.
+of the **Project**—`READ` to view, `WRITE` to modify. There is no right per link:
+the manifest is *one* document, and claiming otherwise would be a rights model
+that the storage cannot support.
 
 | Method | Path | Authority |
 |--------|------|-----------|
 | `GET` | `/scan` | READ |
 | `POST` | `/entry` (Body `{url,title?,teaser?,image?,group?,tags?,note?}`) | WRITE |
-| `PATCH` | `/entry` (Body as above; `null` = unchanged, `""` = empty) | WRITE |
+| `PATCH` | `/entry` (Body as above; `null` = unchanged, `""` = clear) | WRITE |
+| `POST` | `/entry/viewed` (Body `{url, viewed}`) | WRITE |
 | `DELETE` | `/entry?url=` | WRITE |
 | `POST` | `/reorder` (Body `{orderedUrls}`) | WRITE |
 | `POST` | `/groups` (Body `{groups}`) | WRITE |
 | `POST` | `/group/rename` (Body `{from,to?}`; empty `to` dissolves the group) | WRITE |
 | `POST` | `/rebuild` | WRITE |
 
-Every **mutating** response is the complete `LinksView`. This is not verbosity:
-a group change re-anchors the entry, so the order after a change is a server
+Every **mutating** response is the complete `LinksView`. This is not verbose: a
+group change re-anchors the entry, so the order after a change is a server
 response and not something the client can assume.
 
-`/reorder` is intentionally tolerant — URLs unknown to the server are ignored,
+`/reorder` is intentionally tolerant—URLs unknown to the server are ignored,
 entries not sent by the client retain their relative position at the end. A drag
 on a list that has changed in the meantime must not shorten it. `/groups`
 **cannot** drop a heading that still has links attached (it would return via
-`orderedGroups()` anyway) — `/group/rename` with an empty `to` is for that.
+`orderedGroups()` anyway)—`/group/rename` with an empty `to` is for that.
+
+`/entry/viewed` is a **separate route and not a column in `PATCH`**, because they
+are two different actions with different callers: editing is done by whoever
+curates the list, marking as viewed is done by whoever processes it—with a click,
+repeatedly, from a view that should not hold an endpoint that can overwrite a
+teaser incidentally. The value is **named, not toggled**: a repeated request—one
+that creates a shaky connection—must land where the first one landed.
+
+Two invariants behind this: Re-marking as viewed **retains the original
+timestamp** ("when did I read this" is the interesting fact; a second click is a
+slip, not a re-read), and the entry **does not move**—a reading order that
+rearranges itself under the click that acknowledges it loses the reader's place.
+A call that changes nothing writes nothing (no document version per double-click).
+
+### 6.1 The Capture Surface — Three Lean Routes for External Tools
+
+| Method | Path | Authority | Response |
+|--------|------|-----------|----------|
+| `GET` | `/groups` | READ | `{folder, title, groups[]}` |
+| `GET` | `/entry/lookup?url=` | READ | `{found, url, title?, group?, tags, note?, addedAt?, viewedAt?}` |
+| `POST` | `/capture` (Body `{url, title?, group?, tags?, note?}`) | WRITE | `{added, url, title?, group?, viewed}` |
+
+These exist **alongside** the app routes, not in their place, because the two
+callers want opposite things. The app receives the complete `LinksView` after
+each mutation, and that is correct: a mutation can reorder, and the order
+afterwards is a server statement. A capture tool has no list to reorder. It
+wants a few hundred bytes back per click—and precisely the one fact that `POST
+/entry` discards: **`added`**, the difference between "saved" and "you already
+have it."
+
+**Not appended as a query parameter to `/entry`:** a route whose response type
+depends on a flag cannot be typed on either side.
+
+The three routes represent what such a tool does—**Badge, Dropdown, Save**:
+
+- **`/entry/lookup`** answers "is this page already in" for *one* URL. This is
+  the only thing a plugin would ever need `/scan` for; transferring the entire
+  list to learn one bit is the wrong form—and giving a capture credential the
+  entire list for that is the wrong permission. `found: false` is the **normal**
+  response, not an error.
+- **`/groups`** provides the headings without the links. The leading "ungrouped"
+  section is **not** included—it has no name and always exists; a caller offers
+  it as an empty selection.
+- **`/capture`** is idempotent on the URL like `POST /entry`, but **reports**
+  which of the two cases occurred. Saving the same page twice is normal for a
+  capture tool and not an error—so `200`, and the fields then describe the line
+  that was already there.
+
+`CaptureLinkRequest` is intentionally **smaller** than `AddLinkRequest`: no
+`teaser`, no `image`. These are precisely the fields that remain empty so that
+the page speaks for itself (§2.1)—and a capture tool is the caller with the
+greatest temptation to write the freshly scraped content into the manifest,
+thereby freezing today's description in a manifest that no one refreshes.
+`title` remains because there is a legitimate reason to override it: the reader
+renamed it in the popup before saving.
+
+No `@GenerateTypeScript` on these three DTOs—they serve an external HTTP client,
+not the Vue app, which goes through `/entry` and receives the full View.
 
 ## 7. LLM Tools
 
@@ -244,18 +305,18 @@ on a list that has changed in the meantime must not shorten it. `/groups`
 | `links_validate(folder \| content)` | Self-check, §7b. |
 | `app_rebuild(folder)` | Generic — regenerates `_index.md`. |
 
-Two things are deliberately **not** tool parameters or **not** tools:
+Two things are intentionally **not** tool parameters or **not** tools:
 
-- **`image`.** A model asked for an image invents a plausible URL — and the
-  image is precisely the field that fetches itself from the page. Setting an
-  image manually remains a UI task.
+- **`image`.** A model asked for an image invents a plausible URL—and the image
+  is precisely the field that fetches itself from the page. Setting an image
+  manually remains a UI task.
 - **Reorder and Group Rename.** UI operations; add/remove/update covers
-  everything an Agent is asked to do.
+  everything an agent is asked to do.
 
-`links_list` returns what is **saved** and does not fetch previews: if someone
-asks "what is in this list," they want the inventory, and issuing fifty external
-requests for an answer that names the entries by their title anyway would be a
-waste. To *read* a page: `web_fetch` on the URL.
+`links_list` returns what is **saved** and does not fetch previews: whoever asks
+"what is in this list" wants the inventory, and issuing fifty external requests
+for an answer that names the entries by their title anyway would be wasteful. To
+*read* a page: `web_fetch` on the URL.
 
 Manual: `manual_read('app-links')`. Arthur prompt fragment:
 `_vance/prompts/arthur/links.md` (§7a in [prompts-and-manuals](prompts-and-manuals.md)).
@@ -265,59 +326,58 @@ Manual: `manual_read('app-links')`. Arthur prompt fragment:
 The other content apps each have a validator (`canvas_validate`,
 `workbook_validate`), and there is a generic `kind_validate`. The latter does
 **not** help here: `application` is registered as a mere `KindHandler`
-(`() -> "application"`) and thus inherits the no-op `validate` — on an
-`_app.yaml`, it answers "ok" without having checked anything. No app manifest
-in the tree is semantically validated.
+(`() -> "application"`) and thus inherits the no-op `validate`—on an `_app.yaml`
+it responds "ok" without having checked anything. No app manifest in the tree is
+semantically validated.
 
-For `links`, this is more critical than for workbook/canvas: there, content
-resides in separate documents per kind, **here the manifest is the content**,
-and Agents are allowed to write it with the generic `doc_*` tools. And the
-reader is intentionally lenient (§5) — a line without a usable URL is
-*silently* skipped so that a typo doesn't kill the app where it would be
-repaired. Correct for rendering, wrong for authors: the Agent receives no
-complaint, the card simply disappears.
+For `links`, this is more critical than for workbook/canvas: there, content is in
+separate documents per kind, **here the manifest is the content**, and agents may
+write it with the generic `doc_*` tools. And the reader is intentionally lenient
+(§5)—a line without a usable URL is *silently* skipped so that a typo doesn't kill
+the app where it would be repaired. Correct for rendering, incorrect for authors:
+the agent receives no complaint, the card is simply missing.
 
-`LinksValidationService` therefore reads the **raw** YAML and reports exactly
-what the loading path discards. Each check has this form — it names something
-that would otherwise happen *silently*:
+`LinksValidationService` therefore reads the **raw** YAML and reports exactly what
+the loading path discards. Each check has this form—it names something that
+otherwise happens *silently*:
 
 | Code | Level | What otherwise happens silently |
 |---|---|---|
 | `url-missing` / `url-not-a-string` / `url-unusable` | error | The entry disappears (`LinkEntry.fromMap` → `null`). |
-| `url-duplicate` | error | The second entry is **unreachable** — remove and update resolve via the URL and both land on the first. |
+| `url-duplicate` | error | The second entry is **unreachable**—remove and update resolve via the URL and both land on the first. |
 | `wrong-app` / `wrong-kind` / `meta-missing` | error | The folder does not open as a link list. |
 | `entries-not-a-list` / `block-not-a-mapping` | error | *All* links are ignored. |
 | `field-ignored` / `tags-not-a-list` | warning | Field of wrong type is discarded on read. |
-| `image-not-http` | warning | Renders nothing — and "no image" is indistinguishable from "the page has none". |
+| `image-not-http` | warning | Renders nothing—and "no image" is indistinguishable from "the page has none." |
 | `group-duplicate` / `group-not-a-name` | warning | Heading is deduplicated/discarded. |
 | `index-absolute` / `index-escapes` | warning | The generated index lands outside the app folder. |
-| `yaml-broken` / `empty` / `not-a-mapping` | error | Only finding — anything further would be guessing on a broken tree. |
+| `yaml-broken` / `empty` / `not-a-mapping` | error | Only finding—anything further would be guessing on a broken tree. |
 
-**What is deliberately not reported:** a group that exists on an entry but is not
-declared in `groups`. `orderedGroups()` appends it, it works. A validator that
-complains about correct files teaches its reader to ignore it — against this
+**What is intentionally not reported:** a group that appears on an entry but is
+not declared in `groups`. `orderedGroups()` appends it, it works. A validator
+that complains about correct files trains its reader to ignore it—against this
 stands a test that requires `findings().isEmpty()` for a healthy manifest.
 
 Two call forms, exactly one of them: `folder` checks a saved manifest
-(post-write), `content` the text the Agent is about to write (pre-write) — the
-same form as `kind_validate`. Read-only, advisory, never blocks a write.
-Envelope is the shared `{ target, ok, errors, warnings, findings[] }`.
+(post-write), `content` checks the text the agent is about to write (pre-write)
+—the same form as `kind_validate`. Read-only, advisory, never blocks a write.
+The envelope is the shared `{ target, ok, errors, warnings, findings[] }`.
 
 ## 7a. Selection for the Chat Agent
 
-Clicking a card selects it, a second click deselects it (ring in Primary color,
-the same visual grammar as an opened hit in the [Search App](app-search.md)).
-The selection travels via `vance:report-app-selection` → `activeApp.selection`
-→ `PromptInjectContext.selection()`; all interactive elements in the card
-(title link, tags, ⋯ menu) stop the click, otherwise opening a link would also
-change the selection.
+Clicking a card selects it, a second click deselects it (ring in primary color,
+same visual grammar as an opened hit in the [Search App](app-search.md)). The
+selection travels via `vance:report-app-selection` → `activeApp.selection` →
+`PromptInjectContext.selection()`; all interactive elements in the card (title
+link, tags, ⋯ menu) stop the click, otherwise opening a link would change the
+selection.
 
 **Only the URL travels.** The Search App sends `title — url` because a search
-hit is not stored server-side anywhere; a link *is* stored — it is a line in
-this manifest. So the key travels, and `appendSelection` reads the line from the
-manifest. This provides **one** authority for what the entry says, instead of a
-second copy that is correct until someone edits the first. Three details, each
-from a specific misbehavior:
+hit is not stored server-side anywhere; a link *is* stored—it's a line in this
+manifest. So the key travels, and `appendSelection` reads the line from the
+manifest. This ensures there is **one** authority for what the entry says,
+instead of a second copy that is correct until someone edits the first. Three
+details, each from a specific misbehavior:
 
 - A URL that is **no longer** in the list is reported as exactly that (not
   swallowed): the reader is looking at *something*, and "I see no selection"
@@ -330,69 +390,181 @@ from a specific misbehavior:
 
 The first version wrote *the reader has this link **selected***. The Engine
 received the correct data and delivered it **with reservation**: "I cannot read
-your current selection — nothing was marked when sending," followed by the entry
-in quotes as "stored," and finally the request to "mark it again in the editor."
-Reason: for a Chat Engine, *selection* is a **text range in a document**
-(`boundDocSelection`) — and that was indeed empty. The Search App never had
-this problem because it says a hit is **open**.
+your current selection—nothing was marked when sending," followed by the entry
+in quotes as "deposited," finally the request to "mark it again in the editor."
+Reason: for a chat engine, *selection* is a **text range in a document**
+(`boundDocSelection`)—and that was indeed empty. The Search App never had this
+problem because it says a hit is **open**.
 
-From this, the rule for **every** app with `promptInject`: name the action
-("has clicked one card"), state what it is **not** ("NOT a text selection
-inside a document"), and forbid the excuse ("Never answer that no selection
-arrived, and never ask them to mark it again"). A test keeps the old phrasing
-away (`doesNotContain("has this link selected")`).
+From this, the rule for **every** app with `promptInject`: name the action ("has
+clicked one card"), state what it is **not** ("NOT a text selection inside a
+document"), and forbid the excuse ("Never answer that no selection arrived, and
+never ask them to mark it again"). A test keeps the old phrasing away
+(`doesNotContain("has this link selected")`).
 
 ## 8. Web UI
 
-Kind registration `application:links` → `LinksAppKind.vue` (id-Lookup,
+Kind registration `application:links` → `LinksAppKind.vue` (id-lookup,
 `matches: () => false`), immersive app view.
 
-- **Input line at the top:** a text field instead of a dialog — creating links
-  is the one thing this app does constantly. **Multiple lines are multiple
-  links**; this is how a collection actually starts. A failure per line does not
-  discard the others. Next to it, an optional group field (with `suggestions`),
-  "+ Group" and "↻" (Rebuild).
-- **Filter line:** Free text filter plus group chips with counters (`All` /
-  `Ungrouped` / per group). Both filter only locally — typing costs nothing.
+- **Input line at the top:** a text field instead of a dialog—creating links is
+  the one thing this app does constantly. **Multiple lines are multiple links**;
+  that's how a collection actually starts. A failure per line does not discard
+  the others. Next to it, an optional group field (with `suggestions`), "+
+  Group," and "↻" (Rebuild).
+- **Filter line:** mode switcher (§8.1), free text filter plus group chips with
+  counters (`All` / `Ungrouped` / per group). Both filter only locally—typing
+  costs nothing.
 - **List:** **one column**, `max-w-3xl`, groups as headings (ungrouped leading).
   No grid, for the same reason as in the [Search App](app-search.md): these are
   things to *read*, and a title with a teaser next to a thumbnail is read, a
   wall of thumbnails is only looked at.
 - **Card:** Image (`LinkPicture`, lazy, `referrerpolicy="no-referrer"`), title
   as `target="_blank"` link via `safeUrl`, meta line (Host · `og:site_name`, if
-  different · Date), teaser, note italicized, tags as filter buttons.
-  **Custom teaser and page teaser are in the same slot, but with different
-  opacity** — it must be visible which one an edit would replace.
-- **Clicking a card** selects it for the Chat (§7a), clicking again deselects it.
-  The ring is the same one the Search App places on an opened hit.
-- **⋯ menu per card:** "Edit…" (dialog), "Refresh preview", "Remove".
-- **Edit dialog:** Title, Teaser, Group, Tags, Note, Image URL. Teaser and
-  image fields show as **placeholders** what the page says today, and only send
-  *changed* fields — untouched ones thus retain the server-side `null`. Teaser
-  and Note run via `VTextarea` with **`:mono="false"`**: the component is
-  `font-mono` by default because it grew around code and YAML — for a sentence
-  someone writes in their own words, monospace reads as "this is data." The prop
-  is additive (default `true`), no existing consumer changes.
-- **Drag & Drop:** native, as in the Binder. Drop on a card reorders (and adopts
-  its group on group change), drop on a heading moves to the end of the group.
-  The group change goes out **first and alone** because the server re-anchors
-  the entry; then the reorder explicitly names the entire sequence.
+  different · Date), teaser, note italicized, tags as **light blue pills**
+  (`VBadge variant="info"`)—not as `#hashtags`: a tag is something someone
+  *attached* to this link, and a pill reads as attached. **One** color in two
+  weights, not two colors: normally tinted (`soft`—the hue mixed a few percent
+  into the page background, i.e., light in light and dark in dark theme), filled
+  if the pill carries the active filter. A click filters the list to it, a click
+  on the filled one clears it again—a pill that looks switched on must be
+  switchable off, otherwise it reads as a defect. **Custom teaser and page
+  teaser are in the same slot, but with different opacity**—it must be visible
+  which one an edit would replace.
+- **Clicking a card** selects it for chat (§7a), clicking again deselects it. The
+  ring is the same one the Search App places on an opened hit.
+- **⧉ copies the address** to the clipboard—displayed on hover like the ⋯ menu,
+  visible as long as the card is selected. This is the one action a link list
+  constantly demands and which has nothing to do with this app: the URL, pasted
+  elsewhere. It therefore has the accessible icon space, and **Share** has moved
+  to the ⋯ menu—a copy is a click and done, sharing opens a dialog and asks
+  questions, like the rest of this menu. Confirmation is the button's coloring,
+  **not a ✓**: the checkmark directly above it already means something else on
+  this card. Without an available Clipboard API (insecure origin), a message
+  appears—a button that silently does nothing reads as a defect.
+- **⋯ menu per card:** "📤 Share…" ([Milliways](milliways-system.md), renders
+  nothing if the host doesn't share), "Edit…" (dialog), "Refresh preview",
+  "Remove".
+- **Edit dialog:** Title, Teaser, Group, Tags, Note, Image URL. Teaser and image
+  fields show as **placeholder** what the page says today, and only send
+  *changed* fields—the untouched ones thus retain the server-side `null`. Teaser
+  and Note use `VTextarea` with **`:mono="false"`**: the component is `font-mono`
+  by default because it grew around code and YAML—for a sentence someone writes
+  in their own words, monospace reads as "this is data." The prop is additive
+  (default `true`), no existing consumer changes.
+- **Drag & Drop:** native, as in the Binder. Dropping on a card reorders (and
+  adopts its group on group change), dropping on a heading moves to the end of
+  the group. The group change goes out **first and alone**, because the server
+  re-anchors the entry; then the reorder explicitly names the entire order.
 
-All building blocks are `@vance/components`-primitives — no DaisyUI classes in
-the Addon (§7 [web-ui](web-ui.md)).
+### 8.1 Two Modes: **List** and **Stack**
 
-## 9. Anti-Patterns / v1 Limitations
+The same manifest file, two questions. **List** is the curated form: groups in
+their declared order, entries where someone dragged them. **Stack** is the
+reading stack: flat, by date, viewed items out of the way.
+
+**Two modes instead of a sort dropdown on the grouped list**, because the stack
+must **cross** groups. A "newest first" that only reorders within each heading
+answers a question no one asked—and the order of the groups themselves would
+remain manual and thus meaningless as a reading order.
+
+In Stack mode:
+
+- **Unseen first, each half by date.** Not a single date-sorted run: with "Show
+  seen" on, the three open links would be buried among fifty completed ones.
+  Within a half, the date decides, in the direction the reader chose (`↓ Newest`
+  / `↑ Oldest`—oldest-first processes a backlog, newest-first reads what just
+  came in).
+- **An entry without `addedAt`**—a line manually written into the YAML—sinks to
+  the end of its half in manifest order. Guessing a date for it would place it
+  somewhere and look intentional.
+- **No Drag & Drop.** The order *is* the date; a drop would either be
+  ineffective or write an order that the view does not show. Both drop handlers
+  reject themselves, rather than the template hiding them—a drag can also come
+  from outside.
+- **The ✓ is always visible**, as the only card element. In the stack, it is the
+  entire interaction, and having to search for it on hover makes processing a
+  list strenuous. Viewed cards are **dimmed, not hidden and not struck
+  through**: a read link is still a link someone kept, and remains clickable.
+- **Freshly checked items remain**, until the mode or filter changes. Without
+  this, the stack has no undo—the click that checks an entry removes it from the
+  only place where the checkmark would be clickable again.
+- **Empty stack and empty filter read differently.** "Nothing matches" is a dead
+  end, "Nothing left to read" is completion.
+
+The ✓ is on the card in **both** modes, and the meta line carries `seen <Date>`
+—checking off is useful everywhere, only sorting by it is not.
+
+### 8.2 ⚙ — Capture Access
+
+A gear icon in the header opens `CaptureTokenDialog.vue`: the
+[Integration Tokens](integration-tokens.md) with profile `links-capture` for
+this project. A separate control instead of an entry in a card's ⋯ menu—it's
+about the list as a whole, not a single link.
+
+The dialog lists existing tokens (label, created, **last used**, expires,
+revoked if applicable), creates new ones, and revokes them. Filtering is done
+client-side on `(profile, projectId)`; a query parameter on the server would be
+a filter surface for a single caller, and **the project is as narrow as the
+filter can honestly be—because it is as narrow as the token is.**
+
+Two things are explicitly stated in the dialog, rather than being discovered:
+
+- **The token is shown once.** The server does not keep a copy—that is the
+  purpose—so a closed dialog means creating a new one.
+- **The narrowing is the project, not this list.** The folder travels in the
+  connection string as a *target*, not a boundary; a tool that changes it
+  reaches a different link list of the same project. "The token for this list"
+  would be a convenient untruth.
+
+**The connection string** (`@vance/shared`, `integrationConnection.ts`) is a
+copyable field:
+
+```
+vancetope1.<base64url(json)>.<checksum>
+```
+
+It contains: Brain URL, Tenant, Project, target folder, Profile, the token, and
+the expiration time. **A single opaque string** instead of a JSON block for five
+input fields: this travels across another machine, possibly through a chat
+window—a single field cannot be filled in the wrong order, and a truncated paste
+is recognizable.
+
+**It is assembled in the browser.** The Brain URL is the one with which this
+Brain was actually reached; a server behind a reverse proxy regularly does not
+know its own external address—the classic case for a value that looks correct
+but points to nothing.
+
+**The checksum is damage control, not a security measure** (FNV-1a, 32 Bit, 8
+Hex): the token within it is signed, a corrupted one fails at the signature and
+returns 401. What the signature does *not* cover is everything around it—URL,
+Project, Folder. A truncated paste there much later produces a 404 that looks
+like anything but "you pasted half a string." Intentionally **not** SHA-256:
+`crypto.subtle` is async and requires a Secure Context, and the other side can
+be a content script or a shell one-liner.
+
+**Copied to clipboard immediately on creation**, instead of waiting for a second
+click. And there is **no confirmation on close**: ESC closes the native
+`<dialog>` *before* the handler runs—a question at this point could no longer
+cancel the close it asks about. A safeguard that works on ✕ and silently fails
+on the keyboard is worse than none; the loss case is removed instead of
+confirmed.
+
+All building blocks are `@vance/components`-primitives—no DaisyUI classes in the
+addon (§7 [web-ui](web-ui.md)).
+
+## 9. Anti-Patterns / v1 Limits
 
 - **No archive.** Page content is not copied; "Clip" is a different path.
-- **No dead link check.** Nothing periodically checks if a URL still responds
-  — a crawler across all tenants' bookmarks is a decision that does not fall as
-  a side effect of an app.
+- **No dead link check.** Nothing periodically checks if a URL still responds—a
+  crawler across all tenants' bookmarks is a decision that does not fall as a
+  side effect of an app.
 - **No tracking parameter stripping** (§2.2) and no auto-deduplication via
-  redirect targets: the preview proxy knows `finalUrl`, but merging two entries
-  because they land at the same place today is an assumption.
+  redirect targets: `finalUrl` is known to the preview proxy, but merging two
+  entries because they land at the same place today is a presumption.
 - **No live updates.** External changes to the manifest only arrive on reload
-  (the `documents` channel is not connected).
+  (the `documents`-channel is not connected).
 - No import from browser bookmarks, no export except `_index.md`.
 - **v2 earmarked:** Clip path ("save page as document", shared with the Search
   App), import from `bookmarks.html`, sorting modes (newest first) alongside
-  manual order, `documents` channel for live reload.
+  manual order, `documents`-channel for live reload.
