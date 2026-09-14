@@ -1,0 +1,224 @@
+{
+  "startedAt" : "2026-09-13T09:42:52.843486Z",
+  "completedAt" : "2026-09-13T09:43:19.370411Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"message\":\"Stored\",\"reason\":\"User wants to persist team technology stack details to memory.\",\"scope\":\"fact\",\"type\":\"LEARN\",\"content\":\"[2026-09-13] Das Team 'platform-core' nutzt Java 25 + Spring Boot… — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"message\":\"Stored\",\"reason\":\"User wants to persist team technology stack details to memory.\",\"scope\":\"fact\",\"type\":\"LEARN\",\"content\":\"[2026-09-13] Das Team 'platform-core' nutzt Java 25 + Spring Boot…"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 4950,
+      "tokensIn" : 44234,
+      "tokensOut" : 189,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 44234
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsFactReplace",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=fact): {\"content\":\"Das Team des Nutzers heißt 'platform-core' und es arbeitet an Repositorys mit dem Präfix 'ms-*'.\",\"reason\":\"Der Nutzer hat mir eine dauerhafte Information über sein Team und seine Reposito… — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"content\":\"Das Team des Nutzers heißt 'platform-core' und es arbeitet an Repositorys mit dem Präfix 'ms-*'.\",\"reason\":\"Der Nutzer hat mir eine dauerhafte Information über sein Team und seine Reposito…"
+    }, {
+      "name" : "scope-fact",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75,
+      "detail" : "no mode pinned by this case"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 37176,
+      "tokensIn" : 88176,
+      "tokensOut" : 223,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 88176
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaAppend",
+    "capability" : "learn-action",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "LEARN(scope=persona, mode=append): {\"content\":\"Der Nutzer möchte, dass ich jeden Code-Block direkt am Anfang meiner Antwort platziere, ohne lange Einleitungen davor. Dies ist eine Präferenz für die Kommunikationsweise und das Format de… — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "{\"content\":\"Der Nutzer möchte, dass ich jeden Code-Block direkt am Anfang meiner Antwort platziere, ohne lange Einleitungen davor. Dies ist eine Präferenz für die Kommunikationsweise und das Format de…"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.75
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 7702,
+      "tokensIn" : 88452,
+      "tokensOut" : 296,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 88452
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.LearnActionBenchmark",
+    "methodName" : "learnsPersonaReplace",
+    "capability" : "learn-action",
+    "pass" : false,
+    "score" : 0.20689655172413793,
+    "effectiveScore" : 0.20689655172413793,
+    "reason" : "no LEARN action emitted — 21% — 2/6 checks · missed: learn-envelope, scope-persona(skipped), mode(skipped), content-present(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "assistant-output",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "learn-envelope",
+      "kind" : "STAGE",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "no `{\"type\":\"LEARN\"…}` JSON — head: [tool-call arthur_action] {\"message\":\"Aktueller Zustand:\\n\\n- Projekt: `instant-hole` (Instant Hole)\\n- Workspace leer — keine Dokumente, keine Dateien\\n- Client-Sandbox blockiert Zugriff auf lokalen …"
+    }, {
+      "name" : "scope-persona",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "mode",
+      "kind" : "CHECK",
+      "weight" : 0.75,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "content-present",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 11333,
+      "tokensIn" : 220967,
+      "tokensOut" : 352,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 220967
+    }
+  } ]
+}

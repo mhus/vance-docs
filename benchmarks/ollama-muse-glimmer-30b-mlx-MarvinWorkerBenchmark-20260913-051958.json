@@ -1,0 +1,68 @@
+{
+  "startedAt" : "2026-09-13T05:19:58.591149Z",
+  "completedAt" : "2026-09-13T05:19:58.931917Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MarvinWorkerBenchmark",
+    "methodName" : "marvinGrowsAndFinishesTaskTree",
+    "capability" : "marvin-worker",
+    "pass" : true,
+    "score" : 0.8,
+    "effectiveScore" : 0.8,
+    "reason" : "the tree did not finish: 2 node(s) left non-terminal — 80% — 5/6 checks · missed: tree-finished",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "marvin-bench-bf32e5"
+    }, {
+      "name" : "engine-marvin",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=marvin"
+    }, {
+      "name" : "beyond-root-work",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tree worked beyond the root: 2 child node(s), 1 specialist call(s)"
+    }, {
+      "name" : "phases-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "phaseHistory shows SCOPE and CONCLUDE/VALIDATE iterations"
+    }, {
+      "name" : "tree-finished",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "2 node(s) left non-terminal"
+    }, {
+      "name" : "final-reply",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "worker reported back"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 32,
+      "elapsedMs" : 579347,
+      "tokensIn" : 187104,
+      "tokensOut" : 17791,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 187104
+    }
+  } ]
+}

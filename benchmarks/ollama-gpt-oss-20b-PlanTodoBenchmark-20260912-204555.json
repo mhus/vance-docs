@@ -1,0 +1,118 @@
+{
+  "startedAt" : "2026-09-12T20:45:55.601927Z",
+  "completedAt" : "2026-09-12T20:47:05.340712Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.PlanTodoBenchmark",
+    "methodName" : "noPlanModeForSimpleRequest",
+    "capability" : "plan-todo",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "simple question stayed out of plan mode — direct answer — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-plan-mode",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "simple question answered without plan mode"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 8891,
+      "tokensIn" : 111729,
+      "tokensOut" : 575,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 111729
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.PlanTodoBenchmark",
+    "methodName" : "planModeForMultiStepWork",
+    "capability" : "plan-todo",
+    "pass" : false,
+    "score" : 0.09523809523809523,
+    "effectiveScore" : 0.09523809523809523,
+    "reason" : "no START_PLAN — model skipped plan mode despite the approval gate — 10% — 1/8 checks · missed: start-plan-fired, plan-proposed, approval-turn-completed, execution-started(skipped), todos-walked(skipped), todos-completed(skipped), final-answer(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn1-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "start-plan-fired",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no START_PLAN action"
+    }, {
+      "name" : "plan-proposed",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no PROPOSE_PLAN action"
+    }, {
+      "name" : "approval-turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0
+    }, {
+      "name" : "execution-started",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "todos-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "todos-completed",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "final-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 20729,
+      "tokensIn" : 262606,
+      "tokensOut" : 1085,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 262606
+    }
+  } ]
+}

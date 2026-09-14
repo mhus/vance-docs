@@ -1,0 +1,133 @@
+{
+  "startedAt" : "2026-09-13T06:49:35.598632Z",
+  "completedAt" : "2026-09-13T06:52:36.723410Z",
+  "modelSlug" : "ollama-muse-glimmer-30b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "answersSimpleQuestionWithoutWorker",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "simple question answered directly — no worker spawn — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-delegation",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "simple question answered without spawning a worker"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 65849,
+      "tokensIn" : 44183,
+      "tokensOut" : 324,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 44183
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "asksUserOnMissingEssential",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "escalated a referent-less request to the user — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "ask-user-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "ASK_USER action"
+    }, {
+      "name" : "question-text",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 56510,
+      "tokensIn" : 44183,
+      "tokensOut" : 213,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 44183
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "delegatesLongFormWork",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "full delegation: DELEGATE → worker settled, artifact stored — 100% — 5/5 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "delegate-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "DELEGATE action"
+    }, {
+      "name" : "worker-spawned",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "worker(s): delegated-31e82c"
+    }, {
+      "name" : "worker-done",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "worker settled (IDLE or CLOSED/DONE)"
+    }, {
+      "name" : "artifact-exists",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "document at benchmark/delegation/space-history.md"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 81576,
+      "tokensIn" : 81158,
+      "tokensOut" : 2091,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 81158
+    }
+  } ]
+}

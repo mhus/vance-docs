@@ -1,0 +1,133 @@
+{
+  "startedAt" : "2026-09-12T22:23:21.806808Z",
+  "completedAt" : "2026-09-12T22:28:44.729739Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "answersSimpleQuestionWithoutWorker",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "simple question answered directly — no worker spawn — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-delegation",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "simple question answered without spawning a worker"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 26582,
+      "tokensIn" : 36910,
+      "tokensOut" : 180,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 36910
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "asksUserOnMissingEssential",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "escalated a referent-less request to the user — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "ask-user-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "ASK_USER action"
+    }, {
+      "name" : "question-text",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 38853,
+      "tokensIn" : 111120,
+      "tokensOut" : 1042,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 111120
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "delegatesLongFormWork",
+    "capability" : "delegation",
+    "pass" : false,
+    "score" : 0.125,
+    "effectiveScore" : 0.125,
+    "reason" : "no DELEGATE — long-form work stayed in the chat — 13% — 1/5 checks · missed: delegate-fired, worker-spawned, worker-done, artifact-exists",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "delegate-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "no DELEGATE action"
+    }, {
+      "name" : "worker-spawned",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "no worker process under the chat process"
+    }, {
+      "name" : "worker-done",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no worker process"
+    }, {
+      "name" : "artifact-exists",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no document at benchmark/delegation/space-history.md"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 42322,
+      "tokensIn" : 188335,
+      "tokensOut" : 1442,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 188335
+    }
+  } ]
+}

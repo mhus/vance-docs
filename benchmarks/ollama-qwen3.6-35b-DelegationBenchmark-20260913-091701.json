@@ -1,0 +1,110 @@
+{
+  "startedAt" : "2026-09-13T09:17:01.707396Z",
+  "completedAt" : "2026-09-13T09:29:57.020499Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "answersSimpleQuestionWithoutWorker",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "simple question answered directly — no worker spawn — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-delegation",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "simple question answered without spawning a worker"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 38957,
+      "tokensIn" : 88265,
+      "tokensOut" : 824,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 88265
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "asksUserOnMissingEssential",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "escalated a referent-less request to the user — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "ask-user-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "ASK_USER action"
+    }, {
+      "name" : "question-text",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 7,
+      "elapsedMs" : 278434,
+      "tokensIn" : 309923,
+      "tokensOut" : 468,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 309923
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "delegatesLongFormWork",
+    "capability" : "delegation",
+    "pass" : false,
+    "score" : 0.0,
+    "effectiveScore" : 0.0,
+    "reason" : "0% — 0/1 checks · missed: test-completed",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "test-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "HttpTimeoutException: request timed out\n    at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:921)\n    at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)\n    at de.mhus.vance.aitest.FootProcess.postLine(FootProcess.java:285)\n    at de.mhus.vance.aitest.FootProcess.chat(FootProcess.java:262)\n    at de.mhus.vance.benchmark.AbstractBenchmark.sendChatTimed(AbstractBenchmark.java:281)\n    at de.mhus.vance.benchmark.AbstractBenchmark.sendChatTimed(AbstractBenchmark.java:267)\n    at de.mhus.vance.benchmark.DelegationBenchmark.delegatesLongFormWork(DelegationBenchmark.java:61)\n    at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)\n    at java.base/java.lang.reflect.Method.invoke(Method.java:565)\n    at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)\n    at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)\n    at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)\n    at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)\n    at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)\n    at de.mhus.vance.benchmark.result.BenchmarkExtension.interceptTestMethod(BenchmarkExtension.java:72)\n    ... 77 more"
+    } ],
+    "usage" : {
+      "available" : false,
+      "roundTrips" : 0,
+      "elapsedMs" : 0,
+      "tokensIn" : 0,
+      "tokensOut" : 0,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 0
+    }
+  } ]
+}

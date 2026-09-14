@@ -1,0 +1,292 @@
+{
+  "startedAt" : "2026-09-13T09:09:56.053522Z",
+  "completedAt" : "2026-09-13T09:14:05.484772Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsApplicationKind",
+    "capability" : "document-kinds",
+    "pass" : false,
+    "score" : 0.7428571428571429,
+    "effectiveScore" : 0.7428571428571429,
+    "reason" : "kind=application at benchmark/calendar-app/_app.yaml (171 chars); judge: No calendar block, lanes as a list instead of a map, and app sits at top level instead of under $meta. — 74% — 5/6 checks · missed: quality",
+    "artifacts" : [ "=== full body (171 chars) ===\n$meta:\n  name: _app.yaml\n  kind: application\napp: calendar\nlanes:\n  - name: design\n    color: blue\n  - name: backend\n    color: green\n  - name: frontend\n    color: purple\n" ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/calendar-app/_app.yaml"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must be a YAML manifest with `kind: application` and an `app` discriminator"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 8,
+      "want" : 8,
+      "detail" : "all 8 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 0.2,
+      "detail" : "No calendar block, lanes as a list instead of a map, and app sits at top level instead of under $meta."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 8143,
+      "tokensIn" : 177023,
+      "tokensOut" : 406,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 177023
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsChartKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=chart at benchmark/chart-sales.json (371 chars); judge: JSON chart document with kind=chart, chartType bar, and all four data points Jan=10, Feb=25, Maerz(Maer)=15, Apr=30 correctly labelled. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/chart-sales.json"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must be JSON or YAML with a top-level `chart.chartType` and a non-empty `series[]` array"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "JSON chart document with kind=chart, chartType bar, and all four data points Jan=10, Feb=25, Maerz(Maer)=15, Apr=30 correctly labelled."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 41225,
+      "tokensIn" : 230069,
+      "tokensOut" : 663,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 230069
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsDiagramKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 0.9285714285714286,
+    "effectiveScore" : 0.9285714285714286,
+    "reason" : "kind=diagram at benchmark/diagram-login-flow.md (138 chars); judge: All four required nodes appear in the correct order (Form and Validate rendered as German labels Login-Formular and Validierung) and the flowchart syntax is well-formed. — 93% — 5/6 checks · missed: elements(2/4)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/diagram-login-flow.md"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must contain a parseable Mermaid flowchart (either inside a ```mermaid fence in markdown, or as a `source` string in a JSON/YAML body)"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 0.5,
+      "got" : 2,
+      "want" : 4,
+      "detail" : "2/4 (missing: Form, Validate)"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "All four required nodes appear in the correct order (Form and Validate rendered as German labels Login-Formular and Validierung) and the flowchart syntax is well-formed."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 9,
+      "elapsedMs" : 25698,
+      "tokensIn" : 415299,
+      "tokensOut" : 1496,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 415299
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsGraphKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=graph at benchmark/graph-diamond.json (341 chars); judge: JSON graph contains all four nodes A-D and the four directed edges forming the exact diamond shape. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/graph-diamond.json"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must be JSON or YAML with top-level `nodes[]` and `edges[]` arrays"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 4,
+      "want" : 4,
+      "detail" : "all 4 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "JSON graph contains all four nodes A-D and the four directed edges forming the exact diamond shape."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 4,
+      "elapsedMs" : 9381,
+      "tokensIn" : 177248,
+      "tokensOut" : 526,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 177248
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+    "methodName" : "createsMindmapKind",
+    "capability" : "document-kinds",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "kind=mindmap at benchmark/mindmap-languages.md (326 chars); judge: YAML mindmap with root Programmiersprachen and all three branches (Compiled, Interpreted, JVM) each containing the correct language leaves. — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-of-kind",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mindmap-languages.md"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "structural-shape",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "must carry an `items[]` hierarchy (JSON/YAML) OR a nested markdown bullet list"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "got" : 12,
+      "want" : 12,
+      "detail" : "all 12 present"
+    }, {
+      "name" : "quality",
+      "kind" : "JUDGED",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "YAML mindmap with root Programmiersprachen and all three branches (Compiled, Interpreted, JVM) each containing the correct language leaves."
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 8,
+      "elapsedMs" : 21432,
+      "tokensIn" : 367186,
+      "tokensOut" : 1098,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 367186
+    }
+  } ]
+}

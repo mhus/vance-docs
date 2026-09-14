@@ -1,0 +1,123 @@
+{
+  "startedAt" : "2026-09-12T23:28:09.244914Z",
+  "completedAt" : "2026-09-12T23:33:39.697786Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun1",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called — tools: [arthur_action, doc_import_url] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "reached-doc_import_url",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0,
+      "detail" : "directly, no lookup needed"
+    }, {
+      "name" : "discovery-or-substitute",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "neither"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 187024,
+      "tokensIn" : 86027,
+      "tokensOut" : 89,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 86027
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun2",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called — tools: [arthur_action, doc_import_url] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "reached-doc_import_url",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0,
+      "detail" : "directly, no lookup needed"
+    }, {
+      "name" : "discovery-or-substitute",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "neither"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 163685,
+      "tokensIn" : 86025,
+      "tokensOut" : 94,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 86025
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.UrlImportDiscoveryBenchmark",
+    "methodName" : "reachesImportToolRun3",
+    "capability" : "url-import-discovery",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "doc_import_url was called — tools: [arthur_action, doc_import_url] — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "reached-doc_import_url",
+      "kind" : "CHECK",
+      "weight" : 3.0,
+      "earned" : 3.0,
+      "detail" : "directly, no lookup needed"
+    }, {
+      "name" : "discovery-or-substitute",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "neither"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 165205,
+      "tokensIn" : 86025,
+      "tokensOut" : 78,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 86025
+    }
+  } ]
+}

@@ -1,0 +1,68 @@
+{
+  "startedAt" : "2026-09-13T14:28:38.729653Z",
+  "completedAt" : "2026-09-13T14:28:39.068548Z",
+  "modelSlug" : "ollama-qwen3.8-27b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.FordWorkerBenchmark",
+    "methodName" : "fordWritesSummaryDoc",
+    "capability" : "ford-worker",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "full ford contract: read inputs → natural stop with reply → IDLE, artifact stored — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "ford-bench-4492ea"
+    }, {
+      "name" : "engine-ford",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=ford"
+    }, {
+      "name" : "final-reply",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "natural stop with a reply"
+    }, {
+      "name" : "worker-settled",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "IDLE (steered lane) or CLOSED/DONE"
+    }, {
+      "name" : "artifact-written",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "doc_write call with path benchmark/ford/summary.md"
+    }, {
+      "name" : "read-inputs",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "input docs were read"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 42267,
+      "tokensIn" : 33268,
+      "tokensOut" : 1030,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 33268
+    }
+  } ]
+}

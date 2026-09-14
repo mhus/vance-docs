@@ -1,0 +1,86 @@
+{
+  "startedAt" : "2026-09-13T02:22:51.531039Z",
+  "completedAt" : "2026-09-13T02:23:05.151049Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ResponseQualityBenchmark",
+    "methodName" : "answersInGermanWhenAskedInGerman",
+    "capability" : "response-quality",
+    "pass" : false,
+    "score" : 0.42857142857142855,
+    "effectiveScore" : 0.42857142857142855,
+    "reason" : "the German question was answered in the wrong language — 43% — 2/3 checks · missed: german-reply",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "german-reply",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "function words: German 9, English 11"
+    }, {
+      "name" : "answer-body",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "732 chars"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 112493,
+      "tokensIn" : 128713,
+      "tokensOut" : 193,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 128713
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ResponseQualityBenchmark",
+    "methodName" : "answersWithGroundedCount",
+    "capability" : "response-quality",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "grounded answer: checklist read, count correct — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "read-checklist",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "doc_read on the checklist"
+    }, {
+      "name" : "correct-count",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "answer names 8/acht"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 12658,
+      "tokensIn" : 85692,
+      "tokensOut" : 87,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 85692
+    }
+  } ]
+}

@@ -1,0 +1,86 @@
+{
+  "startedAt" : "2026-09-13T08:53:46.565794Z",
+  "completedAt" : "2026-09-13T08:53:54.905895Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.ResponseQualityBenchmark",
+    "methodName" : "answersInGermanWhenAskedInGerman",
+    "capability" : "response-quality",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "German question, German answer with substance — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "german-reply",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "German function words dominate (74 vs 17)"
+    }, {
+      "name" : "answer-body",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "2322 chars"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 5,
+      "elapsedMs" : 37829,
+      "tokensIn" : 221587,
+      "tokensOut" : 663,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 221587
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.ResponseQualityBenchmark",
+    "methodName" : "answersWithGroundedCount",
+    "capability" : "response-quality",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "grounded answer: checklist read, count correct — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "read-checklist",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "doc_read on the checklist"
+    }, {
+      "name" : "correct-count",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "answer names 8/acht"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 7348,
+      "tokensIn" : 132431,
+      "tokensOut" : 355,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 132431
+    }
+  } ]
+}

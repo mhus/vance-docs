@@ -1,0 +1,68 @@
+{
+  "startedAt" : "2026-09-13T08:23:35.559844Z",
+  "completedAt" : "2026-09-13T08:23:35.895158Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MarvinWorkerBenchmark",
+    "methodName" : "marvinGrowsAndFinishesTaskTree",
+    "capability" : "marvin-worker",
+    "pass" : false,
+    "score" : 0.26666666666666666,
+    "effectiveScore" : 0.26666666666666666,
+    "reason" : "the root answered alone — no decomposition and no specialist call; deep-think without outreach is Ford work in Marvin clothing — 27% — 2/6 checks · missed: beyond-root-work, phases-walked, tree-finished, final-reply",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "marvin-bench-33c232"
+    }, {
+      "name" : "engine-marvin",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=marvin"
+    }, {
+      "name" : "beyond-root-work",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "the root answered alone — no children, no specialist call"
+    }, {
+      "name" : "phases-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no node recorded the five-phase machine"
+    }, {
+      "name" : "tree-finished",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "root node not DONE"
+    }, {
+      "name" : "final-reply",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.0,
+      "detail" : "no assistant reply from the worker"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 117397,
+      "tokensIn" : 2181,
+      "tokensOut" : 12288,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 2181
+    }
+  } ]
+}

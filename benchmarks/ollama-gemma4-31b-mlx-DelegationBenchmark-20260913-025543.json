@@ -1,0 +1,133 @@
+{
+  "startedAt" : "2026-09-13T02:55:43.493004Z",
+  "completedAt" : "2026-09-13T03:04:32.790755Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "answersSimpleQuestionWithoutWorker",
+    "capability" : "delegation",
+    "pass" : false,
+    "score" : 0.5,
+    "effectiveScore" : 0.5,
+    "reason" : "trivia was delegated to a worker — the mirror failure of never delegating — 50% — 2/3 checks · missed: no-delegation",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-delegation",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 0.0,
+      "detail" : "DELEGATE or worker spawn on a simple question"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 8133,
+      "tokensIn" : 42701,
+      "tokensOut" : 54,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 42701
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "asksUserOnMissingEssential",
+    "capability" : "delegation",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "escalated a referent-less request to the user — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "ask-user-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "ASK_USER action"
+    }, {
+      "name" : "question-text",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 97814,
+      "tokensIn" : 128233,
+      "tokensOut" : 136,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 128233
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.DelegationBenchmark",
+    "methodName" : "delegatesLongFormWork",
+    "capability" : "delegation",
+    "pass" : false,
+    "score" : 0.625,
+    "effectiveScore" : 0.625,
+    "reason" : "worker spawned but never settled: slartibartfast-561ee2 status=CLOSED closeReason=STALE — 63% — 3/5 checks · missed: worker-done, artifact-exists",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "delegate-fired",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "DELEGATE action"
+    }, {
+      "name" : "worker-spawned",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "worker(s): slartibartfast-561ee2"
+    }, {
+      "name" : "worker-done",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "slartibartfast-561ee2 status=CLOSED closeReason=STALE"
+    }, {
+      "name" : "artifact-exists",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no document at benchmark/delegation/space-history.md"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 14,
+      "elapsedMs" : 365290,
+      "tokensIn" : 64040,
+      "tokensOut" : 7019,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 64040
+    }
+  } ]
+}

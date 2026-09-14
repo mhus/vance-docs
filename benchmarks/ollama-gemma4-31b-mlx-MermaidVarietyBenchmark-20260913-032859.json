@@ -1,0 +1,486 @@
+{
+  "startedAt" : "2026-09-13T03:28:59.823205Z",
+  "completedAt" : "2026-09-13T04:14:34.733225Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsC4ContextDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=C4Context at benchmark/mermaid/c4-notifications.md (875 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/c4-notifications.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-C4Context",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 57011,
+      "tokensIn" : 54563,
+      "tokensOut" : 709,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 54563
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsErDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.0,
+    "effectiveScore" : 0.0,
+    "reason" : "0% — 0/1 checks · missed: test-completed",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "test-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "HttpTimeoutException: request timed out\n    at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:921)\n    at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)\n    at de.mhus.vance.aitest.FootProcess.postLine(FootProcess.java:285)\n    at de.mhus.vance.aitest.FootProcess.chat(FootProcess.java:262)\n    at de.mhus.vance.benchmark.AbstractBenchmark.sendChatTimed(AbstractBenchmark.java:281)\n    at de.mhus.vance.benchmark.AbstractBenchmark.sendChatTimed(AbstractBenchmark.java:267)\n    at de.mhus.vance.benchmark.MermaidVarietyBenchmark.runMermaidCase(MermaidVarietyBenchmark.java:242)\n    at de.mhus.vance.benchmark.MermaidVarietyBenchmark.runMermaidCase(MermaidVarietyBenchmark.java:221)\n    at de.mhus.vance.benchmark.MermaidVarietyBenchmark.emitsErDiagram(MermaidVarietyBenchmark.java:99)\n    at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)\n    at java.base/java.lang.reflect.Method.invoke(Method.java:565)\n    at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)\n    at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)\n    at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)\n    at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)\n    ... 79 more"
+    } ],
+    "usage" : {
+      "available" : false,
+      "roundTrips" : 0,
+      "elapsedMs" : 0,
+      "tokensIn" : 0,
+      "tokensOut" : 0,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 0
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGanttDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=gantt at benchmark/mermaid/gantt-onboarding.md (580 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/gantt-onboarding.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-gantt",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 3,
+      "want" : 3,
+      "detail" : "all 3 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 53485,
+      "tokensIn" : 53446,
+      "tokensOut" : 475,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 53446
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsGitGraph",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.0,
+    "effectiveScore" : 0.0,
+    "reason" : "0% — 0/1 checks · missed: test-completed",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "test-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "HttpTimeoutException: request timed out\n    at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:921)\n    at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)\n    at de.mhus.vance.aitest.FootProcess.postLine(FootProcess.java:285)\n    at de.mhus.vance.aitest.FootProcess.chat(FootProcess.java:262)\n    at de.mhus.vance.benchmark.AbstractBenchmark.sendChatTimed(AbstractBenchmark.java:281)\n    at de.mhus.vance.benchmark.AbstractBenchmark.sendChatTimed(AbstractBenchmark.java:267)\n    at de.mhus.vance.benchmark.MermaidVarietyBenchmark.runMermaidCase(MermaidVarietyBenchmark.java:242)\n    at de.mhus.vance.benchmark.MermaidVarietyBenchmark.runMermaidCase(MermaidVarietyBenchmark.java:221)\n    at de.mhus.vance.benchmark.MermaidVarietyBenchmark.emitsGitGraph(MermaidVarietyBenchmark.java:128)\n    at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)\n    at java.base/java.lang.reflect.Method.invoke(Method.java:565)\n    at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)\n    at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)\n    at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)\n    at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)\n    ... 79 more"
+    } ],
+    "usage" : {
+      "available" : false,
+      "roundTrips" : 0,
+      "elapsedMs" : 0,
+      "tokensIn" : 0,
+      "tokensOut" : 0,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 0
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsJourneyDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=journey at benchmark/mermaid/journey-checkout.md (500 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/journey-checkout.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-journey",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 2,
+      "elapsedMs" : 410612,
+      "tokensIn" : 53466,
+      "tokensOut" : 333,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 53466
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsPieDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=pie at benchmark/mermaid/pie-languages.md (137 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/pie-languages.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-pie",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 52704,
+      "tokensIn" : 265367,
+      "tokensOut" : 562,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 265367
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsSequenceDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : false,
+    "score" : 0.13333333333333333,
+    "effectiveScore" : 0.13333333333333333,
+    "reason" : "no document at path=benchmark/mermaid/sequence-oauth.md (opener=sequenceDiagram); kinds in project: [diagram]; paths: [benchmark/mermaid/c4-notifications.md, benchmark/mermaid/er-shop.md, benchmark/mermaid/er-shop.yaml, benchmark/mermaid/gantt-onboarding.md, benchmark/mermaid/gitflow.md, benchmark/mermaid/pie-languages.md, benchmark/mermaid/pie-languages.yaml, benchmark/mermaid/state-order.md, benchmark/mermaid/state-order.yaml, benchmark/mermaid/timeline-web.md, benchmark/mermaid/timeline-web.yaml, notes/welcome.md, specs/deployment-checklist.md] — 13% — 1/7 checks · missed: document-at-path, kind-diagram(skipped), body-not-empty(skipped), mermaid-form(skipped), opener-sequenceDiagram(skipped), elements(skipped)",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "detail" : "nothing at benchmark/mermaid/sequence-oauth.md within 240s"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "opener-sequenceDiagram",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "got" : 0,
+      "want" : 0,
+      "skipped" : true,
+      "detail" : "chain stopped earlier"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 378888,
+      "tokensIn" : 42745,
+      "tokensOut" : 220,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 42745
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsStateDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=stateDiagram at benchmark/mermaid/state-order.md (211 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/state-order.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-stateDiagram",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 5,
+      "want" : 5,
+      "detail" : "all 5 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 58334,
+      "tokensIn" : 265080,
+      "tokensOut" : 556,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 265080
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+    "methodName" : "emitsTimelineDiagram",
+    "capability" : "mermaid-variety",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "opener=timeline at benchmark/mermaid/timeline-web.md (123 chars) — 100% — 7/7 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "document-at-path",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "benchmark/mermaid/timeline-web.md"
+    }, {
+      "name" : "kind-diagram",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "body-not-empty",
+      "kind" : "STAGE",
+      "weight" : 0.5,
+      "earned" : 0.5
+    }, {
+      "name" : "mermaid-form",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "opener-timeline",
+      "kind" : "STAGE",
+      "weight" : 1.5,
+      "earned" : 1.5
+    }, {
+      "name" : "elements",
+      "kind" : "COUNTED",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "got" : 10,
+      "want" : 10,
+      "detail" : "all 10 present"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 6,
+      "elapsedMs" : 484238,
+      "tokensIn" : 265238,
+      "tokensOut" : 500,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 265238
+    }
+  } ]
+}

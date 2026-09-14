@@ -1,0 +1,68 @@
+{
+  "startedAt" : "2026-09-12T20:58:18.520127Z",
+  "completedAt" : "2026-09-12T20:58:18.856711Z",
+  "modelSlug" : "ollama-gpt-oss-20b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MarvinWorkerBenchmark",
+    "methodName" : "marvinGrowsAndFinishesTaskTree",
+    "capability" : "marvin-worker",
+    "pass" : true,
+    "score" : 0.8,
+    "effectiveScore" : 0.8,
+    "reason" : "the tree did not finish: root node not DONE — 80% — 5/6 checks · missed: tree-finished",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "marvin-bench-4e5451"
+    }, {
+      "name" : "engine-marvin",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=marvin"
+    }, {
+      "name" : "beyond-root-work",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tree worked beyond the root: 2 child node(s), 2 specialist call(s)"
+    }, {
+      "name" : "phases-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "phaseHistory shows SCOPE and CONCLUDE/VALIDATE iterations"
+    }, {
+      "name" : "tree-finished",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "root node not DONE"
+    }, {
+      "name" : "final-reply",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "worker reported back"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 29,
+      "elapsedMs" : 162600,
+      "tokensIn" : 87283,
+      "tokensOut" : 15738,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 87283
+    }
+  } ]
+}

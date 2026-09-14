@@ -1,0 +1,113 @@
+{
+  "startedAt" : "2026-09-13T00:28:45.182498Z",
+  "completedAt" : "2026-09-13T00:30:03.746940Z",
+  "modelSlug" : "ollama-gemma4-31b-mlx",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.PlanTodoBenchmark",
+    "methodName" : "noPlanModeForSimpleRequest",
+    "capability" : "plan-todo",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "simple question stayed out of plan mode — direct answer — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-plan-mode",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "simple question answered without plan mode"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 17745,
+      "tokensIn" : 42707,
+      "tokensOut" : 272,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 42707
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.PlanTodoBenchmark",
+    "methodName" : "planModeForMultiStepWork",
+    "capability" : "plan-todo",
+    "pass" : false,
+    "score" : 0.42857142857142855,
+    "effectiveScore" : 0.42857142857142855,
+    "reason" : "no START_PLAN — model skipped plan mode despite the approval gate — 43% — 4/8 checks · missed: start-plan-fired, execution-started, todos-walked, todos-completed",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn1-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "start-plan-fired",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no START_PLAN action"
+    }, {
+      "name" : "plan-proposed",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "PROPOSE_PLAN with 0 todo(s)"
+    }, {
+      "name" : "approval-turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "execution-started",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no START_EXECUTION action"
+    }, {
+      "name" : "todos-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no todo progression observed"
+    }, {
+      "name" : "todos-completed",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "no completion evidence in the todo walk"
+    }, {
+      "name" : "final-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 8,
+      "elapsedMs" : 265535,
+      "tokensIn" : 302326,
+      "tokensOut" : 1085,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 302326
+    }
+  } ]
+}

@@ -1,0 +1,68 @@
+{
+  "startedAt" : "2026-09-13T20:28:45.111852Z",
+  "completedAt" : "2026-09-13T20:28:45.443306Z",
+  "modelSlug" : "ollama-laguna-s-2.1-nvfp4",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.MarvinWorkerBenchmark",
+    "methodName" : "marvinGrowsAndFinishesTaskTree",
+    "capability" : "marvin-worker",
+    "pass" : true,
+    "score" : 0.8,
+    "effectiveScore" : 0.8,
+    "reason" : "the tree did not finish: root node not DONE — 80% — 5/6 checks · missed: tree-finished",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "marvin-bench-05ad41"
+    }, {
+      "name" : "engine-marvin",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=marvin"
+    }, {
+      "name" : "beyond-root-work",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "tree worked beyond the root: 0 child node(s), 1 specialist call(s)"
+    }, {
+      "name" : "phases-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "phaseHistory shows SCOPE and CONCLUDE/VALIDATE iterations"
+    }, {
+      "name" : "tree-finished",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 0.0,
+      "detail" : "root node not DONE"
+    }, {
+      "name" : "final-reply",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "worker reported back"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 25,
+      "elapsedMs" : 361010,
+      "tokensIn" : 164544,
+      "tokensOut" : 18435,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 164544
+    }
+  } ]
+}

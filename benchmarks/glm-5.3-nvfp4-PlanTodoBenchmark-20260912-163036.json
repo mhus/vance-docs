@@ -1,0 +1,109 @@
+{
+  "startedAt" : "2026-09-12T16:30:36.113930Z",
+  "completedAt" : "2026-09-12T16:31:10.784039Z",
+  "modelSlug" : "glm-5.3-nvfp4",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.PlanTodoBenchmark",
+    "methodName" : "noPlanModeForSimpleRequest",
+    "capability" : "plan-todo",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "simple question stayed out of plan mode — direct answer — 100% — 3/3 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "no-plan-mode",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "simple question answered without plan mode"
+    }, {
+      "name" : "direct-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 1,
+      "elapsedMs" : 3895,
+      "tokensIn" : 52772,
+      "tokensOut" : 370,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 52772
+    }
+  }, {
+    "className" : "de.mhus.vance.benchmark.PlanTodoBenchmark",
+    "methodName" : "planModeForMultiStepWork",
+    "capability" : "plan-todo",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "full plan flow: START_PLAN → PROPOSE_PLAN → approval → START_EXECUTION, todos walked to completion, final answer delivered — 100% — 8/8 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "turn1-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "start-plan-fired",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "START_PLAN"
+    }, {
+      "name" : "plan-proposed",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "PROPOSE_PLAN with 4 todo(s)"
+    }, {
+      "name" : "approval-turn-completed",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0
+    }, {
+      "name" : "execution-started",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "START_EXECUTION"
+    }, {
+      "name" : "todos-walked",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "todo items progressed (todo_update tool or TODO_UPDATE action)"
+    }, {
+      "name" : "todos-completed",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "final todo_update marks COMPLETED (auto-clear by design) or TODO_UPDATE action with final answer"
+    }, {
+      "name" : "final-answer",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 22,
+      "elapsedMs" : 199727,
+      "tokensIn" : 846619,
+      "tokensOut" : 41303,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 846619
+    }
+  } ]
+}

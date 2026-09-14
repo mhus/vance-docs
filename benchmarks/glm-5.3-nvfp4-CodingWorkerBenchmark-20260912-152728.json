@@ -1,0 +1,64 @@
+{
+  "startedAt" : "2026-09-12T15:27:28.407546Z",
+  "completedAt" : "2026-09-12T15:27:28.739069Z",
+  "modelSlug" : "glm-5.3-nvfp4",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.CodingWorkerBenchmark",
+    "methodName" : "frankieFixesBuggyFibonacci",
+    "capability" : "coding-worker",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "full coding contract: read → hash-guarded surgical edit → settled, bug fixed — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "coding-bench-09ba2d"
+    }, {
+      "name" : "engine-frankie",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=frankie"
+    }, {
+      "name" : "read-before-edit",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "file_read on fib.js chronologically before file_edit"
+    }, {
+      "name" : "hash-guard",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "file_edit carried expectedContentHash"
+    }, {
+      "name" : "surgical-fix",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "bug fixed, structure intact"
+    }, {
+      "name" : "worker-settled",
+      "kind" : "CHECK",
+      "weight" : 0.5,
+      "earned" : 0.5,
+      "detail" : "IDLE (steered lane) or CLOSED/DONE"
+    } ],
+    "usage" : {
+      "available" : true,
+      "roundTrips" : 3,
+      "elapsedMs" : 2153,
+      "tokensIn" : 35143,
+      "tokensOut" : 295,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 35143
+    }
+  } ]
+}

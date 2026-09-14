@@ -1,0 +1,68 @@
+{
+  "startedAt" : "2026-09-13T08:51:52.331194Z",
+  "completedAt" : "2026-09-13T08:51:52.663386Z",
+  "modelSlug" : "ollama-qwen3.6-35b",
+  "scoreModel" : "v2-graded",
+  "judgeSlug" : "glm-5.3-nvfp4",
+  "knobs" : {
+    "chatTimeoutS" : 480,
+    "waitBudgetMinS" : 240
+  },
+  "tests" : [ {
+    "className" : "de.mhus.vance.benchmark.VogonWorkerBenchmark",
+    "methodName" : "vogonRunsTwoPhaseWorkflow",
+    "capability" : "vogon-worker",
+    "pass" : true,
+    "score" : 1.0,
+    "effectiveScore" : 1.0,
+    "reason" : "full vogon contract: StartRecord → two phase workers → ordered state walk → terminal DONE — 100% — 6/6 checks",
+    "artifacts" : [ ],
+    "checks" : [ {
+      "name" : "worker-spawned",
+      "kind" : "STAGE",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "vogon-bench-a3ae0f"
+    }, {
+      "name" : "engine-vogon",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "thinkEngine=vogon"
+    }, {
+      "name" : "workflow-started",
+      "kind" : "CHECK",
+      "weight" : 1.0,
+      "earned" : 1.0,
+      "detail" : "StartRecord bound to the spawned process, run 814a589324204ca49602e3be0798f62e"
+    }, {
+      "name" : "journal-walked",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "state walk first → second → accept in order"
+    }, {
+      "name" : "phase-workers-started",
+      "kind" : "CHECK",
+      "weight" : 1.5,
+      "earned" : 1.5,
+      "detail" : "two TaskStartedRecords with subProcessId"
+    }, {
+      "name" : "run-done",
+      "kind" : "CHECK",
+      "weight" : 2.0,
+      "earned" : 2.0,
+      "detail" : "StatusRecord DONE (terminal success)"
+    } ],
+    "usage" : {
+      "available" : false,
+      "roundTrips" : 0,
+      "elapsedMs" : 0,
+      "tokensIn" : 0,
+      "tokensOut" : 0,
+      "cacheReadTokens" : 0,
+      "cacheCreationTokens" : 0,
+      "totalInputTokens" : 0
+    }
+  } ]
+}
