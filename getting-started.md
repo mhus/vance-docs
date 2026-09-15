@@ -64,11 +64,16 @@ Then open the URL it prints (a local install defaults to
 <http://localhost:9999>) and log in with the user you just created.
 
 {: .note }
-> **Latest vs. a specific version.** By default the stack pulls the `latest`
-> images. To pin a release, set `IMAGE_TAG` on the `bash` side of the pipe —
-> e.g. `curl -fsSL https://www.vancetope.com/install.sh | IMAGE_TAG=0.1.0 bash`. The
-> wizard writes it into `.env`, so later `docker compose pull && docker compose
-> up -d` stays on that version until you bump it. Available tags are on the
+> **Pinned by default.** The wizard writes the version of the image it runs
+> from into `IMAGE_TAG` in `.env` — a wizard pulled from `:latest` while that
+> is `0.4.1` pins the stack to `0.4.1` — so `docker compose pull && docker
+> compose up -d` never silently changes what you run. Upgrading on purpose
+> means re-running the wizard from the new image (see [Upgrading](#upgrading)).
+> Prefer a rolling channel? Pick `latest` for the image tag in the wizard's
+> expert mode. To install a specific version up front, set `IMAGE_TAG` on the
+> `bash` side of the pipe — e.g.
+> `curl -fsSL https://www.vancetope.com/install.sh | IMAGE_TAG=0.4.1 bash`.
+> Available tags are on the
 > [Releases page](https://github.com/mhus/vance/releases).
 
 ### What you'll see
@@ -163,7 +168,7 @@ Done.
 ```bash
 # 1) scaffold docker-compose.yml + .env into ~/.vancetope (interactive wizard)
 mkdir -p ~/.vancetope
-docker run --rm -it -v "$HOME/.vancetope:/data" mhus/vancetope-anus:latest --setup-docker-compose
+docker run --rm -it -v "$HOME/.vancetope:/data" mhus/vancetope-anus:latest --setup-docker-compose   # pins IMAGE_TAG to this image's version
 cd ~/.vancetope
 
 # 2) start the stack
@@ -318,12 +323,24 @@ tag. Your previous answers are pre-filled from the existing `.env`.
 
 ## Upgrading
 
+The stack is **pinned**: `IMAGE_TAG` in `.env` names the exact version of the
+wizard that rendered these files. Updating therefore means re-running the
+wizard from the **new** image — it bumps the pin and re-renders the compose
+files — then pulling and rolling:
+
 ```bash
-docker compose pull
-docker compose up -d
+cd ~/.vancetope
+docker run --rm -it -v "$PWD:/data" \
+  mhus/vancetope-anus:<new version> --setup-docker-compose
+docker compose pull && docker compose up -d
 ```
 
-If you've pinned `IMAGE_TAG` in `.env`, bump it first.
+Data is migrated automatically when the new brain boots.
+
+Rolling channel instead: pick `latest` for the image tag in the wizard's
+expert mode — then the pin never changes and `docker compose pull && docker
+compose up -d` alone is the whole update. Re-run the wizard only when the
+release notes say the generated files changed.
 
 ## Running from source (developers)
 

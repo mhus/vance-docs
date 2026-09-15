@@ -67,5 +67,5 @@ what people actually get done with Vancetope.
 - **Configure an LLM provider** — beyond the setup wizard: aliases, fallbacks, per-tier model bindings
 - **Add a webhook / event trigger** — fire a recipe or workflow from an external HTTP call
 - **Schedule recurring work** — Ursa Scheduler from a YAML doc to a running job
-- **Pin a release** — set `IMAGE_TAG` in the Docker stack so upgrades are explicit
+- **Upgrade or switch a stack's channel** — re-running the setup wizard as the update path, or switching a pinned stack to the rolling `latest` channel
 - **Back up MongoDB** — what to dump, how to restore, encryption-key implications
