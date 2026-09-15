@@ -14,6 +14,12 @@
 #   VANCE_DIR=…       same as the argument (env override)
 #   VANCE_IMAGE=…     override the setup image (default: mhus/vancetope-anus:latest)
 #   IMAGE_TAG=…       override just the tag
+#
+#   Agent setup — no prompts, every parameter in a YAML config:
+#     curl -fsSL https://www.vancetope.com/install.sh -o install.sh
+#     cat setup.yaml | bash install.sh --config -        # add --dry-run to preview
+#   '-' reads the config from stdin, so it never lands on the filesystem.
+#   Spec: https://www.vancetope.com/specs/ (setup-agent-mode).
 
 set -euo pipefail
 
@@ -21,7 +27,14 @@ IMAGE="${VANCE_IMAGE:-mhus/vancetope-anus:${IMAGE_TAG:-latest}}"
 # Default install location: a fixed, hidden folder in the user's home — not a
 # "vance/" dir wherever curl happened to run. On Windows this is the WSL2 home
 # (the intended Windows path). Override with $VANCE_DIR or a first argument.
-TARGET_DIR="${1:-${VANCE_DIR:-$HOME/.vancetope}}"
+# First positional argument is the target directory — except in agent mode,
+# where every argument belongs to the wizard and the target comes from
+# VANCE_DIR (or the default).
+if [ $# -gt 0 ] && ! [[ "$1" == --* ]]; then
+  TARGET_DIR="${1:-${VANCE_DIR:-$HOME/.vancetope}}"
+else
+  TARGET_DIR="${VANCE_DIR:-$HOME/.vancetope}"
+fi
 
 # Colours only when writing to a real terminal.
 if [ -t 1 ]; then
@@ -55,17 +68,15 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
-# ── Reattach an interactive terminal (survives 'curl … | bash') ─────────────
-# Piped into bash, this script's own stdin is the pipe — not your keyboard.
-# The wizard is interactive, so point its stdin at the real terminal.
-if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
-  tty_in=/dev/tty
-else
-  err "No interactive terminal available (needed for the setup wizard)."
-  say "Run the wizard directly in a terminal instead:"
-  say "  docker run --rm -it -v \"\$(pwd)\":/data ${IMAGE} --setup-docker-compose"
-  exit 1
-fi
+# ── Agent mode: --config in argv runs the wizard headless ─────────────────
+# No terminal is re-attached (and none is required): the config comes from a
+# file or stdin ('-'), the wizard validates fail-closed, writes the stack
+# files and exits. The exit code propagates so the calling agent can verify
+# success. Every argument belongs to the wizard in this mode.
+agent_mode=false
+for a in "$@"; do
+  if [ "$a" = "--config" ]; then agent_mode=true; fi
+done
 
 # ── Target directory ────────────────────────────────────────────────────────
 mkdir -p "$TARGET_DIR"
@@ -77,12 +88,33 @@ say ""
 
 # ── Run the compose-setup wizard ────────────────────────────────────────────
 # Writes docker-compose.yml + .env into the mounted folder. It exits non-zero
-# when you quit/cancel — nothing gets written, so we stop cleanly (no compose).
-if ! docker run --rm -it -v "${target_abs}:/data" "$IMAGE" --setup-docker-compose <"$tty_in"; then
-  say ""
-  say "Setup cancelled — nothing started. Re-run when you're ready:"
-  say "  curl -fsSL https://www.vancetope.com/install.sh | bash"
-  exit 0
+# when the run fails — nothing gets written, so we stop cleanly (no compose).
+if [ "$agent_mode" = true ]; then
+  say "Agent mode — config via --config, no interactive wizard."
+  if ! docker run --rm -i -v "${target_abs}:/data" "$IMAGE" --setup-docker-compose "$@"; then
+    err "Setup failed — see the wizard output above. Nothing started."
+    exit 1
+  fi
+else
+  # ── Reattach an interactive terminal (survives 'curl … | bash') ─────────
+  # Piped into bash, this script's own stdin is the pipe — not your keyboard.
+  # The wizard is interactive, so point its stdin at the real terminal.
+  if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
+    tty_in=/dev/tty
+  else
+    err "No interactive terminal available (needed for the setup wizard)."
+    say "Run the wizard directly in a terminal instead:"
+    say "  docker run --rm -it -v \"\$(pwd)\":/data ${IMAGE} --setup-docker-compose"
+    say "…or drive it headless with a config (agent mode):"
+    say "  cat setup.yaml | bash $0 --config -"
+    exit 1
+  fi
+  if ! docker run --rm -it -v "${target_abs}:/data" "$IMAGE" --setup-docker-compose <"$tty_in"; then
+    say ""
+    say "Setup cancelled — nothing started. Re-run when you're ready:"
+    say "  curl -fsSL https://www.vancetope.com/install.sh | bash"
+    exit 0
+  fi
 fi
 
 # Belt and suspenders: only start if the wizard actually wrote a compose file.

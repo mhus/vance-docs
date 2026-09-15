@@ -14,7 +14,12 @@
 #
 # Pass-through args work too, e.g.:
 #   curl -fsSL https://www.vancetope.com/setup.sh | bash -s -- --sudo "tenant list"
-
+#
+#   Agent setup — no prompts, every parameter in a YAML config:
+#     curl -fsSL https://www.vancetope.com/setup.sh -o setup.sh
+#     cat tenant.yaml | bash setup.sh --setup --config -     # add --dry-run to preview
+#   '-' reads the config from stdin, so it never lands on the filesystem.
+#   Spec: https://www.vancetope.com/specs/ (setup-agent-mode).
 set -euo pipefail
 
 IMAGE="${VANCE_IMAGE:-mhus/vancetope-anus:${IMAGE_TAG:-latest}}"
@@ -82,9 +87,27 @@ mongo_uri="mongodb://${mongo_user:-root}:${mongo_pass:-example}@mongodb:27017/${
 args=("$@")
 [ ${#args[@]} -gt 0 ] || args=(--setup)
 
-# ── Run the wizard (interactive → reattach the real terminal) ───────────────
+# ── Run the wizard ──────────────────────────────────────────────────────────
 # --env-file lets Docker parse the .env correctly (spaces and all); we layer
 # the constructed Mongo URI + Spring profile on top.
+#
+# Agent mode (--config in argv): no terminal re-attach, stdin carries the
+# config — the wizard validates fail-closed, writes and exits with a code.
+agent_mode=false
+for a in "${args[@]}"; do
+  if [ "$a" = "--config" ]; then agent_mode=true; fi
+done
+
+if [ "$agent_mode" = true ]; then
+  exec docker run --rm -i --network "$network" \
+    --env-file "$dir/.env" \
+    -e SPRING_PROFILES_ACTIVE=prod \
+    -e VANCE_MONGODB_URI="$mongo_uri" \
+    -e VANCE_ANUS_BRAIN_HTTPBASE="http://brain:9990" \
+    "$IMAGE" "${args[@]}"
+fi
+
+# Interactive → reattach the real terminal.
 if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
   exec docker run --rm -it --network "$network" \
     --env-file "$dir/.env" \
@@ -94,5 +117,7 @@ if [ -e /dev/tty ] && (: >/dev/tty) 2>/dev/null; then
     "$IMAGE" "${args[@]}" </dev/tty
 fi
 err "No interactive terminal available for the setup wizard."
-say "Run it from a real terminal (not a non-interactive pipe)."
+say "Run it from a real terminal (not a non-interactive pipe),"
+say "…or drive it headless with a config (agent mode):"
+say "  cat tenant.yaml | bash $0 --setup --config -"
 exit 1
