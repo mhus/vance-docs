@@ -18,6 +18,7 @@ https://www.vancetope.com/llm/specification/arthur-engine.md
 https://www.vancetope.com/llm/specification/audit-system.md
 https://www.vancetope.com/llm/specification/bistromath-system.md
 https://www.vancetope.com/llm/specification/centauri-service.md
+https://www.vancetope.com/llm/specification/chat-location-tool.md
 https://www.vancetope.com/llm/specification/client-protokoll-erweiterbarkeit.md
 https://www.vancetope.com/llm/specification/completion-guard.md
 https://www.vancetope.com/llm/specification/cortex.md
@@ -66,6 +67,7 @@ https://www.vancetope.com/llm/specification/how-do-i.md
 https://www.vancetope.com/llm/specification/identity-credentials.md
 https://www.vancetope.com/llm/specification/image-manipulation.md
 https://www.vancetope.com/llm/specification/inline-and-embedded-content.md
+https://www.vancetope.com/llm/specification/integration-tokens.md
 https://www.vancetope.com/llm/specification/integrationen-externe-systeme.md
 https://www.vancetope.com/llm/specification/inter-links.md
 https://www.vancetope.com/llm/specification/jaglan-system.md
@@ -98,6 +100,7 @@ https://www.vancetope.com/llm/specification/prompts-and-manuals.md
 https://www.vancetope.com/llm/specification/rag.md
 https://www.vancetope.com/llm/specification/recipe-routing.md
 https://www.vancetope.com/llm/specification/recipes.md
+https://www.vancetope.com/llm/specification/report-themes.md
 https://www.vancetope.com/llm/specification/responsive-focus-layout.md
 https://www.vancetope.com/llm/specification/runs-view.md
 https://www.vancetope.com/llm/specification/scheduler.md
@@ -131,6 +134,7 @@ https://www.vancetope.com/llm/specification/vault-access.md
 https://www.vancetope.com/llm/specification/vision.md
 https://www.vancetope.com/llm/specification/vogon-engine.md
 https://www.vancetope.com/llm/specification/voice-mode.md
+https://www.vancetope.com/llm/specification/web-grab.md
 https://www.vancetope.com/llm/specification/web-ui.md
 https://www.vancetope.com/llm/specification/webdav.md
 https://www.vancetope.com/llm/specification/websocket-protokoll.md

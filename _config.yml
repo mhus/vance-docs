@@ -26,7 +26,8 @@ footer_content: >-
   Source on <a href="https://github.com/mhus/vance-docs">GitHub</a> ·
   <a href="/impressum">Impressum</a> ·
   <a href="/datenschutz">Datenschutz</a> ·
-  <a href="/privacy-apps">App Privacy</a>.
+  <a href="/privacy-apps">App Privacy</a> ·
+  <a href="/llms.txt">llms.txt</a> (for agents).
 
 plugins:
   - jekyll-remote-theme
