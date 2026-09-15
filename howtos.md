@@ -62,10 +62,14 @@ what people actually get done with Vancetope.
 - **Add a server-side tool** — register a `vance-shared` tool, wire it into a recipe, call it from a session
 - **Anbind an MCP server** — point Vancetope at an MCP endpoint, expose its tools through the recipe layer
 
-### Operations
+## Operations
+
+- [**Upgrading**](/howtos/upgrading/) — updates on purpose: the pinned-by-default stack, the wizard re-run as the update path, the rolling `latest` channel, and how the clients (CLI, desktop) update
+
+### Planned
+
 
 - **Configure an LLM provider** — beyond the setup wizard: aliases, fallbacks, per-tier model bindings
 - **Add a webhook / event trigger** — fire a recipe or workflow from an external HTTP call
 - **Schedule recurring work** — Ursa Scheduler from a YAML doc to a running job
-- **Upgrade or switch a stack's channel** — re-running the setup wizard as the update path, or switching a pinned stack to the rolling `latest` channel
 - **Back up MongoDB** — what to dump, how to restore, encryption-key implications
