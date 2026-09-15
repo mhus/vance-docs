@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-08-14T21:22:27.354150Z",
+  "completedAt": "2026-08-14T21:22:30.463717Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__pre-merge-fix",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactAppend",
+      "capability": "learn-action",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "model timed out after 0.6s (budget 600s, foot.error=Brain error 500: Engine steer failed: de.mhus.vance.brain.ai.AiChatException: arthur streaming failed: All 2 chat-model chain entries exhausted)",
+      "artifacts": [],
+      "usage": {
+        "available": false,
+        "roundTrips": 0,
+        "elapsedMs": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 0
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User provided team name and repo pattern to remember.\",\"scope\":\"fact\",\"content\":\"Team name: platform-core. Works on ms-* repositories.\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 218632,
+        "tokensIn": 121487,
+        "tokensOut": 235,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121487
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaAppend",
+      "capability": "learn-action",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "model timed out after 0.6s (budget 600s, foot.error=Brain error 500: Engine steer failed: de.mhus.vance.brain.ai.AiChatException: arthur streaming failed: All 2 chat-model chain entries exhausted)",
+      "artifacts": [],
+      "usage": {
+        "available": false,
+        "roundTrips": 0,
+        "elapsedMs": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 0
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaReplace",
+      "capability": "learn-action",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "model timed out after 0.6s (budget 600s, foot.error=Brain error 500: Engine steer failed: de.mhus.vance.brain.ai.AiChatException: arthur streaming failed: All 2 chat-model chain entries exhausted)",
+      "artifacts": [],
+      "usage": {
+        "available": false,
+        "roundTrips": 0,
+        "elapsedMs": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 0
+      }
+    }
+  ]
+}

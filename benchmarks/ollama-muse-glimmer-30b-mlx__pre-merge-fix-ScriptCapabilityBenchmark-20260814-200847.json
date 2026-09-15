@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-08-14T20:08:47.531624Z",
+  "completedAt": "2026-08-14T20:15:11.587299Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__pre-merge-fix",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesJavaScriptJsonTransform",
+      "capability": "script-javascript",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_javascript produced expected substring(s) [50, Feb]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 216378,
+        "tokensIn": 366593,
+        "tokensOut": 479,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 366593
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesJavaScriptPrimes",
+      "capability": "script-javascript",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_javascript produced expected substring(s) [97, 2]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 45040,
+        "tokensIn": 366565,
+        "tokensOut": 787,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 366565
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesJavaScriptSum",
+      "capability": "script-javascript",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no TOOL_RESULT from any of [execute_javascript] within 30s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 34734,
+        "tokensIn": 121502,
+        "tokensOut": 805,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121502
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesPythonPrimes",
+      "capability": "script-python",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no TOOL_RESULT from any of [execute_python, python_run, exec_run, client_exec_run, work_exec_run] within 30s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 180779,
+        "tokensIn": 121498,
+        "tokensOut": 127,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121498
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesPythonStringReverse",
+      "capability": "script-python",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no TOOL_RESULT from any of [execute_python, python_run, exec_run, client_exec_run, work_exec_run] within 30s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 23740,
+        "tokensIn": 121497,
+        "tokensOut": 509,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121497
+      }
+    }
+  ]
+}

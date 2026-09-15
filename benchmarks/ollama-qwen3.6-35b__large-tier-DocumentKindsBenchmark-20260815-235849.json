@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-08-15T23:58:49.063930Z",
+  "completedAt": "2026-08-16T00:01:55.137179Z",
+  "modelSlug": "ollama-qwen3.6-35b__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+      "methodName": "createsApplicationKind",
+      "capability": "document-kinds",
+      "pass": false,
+      "score": 0.3,
+      "effectiveScore": 0.3,
+      "reason": "kind=application at benchmark/calendar-app/_app.yaml (181 chars); judge: The candidate is missing the required calendar.lanes map.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 61114,
+        "tokensIn": 208453,
+        "tokensOut": 499,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 208453
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+      "methodName": "createsChartKind",
+      "capability": "document-kinds",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "kind=chart at benchmark/chart-sales.json (248 chars); judge: Candidate meets all criteria.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 45006,
+        "tokensIn": 207062,
+        "tokensOut": 395,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 207062
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+      "methodName": "createsDiagramKind",
+      "capability": "document-kinds",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "kind=diagram at benchmark/diagram-login-flow.md (310 chars); judge: All required nodes are present in the correct sequence and the syntax is valid.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 65861,
+        "tokensIn": 299732,
+        "tokensOut": 1161,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 299732
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+      "methodName": "createsGraphKind",
+      "capability": "document-kinds",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "kind=graph at benchmark/graph-diamond.json (263 chars); judge: The candidate correctly implements the requested diamond graph structure.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 15784,
+        "tokensIn": 205175,
+        "tokensOut": 530,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 205175
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.DocumentKindsBenchmark",
+      "methodName": "createsMindmapKind",
+      "capability": "document-kinds",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "kind=mindmap at benchmark/mindmap-languages.md (303 chars); judge: Candidate meets all structural requirements.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 7934,
+        "tokensIn": 148994,
+        "tokensOut": 340,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 148994
+      }
+    }
+  ]
+}

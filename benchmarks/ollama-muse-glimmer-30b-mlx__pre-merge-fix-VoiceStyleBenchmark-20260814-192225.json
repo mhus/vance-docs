@@ -1,0 +1,268 @@
+{
+  "startedAt": "2026-08-14T19:22:25.954274Z",
+  "completedAt": "2026-08-14T19:42:27.249770Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__pre-merge-fix",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceAcronymExpansion",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "K8s expanded to Kubernetes in speakable text",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 25621,
+        "tokensIn": 121951,
+        "tokensOut": 214,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121951
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForCodePath",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "long path/URL `https://github.com/spring-projects/spring-petclinic.git` left in inline-backticks \u2014 TTS would either spell it or read with noise. Belongs in a fence in voice mode.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 78031,
+        "tokensIn": 121971,
+        "tokensOut": 262,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121971
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForLongList",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no new ASSISTANT chat-message appeared within 120s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 87245,
+        "tokensIn": 306728,
+        "tokensOut": 966,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 306728
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceForTable",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no new ASSISTANT chat-message appeared within 120s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 176284,
+        "tokensIn": 152566,
+        "tokensOut": 1024,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 152566
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceFenceNotMisused",
+      "capability": "voice-style",
+      "pass": true,
+      "score": 1.0,
+      "effectiveScore": 1.0,
+      "reason": "fence-not-misused (Paris in speakable); judge: The candidate directly and concisely names the capital.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 6376,
+        "tokensIn": 121959,
+        "tokensOut": 131,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121959
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceModeOffMidConversation",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "voice-mode toggle respected mid-conversation: voice=1 sentences vs text=19 with markdown structure",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 360651,
+        "tokensIn": 365650,
+        "tokensOut": 964,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 365650
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceNumbersSpeakable",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "no ISO date leaked into speakable text (numbers TTS-safe)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 16925,
+        "tokensIn": 121970,
+        "tokensOut": 361,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121970
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceQuestionEndsOpenly",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "last sentence closes the turn cleanly (question, invitation, or clear recommendation)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 22292,
+        "tokensIn": 121962,
+        "tokensOut": 500,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121962
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceShortBulletsAllowedInline",
+      "capability": "voice-style",
+      "pass": false,
+      "score": 0.5,
+      "effectiveScore": 0.5,
+      "reason": "voice short-bullets (3 bullets); judge: The enumeration 'Eins, Zwei, Drei' is stilted for spoken German.",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 28712,
+        "tokensIn": 121962,
+        "tokensOut": 236,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121962
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceShortProseReply",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "voice reply had 10 prose sentences (\u22644 allowed); speakable head: Die wichtigsten Sehensw\u00fcrdigkeiten in Lissabon im \u00dcberblick:\n\nErstens: Castelo de S\u00e3o Jorge \u2013 mittelalterliche Burg mit Panoramablick \u00fcber die Altstadt und den Tejo.; Zweitens: Alfama \u2013 \u00e4ltestes Viert\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 24437,
+        "tokensIn": 121955,
+        "tokensOut": 529,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121955
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSpokenPartNoMarkdownLeak",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "speakable text has no markdown markers (1333 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 265636,
+        "tokensIn": 747545,
+        "tokensOut": 1494,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 747545
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSttToleranceCutWord",
+      "capability": "voice-style",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no new ASSISTANT chat-message appeared within 120s",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 22409,
+        "tokensIn": 121951,
+        "tokensOut": 307,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121951
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.VoiceStyleBenchmark",
+      "methodName": "voiceSttToleranceHomophone",
+      "capability": "voice-style",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "STT homophone tolerated, reply references Lissabon",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 28673,
+        "tokensIn": 121962,
+        "tokensOut": 622,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121962
+      }
+    }
+  ]
+}

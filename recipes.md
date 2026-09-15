@@ -45,12 +45,12 @@ Recipes the user / orchestrator can pick directly when spawning a session or pro
 engine: `ford`
 {: .label .label-blue }
 
-Substantive analysis with multiple tool calls. Reads files,
-inspects state, returns findings with cited evidence.
+Analysis of material we ALREADY have (files, project data, RAG, mailbox) — NOT public-web research; for URLs / search use web-research.
+Multi-step tool calls; returns findings with cited evidence.
 
 **Model:** `default:analyze`
 
-**Max iterations:** 10
+**Max iterations:** 40
 
 **Tags:** `analysis`, `research`
 
@@ -69,13 +69,87 @@ operational work to worker recipes, synthesises worker results
 back into the chat. Default for engine 'arthur' when no specific
 recipe is named.
 
-**Model:** `default:arthur` (fallbacks: `default:analyze`)
-
-**Max iterations:** 6
+**Model:** `default:arthur` (fallbacks: `default:chat`, `default:analyze`)
 
 **Tags:** `chat`, `orchestrator`, `engine-default`
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/arthur.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy`
+{: .d-inline-block }
+
+engine: `benjy`
+{: .label .label-blue }
+
+**Benjy — Iterative Orchestration Worker**
+
+Engine-agency orchestration loop for iterative tasks: interprets the
+goal into acceptance criteria and items, delegates each item to a
+focused Ford worker, evaluates results against criteria and decides
+the next step at branches. Built for small/local models that cannot
+carry loop discipline themselves. For coding with mechanical
+verification use benjy-coding.
+
+**Tags:** `worker`, `engine-default`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-batch`
+{: .d-inline-block }
+
+engine: `benjy`
+{: .label .label-blue }
+
+**Benjy Batch (Mechanical)**
+
+Mechanical iterative batch worker for small/local models: Benjy
+interprets the goal into items and works the list without any LLM
+routing at branch points — pure engine mechanics (retry to cap,
+escalation, BLOCKED). Use for well-structured bulk work whose items
+are evident from the task text; for goals needing judgement at
+branches use benjy or benjy-coding.
+
+**Tags:** `worker`, `batch`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-batch.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-coding`
+{: .d-inline-block }
+
+engine: `benjy`
+{: .label .label-blue }
+
+**Benjy Coding**
+
+Iterative coding orchestration: Benjy decomposes the goal into items,
+delegates each to a focused coding worker, verifies mechanically
+(check command), evaluates against acceptance criteria, reflects on
+the goal before DONE and escalates stuck items to the Frankie coding
+worker. Pin `features.check.command` to your project's build/test
+command (project recipe override or spawn params).
+
+**Tags:** `worker`, `coding`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-coding.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-research`
+{: .d-inline-block }
+
+engine: `benjy`
+{: .label .label-blue }
+
+**Benjy Research**
+
+Iterative research orchestration: Benjy interprets the goal into
+acceptance criteria and research items, delegates each item to a
+focused research worker (Zarniwoop search sources), evaluates the
+findings against the criteria and reflects on the goal before DONE.
+For goals that change files use benjy-coding; for mechanical
+bulk lists without LLM routing use benjy-batch.
+
+**Tags:** `worker`, `research`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-research.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `code-read`
 {: .d-inline-block }
@@ -90,7 +164,7 @@ summarises structure and call sites.
 
 **Model:** `default:code-read` (fallbacks: `default:code`)
 
-**Max iterations:** 10
+**Max iterations:** 40
 
 **Tags:** `code`, `read`
 
@@ -114,6 +188,79 @@ those to Marvin.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/coding.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
+### `council-chat`
+{: .d-inline-block }
+
+engine: `zaphod`
+{: .label .label-blue }
+
+**Council Chat**
+
+Interactive session chat where every message is evaluated by a
+three-head council (optimist, skeptic, pragmatist) and answered
+with a synthesis. Long-lived heads remember the conversation;
+turn progress shows as a checklist.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `council`, `session`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/council-chat.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `creator`
+{: .d-inline-block }
+
+engine: `ford`
+{: .label .label-blue }
+
+**Creator — Automation Setup**
+
+Sets up persistent project configuration on explicit user request:
+schedulers (cron / one-shot `at:`), events (incoming webhooks), hooks
+(brain-event-driven triggers), research sources (search backends for
+the research_* family), model definitions (LLM provider instances
+under `_vance/model/`), tenant-wide web-UI customization (custom
+stylesheet and header logo), the project's `agent.md` — the
+standing instructions every agent in the project is given — and kit
+authoring: turning a project into a kit source, keeping the
+authoring manifest honest and pushing the kit to its git repo.
+Ford-based worker that carries the scheduler / event / hook tool
+families as primary plus the how-to manuals. Delegate here when the
+user actually wants something set up for good — not for one-off
+runs. Can verify schemas and conventions against Vance's own
+sources: `brain_info` reports the running version, `git_checkout`
+clones the public repo at exactly that revision.
+
+**Model:** `default:creator` (fallbacks: `default:analyze`)
+
+**Max iterations:** 40
+
+**Tags:** `creator`, `automation`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/creator.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `discuss`
+{: .d-inline-block }
+
+engine: `arthur`
+{: .label .label-blue }
+
+**Discuss — Thinking Partner**
+
+Thinking-partner chat: discusses ideas on their own terms, does
+not pivot to implementation, does not relate every topic back to
+Vance, and does not offer to build unless explicitly asked. Same
+Arthur action-loop; RAG auto-inject off. Switch to `arthur` when
+you want operational work.
+
+**Model:** `default:arthur` (fallbacks: `default:chat`, `default:analyze`)
+
+**Max iterations:** 6
+
+**Tags:** `chat`, `discuss`, `thinking-partner`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/discuss.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
 ### `eddie`
 {: .d-inline-block }
 
@@ -129,9 +276,9 @@ items for follow-up, and keeps her own scratchpad in the user
 project. Default for engine 'eddie' when no specific recipe is
 named.
 
-**Model:** `default:eddie` (fallbacks: `default:analyze`)
+**Model:** `default:eddie` (fallbacks: `default:chat`, `default:analyze`)
 
-**Max iterations:** 6
+**Max iterations:** 20
 
 **Tags:** `hub`, `engine-default`
 
@@ -152,7 +299,7 @@ top of this — pick the most specific one when applicable.
 
 **Model:** `default:ford` (fallbacks: `default:analyze`)
 
-**Max iterations:** 8
+**Max iterations:** 40
 
 **Tags:** `generalist`, `engine-default`
 
@@ -201,6 +348,25 @@ does NOT layer the structured output contract on top of them.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/marvin.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
+### `philosophical-council`
+{: .d-inline-block }
+
+engine: `zaphod`
+{: .label .label-blue }
+
+**Philosophical Council**
+
+Interactive session chat where every message is deliberated by a
+council of seven philosophers — Socrates, Aristotle, Seneca, Kant,
+Mill, Nietzsche, and Laozi — and answered with a synthesis of
+their perspectives.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `council`, `session`, `philosophy`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/philosophical-council.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
 ### `quick-lookup`
 {: .d-inline-block }
 
@@ -221,6 +387,41 @@ shell command.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/quick-lookup.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
+### `trillian-adam`
+{: .d-inline-block }
+
+engine: `trillian-control`
+{: .label .label-blue }
+
+**Trillian adam (persistent)**
+
+Trillian Control — Nature-A 'adam'. Reactive chat host that discusses
+tasks with the human and enqueues them into a paired Trillian
+UserProcess. Attributes set on this Trillian persist as a document.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `trillian`, `control`, `chat`, `adam`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-adam.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `trillian-void`
+{: .d-inline-block }
+
+engine: `trillian-control`
+{: .label .label-blue }
+
+**Trillian void (baseline)**
+
+Trillian Control — Nature void. Reactive chat host that discusses tasks
+with the human and enqueues them into a paired Trillian UserProcess.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `trillian`, `control`, `chat`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-void.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
 ### `web-research`
 {: .d-inline-block }
 
@@ -229,17 +430,16 @@ engine: `ford`
 
 **Web Research**
 
-Multi-source web research with summarisation. Use this when the
-user wants up-to-date information from the public web — comparison
-reports, current best-practices, vendor-feature lookups, news /
-status checks. Performs several `research_search` / `web_fetch`
-calls, cross-checks sources, and returns a synthesis with inline
+Public-web research — URLs / search / fresh internet facts via research_search / research_investigate / web_fetch across multiple sources.
+Use for up-to-date info from the public web — comparison reports,
+current best-practices, vendor-feature lookups, news / status
+checks. Cross-checks sources and returns a synthesis with inline
 source attributions ([source: url]). Single-shot worker (no
 sub-tasks); not for tasks that need decomposition into phases.
 
 **Model:** `default:web-research` (fallbacks: `default:web`)
 
-**Max iterations:** 12
+**Max iterations:** 40
 
 **Tags:** `research`, `web`
 
@@ -270,23 +470,118 @@ and writes a structured diagnosis into the tool-health document.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/agrajag.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
+### `benjy-architect`
+{: .d-inline-block }
+
+engine: `slartibartfast`
+{: .label .label-blue }
+
+Slartibartfast variant that generates a Benjy RECIPE (engine: benjy
+— the iterative orchestration engine for small/local models) from a
+free-text request. Same Slart lifecycle for the authoring part
+(FRAMING → … → VALIDATING → PERSISTING); PROPOSING and VALIDATING
+produce/check the Beny outer-recipe shape — the feature map
+(interpret/route/check/evaluate/reflect/escalation), task types,
+caps and the work target — and validate every referenced recipe
+against the project's recipe inventory.
+
+Author-only (planOnly=true): the run persists the recipe and ends at
+DONE. It does NOT run the generated Benjy worker — a Benjy run is a
+long-lived iterative process with its own doer spawns and controller
+calls; its cost profile has no place inside an authoring run. Spawn
+the persisted recipe afterwards (the DONE payload carries the path).
+
+The architect references existing sub-recipes (doer, controller
+LightLlm profiles, escalation target) by name — it does not generate
+them. The bundled benjy-* profiles and doers cover the common cases;
+a genuinely new doer or controller profile is authored separately.
+
+Use this when the user wants a project-specific Benjy variant —
+"pin mvn verify as the check command for a benjy coding worker",
+"give me a benjy that escalates to marvin", "set up a benjy batch
+worker for this cleanup list". For Marvin recipes use
+marvin-architect, for plain linear pipelines plain `slartibartfast`
+(vogon-strategy).
+
+**Model:** `default:benjy-architect` (fallbacks: `default:analyze`)
+
+**Tags:** `architect`, `benjy`, `engine-default`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-architect.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-do-coding`
+{: .d-inline-block }
+
+engine: `ford`
+{: .label .label-blue }
+
+**Benjy Doer (Coding)**
+
+Focused single-item coding worker spawned by the Benjy engine. Not
+for direct spawning — Benjy drives it (one item per spawn, fresh
+context every attempt).
+
+**Model:** `default:code` (fallbacks: `default:fast`)
+
+**Tags:** `worker`, `coding`, `benjy-doer`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-do-coding.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-do-research`
+{: .d-inline-block }
+
+engine: `ford`
+{: .label .label-blue }
+
+**Benjy Doer (Research)**
+
+Focused single-item research worker spawned by the Benjy engine.
+Not for direct spawning — Benjy drives it (one item per spawn,
+fresh context every attempt).
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `worker`, `research`, `benjy-doer`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-do-research.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
 ### `council-bmad-build`
 {: .d-inline-block }
 
 engine: `zaphod`
 {: .label .label-blue }
 
-BMAD-METHOD-orientiertes Council für Software-Build-Anfragen:
-drei Rollen aus dem agilen Team — Product Manager (Was/Warum),
-Architect (Wie/Struktur), Developer (Konkrete Umsetzung). Jede
-Rolle bewertet die Anfrage aus ihrer Perspektive; Synthese
-kombiniert die Sichten zu einem koordinierten Build-Vorschlag.
-Geeignet für: Feature-Anfragen, Architektur-Entscheidungen,
-Story-Aufrisse vor der eigentlichen Implementierung.
+BMAD-METHOD-oriented council for software-build requests:
+three roles from the agile team — Product Manager (What/Why),
+Architect (How/Structure), Developer (Concrete Implementation).
+Each role evaluates the request from its perspective; the
+synthesis combines the perspectives into a coordinated build
+proposal. Suited for: feature requests, architecture decisions,
+story breakdowns before the actual implementation.
 
 **Tags:** `council`, `multi-head`, `bmad`, `software-build`
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/council-bmad-build.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `council-member`
+{: .d-inline-block }
+
+engine: `ford`
+{: .label .label-blue }
+
+**Council Member**
+
+Light Ford worker profile for Zaphod council heads. One
+perspective per round, driven by the Zaphod engine — the
+persona arrives with the steer content, not with this recipe.
+
+**Model:** `default:fast`
+
+**Max iterations:** 15
+
+**Tags:** `council`, `worker`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/council-member.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `council-three-perspectives`
 {: .d-inline-block }
@@ -294,10 +589,10 @@ Story-Aufrisse vor der eigentlichen Implementierung.
 engine: `zaphod`
 {: .label .label-blue }
 
-3-Personen-Beratung zu einer Entscheidungsfrage: Optimist,
-Skeptiker, Pragmatiker. Jeder gibt seine Sicht ab, dann
-Synthese. Geeignet für Architektur-/Design-/Strategie-Fragen
-bei denen mehrere Sichten Wert bringen.
+3-person deliberation on a decision question: optimist,
+skeptic, pragmatist. Each gives their perspective, then a
+synthesis follows. Suited for architecture / design / strategy
+questions where multiple perspectives add value.
 
 **Tags:** `council`, `multi-head`, `decision`
 
@@ -309,14 +604,14 @@ bei denen mehrere Sichten Wert bringen.
 engine: `zaphod`
 {: .label .label-blue }
 
-Pro/Contra-Debatte zu einer Entscheidungsfrage. Pro argumentiert
-für den Vorschlag, Contra dagegen. Nach jeder Round prüft ein
-LightLlm-Check, ob Konsens erreicht ist; sonst läuft die nächste
-Round (bis zu 3). Der Synthesizer fasst die finale Position
-zusammen — explizit getrennt, ob Konsens erreicht wurde oder die
-Köpfe nach maxRounds noch dissentieren. Geeignet für Entscheidungen
-bei denen Positionen sich realistisch unter Pressure shiften
-können (Ship-jetzt-oder-warten, Buy-vs-Build, Security-Audit etc.).
+Pro/con debate on a decision question. Pro argues for the
+proposal, Con against it. After each round a LightLlm check
+determines whether consensus has been reached; otherwise the next
+round runs (up to 3). The synthesizer summarises the final
+position — explicitly distinguishing whether consensus was reached
+or the heads still dissent after maxRounds. Suited for decisions
+where positions can realistically shift under pressure (ship-now-
+or-wait, buy-vs-build, security audit, etc.).
 
 **Tags:** `debate`, `multi-head`, `decision`, `pro-contra`
 
@@ -328,13 +623,19 @@ können (Ship-jetzt-oder-warten, Buy-vs-Build, Security-Audit etc.).
 engine: `ford`
 {: .label .label-blue }
 
-Generalist worker fallback — used when a process is spawned
-without recipe AND without engine. Conservative defaults: ford
-with a basic 'helpful assistant' prompt and validation on.
+General-purpose worker for straightforward tasks — the right choice
+whenever no specialist recipe clearly fits. Creates and edits
+documents directly (doc_write) — notes, mindmaps, diagrams, records,
+workpages — runs tools, answers questions, and produces files. Engine
+ford with validation on. Prefer this over a script-authoring
+(slart-and-run) or multi-phase (slartibartfast) specialist for simple
+"make / write / edit a document" requests: those are heavier and are
+only warranted when the task genuinely needs custom code or a
+research-and-plan pipeline.
 
 **Model:** `default:analyze`
 
-**Max iterations:** 8
+**Max iterations:** 40
 
 **Tags:** `default`, `generalist`
 
@@ -424,6 +725,39 @@ assistant message, then closes the process with CloseReason.DONE.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/jeltz.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
+### `magrathea-architect`
+{: .d-inline-block }
+
+engine: `slartibartfast`
+{: .label .label-blue }
+
+Slartibartfast variant that generates a Magrathea WORKFLOW (a named
+state-machine document under _vance/workflows/, NOT a recipe) from a
+free-text request. Same Slart lifecycle for the authoring part
+(FRAMING → … → VALIDATING → PERSISTING), only PROPOSING and
+VALIDATING produce/check a workflow state-graph instead of a Vogon
+strategy.
+
+Author-only: the run persists the workflow directly at
+_vance/workflows/<name>.yaml and ends at DONE (planOnly=true). It
+does NOT run the workflow — Magrathea is a workflow-orchestration
+subsystem, not an engine Slart can spawn. Start the generated
+workflow afterwards with the workflow_start tool, the scheduler, or
+the REST endpoint.
+
+Use this when the user wants a reusable, branching PROCESS with
+gates, timers, retries, error-handling and sub-workflows —
+"build a workflow that …", "set up a state machine for …",
+"automate this multi-step process with approval steps". For a
+one-shot linear pipeline use plain `slartibartfast` (vogon-strategy);
+for deep recursive decomposition use `marvin-architect`.
+
+**Model:** `default:magrathea-architect` (fallbacks: `default:analyze`)
+
+**Tags:** `architect`, `workflow`, `engine-default`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/magrathea-architect.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
 ### `marvin-architect`
 {: .d-inline-block }
 
@@ -491,11 +825,11 @@ engine: `ford`
 Python worker — manages a Python workspace RootDir with a local
 venv, installs packages with pip, runs scripts. The python_*
 tools are promoted to primary so they sit in the default tool
-catalog without find_tools discovery.
+catalog without tool_list discovery.
 
 **Model:** `default:python` (fallbacks: `default:code`)
 
-**Max iterations:** 12
+**Max iterations:** 40
 
 **Tags:** `python`, `code`, `worker`
 
@@ -592,58 +926,62 @@ steer the generated plan automatically.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/slartibartfast.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
-### `trillian`
-{: .d-inline-block }
-
-engine: `trillian-control`
-{: .label .label-blue }
-
-Trillian (current-default Nature). Reactive chat host that
-discusses tasks with the human and enqueues them into a paired
-Trillian-User worker. Aliases to trillian-0 today.
-
-**Model:** `default:analyze` (fallbacks: `default:fast`)
-
-**Tags:** `trillian`, `control`, `chat`, `default-alias`
-
-[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian.yaml){: .btn .btn-purple .fs-3 .mr-2 }
-
-### `trillian-0`
-{: .d-inline-block }
-
-engine: `trillian-control`
-{: .label .label-blue }
-
-Trillian Control — Nature-0. Reactive chat host that discusses tasks
-with the human and enqueues them into a paired Trillian UserProcess.
-
-**Model:** `default:analyze` (fallbacks: `default:fast`)
-
-**Tags:** `trillian`, `control`, `chat`
-
-[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-0.yaml){: .btn .btn-purple .fs-3 .mr-2 }
-
-### `trillian-user-0`
+### `trillian-user-adam`
 {: .d-inline-block }
 
 engine: `trillian-user`
 {: .label .label-blue }
 
-Trillian User worker-loop — Nature-0 v2. Picks task_request events,
-spawns workers via process_create, observes, validates, reports
+Trillian User worker-loop — Nature-A 'adam'. Picks task_request events,
+spawns workers via process_spawn, observes, validates, reports
 back to Control via task_complete / task_failed / task_needs_input.
-Runs as _trillian-0XXXX in its own headless session.
+Runs as _trillian-adam-XXXX in its own headless session. Its
+attributes are persisted as a document and reloaded on restart.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `trillian`, `adam`, `user`, `worker`, `orchestrator`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-user-adam.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `trillian-user-void`
+{: .d-inline-block }
+
+engine: `trillian-user`
+{: .label .label-blue }
+
+Trillian User worker-loop — Nature void v2. Picks task_request events,
+spawns workers via process_spawn, observes, validates, reports
+back to Control via task_complete / task_failed / task_needs_input.
+Runs as _trillian-void-XXXX in its own headless session.
 
 **Model:** `default:analyze` (fallbacks: `default:fast`)
 
 **Tags:** `trillian`, `user`, `worker`, `orchestrator`
 
-[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-user-0.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-user-void.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
-### `trillian-worker-0`
+### `trillian-worker-adam`
 {: .d-inline-block }
 
-engine: `frankie`
+engine: `trillian-worker`
+{: .label .label-blue }
+
+Trillian-User worker. Frankie loop with a hard termination contract:
+call trillian_done(summary=…) when the task is finished so the
+parent gets a clean DONE event. Otherwise behaves like a coding-
+style worker (file_*/exec_*/doc_* via Frankie defaults).
+
+**Model:** `default:fast` (fallbacks: `default:analyze`)
+
+**Tags:** `trillian`, `adam`, `worker`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-worker-adam.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `trillian-worker-void`
+{: .d-inline-block }
+
+engine: `trillian-worker`
 {: .label .label-blue }
 
 Trillian-User worker. Frankie loop with a hard termination contract:
@@ -655,7 +993,36 @@ style worker (file_*/exec_*/doc_* via Frankie defaults).
 
 **Tags:** `trillian`, `worker`
 
-[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-worker-0.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-worker-void.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `vogon`
+{: .d-inline-block }
+
+engine: `vogon`
+{: .label .label-blue }
+
+Runs a written plan on behalf of the person who asked for it: the plan
+can put questions to them while it runs, and its result comes back into
+the conversation.
+
+Name the plan when spawning — this recipe deliberately does not pin one:
+
+  params.workflow:     plan name, resolved through the workflow cascade
+                       (_vance/workflows/<name>.yaml, project before tenant)
+  params.workflowPath: a plan document at an explicit path in this project
+
+Exactly one of the two. Everything else in params is passed to the plan
+as its caller parameters.
+
+Use this when the steps are known in advance and worth writing down —
+phases with approvals, a write-review-revise loop, anything a person
+should be able to read before it runs. For one question or one action
+use a Ford recipe; when the structure only emerges while working, use
+Marvin.
+
+**Tags:** `plan`, `workflow`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/vogon.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `waterfall-feature`
 {: .d-inline-block }
@@ -663,12 +1030,13 @@ style worker (file_*/exec_*/doc_* via Frankie defaults).
 engine: `vogon`
 {: .label .label-blue }
 
-Vogon-driven sequential plan: planning → implementation → review.
-User approval gates between phases. Use this when a request
-genuinely needs phased execution with checkpoints, not when a
-single Marvin/Ford worker would suffice.
+Vogon-driven sequential plan: planning → implementation → review,
+with the person asked to approve in between and a scored review that
+can send the work back. Use this when a request genuinely needs
+phased execution with checkpoints, not when a single Marvin/Ford
+worker would suffice.
 
-**Tags:** `strategy`, `waterfall`, `feature`
+**Tags:** `plan`, `waterfall`, `feature`
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/waterfall-feature.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
@@ -678,10 +1046,10 @@ single Marvin/Ford worker would suffice.
 engine: `zaphod`
 {: .label .label-blue }
 
-Zaphod engine default — bewusst minimal. Verlangt explizit
-pattern + heads via params. Catch-all für engine-direct-Spawns
-(Tests). Für echte Use-Cases das spezifische Council-Recipe
-wählen (z.B. council-three-perspectives).
+Zaphod engine default — deliberately minimal. Explicitly requires
+pattern + heads via params. Catch-all for engine-direct spawns
+(tests). For real use cases, choose the specific council recipe
+(e.g. council-three-perspectives).
 
 **Tags:** `default`, `multi-head`, `engine-default`
 
@@ -766,10 +1134,6 @@ Pebble variables:
   toolsUsed      — newline-separated list of tool calls made this
                    turn, in order. Each line is "name(arg-preview)".
   iterations     — how many iterations have been consumed so far
-  extensionsLeft — how many more budget extensions the engine is
-                   willing to grant after this judgment (0 = this
-                   is the last call; must synthesise unless really
-                   making progress)
 
 Output: ONE JSON object, no markdown fences, no prose around it.
 
@@ -778,6 +1142,85 @@ Output: ONE JSON object, no markdown fences, no prose around it.
 **Tags:** `internal`, `action-loop-judge`
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/action-loop-judge.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-evaluate`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for Benjy's per-item evaluate call
+(LightLlm, not spawnable): worker result vs acceptance criteria.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `internal`, `benjy`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-evaluate.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-interpret`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for Benjy's interpret call (LightLlm,
+not spawnable): goal → interpreted goal, task type, acceptance
+criteria, first items. Called once per task.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `internal`, `benjy`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-interpret.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-reflect`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for Benjy's reflect gate (LightLlm,
+not spawnable): terminal goal-level check before DONE.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `internal`, `benjy`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-reflect.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `benjy-route`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for Benjy's route call (LightLlm, not
+spawnable): decides the next queue operation at branch points.
+The high-frequency controller call — smallest model of the chain.
+
+**Model:** `default:fast`
+
+**Tags:** `internal`, `benjy`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/benjy-route.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `completion-guard`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for the CompletionGuardService judge. NOT
+spawnable — marked `internal: true` so the standard recipe selector
+skips it. Renders a user-defined guard condition against the work a
+process just finished and answers whether the guard should fire.
+
+**Model:** `default:fast`
+
+**Tags:** `internal`, `guard`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/completion-guard.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `document-summary`
 {: .d-inline-block }
@@ -859,9 +1302,9 @@ Two structural modes, selected by which Pebble variables are set:
   the two fragments. Suggestions are inserted VERBATIM at the
   cursor — write text the user could plausibly have typed next.
 - Reply mode: `precedingContext` set, `textBefore`/`textAfter`
-  absent. The user is looking at the given text (typically the last
-  assistant message in a chat) and wants suggestions for how to
-  react — a follow-up question, a clarification, an acknowledgement.
+  absent. The user is looking at a recent conversation transcript
+  and wants suggestions for how to react — a follow-up question, a
+  clarification, an acknowledgement, or a natural next message.
 
 `mode` is an optional free-form UI-surface hint passed through
 verbatim, orthogonal to the edit/reply branch.
@@ -901,6 +1344,42 @@ See `planning/fook-service.md`.
 **Tags:** `internal`, `fook`, `triage`
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/fook.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `fook-session-analysis`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for the LightLlmService-driven ReAct loop in
+FookSessionAnalysisService (second stage of the bug/feature ticket
+system). NOT spawnable — marked `internal: true` so the standard
+recipe selector skips it.
+
+When Fook's triage decides a `new_ticket` and flags
+`needSessionReport`, Fook analyses the reporter's session and attaches
+the result to the ticket. The fixer (Lunkwill) has NO access to the
+original session — this report is the only bridge.
+
+This recipe is the PER-TURN prompt of an agentic loop. The session can
+be far larger than a context window, so the model does NOT receive the
+whole transcript — it works over it with tools (overview/search/grep/
+read) and Fook feeds back each observation. One LLM call = one action.
+
+Inputs (Pebble variables):
+  {{ ticketTitle }} / {{ ticketType }} — the derived ticket header
+  {{ reason }} / {{ triageNote }}       — Fook's triage rationale
+  {{ engine }} / {{ recipe }}           — what was running
+  {{ stepsLeft }}                       — remaining loop turns
+  {{ observations }}                    — tool results so far
+
+See `planning/fook-session-report.md`.
+
+**Model:** `default:analyze`
+
+**Tags:** `internal`, `fook`, `analysis`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/fook-session-analysis.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `hactar-args-extract`
 {: .d-inline-block }
@@ -1033,6 +1512,26 @@ required.
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/recipe-selector.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
+### `research-synthesize`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for the LightLlmService consumed by
+ResearchDocumentService (backend of the `research_document` tool). NOT
+spawnable — marked `internal: true` so the standard recipe selector skips
+it. The service runs the curated research pass first, then hands the ranked
+sources to this recipe to synthesize a full Markdown document in one
+single-shot call (no process spawn). Model alias, fallback list, max-attempts
+budget and promptPrefix are read from here.
+
+**Model:** `default:research-synthesize` (fallbacks: `default:analyze`)
+
+**Tags:** `internal`, `research`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/research-synthesize.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
 ### `script-review`
 {: .d-inline-block }
 
@@ -1082,6 +1581,79 @@ required.
 **Tags:** `session`, `system`, `internal`
 
 [Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/session-metadata.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `translate`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal LightLlmService config profile for translating a text or
+Markdown document — the backend of the Cortex "Translate…" menu
+entry. Single shot: the whole text goes in, the whole translation
+comes back, nothing is spawned.
+
+NOT spawnable — `internal: true`, so the standard recipe selector
+skips it. Additionally `web: true`, because it is called straight
+from the browser through POST /brain/{tenant}/light-llm/{project};
+that flag is what releases a recipe for web callers and its default
+is no.
+
+Pebble variables:
+  language    — the target language, as the user picked it. Either
+                a name ("Deutsch", "Brazilian Portuguese") or a
+                BCP-47 code ("de", "pt-BR"). Free-form on purpose:
+                the user may also ask for "Simplified Chinese" or
+                "plain English".
+  sourceName  — optional, the source document's file name. Only used
+                to help the model recognise the format; never echoed.
+
+Output: the translated text and nothing else — no preamble, no
+wrapping code fence, no closing remark. It is written verbatim into
+a new document (or handed to the reader's clipboard), so any word
+the model adds about its own work ends up in the file.
+
+KNOWN LIMIT: one call translates as much as the model is willing to
+emit. A long document comes back silently truncated. The caller caps
+the input length and warns when the result is much shorter than the
+source; chunking is not implemented.
+
+**Model:** `default:analyze` (fallbacks: `default:fast`)
+
+**Tags:** `internal`, `translate`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/translate.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `trillian-adam-reflect`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Internal config profile for the reflexion pass of Trillian Nature-A
+'adam'. Turns one concluded task into at most one journal line, or
+into nothing when there is nothing worth keeping.
+
+**Model:** `default:fast`
+
+**Tags:** `trillian`, `adam`, `internal`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/trillian-adam-reflect.yaml){: .btn .btn-purple .fs-3 .mr-2 }
+
+### `vogon-intake`
+{: .d-inline-block }
+
+engine: `jeltz`
+{: .label .label-blue }
+
+Reads a spoken request into the parameters a plan declared. Used by the
+Vogon engine before a run starts; not meant to be spawned directly.
+
+**Model:** `default:fast`
+
+**Tags:** `internal`, `vogon`
+
+[Source](https://github.com/mhus/vance/blob/main/server/vance-brain/src/main/resources/vance-defaults/_vance/recipes/vogon-intake.yaml){: .btn .btn-purple .fs-3 .mr-2 }
 
 ### `zaphod-consensus`
 {: .d-inline-block }

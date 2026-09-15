@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-08-16T00:08:52.074944Z",
+  "completedAt": "2026-08-16T00:09:10.379759Z",
+  "modelSlug": "ollama-qwen3.6-35b__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactAppend",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User specified their team's tech stack: Java 25 + Spring Boot 4.\",\"scope\":\"fact\",\"content\":\"Tech stack: Java 25 + Spring Boot 4\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 4987,
+        "tokensIn": 49690,
+        "tokensOut": 152,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49690
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsFactReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=fact) emitted: {\"type\":\"LEARN\",\"reason\":\"User stated their team name and repository convention \u2014 a durable fact worth remembering.\",\"scope\":\"fact\",\"content\":\"Team: platform-core; works on ms-* repositories.\"}",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 43363,
+        "tokensIn": 49374,
+        "tokensOut": 89,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49374
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaAppend",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=persona, mode=append) emitted: {\"type\":\"LEARN\",\"reason\":\"User wants code blocks at the very start of every reply, without long introductions.\",\"scope\":\"persona\",\"mode\":\"append\",\"content\":\"Immer Code-Block direkt am Anfang der Antwo\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 6207,
+        "tokensIn": 49804,
+        "tokensOut": 204,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49804
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.LearnActionBenchmark",
+      "methodName": "learnsPersonaReplace",
+      "capability": "learn-action",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "LEARN(scope=persona, mode=replace) emitted: {\"type\":\"LEARN\",\"reason\":\"User explicitly requested a new communication style: only concise bullet points, technical tone, no small talk \u2014 replacing all previous style.\",\"scope\":\"persona\",\"mode\":\"repl\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 5222,
+        "tokensIn": 49737,
+        "tokensOut": 164,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49737
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-08-15T20:54:07.375370Z",
+  "completedAt": "2026-08-15T21:04:33.490377Z",
+  "modelSlug": "ollama-gemma4-31b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesJavaScriptJsonTransform",
+      "capability": "script-javascript",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_javascript produced expected substring(s) [50, Feb]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 151774,
+        "tokensIn": 146968,
+        "tokensOut": 261,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 146968
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesJavaScriptPrimes",
+      "capability": "script-javascript",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_javascript produced expected substring(s) [97, 2]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 157516,
+        "tokensIn": 146869,
+        "tokensOut": 400,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 146869
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesJavaScriptSum",
+      "capability": "script-javascript",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_javascript produced expected substring(s) [500500]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 144381,
+        "tokensIn": 147050,
+        "tokensOut": 226,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 147050
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesPythonPrimes",
+      "capability": "script-python",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_python produced expected substring(s) [97, 2]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 240276,
+        "tokensIn": 196447,
+        "tokensOut": 340,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 196447
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.ScriptCapabilityBenchmark",
+      "methodName": "executesPythonStringReverse",
+      "capability": "script-python",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "tool=execute_python produced expected substring(s) [kramhcneb]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 168894,
+        "tokensIn": 196246,
+        "tokensOut": 190,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 196246
+      }
+    }
+  ]
+}

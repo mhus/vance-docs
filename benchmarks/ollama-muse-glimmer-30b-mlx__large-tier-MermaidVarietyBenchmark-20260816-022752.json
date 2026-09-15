@@ -1,0 +1,188 @@
+{
+  "startedAt": "2026-08-16T02:27:52.302532Z",
+  "completedAt": "2026-08-16T02:59:01.425329Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsC4ContextDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/c4-notifications.md (opener=C4Context) within 120s; kinds in project: []",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 125584,
+        "tokensIn": 87138,
+        "tokensOut": 1691,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 87138
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsErDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/er-shop.md (opener=erDiagram) within 120s; kinds in project: [diagram]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 192303,
+        "tokensIn": 74349,
+        "tokensOut": 1289,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 74349
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsGanttDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=gantt produced at benchmark/mermaid/gantt-onboarding.md (1327 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 77058,
+        "tokensIn": 61881,
+        "tokensOut": 1730,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 61881
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsGitGraph",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/gitflow.md (opener=gitGraph) within 120s; kinds in project: [diagram]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 99231,
+        "tokensIn": 49335,
+        "tokensOut": 525,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49335
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsJourneyDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=journey produced at benchmark/mermaid/journey-checkout.md (720 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 95422,
+        "tokensIn": 61794,
+        "tokensOut": 1085,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 61794
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsPieDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=pie produced at benchmark/mermaid/pie-languages.md (138 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 20,
+        "elapsedMs": 490650,
+        "tokensIn": 1057553,
+        "tokensOut": 2918,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 1057553
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsSequenceDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=sequenceDiagram produced at benchmark/mermaid/sequence-oauth.md (820 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 189205,
+        "tokensIn": 61837,
+        "tokensOut": 1050,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 61837
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsStateDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/state-order.md (opener=stateDiagram) within 120s; kinds in project: [diagram]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 34242,
+        "tokensIn": 49405,
+        "tokensOut": 459,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 49405
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsTimelineDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=timeline produced at benchmark/mermaid/timeline-web.md (146 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 301061,
+        "tokensIn": 203396,
+        "tokensOut": 946,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 203396
+      }
+    }
+  ]
+}

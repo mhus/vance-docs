@@ -1,0 +1,188 @@
+{
+  "startedAt": "2026-08-14T21:28:36.608144Z",
+  "completedAt": "2026-08-14T22:18:36.802156Z",
+  "modelSlug": "ollama-muse-glimmer-30b-mlx__pre-merge-fix",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsC4ContextDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/c4-notifications.md (opener=C4Context) within 120s; kinds in project: []",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 303451,
+        "tokensIn": 188835,
+        "tokensOut": 1773,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 188835
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsErDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/er-shop.md (opener=erDiagram) within 120s; kinds in project: [text]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 382910,
+        "tokensIn": 188932,
+        "tokensOut": 1256,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 188932
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsGanttDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/gantt-onboarding.md (opener=gantt) within 120s; kinds in project: [text]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 156672,
+        "tokensIn": 155329,
+        "tokensOut": 1597,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 155329
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsGitGraph",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "document at benchmark/mermaid/gitflow.md has kind=text (expected diagram) for opener=gitGraph",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 384816,
+        "tokensIn": 155081,
+        "tokensOut": 1597,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 155081
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsJourneyDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/journey-checkout.md (opener=journey) within 120s; kinds in project: [diagram, text]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 428023,
+        "tokensIn": 155064,
+        "tokensOut": 728,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 155064
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsPieDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "document at benchmark/mermaid/pie-languages.md has kind=text (expected diagram) for opener=pie",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 387107,
+        "tokensIn": 155349,
+        "tokensOut": 1005,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 155349
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsSequenceDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/sequence-oauth.md (opener=sequenceDiagram) within 120s; kinds in project: [text]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 1,
+        "elapsedMs": 539493,
+        "tokensIn": 121519,
+        "tokensOut": 681,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 121519
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsStateDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "no document at path=benchmark/mermaid/state-order.md (opener=stateDiagram) within 120s; kinds in project: [text]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 385365,
+        "tokensIn": 122412,
+        "tokensOut": 1064,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 122412
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsTimelineDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "document at benchmark/mermaid/timeline-web.md has kind=text (expected diagram) for opener=timeline",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 108805,
+        "tokensIn": 155074,
+        "tokensOut": 887,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 155074
+      }
+    }
+  ]
+}

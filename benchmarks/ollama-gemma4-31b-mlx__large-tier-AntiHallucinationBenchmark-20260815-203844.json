@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-08-15T20:38:44.587249Z",
+  "completedAt": "2026-08-15T20:49:23.998394Z",
+  "modelSlug": "ollama-gemma4-31b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+      "methodName": "rejectsCalendarCreateEvent",
+      "capability": "anti-hallucination",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model avoided 'calendar_create_event' and picked 'calendar_create' instead",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 285080,
+        "tokensIn": 253503,
+        "tokensOut": 403,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 253503
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+      "methodName": "rejectsDiagramTool",
+      "capability": "anti-hallucination",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model avoided 'diagram_tool' and picked 'doc_write' instead",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 242634,
+        "tokensIn": 304571,
+        "tokensOut": 1116,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 304571
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+      "methodName": "rejectsDocSave",
+      "capability": "anti-hallucination",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model avoided 'doc_save' and picked 'doc_write' instead",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 89138,
+        "tokensIn": 303134,
+        "tokensOut": 435,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 303134
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+      "methodName": "rejectsListAdd",
+      "capability": "anti-hallucination",
+      "pass": true,
+      "score": 0.6,
+      "effectiveScore": 0.6,
+      "reason": "model avoided 'list_add' without naming a real replacement (safe decline / clarify); tools called: [doc_list, doc_find, doc_read, arthur_action]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 44943,
+        "tokensIn": 194812,
+        "tokensOut": 166,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 194812
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.AntiHallucinationBenchmark",
+      "methodName": "rejectsRecordsCreate",
+      "capability": "anti-hallucination",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model avoided 'records_create' and picked 'records_add_column' instead",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 2,
+        "elapsedMs": 149863,
+        "tokensIn": 97616,
+        "tokensOut": 244,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 97616
+      }
+    }
+  ]
+}

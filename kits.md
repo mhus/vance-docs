@@ -57,7 +57,7 @@ v1.0
 
 Foundation-Kit für das Pattern „kurzer Skill-Body + Manuals on
 demand". Inspiriert von Claude Code's Skill-Architektur, aber an
-Vancetope' Engine-Push-Modell angepasst: Trigger aktivieren den Skill,
+Vance' Engine-Push-Modell angepasst: Trigger aktivieren den Skill,
 Skill-Body listet Manuals als Speisekarte, Modell zieht via
 manual_read die Detail-Tiefe nach.
 
@@ -138,7 +138,7 @@ was man eigentlich sagen will.
                            Mimik und Stimmlage fehlen
 
 Domain-frei: Arbeit, Teams, persönliche Beziehungen,
-Verhandlungen. Vancetope ist Think-Tool — diese Skills
+Verhandlungen. Vance ist Think-Tool — diese Skills
 helfen vor und nach den Gesprächen, ersetzen weder
 Therapie noch professionelle Mediation. Bei
 hochpersönlichen Themen ist der Hinweis auf
@@ -176,7 +176,7 @@ bei größeren Geld-Fragen).
 
 #### Wichtig: KEIN finance advice
 
-Vancetope ist Think-Tool, kein Finanzberater. Diese Skills
+Vance ist Think-Tool, kein Finanzberater. Diese Skills
 helfen dir Strukturen für eigenes Denken zu finden — sie
 ersetzen keine Beratung, kein Tax-Planning, keine
 Investment-Empfehlung. Konkrete Entscheidungen mit
@@ -266,7 +266,7 @@ Streitfälle, KEINE Rechtsberatung. Inherits von basic.
 
 #### Wichtig: KEINE Rechtsberatung
 
-Vancetope ist Think-Tool, kein Anwalt. Diese Skills helfen
+Vance ist Think-Tool, kein Anwalt. Diese Skills helfen
 dir, Legal-Texte zu verstehen und Streitfälle zu
 strukturieren. Sie ersetzen keinen Rechtsanwalt, keine
 Steuerberatung, keine spezifische rechtliche Empfehlung
@@ -409,7 +409,7 @@ v1.0
 Third variant of the school-essay kit. Like school-essay-script-kit
 the orchestration sits in a JavaScript skill-script — but unlike
 v1 the drafting of each chapter is delegated to its own Ford
-sub-worker via process_run. Each sub-worker is fed:
+sub-worker via process_spawn. Each sub-worker is fed:
 
   - the topic + sources (shared context),
   - the user-stated style constraints,
@@ -424,6 +424,8 @@ chapter gets dedicated focus.
 
 Same OUTPUT.md contract as the other school-essay kits — final
 essay layout under essay/.
+
+**Skills (1):** `school-essay-script-loop`
 
 [Source](https://github.com/mhus/vance-kits/tree/main/kits/school-essay-script-loop-kit){: .btn .btn-purple .fs-3 .mr-2 }
 
@@ -469,8 +471,8 @@ classes geht in die Tiefe.
 v1.0
 {: .label .label-blue }
 
-Meta-Kit für Vancetope-Konfigurations-Authoring: Recipes und Skills
-schreiben für Vancetope selbst. Inherits von basic — die
+Meta-Kit für Vance-Konfigurations-Authoring: Recipes und Skills
+schreiben für Vance selbst. Inherits von basic — die
 Decision-Frame / Stuck / Rubber-Duck / Review-Output Skills
 helfen auch beim Authoring (z.B. „decision-frame" wenn man
 zwischen Engine-Optionen schwankt, „review-output" zum Review
@@ -496,7 +498,7 @@ Skills:
                        `app: calendar`; weitere App-Types werden
                        später ergänzt.
 
-Zielgruppe: Vancetope-Power-User und Tenant-Admins, die das
+Zielgruppe: Vance-Power-User und Tenant-Admins, die das
 Verhalten anpassen. Nicht für Endbenutzer.
 
 Hinweis: Diese Skills werden Brain-intern interessant, weil

@@ -1,0 +1,188 @@
+{
+  "startedAt": "2026-08-15T22:39:54.203303Z",
+  "completedAt": "2026-08-15T23:18:41.529147Z",
+  "modelSlug": "ollama-gemma4-31b-mlx__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsC4ContextDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=C4Context produced at benchmark/mermaid/c4-notifications.md (1040 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 173191,
+        "tokensIn": 359056,
+        "tokensOut": 1822,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 359056
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsErDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=erDiagram produced at benchmark/mermaid/er-shop.md (573 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 100880,
+        "tokensIn": 353970,
+        "tokensOut": 1038,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 353970
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsGanttDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=gantt produced at benchmark/mermaid/gantt-onboarding.md (595 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 5,
+        "elapsedMs": 96661,
+        "tokensIn": 253317,
+        "tokensOut": 989,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 253317
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsGitGraph",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "HttpTimeoutException: request timed out",
+      "artifacts": [],
+      "usage": {
+        "available": false,
+        "roundTrips": 0,
+        "elapsedMs": 0,
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 0
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsJourneyDiagram",
+      "capability": "mermaid-variety",
+      "pass": false,
+      "score": null,
+      "effectiveScore": 0.0,
+      "reason": "kind=diagram at benchmark/mermaid/journey-checkout.md has neither a ```mermaid fence nor a `source` field \u2014 content head: journey\n  title Online-Kauf User-Journey\n  section Browsen\n    Produkte suchen: 5\n    Kategorien durchst\u00f6bern: 4\n  section Ausw\u00e4hlen\n    Produktdetails pr\u00fcfen: 4\n    Vergleichen: 3\n  section Warenkorb\u2026",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 9,
+        "elapsedMs": 291285,
+        "tokensIn": 462852,
+        "tokensOut": 1398,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 462852
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsPieDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": 0.8,
+      "effectiveScore": 0.8,
+      "reason": "no diagram at benchmark/mermaid/pie-languages.md but the model produced a kind=chart document \u2014 a valid rendering of a 'pie' chart",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 4,
+        "elapsedMs": 320751,
+        "tokensIn": 213287,
+        "tokensOut": 577,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 213287
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsSequenceDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=sequenceDiagram produced at benchmark/mermaid/sequence-oauth.md (608 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 358668,
+        "tokensIn": 356814,
+        "tokensOut": 1004,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 356814
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsStateDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=stateDiagram produced at benchmark/mermaid/state-order.md (231 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 55713,
+        "tokensIn": 303445,
+        "tokensOut": 442,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 303445
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.MermaidVarietyBenchmark",
+      "methodName": "emitsTimelineDiagram",
+      "capability": "mermaid-variety",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "opener=timeline produced at benchmark/mermaid/timeline-web.md (153 chars)",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 55900,
+        "tokensIn": 355500,
+        "tokensOut": 546,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 355500
+      }
+    }
+  ]
+}

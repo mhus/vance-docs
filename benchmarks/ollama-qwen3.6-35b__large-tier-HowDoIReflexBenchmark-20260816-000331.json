@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-08-16T00:03:31.442001Z",
+  "completedAt": "2026-08-16T00:07:27.015722Z",
+  "modelSlug": "ollama-qwen3.6-35b__large-tier",
+  "judgeSlug": "gemini-gemini-2.5-pro",
+  "tests": [
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversAmbiguousMetaphor",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": 0.7,
+      "effectiveScore": 0.7,
+      "reason": "model skipped discovery but took a concrete real-tool action for an ambiguous storage metaphor (acceptable) \u2014 tools called: [arthur_action, doc_write]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 8348,
+        "tokensIn": 148991,
+        "tokensOut": 328,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 148991
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversComposedUnknown",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model fired how_do_i tool \u2014 discovery reflex worked",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 7,
+        "elapsedMs": 53124,
+        "tokensIn": 354066,
+        "tokensOut": 563,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 354066
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversInventedFeature",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model fired how_do_i tool \u2014 discovery reflex worked",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 3,
+        "elapsedMs": 47432,
+        "tokensIn": 149551,
+        "tokensOut": 487,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 149551
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversJargonRequest",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model fired how_do_i tool \u2014 discovery reflex worked",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 6,
+        "elapsedMs": 25345,
+        "tokensIn": 307883,
+        "tokensOut": 885,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 307883
+      }
+    },
+    {
+      "className": "de.mhus.vance.benchmark.HowDoIReflexBenchmark",
+      "methodName": "discoversUnknownTerm",
+      "capability": "how-do-i-reflex",
+      "pass": true,
+      "score": null,
+      "effectiveScore": 1.0,
+      "reason": "model didn't call how_do_i but flagged discovery intent in prose (soft pass) \u2014 tools called: [work_target_get, file_read, work_exec_list, file_list, arthur_action, file_find, project_current]",
+      "artifacts": [],
+      "usage": {
+        "available": true,
+        "roundTrips": 10,
+        "elapsedMs": 69195,
+        "tokensIn": 500628,
+        "tokensOut": 998,
+        "cacheReadTokens": 0,
+        "cacheCreationTokens": 0,
+        "totalInputTokens": 500628
+      }
+    }
+  ]
+}
