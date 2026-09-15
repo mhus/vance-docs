@@ -15,10 +15,10 @@ Workers (Engines, Tools, Skills) require disk space for:
 
 This data does not reside in MongoDB (too large / not JSON / tool-format-specific) and should not. It lives on the local Pod disk. This leads to two requirements that this spec addresses:
 
-1. **Pod Migration:** If a Project moves to another Pod (lease takeover, manual move), the Workspace must move with it. Solution: Suspend → persistent descriptor in MongoDB → Recover on the new Pod.
+1. **Pod Migration:** If a Project moves to another Pod (lease takeover, manual move), the Workspace must move with it. Solution: Suspend → persistent Descriptor in MongoDB → Recover on the new Pod.
 2. **Quota Reclaim:** If disk space becomes scarce, the Engine must be able to decide which Workspaces to offload (suspend). The same Suspend/Recover path solves this.
 
-**What the Workspace is not:** It is not a Document store, nor a persistence layer for results. If a file is relevant to the Project, the Worker imports it as a Document. Anti-pattern: "Worker writes PDF to Workspace and relies on it staying there."
+**What the Workspace is not:** It is not a document store, nor a persistence layer for results. If a file is relevant to the Project, the Worker imports it as a Document. Anti-pattern: "Worker writes PDF to Workspace and relies on it staying there."
 
 ---
 
@@ -31,7 +31,7 @@ Project ──1:1──► Workspace ──1:N──► RootDir
 | Term | Definition |
 |---|---|
 | **Workspace** | Container per Project. A folder on the Pod disk, with its own lifecycle. |
-| **RootDir** | Granular unit within a Workspace. A folder with a sibling descriptor. A Worker creates its own RootDirs, not the Service in advance. |
+| **RootDir** | Granular unit within a Workspace. A folder with a sibling Descriptor. A Worker creates its own RootDirs, not the Service in advance. |
 | **WorkspaceContentHandler** | Plug-in per RootDir type (`temp`, `git`, later `persistent`). Implements Init/Suspend/Recover/Close. |
 | **Descriptor** | JSON file next to the RootDir folder, describing type, creator, metadata. Sibling, not inside the folder — avoids collision with Worker content. |
 | **Snapshot** | MongoDB Document that describes a suspended RootDir in a recoverable way. Written during Suspend, read during Recover. |
@@ -44,7 +44,7 @@ RootDirs are **the** unit for sharing, cleanup, and suspend. The Workspace itsel
 
 ```
 <workspaceRoot>/                              (configured per-Pod, e.g., /var/vance/workspaces/)
-  <projectId>/                                (Workspace, 1:1 to Project)
+  <projectId>/                                (Workspace, 1:1 to the Project)
     <dirName-A>/                              (RootDir folder)
     <dirName-A>.json                          (Sibling Descriptor)
     <dirName-B>/
@@ -91,17 +91,17 @@ One JSON file `<dirName>.json` per RootDir:
 |---|---|---|
 | `tenant` | yes | Tenant ID (Audit, Cross-Pod Migration Sanity) |
 | `projectId` | yes | Project ID (same info as folder path, redundant for standalone readability) |
-| `dirName` | yes | Unique folder name in Workspace |
+| `dirName` | yes | Unique folder name in the Workspace |
 | `label` | no | Worker-suggested hint, not unique |
 | `type` | yes | Handler key: `temp`, `git`, `python`, later `persistent` |
 | `creatorProcessId` | yes | Process that created the RootDir |
 | `creatorEngine` | no | Engine name (`arthur`, `marvin`, ...) — Audit |
 | `sessionId` | no | Owner Session, if process-oriented |
-| `createdAt` | yes | ISO-Instant |
+| `createdAt` | yes | ISO Instant |
 | `deleteOnCreatorClose` | yes | `true` → Cleanup on Worker Close (see §8) |
-| `metadata` | no | Handler-specific (Git: `repoUrl`, `branch`, `commit`; later others) |
+| `metadata` | no | Handler-specific (Git: `repoUrl`, `branch`, `checkoutCommit`, `commit`, `depth`; later others) |
 
-The Descriptor is written upon creation and supplemented during Suspend (e.g., with current commit after `git commit`). No mutation except by the Service.
+The Descriptor is written upon creation and updated during Suspend (e.g., with the current commit after `git commit`). No mutation except by the Service.
 
 ---
 
@@ -134,7 +134,7 @@ Consequence: a Pod restart or migration loses Temp content. If a Worker wants to
 
 | Phase | Behavior |
 |---|---|
-| `init` | `git clone <repoUrl> --branch <branch>`; sets `metadata.commit` to HEAD. |
+| `init` | `git clone <repoUrl> --branch <branch> [--depth <depth>]`; if `metadata.checkoutCommit` is set: `git checkout <checkoutCommit>` (detached); sets `metadata.commit` to HEAD. |
 | `suspend` | If Working Tree dirty: `git checkout -B vance/suspend/<dirName>`, `git add -A`, `git commit -m "vance suspend"`, `git push origin vance/suspend/<dirName>`. Writes Suspend Branch + Commit to `metadata`. |
 | `recover` | `git clone <repoUrl>`, `git checkout <suspendBranch or branch>`. If Suspend Branch exists: deleting `vance/suspend/<dirName>` after Recover is the Worker's responsibility (Engine decides whether to merge or discard changes). |
 | `close` | Optional: Worker can set `commitOnClose: true`, then analogous to Suspend (push to Working Branch). Otherwise: `clean` and delete. |
@@ -143,7 +143,7 @@ V1 Assumption: every Workspace Git checkout may create a `vance/suspend/<dirName
 
 ### 5.3 PythonHandler (`type=python`)
 
-Persistent Python working environment with local venv. Source files survive Suspend; the venv is deterministically reconstructed from `requirements.txt` during Recover.
+Persistent Python working environment with a local venv. Source files survive Suspend; the venv is deterministically reconstructed from `requirements.txt` during Recover.
 
 **Descriptor Metadata:**
 
@@ -160,26 +160,26 @@ There is **no** version pinning at the concept level. The Recover Pod uses its l
 |---|---|
 | `init` | Obtain sources: if `repoUrl` exists, clone like GitHandler; otherwise, empty folder + `git init` (Worker sets remote later if needed). Then: `<pythonPath> -m venv .venv` and write default `.gitignore` (`.venv/`, `__pycache__/`, `*.pyc`). **Default `labelHint` = `python`** — RootDirs end up as `dirName=python`, `python-2`, … and are filterable via `descriptor.label == "python"`. Worker can override (e.g., `analysis-env`). |
 | `suspend` | Like GitHandler: `git commit -A` + push to `vance/suspend/<dirName>`. `.venv/` is excluded by `.gitignore`. Fails with `WorkspaceSuspendNotConfiguredException` if no remote is set — Worker must either configure remote or not suspend Project. |
-| `recover` | Git clone like GitHandler; `python3 -m venv .venv` with the **local** interpreter of the Recover Pod; if `requirements.txt` exists in checkout: `.venv/bin/pip install -r requirements.txt`. |
+| `recover` | Git clone like GitHandler; `python3 -m venv .venv` with the **local** interpreter of the Recover Pod; if `requirements.txt` exists in the checkout: `.venv/bin/pip install -r requirements.txt`. |
 | `close` | Recursively delete folder + `.venv`. |
 
 **Package Operations** are Brain Tools, not a Handler path:
-- `python_pip_install(dirName, package)`: `.venv/bin/pip install <package>`, then `.venv/bin/pip freeze > requirements.txt`. Lockfile is in RootDir and is regularly pushed with the next Suspend.
+- `python_pip_install(dirName, package)`: `.venv/bin/pip install <package>`, then `.venv/bin/pip freeze > requirements.txt`. Lockfile resides in RootDir and is pushed regularly with the next Suspend.
 - `python_pip_uninstall(dirName, package)`: analogous, `pip uninstall` + `pip freeze`.
-- `python_run(dirName, file, args?)`: Subprocess via `ExecManager` with `.venv/bin/python <file>`. CWD = RootDir, Logs in `vance.exec.base-dir` (see §12.3) — not in RootDir. For persistent multi-file projects.
+- `python_run(dirName, file, args?)`: Subprocess via `ExecManager` with `.venv/bin/python <file>`. CWD = RootDir, logs in `vance.exec.base-dir` (see §12.3) — not in RootDir. For persisted multi-file projects.
 
-**Default RootDir without precondition.** `python_run`, `python_install`, and `python_uninstall` no longer require a prior `python_create` call. Without `dirName`: use the Working RootDir if it is python-typed — otherwise use the canonical `_python` Workspace and create it if needed (`TypedRootDirProvisioner`, shared with `execute_python`). An **explicitly** named `dirName` remains strictly type-checked and is never silently redirected: naming a Workspace is a decision, and working elsewhere would obscure the error. Analogously on the JS side: `node_install` creates the canonical `_jsengine` RootDir instead of throwing "Run node_create first". Background: a benchmark run counted 21 `python_run` rejections in a class without the model ever calling `python_create` — the precondition was bookkeeping, not a decision.
+**Default RootDir without precondition.** `python_run`, `python_install`, and `python_uninstall` no longer require a prior `python_create` call. Without `dirName`: use the Working RootDir if it is Python-typed — otherwise, use the canonical `_python` Workspace and create it if needed (`TypedRootDirProvisioner`, shared with `execute_python`). An **explicitly** named `dirName` remains strictly type-checked and is never silently redirected: naming a Workspace is a decision, and working elsewhere would obscure the error. Analogously on the JS side: `node_install` creates the canonical `_jsengine` RootDir instead of throwing "Run node_create first." Background: a benchmark run counted 21 `python_run` rejections in a class without the model ever calling `python_create` — the precondition was bookkeeping, not a decision.
 - `execute_python(code, args?, flags?, waitMs?)`: One-shot execution — JavaScript analog (`execute_javascript`) for Python. Tool creates a default Python RootDir with `labelHint=_python` if needed (idempotent, reused between calls), writes a transient `_inline_<ts>.py` file, and executes it via the same `ExecManager` pipeline. LLM does **not** need to know about RootDir types, `python_create`, or `python_install` — `pip`-installed packages remain available between calls because of the same venv. Primarily for single-snippet calculations.
 
 **Interpreter change at runtime:** Service method `rebuildVenv(projectId, dirName, pythonPath)` discards the `.venv/`, calls `<pythonPath> -m venv .venv` and `pip install -r requirements.txt` anew. Source files remain untouched. Brain Tool `python_set_interpreter(dirName, pythonPath)` calls this.
 
 **Assumptions / Constraints:**
 - Pod image has `python3` in PATH. Otherwise, `init`/`recover` fails with a clear error message.
-- Pod images should have **consistent Python versions**. If Pods drift apart (e.g., 3.12 ↔ 3.10), `pip install -r requirements.txt` may fail during Recover due to Wheel ABI mismatches. The `pip` error appears cleanly in the Recover log — deployment discipline, not a workaround in the Service.
+- Pod images should maintain **consistent Python versions**. If Pods drift apart (e.g., 3.12 ↔ 3.10), `pip install -r requirements.txt` during Recover may fail due to Wheel ABI mismatches. The `pip` error appears cleanly in the Recover log — deployment discipline, not a workaround in the Service.
 - Suspend absolutely requires a Git remote. Those who want to experiment "locally only" should use `temp` or accept that the Project is not suspendable.
 
 **What is NOT persisted:**
-- `.venv/` — platform-specific binaries, reconstructible from `requirements.txt`
+- `.venv/` — platform-specific binaries, reconstructable from `requirements.txt`
 - `__pycache__/`, `*.pyc` — bytecode cache
 - `pyvenv.cfg` — regenerated by `python -m venv`
 
@@ -207,13 +207,13 @@ INIT ──init──► RUNNING ──dispose──► DISPOSED
 
 `SUSPENDED` is **not a Workspace status**. Suspend means: all RootDirs are as Snapshots in Mongo, the folder is gone. The Workspace itself no longer exists — a Recover calls `init` anew and pulls the Snapshots back in. This asymmetry saves a status; the Project carries the Suspend state (see Project Lifecycle, separate Spec).
 
-**Write Lock via `dispose()`:** As soon as the Service calls `dispose()` for a RootDir or the Workspace, it rejects further write calls for that path with `WorkspaceDisposedException`. Atomic via Mongo status update with pre-condition.
+**Write lock via `dispose()`:** As soon as the Service calls `dispose()` for a RootDir or the Workspace, it rejects further write calls for that path with `WorkspaceDisposedException`. Atomic via Mongo status update with pre-condition.
 
 ---
 
 ## 7. Service API
 
-`WorkspaceService` lives in `vance-shared` (no AI stack needed). The consuming Brain Tools remain in `vance-brain` and access via the Service API.
+`WorkspaceService` lives in `vance-shared` (no AI stack needed). The consuming Brain Tools remain in `vance-brain` and access it via the Service API.
 
 ### 7.1 Workspace Lifecycle
 
@@ -229,7 +229,7 @@ void dispose(String projectId);                    // DISPOSED, everything + Sna
 Optional<Workspace> get(String projectId);
 ```
 
-`init` is the central entry point. If Snapshots exist in the Mongo collection `workspace_snapshots` at the time of the call, `init` automatically recovers them (deletes partial folder state if necessary, writes Descriptors, calls Handler.recover, deletes Snapshots upon success). This makes Pod migration and crash recovery the same code path — the caller does not need to distinguish between "fresh init" and "recover."
+`init` is the central entry point. If Snapshots exist in the `workspace_snapshots` Mongo collection upon invocation, `init` automatically recovers them (deletes partial folder state if necessary, writes Descriptors, calls Handler.recover, deletes Snapshots upon success). This makes Pod migration and crash recovery the same code path — the caller does not need to distinguish between "fresh init" and "recover."
 
 `recoverAll` exists as a spec-compliant alias for ProjectService callers who want to follow the explicit lifecycle step in §11.2.
 
@@ -246,7 +246,7 @@ void disposeRootDir(String projectId, String dirName);
   // Handler.close, delete folder + Descriptor.
 
 void disposeByCreator(String projectId, String creatorProcessId);
-  // Iterates over all RootDirs of the Project with creatorProcessId match
+  // Iterates over all RootDirs of the Project with matching creatorProcessId
   // AND deleteOnCreatorClose=true; calls disposeRootDir.
 
 List<RootDirHandle> listRootDirs(String projectId);
@@ -255,7 +255,7 @@ RootDirHandle getRootDir(String projectId, String dirName);
 
 ### 7.3 Temp Convenience
 
-Special methods for the most common case — Worker wants a short-lived file without worrying about RootDir creation:
+Special methods for the most common case — Worker wants a short-lived file without bothering with RootDir creation:
 
 ```java
 Path createTempFile(String projectId, String creatorProcessId, String prefix, String suffix);
@@ -264,11 +264,11 @@ Path createTempDirectory(String projectId, String creatorProcessId, String prefi
 
 Implementation: lazily creates a RootDir of type `temp` per `(projectId, creatorProcessId)`, with `deleteOnCreatorClose=true`. The first call creates it, subsequent calls reuse it. The Service caches the mapping in-memory; after Pod restart, Workers are gone anyway, the cleanup trigger §8 cleans up based on `deleteOnCreatorClose` + non-existent Process.
 
-This means the Worker does not need to call `createRootDir`, manage a Handle, or perform cleanup for standard cases — methods return `Path`, the rest happens behind the API.
+This means the Worker does not need to call `createRootDir`, manage a handle, or perform cleanup for standard cases — methods return `Path`, the rest happens behind the API.
 
 ### 7.4 Default RootDir Resolution
 
-Worker Tools usually do not need to know which RootDir they are writing to. The Service maintains a second map (in addition to the Temp cache from §7.3):
+Worker Tools usually don't need to know which RootDir they are writing to. The Service maintains a second map (in addition to the Temp cache from §7.3):
 
 ```java
 void           setWorkingDir(String projectId, String creatorProcessId, String dirName);
@@ -277,7 +277,7 @@ void           clearWorkingDir(String projectId, String creatorProcessId);
 RootDirHandle  getOrCreateTempRootDir(String projectId, String creatorProcessId);
 ```
 
-`setWorkingDir` registers a RootDir as "working RootDir" for a Process. `git_checkout` with `asWorkingDir=true` sets this automatically (see §12.4). When the Process is CLOSED, the mapping is cleared via the brain-side listener; automatically on `disposeRootDir`/`dispose`.
+`setWorkingDir` registers a RootDir as the "working RootDir" for a Process. `git_checkout` with `asWorkingDir=true` sets this automatically (see §12.4). When the Process is CLOSED, the mapping is cleared via the brain-side listener; automatically on `disposeRootDir`/`dispose`.
 
 The resolution order **does not live in the Service**, but in the brain-side helper `WorkspaceDirResolver`, because it is based on `ToolInvocationContext` (which `vance-shared` does not know). Order:
 
@@ -287,7 +287,7 @@ The resolution order **does not live in the Service**, but in the brain-side hel
 
 `creator` is `ctx.processId()`, fallback `ctx.sessionId()`. If both are missing, the Tool throws an error — default resolution requires a process-related identity, otherwise cleanup cannot be assigned.
 
-Skill Bindings (`vance.workspace.read/write/...`, [skills.md §10](skills.md)) should use the same logic — either by direct call to `WorkspaceDirResolver` or by an analogous helper layer in the Skill runtime.
+Skill Bindings (`vance.workspace.read/write/...`, [skills.md §10](skills.md)) should use the same logic — either by direct call to `WorkspaceDirResolver` or by an analogous helper layer in the Skill Runtime.
 
 ### 7.5 RootDirHandle
 
@@ -303,7 +303,7 @@ class RootDirHandle {
 }
 ```
 
-Handles are **not** refcounted. If Worker A creates a RootDir with `deleteOnCreatorClose=true` and passes it to Worker B, and Worker A ends, the RootDir is gone — even if B still has the Handle. Consumers must know that they cannot rely on shared RootDirs whose Creator they are not. A later V2 can add refcounting if a use case demands it.
+Handles are **not** refcounted. If Worker A creates a RootDir with `deleteOnCreatorClose=true` and passes it to Worker B, and Worker A ends, the RootDir is gone — even if B still has the handle. Consumers must know that they cannot rely on shared RootDirs whose creator they are not. A later V2 can add refcounting if a use case demands it.
 
 ---
 
@@ -318,7 +318,7 @@ Four sources for cleanup, all pulling on the same Service code.
 | Project Close | `dispose(projectId)` — everything terminal. |
 | Quota / Disk Pressure | see §9 |
 
-Worker-Close-Trigger lives in ProcessLifecycle: upon status change to `CLOSED` (not `SUSPENDED`!), a listener calls `disposeByCreator`. Pause/Suspend leave RootDirs untouched — the Worker can continue upon resume.
+Worker-Close-Trigger lives in ProcessLifecycle: on status change to `CLOSED` (not `SUSPENDED`!), a listener calls `disposeByCreator`. Pause/Suspend leave RootDirs untouched — the Worker can continue on resume.
 
 ---
 
@@ -355,7 +355,7 @@ Recover Flow:
 4. Per Snapshot: create folder, write Descriptor, call Handler.recover.
 5. Snapshot Documents are deleted (or marked as `consumed` — V2 for Audit).
 
-Crash during Recover: Snapshot remains in Mongo, Pod has half a folder. On retry: Service recognizes incomplete folder (Descriptor exists, but Handler has not yet acknowledged `recover`), deletes it and retries. Idempotent.
+Crash during Recover: Snapshot remains in Mongo, Pod has half a folder. On retry: Service detects incomplete folder (Descriptor exists, but Handler has not yet acknowledged `recover`), deletes it and retries. Idempotent.
 
 **Data Sovereignty:** Snapshots belong to the WorkspaceService — no other Service reads or writes the collection. ProjectService only calls `suspendAll` / `recoverAll` as API calls.
 
@@ -393,7 +393,7 @@ ProjectService on old Pod (e.g., triggered by Idle Sweep / Pod Shutdown / Quota 
 2. Engines stop (controlled, with timeout — falls under Engine Suspend Cascade, see [session-lifecycle.md §9](session-lifecycle.md)).
 3. `WorkspaceService.suspendAll(projectId)`:
    - Workspace status to `SUSPENDING` (blocks further writes).
-   - Per RootDir: Handler.suspend → Descriptor is supplemented (e.g., GitHandler pushes Suspend Branch).
+   - Per RootDir: Handler.suspend → Descriptor is updated (e.g., GitHandler pushes Suspend Branch).
    - Write Snapshot Document per RootDir to Mongo.
    - Delete folder + Sibling Descriptor.
    - Delete Workspace folder.
@@ -417,10 +417,10 @@ ProjectService decides this based on the persisted Project status; WorkspaceServ
 
 Engine Suspend (status `SUSPENDED` on a Process, [session-lifecycle.md §3](session-lifecycle.md)) is **not** the same as Workspace Suspend:
 
-- Engine Suspend pauses the Engine turn, persists Engine state in Mongo (Lane Pause, Pending Queue remains).
+- Engine Suspend pauses the Engine turn, persists Engine state in Mongo (Lane pause, Pending Queue remains).
 - Workspace Suspend cleans up the disk.
 
-In the Project's Suspend Cascade, both run sequentially: first all Engines to `SUSPENDED` (Engine state in Mongo), then Workspace Suspend (disk empty). On Recover, vice versa: Workspace Recover (disk back), then Engine Resume (Lane Pause lifted).
+In the Project's Suspend Cascade, both run sequentially: first all Engines to `SUSPENDED` (Engine state in Mongo), then Workspace Suspend (disk empty). On Recover, vice versa: Workspace Recover (disk restored), then Engine Resume (Lane pause lifted).
 
 ---
 
@@ -462,11 +462,11 @@ Existing Tools receive an optional `dirName` parameter:
 | `workspace_delete` | `(path)` | `(path, dirName?)` |
 | `execute_workspace_javascript` | `(path)` | `(path, dirName?)` |
 
-`dirName` omitted → Default resolution via §7.4. This leaves most LLM tool calls unchanged; Workers that explicitly need to switch between RootDirs (e.g., Marvin with two Git checkouts) use the parameter.
+`dirName` omitted → Default resolution via §7.4. This leaves most LLM Tool calls unchanged; Workers that explicitly need to switch between RootDirs (e.g., Marvin with two Git checkouts) use the parameter.
 
-`ExecManager`: Current Spec = CWD was `projectRoot`. New Spec = CWD is a RootDir chosen by `dirName` (parameter in `work_exec_run` tool, default resolution as in §7.4). Log files (`{jobId}/stdout.log`) remain in ExecManager's own `vance.exec.base-dir` (separate property, not under the Workspace) — RootDir content thus remains free of Service artifacts.
+`ExecManager`: Current spec = CWD was `projectRoot`. New spec = CWD is a RootDir chosen by `dirName` (parameter in `work_exec_run` Tool, default resolution as in §7.4). Log files (`{jobId}/stdout.log`) remain in ExecManager's own `vance.exec.base-dir` (separate property, not under the Workspace) — RootDir content thus remains free of Service artifacts.
 
-`RagAddWorkspaceFileTool`: also receives optional `dirName`.
+`RagAddWorkspaceFileTool`: also receives an optional `dirName`.
 
 ### 12.4 New Tool: `git_checkout`
 
@@ -477,12 +477,17 @@ Tool: git_checkout
 Parameters:
   repoUrl: string                 # required
   branch: string                  # optional, default = repo default branch
-  label: string                   # optional, dirName-Hint
+  commit: string                  # optional — detach after clone to this exact SHA
+                                  # (version-accurate source match, see brain_info)
+  depth: integer                  # optional — Shallow clone depth (1 = snapshot without
+                                  # history); for ephemeral analysis RootDirs
+  label: string                   # optional, dirName hint
   asWorkingDir: boolean           # optional, default false
   credentialAlias: string         # optional, picks credential from credential store
 Returns:
   dirName: string                 # unique
-  path: string                    # absolute path to the checkout
+  path: string                    # absolute path to checkout
+  commit: string                  # HEAD of checkout after init
 ```
 
 The Tool internally calls `WorkspaceService.createRootDir(type=git, …)` with GitHandler metadata. `asWorkingDir=true` sets the newly created RootDir as `workingDir()` in the EngineContext for subsequent Tool calls — the LLM can then perform `workspace_read/write` without `dirName` and works within the repo.
@@ -491,18 +496,18 @@ The Tool internally calls `WorkspaceService.createRootDir(type=git, …)` with G
 
 ### 12.5 Skill Bindings
 
-`vance.workspace.read/write/list/delete` ([skills.md §10](skills.md)) receive an optional second argument for `dirName`, analogous to §12.3. Default resolution is identical. This makes existing Skills binary compatible.
+`vance.workspace.read/write/list/delete` ([skills.md §10](skills.md)) receive an optional second argument for `dirName`, analogous to §12.3. Default resolution identical. This makes existing Skills binary compatible.
 
 ---
 
-## 13. What This Spec Does Not Govern
+## 13. What This Spec Does Not Regulate
 
-- **Project Status Machine** (`init`, `recover`, `running`, `suspending`, `suspended`, `closing`, `closed`) including triggers (Pod Shutdown, Quota Eviction, Manual Admin), Pod Lease, and Crash Recovery — separate Project Lifecycle Spec. This Spec only defines the Workspace portion (§11).
+- **Project Status Machine** (`init`, `recover`, `running`, `suspending`, `suspended`, `closing`, `closed`) including triggers (Pod shutdown, Quota eviction, Manual admin), Pod lease, and crash recovery — separate Project Lifecycle Spec. This Spec only defines the Workspace portion (§11).
 - **Quota Eviction Strategy** (LRU, size, TTL) — Project Lifecycle / Operations Spec.
-- **Refcounting for Shared RootDirs** — V2, for now owner-only dispose.
+- **Refcounting for shared RootDirs** — V2, for now owner-only dispose.
 - **Patch-based Git Suspend** instead of Suspend Branch — V2.
 - **Document Storage for files that should end up in the Project** — existing DocumentService, separate from the Workspace.
-- **Concrete Tool Schemas** (LLM-facing JSON schema of `workspace_*` and `git_checkout`) — live on the respective `@Component Tool`, here only parameter form sketched.
+- **Concrete Tool Schemas** (LLM-facing JSON schema of `workspace_*` and `git_checkout`) — live on the respective `@Component Tool`, here only parameter form outlined.
 
 ---
 
@@ -511,5 +516,5 @@ The Tool internally calls `WorkspaceService.createRootDir(type=git, …)` with G
 - [session-lifecycle.md](session-lifecycle.md) — Session/Engine Lifecycle. Worker-Close-Trigger (§8) depends on Engine status `CLOSED`. Engine Suspend is *not* Workspace Suspend (§11.5).
 - [architektur-scopes-clients.md](architektur-scopes-clients.md) — Project Scope. Workspace is 1:1 to the Project.
 - [skills.md §10](skills.md) — Skill Runtime exposes `vance.workspace.*`; backend is the Service defined here. `dirName` parameter analogous to §12.5.
-- [kits.md](kits.md) — Kit Import/Export should be converted to TempHandler in the medium term instead of its own Tmp logic. `KitRepoLoader` (JGit) remains parallel to the `git_checkout` tool — Kit imports are not workspace-bound.
+- [kits.md](kits.md) — Kit Import/Export should be migrated to TempHandler in the medium term instead of custom Tmp logic. `KitRepoLoader` (JGit) remains parallel to the `git_checkout` Tool — Kit imports are not workspace-bound.
 - [project-lifecycle.md](project-lifecycle.md) — Project Lifecycle Service (`bring`/`suspend`/`close`) calls `init` / `suspendAll` / `dispose`. Flow see §11.

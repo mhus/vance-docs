@@ -32,52 +32,54 @@ A Recipe is a YAML file with the following top-level fields. The `name` comes fr
 | `engine` | `String` | yes | Engine name (`ford`, `arthur`, `marvin`, …) |
 | `params` | `Map<String, Object>` | no | Default `engineParams`. Merged with caller parameters (see §4). Common keys: `model`, `validation`, `maxIterations`, `modelSize`, `rag.autoInject`, `rag.minScore`, `rag.topK` (see [rag.md §5](rag.md) — RAG-AutoInject is currently active in Arthur). LLM sampling controls see §5c |
 | `promptPrefix` | `String` (Pebble Template) | no | System prompt content for the Engine — single source of truth for Engine Persona. Sent **as a Pebble template** through the renderer, with access to `tier`, `model`, `provider`, `mode`, `profile`, `recipe`, `engine`, `params` (see §5 for render context and §5b for syntax subset) |
-| `promptMode` | `APPEND \| OVERWRITE` | default `APPEND` | How `promptPrefix` is combined with the Engine's default fallback (see §5) |
+| `promptMode` | `APPEND \| OVERWRITE` | default `APPEND` | How `promptPrefix` is combined with the Engine default fallback (see §5) |
 | `dataRelayCorrection` | `String` | no | Override for the "data-relay-gap" Validator correction (see §5a) |
-| `allowedToolsAdd` | `List<String>` | no | Tools to be added to the Engine's default. Entries with `@`-prefix are resolved as label selectors — via [server-tools](server-tools.md) **and** via the session's client tool registration (see §6.2) |
-| `allowedToolsRemove` | `List<String>` | no | Tools to be removed from the Engine's default (same `@`-selector syntax) |
+| `allowedToolsAdd` | `List<String>` | no | Tools to be added to the Engine default. Entries with `@`-prefix are resolved as label selectors — via [server-tools](server-tools.md) **and** via the client tool registration of the Session (see §6.2) |
+| `allowedToolsRemove` | `List<String>` | no | Tools to be removed from the Engine default (same `@`-selector syntax) |
 | `allowedToolsKeep` | `List<String>` | no | **Pure ranking, not visibility.** These tools remain in the manifest if the tool surface budget needs to be cut ("important"). Entries can be names, `@`-label selectors, or prefix patterns (`doc_*`). Ineffective without `maxTools` at the endpoint — see [server-tools §14](server-tools.md) |
 | `allowedToolsDropFirst` | `List<String>` | no | Counterpart: these tools are moved to deferred first ("less important"). Same entry syntax; `allowedToolsKeep` wins in case of overlap |
 | `defaultActiveSkills` | `List<String>` | no | Skills that are sticky-active from spawn (`fromRecipe=true`). See §6c |
 | `allowedSkills` | `List<String>` | no | Whitelist: only these skills may ever become active (Trigger / Default / `/skill`). Missing ⇒ no restriction. Empty list ⇒ lockdown. See §6c |
 | `locked` | `boolean` | default `false` | If `true`: caller overrides are ignored (Recipe is binding) |
-| `listed` | `boolean` | default `false` | Opt-in for the user-facing Recipe picker (Web-UI Session Start Modal). Server additionally hard-filters out `internal: true`. Foot still lists all Recipes — this flag only affects discovery clients (see §6e) |
-| `web` | `boolean` | default `false` | Release for **web callers**: only with `web: true` may the generic Light-LLM route `POST /brain/{tenant}/light-llm/{project}` execute this Recipe. Second gate **above** `internal` (which `LightLlmService` already requires), not an alternative to it. Deliberately on the Recipe and not on the caller: a custom app **is** a web client, every web client reaches the same route with the same session — a per-app permission would be a fiction that looks like a boundary. Purpose-specific routes (`/follow-up`) retain their own contract and do not need this flag. See [light-llm-service.md](light-llm-service.md) |
-| `tenants` | `List<String>` | no | For which tenants this Recipe applies. Missing or empty ⇒ **all** — every Recipe written without this field remains valid. Necessary because a bundled Recipe is in the classpath, and the classpath layer of the lookup cascade is tenant-agnostic: what an addon provides, **every** tenant finds — for a Recipe that starts an agent with its own credentials, this is the wrong scope. **Enforced in `RecipeLoader.load`, not at a display point** (see §2a) |
+| `listed` | `boolean` | default `false` | Opt-in for the User-Facing Recipe Picker (Web-UI Session Start Modal). Server additionally hard-filters `internal: true`. Foot still lists all Recipes — this flag only affects discovery clients (see §6e) |
+| `projectKind` | `String` | default `normal` | Picker filter by project type: `normal` (Default) ⇒ selectable only in regular projects, `system` ⇒ only in SYSTEM-Hub projects (`_user_*`, `_tenant`), `any` ⇒ everywhere. Reason: the Hub chat is always Eddie (`SessionChatBootstrapper` ignores Recipe overrides there), regular projects run on Arthur/Worker — a Recipe in the wrong picker is a clickable lie. Unknown values fail the Recipe load (no silent fallback). Only a display filter: explicit names via `--recipe`/`session-bootstrap`/Spawn tools remain free (see §6e) |
+| `web` | `boolean` | default `false` | Release for **Web callers**: only with `web: true` may the generic Light-LLM route `POST /brain/{tenant}/light-llm/{project}` execute this Recipe. Second gate **above** `internal` (which `LightLlmService` requires anyway), not its alternative. Deliberately on the Recipe and not on the caller: a custom app **is** a web client, every web client reaches the same route with the same session — a per-app permission would be a fiction that looks like a boundary. Purpose-specific routes (`/follow-up`) retain their own contract and do not need this flag. See [light-llm-service.md](light-llm-service.md) |
+| `tenants` | `List<String>` | no | For which tenants this Recipe applies. Missing or empty ⇒ **all** — every Recipe written without this field remains valid. Necessary because a bundled Recipe is in the classpath and the classpath layer of the lookup cascade is tenant-agnostic: what an addon provides, **every** tenant finds — for a Recipe that starts an agent with its own credentials, this is the wrong scope. **Enforced in `RecipeLoader.load`, not at a display location** (see §2a) |
 | `title` | `String` | no | Display name for Recipe picker UIs. Falls back to Recipe `name` if not set |
+| `category` | `String` | no | Picker grouping key (kebab-case, normalized to trim + lowercase on parse). Pure display metadata for the User-Facing Recipe Picker — Spawn, Engine, and Tool logic never read this field. Group order and localized labels come from [`_vance/config/recipe_categories.yaml`](#6e-user-facing-recipe-picker) (§6e). If the field is missing, the Recipe lands in the last "Other" group of the picker |
 | `tags` | `List<String>` | no | Free for discovery (e.g., `[research, code, web]`) |
-| `guard` | `List<Map>` | no | **Cross-engine** (Frankie, Arthur, Eddie). List of [Completion-Guards](completion-guard.md): at a yield point, a JS guard script runs, which can inject a follow-up into its own queue via `vance.guard.continueWith(prompt)`, so the Engine continues working instead of yielding. Per entry: `script` **or** `scriptBody` (required, exactly one), `params` (optional, → `vance.params.*`), `trigger` (`stop`\|`terminate`\|`both`, default `stop`), `maxRounds`, `allowTools`. Without block = No-op. Full semantics in [completion-guard.md](completion-guard.md) |
+| `guard` | `List<Map>` | no | **Cross-Engine** (Frankie, Arthur, Eddie). List of [Shooty-Guards](shooty.md): a JS guard script at a **Point** — Yield point (`continueWith` injects a follow-up into its own queue, so the Engine continues working), Turn start (`activateSkill`), or Command dispatch (`deny`, fail-closed). Per entry: `script` **or** `scriptBody` (required, exactly one), `params` (optional, → `vance.params.*`), `trigger` (`start`\|`command`\|`stop`\|`terminate`\|`both`, default `stop`), `maxRounds` (only stop/terminate), `allowTools`. Without block = No-op. Full semantics in [shooty.md](shooty.md) |
 
-> **Pitfall: `params` swallows misaligned top-level fields.** `params`
+> **Trap: `params` swallows misaligned top-level fields.** `params`
 > is an open map — unknown keys end up as `engineParams` on the
-> Process. A field indented one level too deep is thus
+> Process. A field indented one level too deep is therefore
 > accepted without complaint and never takes effect. This has
 > actually happened: `coding.yaml` and `trillian-worker-void.yaml`
-> carried their entire `promptPrefix` under `params` and ran without a
-> single line of it — the symptom looked like a model ignoring
-> instructions, rather than instructions that never arrived. `RecipeLoader`
-> has since warned during loading, and `BundledRecipeStructureTest`
+> carried their complete `promptPrefix` under `params` and ran
+> without a single line of it — the symptom looked like a model
+> ignoring instructions, rather than instructions never arriving.
+> `RecipeLoader` has since warned on load, and `BundledRecipeStructureTest`
 > checks all bundled Recipes for this form.
 
 There is **no Mongo collection** for Recipes. Persistence, versioning, audit come from the Document Layer (soft-delete, `createdBy`, storage backend for inline-vs-blob, etc.).
 
 ---
 
-## 2a. `tenants:` — a Loading Barrier, not a Display Filter
+## 2a. `tenants:` — a Load Barrier, not a Display Filter
 
-This field answers a question that could not be asked before: **who owns a bundled Recipe?** An addon that bundles a Recipe places it in the classpath — and the classpath layer of the Cascade (§3) is tenant-agnostic. Thus, every tenant finds it. For most Recipes, this is correct; for one that starts an agent with its own credentials, it is the wrong scope.
+This field answers a question that could not be asked before: **who owns a provided Recipe?** An addon that bundles a Recipe places it in the classpath — and the classpath layer of the Cascade (§3) is tenant-agnostic. Thus, every tenant finds it. For most Recipes, this is correct; for one that starts an agent with its own credentials, it is the wrong scope.
 
-**Checked in `RecipeLoader.load`.** This is the single point through which every usage passes — `RecipeResolver`, all four spawn paths, the `LightLlmService`. A Recipe rejected there is thus **unreachable**, not merely invisible.
+**Checked in `RecipeLoader.load`.** This is the single point through which every usage passes — `RecipeResolver`, all four spawn paths, the `LightLlmService`. A Recipe rejected there is therefore **unreachable**, not merely invisible.
 
-The distinction is the entire purpose: if the check were on a list route, "not displayed" would mean something different from "cannot be used", and a `process_create(recipe: "…")` from a foreign tenant would bypass it. `listAll` filters along — a listed name that answers "does not exist" during loading would be a trap.
+The distinction is the whole purpose: if the check were on a list route, "not displayed" would mean something different from "cannot be used", and a `process_create(recipe: "…")` from a foreign tenant would bypass it. `listAll` filters along — a listed name that answers "does not exist" on load would be a trap.
 
 Three related stipulations:
 
-- **Missing or empty means "all".** Any other choice would have shut down every existing Recipe.
+- **Missing or empty means "all".** Any other choice would have silently disabled every existing Recipe.
 - **Rejection is as "not found"**, not as a separate error. An "exists, but not for you" would be an oracle about the Recipes of foreign tenants.
 - **The Cascade does not search further.** If it encounters a Recipe that does not apply here, the result is empty — the selector says "this does not apply here", not "take another one". A tenant with its own Recipe of the same name gets theirs first anyway, because the Cascade starts with them.
 
-**What this field does not achieve.** It limits the scope, not the effect. The Recipe document is in the Brain's classpath; whoever looks there sees it. And what an agent started with it *can do* depends on its settings and the permissions of its account — not on the Recipe name.
+**What this field does not achieve.** It limits the scope, not the effect. The Recipe document is in the Brain's classpath; whoever looks there sees it. And what an agent started with it can *do* depends on its settings and the permissions of its account — not on the Recipe name.
 
 ---
 
@@ -95,13 +97,13 @@ load(tenantId, projectId, name) → Optional<ResolvedRecipe> :=
     4. → empty
 ```
 
-**First-hit-wins** — innermost wins. Project override beats `_tenant` override beats Resource default. No field merge between stages: whoever overrides rewrites all fields, otherwise it becomes unclear which values are currently active.
+**First-hit-wins** — innermost wins. Project override beats `_tenant` override beats Resource default. No field merge between stages: whoever overrides, rewrites all fields, otherwise it becomes unclear which values are currently active.
 
 **Resource Recipes are the source of truth for standard functionality.** They are located under `vance-brain/src/main/resources/vance-defaults/recipes/<name>.yaml` and survive Mongo data loss. `_tenant` and Project Recipes only exist if they have been actively configured.
 
 **Hot-Reload:**
 - Resource Recipes require a Brain restart (classic classpath read).
-- `_tenant` and Project Recipes are read fresh with each lookup — this is the identical cascade mechanism as for Documents.
+- `_tenant` and Project Recipes are read fresh with each lookup — this is the identical Cascade mechanism as for Documents.
 
 **Listing** (`recipe_list` and the embedded Catalog in the Arthur/Marvin prompt) runs via `DocumentService.listByPrefixCascade(tenantId, projectId, "recipes/")` and merges inner over outer by path.
 
@@ -147,7 +149,7 @@ This allows later tracing of which Workers ran with Recipe defaults and which wi
 
 ### 5.1 Render Context
 
-`promptPrefix` is a **Pebble template**. Tier/Model/Mode/Profile variants live **within** the template body, not in separate fields. The renderer (`PromptTemplateRenderer`) is called at the start of a turn and populates the following variable context:
+`promptPrefix` is a **Pebble template**. Tier/Model/Mode/Profile variants live **within** the template body, not in separate fields. The renderer (`PromptTemplateRenderer`) is called at the start of the turn and populates the following variable context:
 
 | Variable | Type | Value |
 |---|---|---|
@@ -160,19 +162,19 @@ This allows later tracing of which Workers ran with Recipe defaults and which wi
 | `engine` | `String` | Engine name |
 | `lang` | `String` | Chat language from Memory Cascade (empty until language settings arrive) |
 | `params` | `Map<String, Object>` | Merged Recipe parameters, read access via `{{ params.maxIterations }}` |
-| `profileAppend` | `String` | Pre-rendered content of the active `profileBlock.promptPrefixAppend`. Recipe template can insert `{{ profileAppend }}` anywhere — e.g., **before** the hard rules instead of at the end. If the variable is **not** referenced AND the append is non-blank, the renderer appends it as a fallback (backwards compatibility). See `planning/prompt-inlining.md` §3 |
+| `profileAppend` | `String` | Pre-rendered content of the active `profileBlock.promptPrefixAppend`. Recipe template can insert `{{ profileAppend }}` anywhere — e.g., **before** the hard rules instead of at the end. If the variable is **not** referenced AND the append is non-blank, the renderer appends it as a fallback (Backwards-Compat). See `planning/prompt-inlining.md` §3 |
 
-The effective Tier value can be enforced per Recipe call via `params.modelSize` (`SMALL` / `LARGE` / `AUTO`, default `AUTO`) — e.g., to deliberately run the Small variant on a Large model or to test unclassified models. `AUTO` ⇒ Catalog wins.
+The effective Tier value can be enforced per Recipe call via `params.modelSize` (`SMALL` / `LARGE` / `AUTO`, Default `AUTO`) — e.g., to deliberately run the Small variant on a Large model or to test unclassified models. `AUTO` ⇒ Catalog wins.
 
 ### 5.2 Pebble Syntax & Security Boundary
 
-The **full Pebble grammar** is available — `{{ var }}`, `{% if/elseif/else/endif %}` (note: `elseif`, **not** `elif`), `{% for %}`, `{% raw %}…{% endraw %}`, Boolean operators (`and`/`or`/`not`), built-in and registered custom filters (`slug`, `yamlIndent`), and the Jinja2 compatibility test `{% if model is matching("regex") %}`.
+The **full Pebble grammar** is available — `{{ var }}`, `{% if/elseif/else/endif %}` (note: `elseif`, **not** `elif`), `{% for %}`, `{% raw %}…{% endraw %}`, Boolean operators (`and`/`or`/`not`), Builtin and registered Custom filters (`slug`, `yamlIndent`), and the Jinja2 compatibility test `{% if model is matching("regex") %}`.
 
-**The security boundary is not a syntax subset, but the deactivation of method/reflection access.** Prompt/Recipe/Setting form/Wizard/Template bodies effectively originate from DB documents that anyone with Doc-Write can create — they are therefore untrusted. The renderer therefore pins a **deny-all `MethodAccessValidator`** (`DenyMethodAccessValidator`): **no** method and **no** getter can be called from a template. This closes the classic SSTI→RCE chain (`{{ x.getClass().forName(…) }}`) and makes the context content irrelevant for security — a render attempting to call a method fails fail-closed. Map/List/Array access (`{{ m.key }}`, `{{ xs[0] }}`) and filters bypass this check and function normally.
+**The security boundary is not a syntax subset, but the deactivation of method/reflection access.** Prompt/Recipe/Setting Form/Wizard/Template bodies effectively originate from DB documents that anyone with Doc-Write can create — they are therefore untrusted. The renderer therefore pins a **deny-all `MethodAccessValidator`** (`DenyMethodAccessValidator`): **no** method and **no** getter can be called from a template. This closes the classic SSTI→RCE chain (`{{ x.getClass().forName(…) }}`) and makes the context content irrelevant for security — a render attempting to call a method fails fail-closed. Map/List/Array access (`{{ m.key }}`, `{{ xs[0] }}`) and filters bypass this check and work normally.
 
-Control structures (`for`/`if`/`include`) are **not** a privilege escalation beyond `{{ }}` for an untrusted author (same Engine, same locked validator) — they therefore remain allowed. Two deliberate **style** recommendations (not a hard boundary): hand-written Recipe prompts should not be iterative (`{% for %}` bloats the prompt), and `{% include %}` re-renders a variable value as a template (footgun with indirectly injected data) — avoid where not necessary. Internal Recipes (e.g., `zarniwoop-*`, `zaphod-*`, `fook`) legitimately use `{% for %}` to render candidate lists.
+Control structures (`for`/`if`/`include`) are **not** a privilege escalation beyond `{{ }}` for an untrusted author (same Engine, same locked validator) — they therefore remain allowed. Two deliberate **style** recommendations (not a hard boundary): hand-written Recipe prompts should not be iterative (`{% for %}` inflates the prompt), and `{% include %}` re-renders a variable value as a template (footgun with indirectly injected data) — avoid where not necessary. Internal Recipes (e.g., `zarniwoop-*`, `zaphod-*`, `fook`) legitimately use `{% for %}` to render candidate lists.
 
-> **DoS Residual Risk (deliberately open):** `{% for i in range(0, 10000000) %}` remains possible (CPU/Heap). Method access is closed, RCE therefore not; a render timeout/output cap is a separate, still open hardening point.
+> **DoS Residual Risk (deliberately open):** `{% for i in range(0, 10000000) %}` remains possible (CPU/Heap). Method access is closed, RCE is not possible; a render timeout/output cap is a separate, still open hardening point.
 
 ### 5.3 Composition
 
@@ -192,39 +194,39 @@ elif promptMode == OVERWRITE:
     finalSystemPrompt = renderedOverride
 ```
 
-Profile `promptPrefixAppend` (Pebble template) is already appended to `recipe.promptPrefix` with a `\n\n`-separator in `RecipeResolver.apply` before the render stage — meaning the profile append participates in the same render run. Profile append is always additive, even in OVERWRITE mode.
+Profile `promptPrefixAppend` (Pebble template) is already appended to `recipe.promptPrefix` with a `\n\n`-separator in `RecipeResolver.apply` before the render stage — meaning the Profile append participates in the same render run. Profile append is always additive, even in OVERWRITE mode.
 
 **Arthur Special Case**: Arthur additionally appends the Recipe Catalog after the compose step, so the LLM sees the worker recipes to choose from. Marvin does something similar for his Planner.
 
-### 5.4 Compile Validation
+### 5.4 Compile-Validation
 
-`RecipeLoader` calls `PromptTemplateRenderer.compile(promptPrefix)` and `compile(profileBlock.promptPrefixAppend)` during loading. Syntax errors fail as `RecipeParseException` with clear diagnostics (Pebble line number, token). `ValidatingPhase` (Slartibartfast) performs the same compile check for LLM-generated drafts under `RULE_PROMPT_PREFIX_TEMPLATE_VALID`.
+`RecipeLoader` calls `PromptTemplateRenderer.compile(promptPrefix)` and `compile(profileBlock.promptPrefixAppend)` on load. Syntax errors fail as `RecipeParseException` with clear diagnostics (Pebble line number, token). `ValidatingPhase` (Slartibartfast) performs the same compile check for drafts generated by the LLM under `RULE_PROMPT_PREFIX_TEMPLATE_VALID`.
 
-Compile validation is **syntax-only** (catching parse errors early). The security boundary (§5.2) is the deny-all `MethodAccessValidator` and applies at **render time** — a template attempting method/reflection access compiles, but fails fail-closed during rendering.
+Compile-Validation is **syntax-only** (catching parse errors early). The security boundary (§5.2) is the deny-all `MethodAccessValidator` and applies at **render time** — a template attempting method/reflection access compiles, but fails fail-closed during rendering.
 
-### 5.5 Storage on the Process
+### 5.5 Storage on Process
 
-Upon spawn, the following are written to the Process: `recipeName`, `promptOverride` (unrendered Pebble string), `promptMode`, `dataRelayCorrectionOverride`, `allowedToolsOverride`, `engineParams`. Rendering happens per turn — Tier/Mode/Model can change between turns (model switch, plan mode transition). Recipe edits do not affect running Processes (snapshot semantics).
+At spawn, the following are written to the Process: `recipeName`, `promptOverride` (unrendered Pebble string), `promptMode`, `dataRelayCorrectionOverride`, `allowedToolsOverride`, `engineParams`. Rendering happens per turn — Tier/Mode/Model can change between turns (model switch, plan mode transition). Recipe edits do not affect running Processes (snapshot semantics).
 
 ### 5.6 Stance / Proactivity
 
-**Engine Base** (`prompts/<engine>-prompt.md`) provides the default stance — how the model reacts to requests with missing detailed information. Currently:
+**Engine-Base** (`prompts/<engine>-prompt.md`) provides the default stance — how the model reacts to requests with missing detailed information. Currently:
 
 - **Arthur**: balanced. Mandatory info (what, on what) → ASK_USER. Optional details (path, title, format) → choose wisely, execute directly, mention chosen defaults in the ANSWER.
-- Other Engines (Eddie, Ford, Marvin, …): Engine Base provides a sensible default for the Engine role; Recipes override if necessary.
+- Other Engines (Eddie, Ford, Marvin, …): Engine-Base provides a sensible default for the Engine role; Recipes override if necessary.
 
-**Recipe Override via `promptPrefixAppend`**. Each Recipe (Profile Block) can overturn the default by appending its own stance section. Convention:
+**Recipe-Override via `promptPrefixAppend`**. Each Recipe (Profile block) can override the default by appending its own stance section. Convention:
 
-- A Markdown subsection (`## Style — …`) that unambiguously describes how the model handles vagueness: choose aggressive defaults, more restrictive ASK_USER, or with specific domain rules (citation requirement, source validation, …).
+- A Markdown subsection (`## Style — …`) that unambiguously describes how the model handles vagueness: choose more aggressive defaults, more restrictive ASK_USER, or with specific domain rules (citation requirement, source validation, …).
 - Plain text, no schema variable. Drift tolerance is acceptable — each personality may have its own nuances.
 
 **Examples in the bundled Recipes:**
 
 - **eddie.yaml** — Frontman stance: for creatively open requests ("write a poem"), default autonomously, choose topic/title/path itself, mention in ANSWER. Only ask if the answer depends on user knowledge. The block is repeated per profile (eddie, foot, web, default) because `promptPrefixAppend` lives per-profile and some profiles have additional client-context sections — a YAML anchor (`*frontman_stance`) deduplicates where possible.
-- **arthur.yaml** — no override, Engine default (balanced) suffices for the Orchestrator use case.
-- **(future)** `analyze`, `web-research` — strict stance: citation required, no assumptions, ASK_USER for gaps; Recipe author decides per use case.
+- **arthur.yaml** — no override, Engine default (balanced) is sufficient for the Orchestrator use case.
+- **(future)** `analyze`, `web-research` — strict stance: citation requirement, no assumptions, ASK_USER for gaps; Recipe author decides per use case.
 
-**Why free-form instead of Schema Variable.** A schema enum (`proactiveness: strict|balanced|creative`) would be more consistent, but it couples the personality vocabulary to an Engine edit as soon as a new nuance is desired. Free-form `promptPrefixAppend` uses an existing mechanism, shows directly what happens in the Recipe, and allows different Recipes to express different personalities. Drift risk is low — Recipes are rare and reviewed collaboratively.
+**Why free-form instead of Schema Variable.** A schema enum (`proactiveness: strict|balanced|creative`) would be more consistent, but couples the personality vocabulary to an Engine edit as soon as a new nuance is desired. Free-form `promptPrefixAppend` uses an existing mechanism, shows directly what happens in the Recipe, and allows different Recipes to express different personalities. Drift risk is low — Recipes are rare and reviewed collaboratively.
 
 **When to elevate to a Schema Mechanism.** If 10+ Recipes repeat similar stance texts, or if Tenant/UI wants to expose selection between stances, a Recipe top-level append slot + named stance constants would be worthwhile. Until then: free-form per Recipe, YAML anchor for DRY.
 
@@ -232,22 +234,22 @@ Upon spawn, the following are written to the Process: `recipeName`, `promptOverr
 
 ## 5a. Validator Corrections
 
-Engines with active validation (`params.validation: true`) inject a corrective `SystemMessage` upon detected failure patterns. Both triggers are language-agnostic (structural, not regex-based) — see [structured-engine-output](structured-engine-output.md):
+Engines with active validation (`params.validation: true`) inject a corrective `SystemMessage` upon detecting a failure pattern. Both triggers are language-agnostic (structural, not regex-based) — see [structured-engine-output](structured-engine-output.md):
 
-- **No-Tool-Call** — the LLM reply contains no tool call whatsoever (neither work tool nor `respond`). Engine-default wording, no Recipe override (the correction text is tightly coupled to the `respond` tool).
-- **Data-Relay-Gap** — Tool result large (≥ 500 characters), reply short (≤ 200 characters). Indicates that the LLM did not relay the tool data. Override via `dataRelayCorrection` (format string with two `%d`-placeholders: `toolDataChars`, `replyLen`).
+- **No-Tool-Call** — the LLM reply contains no tool call whatsoever (neither Work-Tool nor `respond`). Engine-default wording, no Recipe override (the correction text is tightly coupled to the `respond`-tool).
+- **Data-Relay-Gap** — Tool-Result large (≥ 500 characters), Reply short (≤ 200 characters). Indicates that the LLM did not relay the tool data. Override via `dataRelayCorrection` (format string with two `%d`-placeholders: `toolDataChars`, `replyLen`).
 
-`null`/empty → Engine default (one-line fallback) is used. The bundled Recipes `default`, `arthur`, `ford` carry more detailed wordings tailored to the Engine context for the data-relay variant.
+`null`/empty → Engine default (one-line fallback) is used. The Bundled Recipes `default`, `arthur`, `ford` carry more detailed wordings tailored to the Engine context for the data-relay variant.
 
-`formatSafe(...)` protects against incorrectly formatted templates: in case of a format exception, the template string is taken literally instead of crashing the turn.
+`formatSafe(...)` protects against malformed templates: in case of a format exception, the template string is taken literally instead of crashing the turn.
 
-The old regex-based "intent-without-action" heuristic (`INTENT_PATTERNS`) has been replaced by the structured `respond` tool convention plus the No-Tool-Call validator.
+The old regex-based "intent-without-action" heuristic (`INTENT_PATTERNS`) has been replaced by the structured `respond`-tool convention plus the No-Tool-Call validator.
 
 ---
 
 ## 5c. LLM Sampling Parameters
 
-The following `params`-keys control the LLM wire parameters per call. They are read by `EngineChatFactory` from `EngineChatFactory.effectiveParams(process)` — the Recipe `engineParams` merged with the runtime overlay `engineParamOverrides` (see override semantics below) — and placed on `AiChatOptions`; the respective `AiModelProvider`s map to the backend's wire field. Providers that do not recognize a field ignore it silently — Recipes thus run portably across providers without every mapping gap breaking a spawn.
+The following `params`-keys control the LLM wire parameters per call. They are read by `EngineChatFactory` from `EngineChatFactory.effectiveParams(process)` — merged with the runtime overlay `engineParamOverrides` (see override semantics below) — and placed on `AiChatOptions`; the respective `AiModelProvider`s map to the backend's wire field. Providers that do not recognize a field ignore it silently — Recipes thus run portably across providers without every mapping gap breaking a spawn.
 
 | Key | Type | Default | Effect |
 |---|---|---|---|
@@ -255,22 +257,22 @@ The following `params`-keys control the LLM wire parameters per call. They are r
 | `maxTokens` | `Integer` | `null` (Provider default) | Hard cap on generated tokens. Caller-explicit values win. |
 | `topP` | `Double` (0..1) | `null` | Nucleus sampling. |
 | `topK` | `Integer` | `null` | Top-K cutoff. |
-| `stopSequences` | `List<String>` | `null` | Hard stop strings. YAML single strings are wrapped into a one-element list. Empty entries are filtered. |
+| `stopSequences` | `List<String>` | `null` | Hard-stop strings. YAML single strings are wrapped into a one-element list. Empty entries are filtered. |
 | `seed` | `Long` | `null` | Determinism seed for replay/QA. |
 | `frequencyPenalty` | `Double` | `null` | Penalty proportional to frequency. |
 | `presencePenalty` | `Double` | `null` | Penalty for each token already seen. |
 
 ### Override Semantics
 
-- **Nullable fields** (all except `temperature`): Recipe param is only written if the caller has not already set the field. Call code that builds `AiChatOptions.builder().topP(0.1)…` wins.
+- **Nullable fields** (all except `temperature`): Recipe parameter is only written if the caller has not already set the field. Call code that builds `AiChatOptions.builder().topP(0.1)…` wins.
 - **`temperature`**: has a non-null default (`0.7`), caller-explicit and default are indistinguishable. Here, the Recipe always wins if `params.temperature` is set. This aligns with the single-source-of-truth rule for Recipes; callers who need to enforce a fixed value set it on the Options instance after the `EngineChatFactory.forProcess(...)` call.
 - **Runtime Overlay** (`engineParamOverrides`): set live via the `//llm`-Engine command (reasoning additionally via `//thinking`), wins over the Recipe default — precedence **Override > Recipe > Option-Default**. Merged fresh per turn, no respawn. Sub-callers with `lockSampling` (Judges/Validators) skip `applySamplingParams` and are unaffected. Details: [engine-commands.md §9](engine-commands.md).
 
-### Type Tolerance
+### Type-Tolerance
 
-YAML parsers provide numbers as `Integer`, `Long`, or `Double` depending on the path. The reader accepts any `Number` subtype and also parses strings (`"0.4"` → `0.4`). Invalid values are dropped with a WARN log line instead of crashing the spawn.
+YAML parsers deliver numbers as `Integer`, `Long`, or `Double` depending on the path. The reader accepts any `Number` subtype and also parses strings (`"0.4"` → `0.4`). Invalid values are dropped with a WARN log line instead of crashing the spawn.
 
-### Provider Coverage
+### Provider-Coverage
 
 | Param | OpenAI | LM Studio | Anthropic | Gemini | Ollama / Ollama Cloud |
 |---|---|---|---|---|---|
@@ -327,9 +329,9 @@ Engines declare their default tool whitelist via `allowedTools()`. Recipes can a
 finalAllowed = (engine.allowedTools ∪ recipe.allowedToolsAdd) ∖ recipe.allowedToolsRemove
 ```
 
-With an empty Engine whitelist (= unrestricted, Ford default), `Add` has no effect (everything is already there), but `Remove` creates a concrete whitelist from "all minus removed". This is the path to, for example, temporarily start a Ford worker without shell tools.
+With an empty Engine whitelist (= unrestricted, Ford default), `Add` has no effect (everything is already there), but `Remove` creates a concrete whitelist of "all minus removed". This is the path to, for example, temporarily start a Ford worker without shell tools.
 
-### 6.1 Convention: Engine Base Empty, Recipe is Single Source of Truth
+### 6.1 Convention: Engine-Base Empty, Recipe is Single Source of Truth
 
 Engines like Arthur and Eddie declare `allowedTools() = Set.of()` — no hardcoded Java list. Rationale:
 
@@ -337,9 +339,9 @@ Engines like Arthur and Eddie declare `allowedTools() = Set.of()` — no hardcod
 - **Single Source of Truth.** The Recipe YAML fully describes what the Engine sees and how it classifies it (`allowedToolsAdd / Remove / Defer`, plus label selectors like `@write`, `@executive`).
 - **Classification via Labels, not Lists.** A Recipe might say, for example, *"defer @write, @executive, @side-effect; remove @destructive — bulk wipes like doc_purge / kit_apply"*, instead of listing 80 tool names individually. New tools are immediately correctly classified if they set their labels.
 
-If `base.isEmpty() && filter`, `ContextToolsApi.classify` expands at runtime to the complete Dispatcher pool and applies the Recipe overlays (see Java documentation for the method). Specialty Engines (Marvin worker, Vogon strategy, Zaphod) may continue to maintain narrow static lists — for them, the narrow scope is a feature, not a maintenance burden.
+If `base.isEmpty() && filter`, `ContextToolsApi.classify` expands to the full Dispatcher pool at runtime and applies the Recipe overlays (see Java documentation for the method). Specialty Engines (Marvin worker, Vogon strategy, Zaphod) may continue to maintain narrow static lists — for them, the narrow scope is a feature, not a maintenance burden.
 
-**Implication for action-internal Tools.** Tools like `project_create`, `project_chat_send`, which Engines only call via `invokeInternal` from Action handlers, are visible in the LLM Catalog (Recipe does not hide them). This is allowed — with auto-activate-on-direct-call, the LLM can also call them directly, the Action handler translates the same vocabulary. System prompt guidelines (Arthur: *"DELEGATE instead of process_spawn"*) guide the model to the structured path, but are not a compulsion.
+**Implication for action-internal Tools.** Tools like `project_create`, `project_chat_send`, which Engines only call via `invokeInternal` from Action-Handlers, are visible in the LLM Catalog (Recipe does not hide them). This is allowed — with Auto-Activate-on-direct-call, the LLM can also call them directly, the Action-Handler translates the same vocabulary (endpoint restriction see server-tools.md §13: on endpoints with restricted tool call decoding, the prompt prescribes Activate-First because direct calls can silently fail there). System prompt guidelines (Arthur: *"DELEGATE instead of process_spawn"*) guide the model to the structured path, but are not a compulsion.
 
 ### 6.2 Label Selectors via Client Tools
 
@@ -357,18 +359,18 @@ allowedToolsAdd:
 
 Two properties result from the design and are intentional:
 
-- **Only per-turn, never at spawn.** The spawn path (`applyDefaulting` → `allowedToolsOverride`) has no session scope, so it expands client labels to nothing. Resolution happens at **every turn** in `toolFilterFor`. A `/tools reload` in Foot (different pack set) thus takes effect immediately, without a name list frozen in the Process becoming outdated. If the pack is missing (client disconnected, pack deactivated), the label expands to empty like any unresolved selector.
-- **`add` extends the dispatch pool.** An `allowedToolsAdd` entry that names a tool **outside** of `base` is added to the pool by `ContextToolsApi.classify` instead of being discarded — otherwise, a per-turn resolved client tool could never reach the allow-set frozen at spawn. Names already in `base` retain the old meaning ("promote to primary"); newly added ones retain their **own** `deferred()` flag. A pack with `defaultDeferred: true` is thus reachable via `tool_list` without putting 29 schemas into every turn. Role gate, profile gate, and `allowedToolsRemove` apply unchanged to newly added names as well.
+- **Only per-Turn, never at Spawn.** The spawn path (`applyDefaulting` → `allowedToolsOverride`) has no session scope, so it expands client labels to nothing. Resolution happens at **every turn** in `toolFilterFor`. A `/tools reload` in Foot (different pack set) thus takes effect immediately, without a name list frozen in the Process becoming outdated. If the pack is missing (client disconnected, pack deactivated), the label expands to empty like any unresolved selector.
+- **`add` extends the Dispatch Pool.** An `allowedToolsAdd` entry that names a tool **outside** of `base` is added to the pool by `ContextToolsApi.classify` instead of being discarded — otherwise, a client tool resolved per-turn could never reach the allow-set frozen at spawn. Names already in `base` retain the old meaning ("promote to primary"); newly added ones retain their **own** `deferred()` flag. A pack with `defaultDeferred: true` is thus reachable via `tool_list` without putting 29 schemas into every turn. Role-Gate, Profile-Gate, and `allowedToolsRemove` apply unchanged to newly added names as well.
 
 ---
 
 ## 6a. Connection Profile Block
 
-Recipes can carry an optional override block per Connection Profile. The Profile Block adjusts the Recipe for the specific client class without having to duplicate the Recipe per client.
+Recipes can carry an optional override block per Connection Profile. The Profile block adjusts the Recipe for the specific client class without having to duplicate the Recipe per client.
 
-**Profile value comes from the WebSocket handshake** as an open string (`?profile=…`, see [client-protokoll-erweiterbarkeit](client-protokoll-erweiterbarkeit.md) §2.1a). Profile Block keys are also open strings — tenants can introduce their own profiles (e.g., `ci-bot`, `kiosk`) via Recipe configuration without the Brain needing code changes. The canonical values (`foot`, `web`, `mobile`, `daemon`) are documented in `de.mhus.vance.api.ws.Profiles` as string constants.
+**Profile value comes from the WebSocket handshake** as an open string (`?profile=…`, see [client-protokoll-erweiterbarkeit](client-protokoll-erweiterbarkeit.md) §2.1a). Profile block keys are also open strings — Tenants can introduce their own profiles (e.g., `ci-bot`, `kiosk`) via Recipe configuration without the Brain needing code changes. The canonical values (`foot`, `web`, `mobile`, `daemon`) are documented in `de.mhus.vance.api.ws.Profiles` as string constants.
 
-**Motivation:** `foot` (terminal client) brings filesystem and shell tools, and the worker should actively use them; `web` runs in the browser without local tools — `client_*` tools must be removed, otherwise the LLM hallucinates calls that do nothing; `mobile` wants shorter/cheaper sessions. Three Recipes (`foot_arthur`, `web_arthur`, `mobile_arthur`) would be proliferation at the Recipe level — the Profile Block keeps this within one Recipe.
+**Motivation:** `foot` (terminal client) brings filesystem and shell tools, and the worker should actively use them; `web` runs in the browser without local tools — `client_*`-tools must be removed, otherwise the LLM hallucinates calls that do nothing; `mobile` wants shorter/cheaper sessions. Three Recipes (`foot_arthur`, `web_arthur`, `mobile_arthur`) would be proliferation at the Recipe level — the Profile block keeps this in one Recipe.
 
 ### Schema
 
@@ -392,7 +394,7 @@ arthur:
     mobile:
       allowedToolsRemove: [client_file_*, client_exec_*]
       params: { maxIterations: 6 }       # mobile: shorter sessions
-    default:                             # Catch-all for unknown profile values
+    default:                             # Catch-all for unknown Profile values
       allowedToolsRemove: [client_file_*, client_exec_*]
       promptPrefixAppend: |
         Non-CLI client — workspace_* only.
@@ -405,35 +407,35 @@ arthur:
 |---|---|---|
 | `allowedToolsAdd` | `List<String>` | In addition to `recipe.allowedToolsAdd` (same `@`-selector syntax) |
 | `allowedToolsRemove` | `List<String>` | In addition to `recipe.allowedToolsRemove` |
-| `promptPrefixAppend` | `String` (Pebble Template) | Appended **after** `recipe.promptPrefix` — additive, not replacing. Pebble is also allowed here (e.g., `{% if profile == "foot" %}…{% endif %}` branches). For `OVERWRITE` mode, the Recipe remains the master, the Profile Append is still appended (Profile Append is always additive) |
+| `promptPrefixAppend` | `String` (Pebble Template) | Appended **after** `recipe.promptPrefix` — additive, not replacing. Pebble is also allowed here (e.g., `{% if profile == "foot" %}…{% endif %}` branches). For `OVERWRITE`-mode, the Recipe remains the master, the Profile append is still appended (Profile append is always additive) |
 | `params` | `Map<String, Object>` | Profile-specific parameter defaults — merged between Recipe defaults and Caller parameters. Commonly used: `manualPaths` (see §6b), `maxIterations`, `model` |
 
 ### Profile Block Lookup with Fallback
 
-The resolver selects the effective Profile Block along a cascade:
+The resolver selects the effective Profile block along a cascade:
 
 ```
 profileBlock(connectionProfile) :=
   1. recipe.profiles.get(connectionProfile)         → exact match wins
   2. recipe.profiles.get("default")                 → catch-all block, if defined
-  3. ∅                                              → Recipe base without profile overlay
+  3. ∅                                              → Recipe base without Profile overlay
 ```
 
-Thus, the fallback applies in two cases:
-1. **Profile not specified** — Wire default `web` (see Extensibility Spec §2.1a) goes through the same lookup; without a `profiles.web` block, it lands on `profiles.default` or Recipe base.
+This means the fallback applies in two cases:
+1. **Profile not specified** — Wire default `web` (see Extensibility Spec §2.1a) goes through the same lookup; without a `profiles.web`-block, it lands on `profiles.default` or Recipe base.
 2. **Profile specified, but no block configured** — e.g., a tenant custom profile `ci-bot` for which the Recipe does not yet have an explicit block: `profiles.default` applies.
 
-`profiles.default` is the only profile key with reserved semantics (catch-all). All other keys are freely selectable.
+`profiles.default` is the only Profile key with reserved semantics (catch-all). All other keys are freely selectable.
 
 ### Recipe Visibility
 
-At Recipe top-level, not in the Profile Block:
+At Recipe top-level, not in the Profile block:
 
 | Field | Type | Meaning |
 |---|---|---|
-| `protected` | `boolean` | If `true`: Recipe only selectable as login/bootstrap recipe, not visible in the search/spawn list (for default engines like `arthur` that should not be accidentally chosen as a worker recipe) |
+| `protected` | `boolean` | If `true`: Recipe selectable only as a login/bootstrap Recipe, not visible in the search/spawn list (for default Engines like `arthur` that should not be accidentally chosen as a worker Recipe) |
 
-Profile-specific visibility (`visibleTo: [foot, web]`) is not in the schema — if one wants to hide a Recipe for a profile, simply omit the Profile Block and use the `default` fallback, or the Recipe is generally `protected`.
+Profile-specific visibility (`visibleTo: [foot, web]`) is not in the schema — if one wants to hide a Recipe for a profile, simply omit the Profile block and use the `default` fallback, or the Recipe is generally `protected`.
 
 ### Merge Semantics
 
@@ -453,11 +455,11 @@ effectivePrompt    = render(recipe.promptPrefix, ctx + {profileAppend: rendered(
 effectiveParams    = recipe.params ⊕ profile.params ⊕ caller.params   // last wins
 ```
 
-If `recipe.locked == true`, caller parameters are ignored (see §4) — profile parameters **are still applied**, as they represent Recipe author intent, not caller override.
+If `recipe.locked == true`, Caller parameters are ignored (see §4) — Profile parameters **are still applied**, as they represent Recipe author intent, not Caller override.
 
 ### Daemon
 
-`daemon` is reserved as a canonical profile value for `vance-foot -d` (planned), but has no special effect in the current resolver — it flows through the same block lookup cascade as any other profile. If daemon mode is implemented, special handling will move to the connect handler in the Brain (no chat bootstrap, instead `DaemonRegistry` entry), not into the Recipe schema.
+`daemon` is reserved as a canonical Profile value for `vance-foot -d` (planned), but has no special effect in the current resolver — it flows through the same block lookup cascade as any other profile. If daemon mode is implemented, special handling will move to the connect handler in the Brain (no chat bootstrap, instead `DaemonRegistry` entry), not into the Recipe schema.
 
 ---
 
@@ -500,13 +502,13 @@ DocumentService.listByPrefixCascade(tenantId, projectId, "<folder>/")
 | `client_file_*` | Local FS on the Foot client | Foot Process |
 | Server Tool `doc_lookup` | Single pinned document as its own tool | `ServerToolDocument` with Type `doc_lookup` |
 
-`manual_*` replaces the old engine-specific `docs_*` and `eddie_docs_*` tools — one implementation, multiple paths, recipe-configured.
+`manual_*` replaces the old engine-specific `docs_*` and `eddie_docs_*`-tools — one implementation, multiple paths, recipe-configured.
 
 ---
 
 ## 6c. Skill Integration
 
-Recipes control Skills on two axes — *which skills are active from spawn* and *which skills are allowed to become active at all*. Both fields are optional and can be used independently. Skills themselves are described in [skills.md](skills.md) — Recipes only define which subset of their spawn bubble is eligible.
+Recipes control Skills on two axes — *which Skills are active from spawn* and *which Skills are allowed to become active at all*. Both fields are optional and can be used independently. Skills themselves are described in [skills.md](skills.md) — Recipes only define which subset of their spawn bubble is eligible.
 
 ### Schema
 
@@ -523,93 +525,114 @@ analyze:
 
 ### `defaultActiveSkills`
 
-List of Skill names that are written to the fresh Process as sticky active Skills upon spawn. Each entry becomes an `ActiveSkillRefEmbedded` with:
-- `fromRecipe: true` — the `/skill clear` path respects this (recipe-bound Skills cannot be cleared if the Recipe is locked; see `skills.md` §7a)
+List of Skill names that are written to the fresh Process as sticky active Skills at spawn. Each entry becomes an `ActiveSkillRefEmbedded` with:
+- `fromRecipe: true` — the `/skill clear`-path respects this (recipe-bound Skills cannot be cleared if the Recipe is locked; see `skills.md` §7a)
 - `oneShot: false` — sticky, runs until session end
 - `resolvedFromScope: RESOURCE` as a safe default; Engines re-resolve on turn
 
-If the Recipe Cascade does not find the named Skill names at spawn time, the entry is silently carried along — Engines (`Ford.resolveActiveSkills`) then discard it on the next turn with a warning log. Recipe author can verify with a spawn smoke test.
+If the Recipe cascade does not find the named Skill names at spawn time, the entry is silently carried along — Engines (`Ford.resolveActiveSkills`) then discard it on the next turn with a warning log. Recipe author can verify with a spawn smoke test.
 
 ### `allowedSkills` — Whitelist
 
 | Value | Effect |
 |---|---|
-| Field not set / `null` | No restriction — current behavior. Trigger match, default active, and `/skill <x>` work against the full Skill Cascade visibility scope |
+| Field not set / `null` | No restriction — current behavior. Trigger match, Default-Active, and `/skill <x>` operate against the full Skill cascade visibility scope |
 | List with entries | Whitelist. Trigger match iteration filters to these names; `/skill <x>` with an unlisted Skill fails with `SkillNotAllowedByRecipeException` ("Skill 'foo' is not allowed by recipe 'analyze'") |
 | Empty list `[]` | Hard Lockdown — no Skill can ever become active. `defaultActiveSkills` must then also be empty, otherwise Recipe parse error |
 
-**Validation during Recipe Parse:** if `allowedSkills` is set, `defaultActiveSkills ⊆ allowedSkills` must hold. Otherwise, `RecipeLoader.parse` throws `IllegalStateException`.
+**Validation during Recipe Parse:** if `allowedSkills` is set, then `defaultActiveSkills ⊆ allowedSkills`. Otherwise, `RecipeLoader.parse` throws `IllegalStateException`.
 
 ### Snapshot Persistence
 
-Upon spawn, `allowedSkills` is written as `Set<String>` to `ThinkProcessDocument.allowedSkillsOverride` — snapshot, same pattern as `allowedToolsOverride`. If the Recipe is later edited or deleted, nothing changes for the running Process. The `defaultActiveSkills` entries move directly into `process.activeSkills` and are subject to normal Skill lifecycle logic from then on.
+At spawn, `allowedSkills` is written as `Set<String>` into `ThinkProcessDocument.allowedSkillsOverride` — snapshot, same pattern as `allowedToolsOverride`. If the Recipe is later edited or deleted, nothing changes for the running Process. The `defaultActiveSkills` entries go directly into `process.activeSkills` and are subject to normal Skill lifecycle logic from then on.
 
 ### Relationship to Recipe Lock
 
-`recipe.locked == true` protects `engineParams` from caller overrides. At the Skill level, this works differently: `defaultActiveSkills` are written regardless (Recipe author intent), and `allowedSkills` is a spawn-time snapshot decision — after spawn, there is no "caller", only user input (`/skill`). Here, the rule is: user may *not* clear Recipe skills if Recipe is locked, and activate new skills only from `allowedSkills`. Both rules are implemented in `SkillSteerProcessor`.
+`recipe.locked == true` protects `engineParams` from Caller overrides. At the Skill level, this works differently: `defaultActiveSkills` are written regardless (Recipe author intent), and `allowedSkills` is a spawn-time snapshot decision — after spawn, there is no "Caller", only user input (`/skill`). Here, the user may *not* clear Recipe skills if the Recipe is locked, and may only activate new skills from `allowedSkills`. Both rules are implemented in `SkillSteerProcessor`.
 
 ### Profile Block Override (not in v1)
 
-Profile Blocks (`profiles.foot:`) cannot currently override `allowedSkills` / `defaultActiveSkills`. Use case is thin: Skills are usually client-agnostic. If a concrete need arises (e.g., a client-specific style skill only for `foot`), the schema can be extended — it does not break existing configuration.
+Profile blocks (`profiles.foot:`) cannot currently override `allowedSkills` / `defaultActiveSkills`. Use case is thin: Skills are usually client-agnostic. If a concrete need arises (e.g., a client-specific style skill only for `foot`), the schema can be extended — it does not break existing configuration.
 
 ---
 
-## 6d. Completion Guard Block (`guard:`)
+## 6d. Completion-Guard Block (`guard:`)
 
-A Recipe can provide one or more **Completion Guards** as a spawn default. A Guard is a **JS script** that runs at a yield point (Frankie stop, Arthur/Eddie reply→IDLE) and decides whether the Engine delivers or continues working — via `vance.guard.continueWith(prompt)`, it injects a follow-up into its own queue, and the Engine runs again.
+A Recipe can provide one or more **Completion-Guards** as a spawn default. A Guard is a **JS script** that runs at a yield point (Frankie-Stop, Arthur/Eddie-Reply→IDLE) and decides whether the Engine delivers or continues working — via `vance.guard.continueWith(prompt)` it injects a follow-up into its own queue, and the Engine runs again.
 
 ```yaml
 guard:
   - script: _vance/guards/llm-judge.js   # Cascade path OR inline scriptBody
     params:                              # optional → vance.params.*
-      judge: "Has a development task been completed with this?"
-      prompt: "Was a build also done and the specification updated?"
+      judge: "Ist damit eine Entwicklungsaufgabe fertiggestellt worden?"
+      prompt: "Wurde auch build gemacht und die Spezifikation aktualisiert?"
     trigger: stop          # stop | terminate | both   (Default: stop)
     maxRounds: 2
     allowTools: false      # false: Supervisor surface; true: full Process tools
 ```
 
-Exactly **one** of `script`/`scriptBody` is required. The bundled `_vance/guards/llm-judge.js` is a reusable "LLM Judge + fixed prompt" guard, configured via `params: {judge, prompt}` — the 90% case without writing JS. The Recipe Block is the **spawn default**; in operation, an additional runtime guard can be installed additively via the [`guard`-command family](engine-commands.md) (`//guard script <path>`) — typically by a Skill with an `activate:` sequence ([skills.md §2a](skills.md)). Mechanics (script execution, `continueWith`, round cap, fail-open, loop/session scratch, per-user-turn reset) fully described in [completion-guard.md](completion-guard.md).
+Exactly **one** of `script`/`scriptBody` is required. The bundled `_vance/guards/llm-judge.js` is a reusable "LLM-Judge + fixed prompt" guard, configured via `params: {judge, prompt}` — the 90% case without writing JS. The Recipe block is the **spawn default**; in operation, an additional runtime guard can be installed additively via the [`guard`-command family](engine-commands.md) (`//guard script <path>`) — typically by a Skill with an `activate:` sequence ([skills.md §2a](skills.md)). Mechanics (script execution, `continueWith`, round cap, fail-open, loop/session-scratch, per-user-turn reset) fully described in [shooty.md](shooty.md).
 
 ---
 
 ## 6e. User-facing Recipe Picker
 
-The Web-UI opens a modal with selectable Recipes when starting a session (`+`-button in the picker). Which Recipes appear there is controlled by the `listed`-flag from §2 — no auto-collection across the entire Recipe list, because 90% of Recipes are helpers / validators / light-LLM profiles that have no place in a user picker.
+The Web-UI opens a modal with selectable Recipes at session start (`+`-button in the picker). Which Recipes appear there is controlled by the `listed`-flag from §2 — no auto-collection across the entire Recipe list, because 90% of Recipes are helpers / validators / light-LLM profiles that have no place in a user picker.
 
-**REST Surface:**
+**REST-Surface:**
 
 ```
 GET /brain/{tenant}/projects/{project}/recipes/listed
-  → 200 [ { name, title?, description? } ]
+  → 200 {
+       categories: [ { id, title? } ],   // Doc order; title = Locale → Text
+       recipes:   [ { name, title?, description?, category? } ]
+     }
 ```
 
 - Permission: `Resource.Project(tenant, project)` READ
-- Cascade resolution as for `recipe_list` (Project → `_vance` → Bundled), merge by Recipe name
-- Filter: `listed == true && internal == false`
-- Sorting: alphabetically by `title || name`, case-insensitive
+- Cascade resolution as with `recipe_list` (Project → `_vance` → Bundled), merge by Recipe name
+- Filter: `listed == true && internal == false` **plus project type filter** (`projectKind`, §2): `system`-Recipes (Eddie) appear only in SYSTEM-Hub projects, `normal` (Default) only in regular projects, `any` everywhere. The Hub chat is always Eddie — an Arthur entry in the Hub picker would be a selection that `SessionChatBootstrapper` silently ignores; an Eddie entry in a regular project would spawn a Hub Engine without a Hub
+- Sorting (server-side, `RecipeCategoriesService`): **(1)** Category group — documented categories in doc order, then undocumented categories alphabetically, Recipes without `category` last — **(2)** within `title || name`, case-insensitive. The list remains flat; the client groups by key on first occurrence and trusts the server sorting.
+
+**Categories Document `_vance/config/recipe_categories.yaml`:**
+
+```yaml
+categories:
+  - id: coding
+    title:
+      en: Coding
+      de: Programmierung
+```
+
+This document is a **sorting aid, not a registry** — deliberately soft:
+
+- **Neither complete nor mandatory.** Categories not named in it still appear (alphabetically after the documented ones); a missing document means alphabetical group order without labels; Recipes without `category` form the last "Other" group.
+- **Fail-open.** A malformed document (wrong type, missing/empty `id`, duplicate `id`, empty title entries) is logged with WARN and ignored — the picker then shows the no-document fallback, but never blocks session start.
+- **Locale-Map, no Locale resolution on the server.** `title` is an open language→text map; the server passes it through, the client resolves: exact UI locale → base language (`de-CH` → `de`) → `en` → humanized Id (`code-read` → `Code Read`). Tenant categories are an open vocabulary, true i18n is impossible for them — Humanize is the only generic fallback.
+- **Cascade like Recipes:** Project → `_vance` → Bundled (`vance-brain`-resource `vance-defaults/_vance/config/recipe_categories.yaml`), first-hit-wins, no field merge — whoever overrides, rewrites all fields.
+- **No cache, no event listener:** the document is read per picker request (parse-on-every-read like Recipes).
 
 **Client Behavior:**
 
-- The modal entry "Default" is rendered by the client and sends `chatRecipe: null` to `session-bootstrap` → Server `RecipeResolver.applyDefaulting` applies as before (`recipe → engine → default`). This means the "Default" selection automatically reflects any project-/tenant-wide override of the `default`-Recipe — no separate sentinel needed.
+- The modal entry "Default" is rendered by the client and sends `chatRecipe: null` to `session-bootstrap` → Server `RecipeResolver.applyDefaulting` applies as before (`recipe → engine → default`). This means the "Default" selection automatically reflects any project-/tenant-wide override of the `default`-Recipe — no separate sentinel needed. "Default" is ungrouped above all category groups.
+- Above the list is a narrow search field that narrows the display: case-insensitive substring filter over `title || name` and `description` (`filterListedRecipes`). Filtering happens before grouping — groups without hits disappear, "Default" remains selectable regardless of the filter. The filter is reset each time the modal is opened.
 - The bundled `default.yaml` is therefore **not** marked with `listed: true`; otherwise, there would be duplicate "Default" entries.
-- Foot ignores the flag and continues to accept all Recipes via `--recipe` — there, the user types the name, discovery is not the purpose.
-
-**Bundled Defaults with `listed: true` (as of v1):** `arthur`, `eddie`, `ford`, `analyze`, `coding`, `web-research`, `code-read`, `marvin`, `frankie`, `quick-lookup`. Tenant and Project layers can opt-in mark any further Recipes or remove bundled entries from the picker with an override file without `listed: true`.
+- Foot has the same picker as a UI command: `/ui-new` (Fullscreen-Lanterna, search field, Default + category groups, Enter starts, Esc cancels) — it calls the same REST endpoint and starts the pick via `session-bootstrap` with `chatRecipe`. `/new [recipe]` is the text counterpart without a dialog. Explicit names remain free everywhere: `--recipe`, `/session-bootstrap`, and Spawn tools still accept **all** Recipes, not just listed ones — `listed`/`category` only control the discovery pickers.
+**Bundled Defaults with `listed: true`** (with category): `arthur`, `eddie`, `discuss`, `trillian-adam`, `trillian-void` (*chat*); `coding`, `benjy-coding`, `code-read`, `app-builder` (*coding*, App-Builder from the Bistromath-Addon); `web-research`, `analyze`, `quick-lookup` (*research*); `ford`, `frankie`, `benjy`, `marvin`, `creator` (*workers*). Of these, only `eddie` carries **`projectKind: system`** — it appears exclusively in the Hub picker (`_user_*`, `_tenant`), all others only in regular projects. Tenant and Project layers can opt-in mark any further Recipes or remove bundled entries from the picker with an override file without `listed: true`.
 
 ---
 
-## 7. Fields on the ThinkProcessDocument
+## 7. Fields on ThinkProcessDocument
 
-So that Engines can see the Recipe-derived values during a turn, they are projected onto the Process:
+For Engines to see the Recipe-derived values during a turn, they are projected onto the Process:
 
 | Field | Source |
-|---|---|
-| `recipeName` | for audit/UI — not for Engine logic |
-| `connectionProfile` | active profile value at spawn (`foot`/`web`/`mobile`) — for audit, if one later wants to trace under which profile a Process was created |
+|---|---|---|
+| `recipeName` | for Audit/UI — not for Engine logic |
+| `connectionProfile` | active Profile value at spawn (`foot`/`web`/`mobile`) — for audit, if one later wants to trace under which profile a Process was created |
 | `activeSkills` | seeded at spawn from Recipe `defaultActiveSkills` (each entry with `fromRecipe=true`, sticky). Thereafter normal Skill lifecycle |
-| `allowedSkillsOverride` | Snapshot of Recipe `allowedSkills` as `Set<String>?`. `null` = no restriction; non-null = whitelist against which trigger match and `/skill` validate. Mirror of `allowedToolsOverride` |
-| `engineParams` | filled with `effectiveParams` (Recipe defaults + Profile defaults + Caller merge) |
+| `allowedSkillsOverride` | Snapshot of Recipe `allowedSkills` as `Set<String>?`. `null` = no restriction; non-null = whitelist against which trigger match and `/skill` validate. Mirror to `allowedToolsOverride` |
+| `engineParams` | populated with `effectiveParams` (Recipe defaults + Profile defaults + Caller merge) |
 | `promptOverride` | Recipe `promptPrefix` + Profile `promptPrefixAppend` as unrendered Pebble template (rendering occurs per turn with current Tier/Mode/Profile context) |
 | `promptMode` | `APPEND` / `OVERWRITE` |
 | `dataRelayCorrectionOverride` | Recipe `dataRelayCorrection`, if set |
@@ -621,7 +644,7 @@ The Recipe is no longer referenced after spawn — the Process carries its effec
 
 ## 8. Discovery — How Arthur Finds Recipes
 
-**Static in the Prompt:** When the Arthur system prompt boots, a section is inserted:
+**Static in the Prompt:** When the Arthur system prompt boots, a section is appended:
 
 ```
 ## Available worker recipes
@@ -634,9 +657,9 @@ The Recipe is no longer referenced after spawn — the Process carries its effec
 - `code-read` — Reads codebases, summarises structure, finds references.
 ```
 
-The static list contains exactly the **bundled** Recipes (from YAML). Tenant and Project Recipes are not embedded there — they must be discovered via the tool (see below). Advantage: bundled defaults are known to the LLM without an extra round trip; the list only changes on Brain restart.
+The static list contains exactly the **bundled** Recipes (from YAML). Tenant and Project Recipes are not embedded there — they must be discovered via the Tool (see below). Advantage: Bundled defaults are known to the LLM without an extra round trip; the list only changes on Brain restart.
 
-**Dynamically via Tool:** `recipe_list` (primary for Arthur) provides the effective Catalog for the current Tenant/Project view — i.e., bundled + tenant + project with correct override accounting. Arthur calls it if needed, when the built-in default set is insufficient.
+**Dynamic via Tool:** `recipe_list` (primary for Arthur) provides the effective Catalog for the current Tenant/Project view — i.e., bundled + tenant + project with correct override accounting. Arthur calls it as needed if the built-in default set is insufficient.
 
 Schema:
 
@@ -647,7 +670,7 @@ recipe_list() → {
 }
 ```
 
-Optional `recipe_describe(name)` as a secondary tool — returns the complete Recipe Document if Arthur wants to see the default parameters/prompt.
+Optional `recipe_describe(name)` as a Secondary Tool — returns the complete Recipe Document if Arthur wants to see the default parameters/prompt.
 
 ---
 
@@ -664,7 +687,7 @@ applyDefaulting(tenantId, projectId, recipeName, engineName, callerParams) →
                                 else                → empty Optional
                                 (Caller then falls back to engine-direct)
   both null                  → apply("default")
-                                (Error if `default`-Recipe is missing — bundled, so always present)
+                                (Error if `default`-Recipe missing — bundled, so always present)
 ```
 
 Spawn examples:
@@ -678,25 +701,25 @@ Spawn examples:
 | `process_spawn(engine="custom-x")` (no Recipe `custom-x`) | engine-direct fallback without Recipe override (Engine fallback prompt) |
 | `process_spawn(engine="ford", recipe="analyze", ...)` | Conflict — `recipe` wins, `engine`-argument is logged-and-ignored |
 
-Arthur's system prompt recommends the Recipe path as standard. Engine-direct is a fallback for uncataloged custom Engines.
+Arthur's System Prompt recommends the Recipe path as standard. Engine-direct is a fallback for uncataloged custom Engines.
 
 ---
 
 ## 10. Initial Repertoire (Bundled Resources)
 
-Current delivery as individual YAML files in `vance-brain/src/main/resources/vance-defaults/recipes/`. Three convention Recipes plus a series of specialized workers:
+Current delivery as individual YAML files in `vance-brain/src/main/resources/vance-defaults/recipes/`. Three convention Recipes plus a series of specialized Workers:
 
 | Name | Engine | Role | Usage |
 |---|---|---|---|
 | `default` | ford | Generalist Fallback | Called if neither Recipe nor Engine is set. Validation on, `default:analyze` model |
-| `arthur` | arthur | Engine Default for Arthur | Full Arthur system prompt (Coordinator role), Validator override for Intent-Without-Action. Auto-applied for `engine="arthur"` without Recipe |
-| `ford` | ford | Engine Default for Ford | Worker personality + both Validator overrides. Auto-applied for `engine="ford"` without Recipe |
+| `arthur` | arthur | Engine Default for Arthur | Full Arthur system prompt (Coordinator role), validator override for Intent-Without-Action. Auto-applied for `engine="arthur"` without Recipe |
+| `ford` | ford | Engine Default for Ford | Worker personality + both validator overrides. Auto-applied for `engine="ford"` without Recipe |
 | `quick-lookup` | ford | Fast One-Shot | Validation on, `default:fast` (SMALL model), 3 iterations |
-| `analyze` | ford | Multi-Step Analysis | Validation on, `default:analyze` (LARGE), 10 iterations, dedicated Small-Variant prompt |
+| `analyze` | ford | Multi-Step Analysis | Validation on, `default:analyze` (LARGE), 10 iterations, dedicated Small-Variant-Prompt |
 | `web-research` | ford | Multi-Source Web Research | `default:web`, 12 iterations |
 | `code-read` | ford | Read-only Codebase Inspection | `default:code`, removes write-tools (`client_file_write`, `client_file_edit`, `workspace_write`, `workspace_delete`) |
 
-**Convention:** Recipes named after an Engine (`arthur`, `ford`, later `deep-think`) are their default bundles and carry the source-of-truth prompts. Specialized Recipes (`analyze`, `code-read`, …) build upon them — same Engine, different prompt prefix + different parameters.
+**Convention:** Recipes named after an Engine (`arthur`, `ford`, later `deep-think`) are their default bundles and carry the source-of-truth prompts. Specialized Recipes (`analyze`, `code-read`, …) build upon them — same Engine, different prompt prefix + different params.
 
 With the introduction of `deep-think`, for example, `deep-think` (Engine default), `task-tree-plan`, `deep-analyze` will be added — on the same Recipe track, with a new Engine underneath.
 
@@ -706,11 +729,11 @@ With the introduction of `deep-think`, for example, `deep-think` (Engine default
 
 Recipes are Documents — editing therefore happens via the Document Layer:
 
-- **Tenant-wide Override:** Document with path `recipes/<name>.yaml` in the `_tenant`-Project. Overrides the Resource default without further configuration.
-- **Project Override:** Document with path `recipes/<name>.yaml` in the respective user project. Overrides `_tenant` and Resource.
-- **Rollback to Default:** Delete the document — the next lookup falls back to the next outer cascade stage.
+- **Tenant-wide Override:** Document with path `recipes/<name>.yaml` in the `_tenant`-Project. Beats the Resource default without further configuration.
+- **Project-Override:** Document with path `recipes/<name>.yaml` in the respective User Project. Beats `_tenant` and Resource.
+- **Rollback to Default:** Delete the Document — the next lookup falls back to the next outer Cascade stage.
 
-There is no longer a dedicated Recipe REST controller — the Document Editor (CLI / Web-UI Document Editor) suffices. Who is allowed to do what comes from the Document ACL model, once that is defined.
+There is no longer a dedicated Recipe REST controller — the Document Editor (CLI / Web-UI Document Editor) is sufficient. Who is allowed to do what comes from the Document ACL model, once that is defined.
 
 ---
 
@@ -741,8 +764,8 @@ input := <prefix>:<rest>
     → UnknownModelException
 ```
 
-Thus:
-- Recipes run out-of-the-box on every tenant — regardless of whether they have Gemini, Anthropic, or OpenAI keys. `default:fast`/`default:analyze`/`default:deep` only need to be configured by the tenant as aliases (or silently fall back to `ai.default.*`).
+This means:
+- Recipes run out-of-the-box on any tenant — regardless of whether they have Gemini, Anthropic, or OpenAI keys. `default:fast`/`default:analyze`/`default:deep` only need to be configured by the tenant as aliases (or silently fall back to `ai.default.*`).
 - Models come and go without Recipe editing. `gpt-5` released? Set tenant setting `ai.alias.default.deep = openai:gpt-5`, done.
 - Directly provider-specific specs (`anthropic:claude-sonnet-4-5`) remain valid — e.g., if a Recipe author intentionally wants to bind to a specific model.
 
@@ -751,7 +774,7 @@ Thus:
 ## 12. Open Points
 
 - **Versioning of Recipes**. Today: Recipe is mutable, edits overwrite in-place. For reproducibility (which version of a Recipe ran on day X?), the Recipe would need to be versioned, with a reference from the Process to the specific version. Not v1, but not prevented by the schema.
-- **Recipe Composition**. Can Recipes extend other Recipes (`extends: analyze`)? Not v1 — if needed, can be added later.
-- **Schema Validation of `params`**. Today, a free `Map<String,Object>`. If Engines receive a typed `defaultSettings()` schema (see `think-engines.md` point 4), the Recipe resolver can validate against the Engine schema before triggering the spawn.
-- **Recipe Cost Model**. Recipes could carry a `costClass` (`cheap/normal/expensive`) that influences the quota system (`llm-resource-management.md`). A clean integration would be to query the quota system per Recipe call before allowing the spawn.
-- **Recipe Discovery from a Worker Engine**. Are workers (Ford, Deep-Think) allowed to inspect Recipes themselves or spawn sub-workers via Recipe? V1 no — only Arthur orchestrates; for multi-level orchestration (deep-think → sub-deep-think), this needs to be re-evaluated.
+- **Recipe-Composition**. Can Recipes extend other Recipes (`extends: analyze`)? Not v1 — if needed, later.
+- **Schema validation of `params`**. Currently free `Map<String,Object>`. If Engines receive a typed `defaultSettings()` schema (see `think-engines.md` point 4), the Recipe resolver can validate against the Engine schema before triggering the spawn.
+- **Recipe Cost Model**. Recipes could carry a `costClass` (`cheap/normal/expensive`) that feeds into the quota system (`llm-resource-management.md`). A clean integration would be to query the quota system per Recipe call before allowing the spawn.
+- **Recipe Discovery from a Worker Engine**. Are Workers (Ford, Deep-Think) allowed to inspect Recipes themselves or spawn sub-workers via Recipe? V1 no — only Arthur orchestrates; for multi-level orchestration (deep-think → sub-deep-think), this needs to be reconsidered.

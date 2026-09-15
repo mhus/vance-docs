@@ -1,8 +1,8 @@
 # Vancetope — Follow-Up Service
 
-> REST endpoint that generates context-aware follow-up suggestions from a text fragment plus cursor position. Single-shot, no Process-Spawn — built on the [LightLlmService](light-llm-service.md) with Recipe `follow-up` as the configuration profile.
+> REST endpoint that generates context-aware follow-up suggestions from a text fragment plus cursor position. Single-shot, no Process-Spawn — built on the [LightLlmService](light-llm-service.md) with Recipe `follow-up` as a config profile.
 >
-> Consumed by the chat prompt and text editor in the Web-UI (see [web-ui](web-ui.md)); other client surfaces (Mobile, future editors) can use the same endpoint.
+> Consumed by the chat prompt and text editor in the Web UI (see [web-ui](web-ui.md)); other client surfaces (Mobile, future editors) can use the same endpoint.
 >
 > See also: [light-llm-service](light-llm-service.md) | [recipes](recipes.md) | [how-do-i](how-do-i.md)
 
@@ -21,16 +21,16 @@ Implementing each of these use cases as a separate Engine would be overkill: no 
 
 **Solution.** A thin `FollowUpService` in `vance-brain` that calls the `follow-up` Recipe via `LightLlmService`. REST endpoint `POST /brain/{tenant}/follow-up/{project}`. The service has two structural modes, controlled by the presence or absence of `cursor`:
 
-- **Edit Mode** (`cursor != null`): Service splits `text` at the cursor position into `textBefore`/`textAfter` and sends both to the prompt.
-- **Reply Mode** (`cursor == null`): Service sends the entire `text` as `precedingContext` to the prompt.
+- **Edit Mode** (`cursor != null`): Service splits `text` at the cursor position into `textBefore`/`textAfter` and sends both to the Prompt.
+- **Reply Mode** (`cursor == null`): Service sends the entire `text` as `precedingContext` to the Prompt.
 
 An empty result (no suggestions) is a valid response.
 
 **What it is not:**
 
-- Not a separate Engine — the entire flow is single-shot. Should FollowUp later become multi-stage (e.g., first RAG, then Generate, then Re-Rank), it can be upgraded to a `mark-ii` Engine — the Recipe name remains stable.
-- No Streaming — a complete response is returned.
-- No Tool-Use — the LLM is not allowed to call tools in this call.
+- Not a dedicated Engine — the entire flow is single-shot. Should FollowUp later become multi-stage (e.g., first RAG, then Generate, then Re-Rank), it can be upgraded to a `mark-ii` Engine — the Recipe name remains stable.
+- No streaming — a complete response is returned.
+- No Tool-Use — the LLM is not allowed to call Tools in this call.
 - No Chat History entry — Follow-Up is a UI aid, not a conversation-relevant action.
 
 ---
@@ -43,22 +43,22 @@ Authorization: Bearer <jwt>
 Content-Type: application/json
 ```
 
-**Request — Edit Mode** (User edits text with cursor):
+**Request — Edit Mode** (User editing text with cursor):
 
 ```json
 {
-  "text": "Wir sollten den Migrationspfad ",
+  "text": "We should split the migration path ",
   "cursor": 31,
   "count": 3,
   "mode": "chat-prompt"
 }
 ```
 
-**Request — Reply Mode** (User replies to preceding text):
+**Request — Reply Mode** (User replying to preceding text):
 
 ```json
 {
-  "text": "Hi, wie kann ich dir heute helfen?",
+  "text": "Hi, how can I help you today?",
   "count": 1,
   "mode": "chat-reply"
 }
@@ -69,16 +69,16 @@ Content-Type: application/json
 ```json
 {
   "suggestions": [
-    { "text": "in mehrere Phasen aufteilen.", "kind": "completion" },
-    { "text": "auf einmal durchführen — was sind die Risiken?", "kind": "continuation" },
-    { "text": "mit dem Ops-Team abstimmen.", "kind": "completion" }
+    { "text": "into multiple phases.", "kind": "completion" },
+    { "text": "all at once — what are the risks?", "kind": "continuation" },
+    { "text": "coordinate with the Ops team.", "kind": "completion" }
   ]
 }
 ```
 
 **Path Parameters:**
 
-- `tenant` — Tenant slug. Checked against the JWT claim `tid` by the upstream filter.
+- `tenant` — Tenant slug. Checked by the upstream filter against the JWT claim `tid`.
 - `project` — Project name within the Tenant. Auth enforcement: `Resource.Project(tenant, project)` with `Action.READ`. Conventionally: `_tenant` as the default Project if no Project reference is desired (see [architektur-scopes-clients](architektur-scopes-clients.md)).
 
 **Body Fields:**
@@ -88,7 +88,7 @@ Content-Type: application/json
 | `text` | string | ✓ | In Edit Mode: complete text the user is editing. In Reply Mode: bounded transcript of the preceding conversation context with role and, if available, speaker markers. Multiple participants and non-alternating roles are allowed. An empty string is allowed in Edit Mode, but meaningless in Reply Mode. |
 | `cursor` | int | ✗ | **If set: Edit Mode.** Cursor position as a character offset from the beginning. Must be within `[0, text.length()]` — the service automatically clamps, the controller validates beforehand and returns `400 BAD REQUEST` if out-of-range. **If omitted/null: Reply Mode.** The entire text is considered `precedingContext`. |
 | `count` | int | ✓ | Desired number of suggestions (max). Server cap at `FollowUpService.MAX_COUNT` (=10). `<1` is rejected with `400`. |
-| `mode` | string | ✗ | Free-form hint indicating which UI surface the call originates from (e.g., `"chat-prompt"`, `"chat-reply"`, `"text-editor"`). Passed as a Pebble variable to the prompt — orthogonal to the Edit/Reply branch. Reserved for later specialization without contract change. |
+| `mode` | string | ✗ | Free-form hint indicating which UI surface the call originates from (e.g., `"chat-prompt"`, `"chat-reply"`, `"text-editor"`). Passed as a Pebble variable to the Prompt — orthogonal to the Edit/Reply branch. Reserved for later specialization without contract change. |
 
 **Response Schema:**
 
@@ -107,9 +107,9 @@ Content-Type: application/json
 
 | Status | Condition |
 |--------|-----------|
-| 200 + empty `suggestions` | LLM has no meaningful follow-up suggestions — not an error, desired behavior. |
+| 200 + empty `suggestions` | LLM found no meaningful follow-up suggestions — not an error, desired behavior. |
 | 400 | `text` null, `cursor` set but outside `[0, text.length()]`, `count < 1`. |
-| 401 / 403 | JWT missing/invalid or Project-READ denied. |
+| 401 / 403 | JWT missing/invalid or Project READ denied. |
 | 500 | LightLlmService throws `LightLlmException` (Recipe missing, Provider exhausted, Schema-Loop fails). |
 
 ---
@@ -136,7 +136,7 @@ FollowUpService.suggest(text, cursor?, count, mode, tenantId, projectId)
    ▼
 LightLlmService.callForJson(LightLlmRequest{ recipeName="follow-up", ... })
    │  - Recipe "follow-up" is loaded from Cascade (project → tenant → bundled)
-   │  - Pebble renders promptPrefix with {% if precedingContext %} branch
+   │  - Pebble-renders promptPrefix with {% if precedingContext %} branch
    │  - ChatModel.chat() → JSON-Parse → Schema-Validate-Loop
    ▼
 parseSuggestions(rawJson, limit)
@@ -150,11 +150,13 @@ List<FollowUpSuggestionDto>
 FollowUpResponseDto { suggestions } → JSON → HTTP 200
 ```
 
-**Edit Mode** (`cursor != null`): `textBefore = text.substring(0, cursor)`, `textAfter = text.substring(cursor)`. Both are rendered as Pebble variables `{{ textBefore }}` and `{{ textAfter }}` into the system prompt. The LLM thus knows the user's current position and can produce follow-up suggestions at that exact location.
+**Edit Mode** (`cursor != null`): `textBefore = text.substring(0, cursor)`, `textAfter = text.substring(cursor)`. Both are rendered as Pebble variables `{{ textBefore }}` and `{{ textAfter }}` into the System Prompt. The LLM thus knows the user's current position and can produce follow-up suggestions at that exact location.
 
-**Reply Mode** (`cursor == null`): The entire `text` is passed as `{{ precedingContext }}` to the prompt. The LLM responds with suggestions on how the user could react to this context (follow-up question, clarification, acknowledgment). The Pebble template branches with `{% if precedingContext %}reply-prompt{% else %}edit-prompt{% endif %}`.
+**Reply Mode** (`cursor == null`): The entire `text` is passed as `{{ precedingContext }}` to the Prompt. The LLM responds with suggestions on how the user could react to this context (follow-up question, clarification, acknowledgment). The Pebble template branches with `{% if precedingContext %}reply-prompt{% else %}edit-prompt{% endif %}`.
 
-This branching is semantically necessary: the two tasks ("what comes after the cursor at this position" vs. "how to react to this text") are semantically different. `mode` remains as an additional free-form hint for UI surface specialization — orthogonal to the Edit/Reply branch.
+This branching is semantically necessary: the two tasks ("what comes after the cursor at this point" vs. "how to react to this text") are semantically different. `mode` remains as an additional free-form hint for UI surface specialization — orthogonal to the Edit/Reply branch.
+
+**FIM Alternative Path:** Edit Mode can run via a Completion path instead of this Chat Recipe if `ai.alias.default.fim` is set — see [§5](#5-fim-completion-path-edit-mode-optional). The flow above describes the Chat path; the cache applies to both paths unchanged.
 
 **Result Cache (Caffeine).** The service maintains an in-memory LRU cache that covers repeated identical requests:
 
@@ -162,8 +164,8 @@ This branching is semantically necessary: the two tasks ("what comes after the c
 - **Key:** SHA-256 hex digest over `tenantId | projectId | text | cursor | count | mode` (null separator in between). Compact in the map, does not leak user content into string interns; Reply vs. Edit mode is distinguished by `cursor = -1` vs. `>= 0`.
 - **Value:** parsed `List<FollowUpSuggestionDto>` — we cache the **typed result**, not the raw JSON string, so parsing runs only once.
 - **Eviction:** `maximumSize = 500` (LRU) + `expireAfterWrite = 30 min` TTL.
-- **Metric:** `vance.followup.cache` Counter with tag `outcome` ∈ {`hit`, `miss`}. Hit ratio is a direct statement about cache effectiveness.
-- **What it covers:** Page reload, multi-tab of the same user, multiple users on a shared Hub Project with identical conversation context, and quick re-displays due to focus toggle in the composer.
+- **Metric:** `vance.followup.cache` Counter with tag `outcome` ∈ {`hit`, `miss`}. Hit-ratio is a direct statement about cache effectiveness.
+- **What it covers:** Page reload, multi-tab of the same user, multiple users on a shared Hub Project with identical conversation context, and quick re-displays due to focus toggle in the Composer.
 - **What it does not cover:** Multi-Pod sharing (each Pod has its own cache) — with N Pods, the first call of each Pod instance will still see an LLM miss. Persistent cache via Mongo is v2 if load data shows the need.
 - **Consistency under Recipe Reload:** no explicit invalidation — old cache entries expire after a maximum of 30 min. Acceptable because Recipe edits are not hard cuts anyway, and the effect propagates naturally. If force-invalidate is needed later, an `@EventListener` will attach to the Recipe reload event and call `cache.invalidateAll()`.
 
@@ -174,9 +176,9 @@ This branching is semantically necessary: the two tasks ("what comes after the c
 - Missing `suggestions` key → empty list.
 - Items without `text` or with blank `text` → dropped.
 
-This keeps the service robust without bloating the prompt with excessive format reminders.
+This keeps the service robust without bloating the Prompt with excessive format reminders.
 
-**Empty-Result as First-Class-Outcome**: The service explicitly returns `200 + []`, not `204` and no error. This simplifies client code (no status check needed) and respects reality: not every cursor context warrants suggestions.
+**Empty-Result as First-Class-Outcome**: The service explicitly returns `200 + []`, no `204` and no error. This simplifies client code (no status check needed) and respects reality: not every cursor context warrants suggestions.
 
 ---
 
@@ -227,9 +229,9 @@ tags:
 
 **Engine Choice:** `jeltz` provides the schema validation loop "for free". If the LLM does not provide parseable JSON, the call is retried with a correction hint (up to `maxAttempts`). Error case: `SchemaValidationException` → `500`.
 
-**Pebble Branching:** `{% if precedingContext %}` switches between Reply and Edit prompts. This means the two-mode logic is **fully declarative in the Recipe**; the service only decides which Pebble vars to set.
+**Pebble Branching:** `{% if precedingContext %}` switches between Reply and Edit Prompt. This means the two-mode logic is **fully declarative in the Recipe**; the service only decides which Pebble vars to set.
 
-**Temperature 0.7** — deliberately higher than for Discovery (0.0), because creativity is required here, not deterministic selection from a catalog.
+**Temperature 0.7** — intentionally higher than for Discovery (0.0), because creativity is needed here, not deterministic selection from a catalog.
 
 **Model `default:fast`** — Follow-Up is latency-sensitive (user waits in the UI). The inexpensive/fast model per Tenant is resolved via alias cascade (see [llm-resource-management](llm-resource-management.md) §3a).
 
@@ -237,7 +239,81 @@ tags:
 
 ---
 
-## 5. DTO Contracts
+## 5. FIM Completion Path (Edit Mode, Optional)
+
+Edit Mode can use a **Completion Model** (Fill-In-the-Middle) instead of a Chat Model — models like Qwen2.5/Qwen3-Coder, DeepSeek-Coder, Codestral, or StarCoder, which are trained to fill a gap between prefix and suffix using their own FIM control tokens. Reply Mode **never** uses FIM — there is no suffix to fill against.
+
+### 5.1 Gate and Model Selection — `ai.alias.default.fim`
+
+A setting decides the path (Tenant/Project cascade like all `ai.alias.*`):
+
+```yaml
+ai.alias.default.fim = lmstudio:qwen3-coder-30b
+```
+
+- **Unset** → both modes run via the Chat path (Recipe `follow-up` via LightLlm) — the existing behavior, unchanged.
+- **Set** → Edit Mode calls run via the FIM path; the value is a normal Model Spec (instance, provider, or another alias) and goes through the `AiModelResolver`.
+
+Operators set the alias in the "LLM Settings" form (`llm-setup`, field `aliasFim`); the picker uses the `ai-fim-models` choices source and lists **only** models with a resolved `fimTemplate` — otherwise, a Chat Model would be a fail-closed error at runtime. The LLM-side Manual for creating Model Docs (`manual_read('ai-model-catalog')`) documents the `fimTemplate` field, including a family table.
+
+### 5.2 Call Shape — `fimTemplate` Quirk (Per Model, Not Global)
+
+The FIM token convention is **family-specific**, so the Prompt shape is per-model metadata and not a global constant. The `fimTemplate` field follows the same two-layer resolution as `messageParser` (see [llm-resource-management](llm-resource-management.md) §3a/§4.1.1): explicit per-model YAML wins, family patterns from the bundled `model-quirks.yaml` fill the gap:
+
+```yaml
+# model-quirks.yaml (bundled Patterns, excerpt)
+rules:
+  - match: "qwen*coder*"
+    fimTemplate: "<fim_prefix>{prefix}<fim_suffix>{suffix}<fim_middle>"
+  - match: "deepseek-coder*"
+    fimTemplate: "<|fim▁begin|>{prefix}<|fim▁hole|>{suffix}<|fim▁end|>"
+  - match: "codestral*"
+    fimTemplate: "[PREFIX]{prefix}[SUFFIX]{suffix}[MIDDLE]"
+```
+
+The markers `{prefix}` and `{suffix}` are spliced with `textBefore`/`textAfter` — the template itself is parsed, the user content never is (a literal `{suffix}` in the edited text remains untouched).
+
+**Fail-closed:** Alias set, but the resolved model has no `fimTemplate` → error with a clear message ("Setting points to a model without FIM shape"), **no** silent fallback to the Chat path. Such a fallback would mask a configuration error and replace it with double costs. The separation is deliberate: the setting decides **which** model, the quirk field decides **how** to query.
+
+### 5.3 Architecture
+
+```
+FollowUpService (Edit Mode, Cache Miss)
+   │  ai.alias.default.fim set?
+   │    no → Chat Path (§3, unchanged)
+   │    yes:
+   ▼
+FimCompletionService (brain.ai.fim)
+   │  - Resolve spec (AiModelResolver) → AiChatConfig
+   │  - ModelCatalog.lookupOrDefault → ModelInfo.fimTemplate
+   │  - Render template (splice prefix/suffix)
+   │  - Single User Message over the standard Chat plate
+   │    (ChatBehaviorBuilder.resolveOne → AiModelService.createChat)
+   ▼
+Raw Continuation → Trim end markers (FIM end tokens) → strip
+   ▼
+1 × FollowUpSuggestionDto { text, kind: "completion" }
+```
+
+**Transport over the Chat Wire:** vLLM, llama.cpp, and LM Studio — where these models typically run — accept the FIM token sequence as a simple User Message on the OpenAI-compatible Chat Endpoint. This allows the entire existing plate (alias resolution, provider adapter, usage ledger, audit) to be used; a dedicated `/v1/completions`-with-`suffix` transport will only become a provider feature if a specific endpoint rejects the Chat form.
+
+**Fixed, conservative Call Params** (deliberately no Recipe — the FIM path has no Pebble Prompt, so there is no config profile; if needed, later as settings): Temperature 0.2, maxTokens 256, Stop sequences = FIM end markers, Sync deadline 30s, no System Prompt, no JSON schema loop.
+
+### 5.4 Result Semantics
+
+- FIM delivers **exactly one** Continuation; `count` is ignored on this path (documented, not hidden). To get `count > 1` diverse suggestions, leave the alias unset.
+- Blank-Middle (after trim) is a valid "nothing goes here" → `200 + empty list`, no error, **no** silent Chat fallback.
+- The REST contract does not change — client-side, the path is invisible; the suggestion carries `kind: "completion"`.
+
+### 5.5 Metrics & Audit
+
+- `vance.fim.calls{outcome=success|blank|error, caller}` and `vance.fim.duration{caller}` — Caller is the consuming service (e.g., `follow-up-fim`), low-cardinality.
+- Audit like Light Calls: `llmLightCall` with Caller as Recipe name; the Usage Ledger is booked by the Accounting Decorator in the Provider, as with any Chat call.
+- The FollowUp cache remains unchanged: the cache key already distinguishes Edit/Reply via `cursor`, and the path decision depends only on settings, not on request content.
+
+---
+
+## 6. DTO Contracts
 
 **`vance-api/de/mhus/vance/api/followup/`** — `@GenerateTypeScript("followup")` annotated, TS output to `client/packages/generated/src/followup/`:
 
@@ -245,11 +321,11 @@ tags:
 - `FollowUpResponseDto` — Response.
 - `FollowUpSuggestionDto` — Single suggestion.
 
-Validation annotations (`@NotNull`, `@Min`) are enforced by the controller via `@Valid`; edge cases (cursor-out-of-range vs. text-length) are additionally checked manually by the controller, as this is a cross-field constraint.
+Validation annotations (`@NotNull`, `@Min`) are enforced by the Controller via `@Valid`; edge cases (cursor-out-of-range vs. text-length) are additionally checked manually by the Controller, as this is a cross-field constraint.
 
 ---
 
-## 6. Client Integration
+## 7. Client Integration
 
 **Web (`vance-face`):**
 
@@ -271,21 +347,21 @@ const replyResp: FollowUpResponseDto = await restPost(
 );
 ```
 
-**Chat Editor "Ghost-Bubble"** (Reply Mode, v1):
+**Chat Editor "Ghost Bubble"** (Reply Mode, v1):
 
 - Trigger: new relevant chat turn fully persisted **and** input field empty **and** composer focused (fetch gate).
-- Display: Ghost-bubble below the last context message, muted color + italic, with hint icon (e.g., `↹ Space`).
+- Display: Ghost bubble below the last context message, muted color + italic, with hint icon (e.g., `↹ Space`).
 - Adoption: User presses **Space** → suggestion is written into the input field (plus appended space, shell autosuggestion style). Alternatively **Tab** → without space. Click on bubble → also adopt.
 - Hiding: As soon as `input.length > 0` and the first character is not a space, the bubble disappears.
-- Reappearing: Input back to empty → bubble re-appears (cached, no new call).
-- Invalidating: new relevant chat turn → old suggestion discarded, new call with the updated transcript.
+- Reappearance: Input back to empty → bubble re-appears (cached, no new call).
+- Invalidation: new relevant chat turn → old suggestion discarded, new call with the updated transcript.
 - **Fetch Gate (Strategy B):** The REST call runs **only** when the textarea is focused. The client composable caches per `(projectId, anchorMessageId, transcript)`, and re-focusing does not lead to a second call. This way, we don't pay for an LLM call for users who don't want to reply.
 
-**Markdown Document Editor "Tooltip-Suggestion"** (Edit Mode, v1):
+**Markdown Document Editor "Tooltip Suggestion"** (Edit Mode, v1):
 
-- Implementation: `followUpExtension` from `@vance/components` as a CodeMirror extension. Active only if `<CodeEditor :follow-up="…" />` is set; in `DocumentApp.vue` this is only the case for Markdown documents in the Edit tab.
-- Trigger: User presses **`Ctrl+.`** (Mac: `Cmd+.`) in the editor. **On-demand**, never automatically while typing — respects that the user decides when they want help. (`Ctrl/Cmd+Space` would be more intuitive, but is reserved by the OS on macOS for Spotlight or the IME switcher; `Mod-.` is platform-neutral free.)
-- Display: CodeMirror-`showTooltip` directly below the cursor, muted color + italic, with hint label (`↹ Tab`).
+- Implementation: `followUpExtension` from `@vance/components` as a CodeMirror extension. Active only if `<CodeEditor :follow-up="…" />` is set; in `DocumentApp.vue`, this is only the case for Markdown documents in the Edit tab.
+- Trigger: User presses **`Ctrl+.`** (Mac: `Cmd+.`) in the editor. **On-demand**, never automatically while typing — respects that the user decides when they want help. (`Ctrl/Cmd+Space` would be more intuitive, but is reserved on macOS by the OS for Spotlight or the IME switcher; `Mod-.` is platform-neutral free.)
+- Display: CodeMirror `showTooltip` directly under the cursor, muted color + italic, with hint label (`↹ Tab`).
 - Adoption: **Tab** → suggestion is inserted at the cursor, cursor jumps to the end of the insertion, tooltip disappears.
 - Discarding: **Escape** → tooltip disappears without insertion. Any document change or cursor movement also discards the suggestion (anchor position would then be stale).
 - Stale-Drop: Pending fetch is discarded via sequence counter if a newer trigger or document change occurs.
@@ -301,17 +377,19 @@ Edit Mode in the Chat Prompt is not v1.
 
 ---
 
-## 7. What v1 does not do
+## 8. What v1 Does Not Do
 
-- **No RAG.** Suggestions are based solely on the provided text context. As soon as Project Memory is to be included, it's v2: either pre-retrieval (embedding lookup on `textBefore` environment) or upgrade to a real `mark-ii` Engine with a Tool-Call-Loop. This breaks the single-shot model — therefore deliberately postponed.
-- **No persistent caching.** The service maintains an in-memory Caffeine cache (LRU, 500 entries, 30 min TTL, cache key = SHA-256 over `tenantId + projectId + text + cursor + count + mode`), which covers page reloads, multi-tab, and shared Hubs. Multi-Pod setups lose cross-Pod sharing — Mongo persistence is v2. Hit/miss counts under `vance.followup.cache{outcome=hit|miss}`.
-- **No Persona adaptation.** The prompt is generic; persona-specific suggestions (e.g., specialized language tone) are v2.
-- **No Streaming.** Suggestions appear as a block as soon as the LLM call returns. For `default:fast` (~500ms p50) this is acceptable.
-- **No Rate Limit special handling.** Standard quota cascade (see [llm-resource-management](llm-resource-management.md)) applies — excessive calls are blocked like normal LLM calls.
+- **No RAG.** Suggestions are based solely on the provided text context. As soon as Project Memory is to be included, it's v2: either pre-retrieval (embedding lookup on `textBefore` environment) or upgrade to a real `mark-ii` Engine with a Tool-Call loop. This breaks the single-shot model — therefore deliberately postponed.
+- **No persistent caching.** The service maintains an in-memory Caffeine cache (LRU, 500 entries, 30 min TTL, cache key = SHA-256 over `tenantId + projectId + text + cursor + count + mode`), which covers page reloads, multi-tab, and shared Hubs. Multi-Pod setups lose cross-Pod sharing — Mongo persistence is v2. Hit/Miss count under `vance.followup.cache{outcome=hit|miss}`.
+- **No Persona adaptation.** The Prompt is generic; persona-specific suggestions (e.g., specialized language tone) are v2.
+- **No streaming.** Suggestions appear as a block once the LLM call returns. For `default:fast` (~500ms p50), this is acceptable.
+- **No special rate limit handling.** Standard quota cascade (see [llm-resource-management](llm-resource-management.md)) applies — excessive calls are blocked like normal LLM calls.
+- **No diverse FIM suggestions.** The FIM path (§5) delivers exactly one Continuation per call — N diverse suggestions via N temperature-sampled calls would be possible but increase call cost without guaranteeing diversity.
+- **No dedicated Completion Endpoint.** FIM transport runs over the Chat wire (§5.3); `/v1/completions` with a `suffix` parameter will only become a provider feature if a specific endpoint rejects the Chat form.
 
 ---
 
-## 8. Tests
+## 9. Tests
 
 `vance-brain/src/test/java/de/mhus/vance/brain/followup/FollowUpServiceTest.java`:
 
@@ -320,14 +398,24 @@ Edit Mode in the Chat Prompt is not v1.
 - Parser tolerance: object-form, bare-strings, missing-key, blank-text, empty array.
 - Mode passthrough (set vs. null/blank → omitted).
 - LightLlmService wiring (Recipe name, Tenant/Project Scope, Schema set).
+- FIM path selection: configured → 1 Completion without LightLlm call; blank → empty list; Reply Mode never FIM; unconfigured → Chat path; cache also applies to FIM.
 - Validation (null text, blank tenant).
 
-LightLlmService mocked — no real LLM calls in unit tests. End-to-end is tested via `qa/ai-test/` opt-in (see [CLAUDE.md](../../CLAUDE.md) section "Tests") when the use case is included in QA.
+`vance-brain/src/test/java/de/mhus/vance/brain/ai/fim/FimCompletionServiceTest.java`:
+
+- Gate (`isConfigured`), not-configured error, fail-closed on missing `fimTemplate` (no Provider call).
+- Template splicing (markers only in template, never in user content), malformed-template rejection.
+- End-marker trim, blank-Middle, Provider error → `FimException` + metric outcomes.
+
+`vance-brain/src/test/java/de/mhus/vance/brain/ai/ModelQuirksTest.java`: FIM family patterns, per-field independence of `fimTemplate`, malformed-rule drop.
+
+LightLlmService and FimCompletionService mocked — no actual LLM calls in unit tests. End-to-end is tested via `qa/ai-test/` opt-in (see [CLAUDE.md](../../CLAUDE.md) section "Tests") when the use case is included in QA.
 
 ---
 
-## 9. Extension Paths
+## 10. Extension Paths
 
-- **MarkII-Engine** — If FollowUp becomes multi-stage (RAG → Generate → Re-Rank) or requires Tool-Use (e.g., code lookup in Project Files), `mark-ii` will be implemented as a real Engine. The REST contract remains stable; the Recipe `follow-up.yaml` switches to `engine: mark-ii`.
-- **Per-Mode-Recipes** — If Chat Prompt and Text Editor require very different suggestions, the service can be extended to `follow-up-${mode}` Recipe lookup with a fallback to `follow-up`.
-- **Manuals-Hook** — If the model needs to access predefined Domain Manuals, this works like Discovery: `SourceCatalogBuilder` for FollowUp-specific Manuals, appended to the Pebble vars.
+- **MarkII Engine** — If FollowUp becomes multi-stage (RAG → Generate → Re-Rank) or needs Tool-Use (e.g., code lookup in Project Files), `mark-ii` will be implemented as a real Engine. The REST contract remains stable; the Recipe `follow-up.yaml` switches to `engine: mark-ii`.
+- **Per-Mode Recipes** — If Chat Prompt and Text Editor require very different suggestions, the service can be extended to `follow-up-${mode}` Recipe lookup with a fallback to `follow-up`.
+- **Manuals Hook** — If the model needs to access predefined Domain Manuals, this works like Discovery: `SourceCatalogBuilder` for FollowUp-specific Manuals, appended to Pebble vars.
+- **Inline Ghost Text in Editor** — The FIM path (§5) makes continue-while-typing cheap (small local model, no JSON loop). An inline ghost text in the Workpage Editor would be the natural next consumer of `FimCompletionService` — today's Ctrl/Cmd+.-tooltip remains an on-demand Chat path. This would be a client feature with its own `mode`, no contract change.

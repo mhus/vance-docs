@@ -8,8 +8,8 @@ permalink: /specs/arthur-engine
 
 # Vancetope — Arthur Think Engine
 
-> **Arthur** is the reactive **Session Chat Think Engine** — the default engine of the Chat Think Process, which is automatically created when an Interactive Session is established. Arthur also serves as the **reference implementation example**, thoroughly demonstrating the general Think Engine framework. Those building a new Think Engine will find the concrete API Arthur uses here — other engines (e.g., `deep-think`) implement the same framework.
-> See also: [think-engines](/specs/think-engines) (concepts, registry, lifecycle contract), architecture-scopes-clients §2 (Session Ownership), execution-and-persistence (memory types, Pod binding), engine-message-routing (Inbox persistence, Working WS)
+> **Arthur** is the reactive **Session Chat Think Engine** — the default engine of the Chat Think Process, which is automatically created when an Interactive Session is established. Arthur also serves as the **reference implementation example**, demonstrating the full scope of the general Think Engine framework. Those building a new Think Engine will find the concrete API used by Arthur here — other engines (e.g., `deep-think`) implement the same framework.
+> See also: [think-engines](/specs/think-engines) (concepts, registry, lifecycle contract), architecture-scopes-clients §2 (Session ownership), execution-and-persistence (memory types, Pod binding), engine-message-routing (Inbox persistence, Working WS)
 
 ---
 
@@ -19,17 +19,17 @@ An Interactive Session is always coupled to an Arthur Process. This Process:
 
 - Holds the **Session Chat** (`ChatMessage` with `thinkProcessId = <arthurProcessId>`).
 - Receives **User Input** via `process-steer`.
-- Receives **Events from other Processes** of the Session (Sub-Process finished, blocked, Approval Request).
-- Calls worker engines (`deep-think`, etc.) as needed via the `process_spawn` Tool.
+- Receives **Events from other Processes** within the Session (sub-process finished, blocked, approval request).
+- Calls worker engines (`deep-think`, etc.) as needed via the `process_spawn` tool.
 - Summarizes intermediate results and completions for the user **in the chat**.
 
-Arthur is **reactive**: it does nothing without an inbound event (User Input, Event, Tool Result). It never reaches `done` — it only ends via `stopped` (on Session Close or User Stop) or `suspended` (on Session Suspend).
+Arthur is **reactive**: it does nothing without an inbound event (user input, event, tool result). It never reaches `done` — it only ends via `stopped` (on session close or user stop) or `suspended` (on session suspend).
 
 In contrast: `deep-think` is **batch-like**, plans a task tree, executes it, and reaches `done`.
 
-The framework in Chapter 2 makes both worlds operable with the same interface — the difference arises from the Prompt, Tool Pool, and reaction logic, not from type distinction.
+The framework in Chapter 2 makes both worlds operable with the same interface — the difference arises from the prompt, tool pool, and reaction logic, not from type distinction.
 
-Architecturally, Arthur is a **Coordinator**: a chat agent orchestrates worker Processes via Tool Calls (`process_spawn`) that run as separate engines on their own Lanes; worker results return asynchronously as structured `ProcessEvent` messages to Arthur's Inbox (§3.4–§3.5).
+Architecturally, Arthur is a **Coordinator**: a chat agent orchestrates worker processes via tool calls (`process_spawn`) that run as separate engines on their own Lanes; worker results return asynchronously as structured `ProcessEvent` messages to Arthur's Inbox (§3.4–§3.5).
 
 ---
 
@@ -46,7 +46,7 @@ public interface ThinkEngine {
 
     // ─── Metadata (Registry fields, see think-engines §2) ──────────────
     String name();                              // unique, lowercase-kebab: "arthur", "deep-think"
-    String title();                             // Display Name: "Arthur Session Chat"
+    String title();                             // Display name: "Arthur Session Chat"
     String description();
     SemVer version();
     @Nullable SettingsSchema defaultSettings();
@@ -60,15 +60,15 @@ public interface ThinkEngine {
 }
 ```
 
-**Discovery.** A dedicated annotation `@ThinkEngineBean` marks the class; the `ThinkEngineRegistry` collects all Beans of this type during Spring startup, indexed by `name()`. No explicit entry in `application.yml`.
+**Discovery.** A dedicated `@ThinkEngineBean` annotation marks the class; the `ThinkEngineRegistry` collects all Beans of this type during Spring startup, indexed by `name()`. No explicit entry in `application.yml`.
 
 **Name Conflicts.** Two Beans with the same `name()` → error during startup (fail-fast).
 
-**Version Check.** When resuming a persisted Process, `process.thinkEngineVersion` is checked against `engine.version()` (SemVer compatibility: Major Match). Incompatible → Process goes to `stale`.
+**Version Check.** When resuming a persisted Process, `process.thinkEngineVersion` is checked against `engine.version()` (SemVer compatibility: major match). Incompatible → Process becomes `stale`.
 
 ### 2.2 `ThinkEngineContext`
 
-The Context is the **sole access surface** of the Engine at runtime. It is built **fresh** by the Brain for each lifecycle call and never cached by the Engine.
+The Context is the **sole access point** for the Engine at runtime. It is built **fresh** by the Brain for each lifecycle call and never cached by the Engine.
 
 ```java
 public interface ThinkEngineContext {
@@ -78,13 +78,13 @@ public interface ThinkEngineContext {
     UserId user();                              // Owner of the Session
 
     // ─── Knowledge ──────────────────────────────────────────────────────────
-    MemoryApi memory();                         // RAG query with Scope cascade, KG access, documents
-    ChatApi chat();                             // Read + write ChatMessages of this Session
+    MemoryApi memory();                         // RAG query with scope cascade, KG access, documents
+    ChatApi chat();                             // Read + write ChatMessages for this Session
 
     // ─── Execution ──────────────────────────────────────────────────────
     LlmProvider llm();                          // per-call client instantiation (see llm-resource-management)
-    ToolDispatcher tools();                     // generic Tool Call (server/client/MCP, transparent)
-    SettingsApi settings();                     // typed settings with Scope cascade
+    ToolDispatcher tools();                     // generic tool call (server/client/MCP, transparent)
+    SettingsApi settings();                     // typed settings with scope cascade
 
     // ─── Inbound Queue ───────────────────────────────────────────────────
     List<SteerMessage> drainPending();          // pending messages since last Lane turn
@@ -95,11 +95,11 @@ public interface ThinkEngineContext {
 }
 ```
 
-The Context makes **Tool transport** transparent: whether a Tool is executed server-side, via WebSocket at the client, or via an MCP server — the Engine always calls `context.tools().invoke(toolName, params)`. See [mcp-tool-routing](/specs/mcp-tool-routing).
+The Context makes **tool transport** transparent: whether a tool is executed server-side, via WebSocket on the client, or through an MCP server — the Engine always calls `context.tools().invoke(toolName, params)`. See [mcp-tool-routing](/specs/mcp-tool-routing).
 
 ### 2.3 `SteerMessage` — The Inbound Protocol
 
-Every message sent to a Think Process — whether from the user, a sibling Process, or as a Tool Result — is a `SteerMessage`. This is intentionally a sum type (sealed interface) so that engines explicitly handle all cases.
+Every message sent to a Think Process — whether from the user, a sibling process, or as a tool result — is a `SteerMessage`. This is intentionally a sum type (sealed interface) so that Engines handle all cases explicitly.
 
 ```java
 public sealed interface SteerMessage {
@@ -107,7 +107,7 @@ public sealed interface SteerMessage {
     Instant at();                               // Time of delivery
     @Nullable MessageId idempotencyKey();       // for retry safety
 
-    /** The user has typed in the chat. */
+    /** The user typed in the chat. */
     record UserChatInput(
         Instant at, @Nullable MessageId idempotencyKey,
         UserId from, String content
@@ -122,7 +122,7 @@ public sealed interface SteerMessage {
         @Nullable Map<String, Object> payload
     ) implements SteerMessage {}
 
-    /** Result of an async dispatched Tool Call. */
+    /** Result of an async dispatched tool call. */
     record ToolResult(
         Instant at, @Nullable MessageId idempotencyKey,
         ToolCallId toolCallId, String toolName,
@@ -130,7 +130,7 @@ public sealed interface SteerMessage {
         @Nullable Object result, @Nullable String error
     ) implements SteerMessage {}
 
-    /** High-level command directly addressed from the client (e.g., UI button). */
+    /** High-level command addressed directly from the client (e.g., UI button). */
     record ExternalCommand(
         Instant at, @Nullable MessageId idempotencyKey,
         String command, Map<String, Object> params
@@ -140,7 +140,7 @@ public sealed interface SteerMessage {
 
 ### 2.4 Pending Message Queue and Lane Serialization
 
-Every Think Process has a **persisted Inbox** in the central `EngineMessageDocument` collection (see engine-message-routing §3). Inbound events are persisted by the sender as a Mongo Document Insert with `targetProcessId = <this>` (atomic) — regardless of whether the Process is currently `running` or idle.
+Each Think Process has a **persisted Inbox** in the central `EngineMessageDocument` collection (see engine-message-routing §3). Inbound events are persisted by the sender as a Mongo Document Insert with `targetProcessId = <this>` (atomic) — regardless of whether the Process is currently `running` or idle.
 
 A **Lane Turn** (serialized execution of a lifecycle call) proceeds as follows:
 
@@ -153,16 +153,16 @@ A **Lane Turn** (serialized execution of a lifecycle call) proceeds as follows:
 7. Engine sets the final status: `ready` (idle), `blocked` (waiting for user), `done` (goal reached), `stopped`.
 8. Lane lock is released.
 
-**Atomicity.** While a Lane Turn is running, further messages can be added to the Inbox via Insert into `EngineMessageDocument` — they will be processed in the **next** turn. No race, no loss.
+**Atomicity.** While a Lane Turn is running, additional messages can be added to the Inbox via an Insert into `EngineMessageDocument` — they will be processed in the **next** turn. No race, no loss.
 
-**Auto-Wakeup.** If after a turn the Inbox is **not empty** (new messages arrived during the turn), another turn is scheduled immediately — until the Inbox is empty.
+**Auto-Wakeup.** If the Inbox is **not empty** after a turn (new messages arrived during the turn), another turn is scheduled immediately — until the Inbox is empty.
 
 ### 2.5 Persistence Integration
 
 A Think Engine **never touches MongoDB directly**. All write operations go through the Context:
 
-| Where to | Via which Context API |
-|----------|-----------------------|
+| Destination | Via which Context API |
+|-------------|-----------------------|
 | Chat Messages (visible in UI) | `context.chat().append(...)` |
 | Memory Entries (internal working memory, `ThinkProcessMemoryEntry`) | `context.memory().recordTurn(...)` |
 | Task Tree Nodes (if the Engine uses a tree) | `context.processes().current().tree().append(...)` |
@@ -184,7 +184,7 @@ public sealed interface ChatStreamEvent {
 }
 ```
 
-For a suspended Session (no client bound), events are **discarded** — the permanent data (Chat Messages, Memory) is already persistent; events are only a live overlay.
+If the Session is suspended (no client bound), events are **discarded** — the permanent data (Chat Messages, Memory) is already persistent; events are only a live overlay.
 
 ---
 
@@ -192,7 +192,7 @@ For a suspended Session (no client bound), events are **discarded** — the perm
 
 ### 3.1 Auto-Start on Session Creation
 
-When creating an **Interactive** Session, the `SessionChatBootstrapper` (vance-brain) atomically creates a Session Chat Think Process, triggered by `SessionCreateHandler` and `SessionBootstrapHandler`. The specific engine used is read from the `session.defaultChatEngine` setting (default: `arthur`):
+When an **Interactive** Session is created, the `SessionChatBootstrapper` (vance-brain) atomically creates a Session Chat Think Process, triggered by `SessionCreateHandler` and `SessionBootstrapHandler`. The specific engine used is read from the `session.defaultChatEngine` setting (default: `arthur`):
 
 ```
 sessionCreate(userId, projectId, type=INTERACTIVE) →
@@ -200,31 +200,31 @@ sessionCreate(userId, projectId, type=INTERACTIVE) →
   2. engine = settings.get("session.defaultChatEngine")   // default "arthur"
   3. RecipeResolver.applyDefaulting(recipe=null, engine=engine)
      → applies Recipe `<engine>` (e.g., `arthur`) to the spawn
-     → returns AppliedRecipe with Prompt override + Validator overrides
+     → returns AppliedRecipe with prompt override + validator overrides
   4. Persist ThinkProcessDocument (Name: "chat", recipeName=engine,
                                           plus all Recipe fields mirrored)
   5. SessionDocument.chatProcessId = <new Process> (atomic setChatProcessId)
   6. engine.start(process, context) runs on the Process Lane (synchronously via .get())
 ```
 
-For **Autonomous** Sessions, **no** Chat Process is created — autonomous Sessions do not have a Session Chat.
+For **Autonomous** Sessions, **no** Chat Process is created — autonomous sessions do not have a Session Chat.
 
 The Chat Process cannot be created or deleted separately. It exists 1:1 with the Interactive Session as long as the Session lives. Session Close → Chat Process `stopped`. During the Session's lifetime, the chosen engine is fixed — no runtime swap from Ford to Arthur within the same Session.
 
 ### 3.2 System Prompt and Role
 
-Arthur's System Prompt lives in the **bundled `arthur` Recipe** in `vance-brain/src/main/resources/vance-defaults/recipes/arthur.yaml`. When an Arthur Process is spawned (e.g., by `SessionChatBootstrapper` for each new Interactive Session), the `RecipeResolver` automatically resolves `recipe="arthur"` and writes `promptOverride` (Pebble template, unrendered) + Validator overrides to the `ThinkProcessDocument`. Tier/Mode variants live within the template and are rendered per turn; in the source code, Arthur only holds a single-line fallback for the (in practice, non-occurring) case without a Recipe override. See [recipes](/specs/recipes) §5 for composition + render context.
+Arthur's System Prompt lives in the **bundled `arthur`-Recipe** in `vance-brain/src/main/resources/vance-defaults/recipes/arthur.yaml`. When an Arthur Process is spawned (e.g., by `SessionChatBootstrapper` for each new Interactive Session), the `RecipeResolver` automatically resolves `recipe="arthur"` and writes `promptOverride` (Pebble template, unrendered) + Validator Overrides to the `ThinkProcessDocument`. Tier/Mode variants live within the template and are rendered per turn; in the source code, Arthur only holds a single-line fallback for the (in practice, non-occurring) case without a Recipe override. See [recipes](/specs/recipes) §5 for composition + render context.
 
-Hot-swappable: edit Recipe YAML → restart Brain → the new Prompt is active from the next spawn. Running Processes retain their snapshot (Recipe content is copied to the Process on spawn, not referenced).
+Hot-swappable: Edit Recipe YAML → Restart Brain → the new prompt is active from the next spawn. Running Processes retain their snapshot (Recipe content is copied to the Process on spawn, not referenced).
 
 Content-wise, the Recipe positions Arthur as:
 
-- Conversational partner for the user in the Session.
-- **Orchestrator** for deep-work: if a request requires more than one LLM turn, Arthur starts a worker Process (`process_spawn` Tool, ideally with Recipe name).
-- Synthesizer: it reads results/events from workers and summarizes them for the user **in the chat**.
+- A conversational partner for the user in the Session.
+- An **orchestrator** for deep-work: if a request requires more than one LLM turn, Arthur starts a worker Process (`process_spawn` Tool, ideally with a Recipe name).
+- A synthesizer: it reads results/events from workers and summarizes them for the user **in the chat**.
 - **Not** a deep worker: Arthur does not plan task trees or perform multi-stage analyses itself. It prefers to delegate.
 
-Arthur explicitly stays out of Sub-Process Memory — it only sees worker results in the summarized form reported by the worker Process via `ProcessEvent`.
+Arthur explicitly stays out of sub-process Memory — it only sees worker results in the summary form reported by the worker Process via `ProcessEvent`.
 
 ### 3.3 Arthur's Tool Pool
 
@@ -233,22 +233,22 @@ Arthur has a deliberately **limited** Tool Pool (set in `ArthurEngine.allowedToo
 | Tool | What it does |
 |------|--------------|
 | `process_spawn` | Start a worker Process in this Session. Preferably with `recipe`, optionally `engine` directly |
-| `process_steer` | Send a Steer Message to a worker Process |
+| `process_steer` | Send a SteerMessage to a worker Process |
 | `process_stop` | Stop a worker Process |
 | `process_list` | List all sibling Processes of the Session (status, engine, goal). Default: without terminal states, `--all` for audit |
 | `process_status` | Details of a single Process |
-| `recipe_list` | Available worker Recipes (Cascade Project → Tenant → Bundled). Primary, so Arthur can consult the catalog at any time |
-| `recipe_describe` | Full Recipe Document (default params, prompt, Tool adaptations). Secondary |
+| `recipe_list` | Available worker Recipes (Cascade Project → Tenant → Bundled). Primary, so Arthur can consult the Catalog at any time |
+| `recipe_describe` | Full Recipe Document (default params, prompt, tool adjustments). Secondary |
 | `manual_list` | List of recipe-configured Markdown Manuals (instructions, spec excerpts). Path list comes from `params.manualPaths` |
 | `manual_read` | Content of a specific Manual (by name) |
 
-**Not v1 in Arthur's Pool** (originally planned in arthur-spec): `memory.query`, `memory.read`, `knowledge.graph`. These Memory and Knowledge Graph Tools do not yet exist as server Tools; they will be added when the associated subsystems are ready.
+**Not v1 in Arthur's Pool** (originally planned in arthur-spec): `memory.query`, `memory.read`, `knowledge.graph`. These Memory and Knowledge Graph tools do not yet exist as server tools; they will be added when the associated subsystems are ready.
 
-**Discovery via `DISCOVER` Action.** Arthur additionally has a structural discovery entry point: the continuing action `type=DISCOVER` with `intent: "<term>"` synchronously calls `DiscoveryService` and passes the result as a Tool Result to the Action Loop. Used when the User Input contains a term Arthur doesn't know (Vancetope jargon, Kit feature, invented word). The `how_do_i` Tool remains available for proactive mid-turn lookups. Full description: [how-do-i §1a](/specs/how-do-i).
+**Discovery via `DISCOVER`-Action.** Arthur also has a structural discovery entry point: the continuing action `type=DISCOVER` with `intent: "<term>"` synchronously calls `DiscoveryService` and passes the result as a Tool Result to the Action Loop. Used when the user input contains a term Arthur doesn't know (Vancetope jargon, Kit feature, invented word). The `how_do_i` tool remains available for proactive mid-turn lookups. Full description: [how-do-i §1a](/specs/how-do-i).
 
-What Arthur **does not** have: Filesystem, Shell, Web Fetch, direct LLM calls (except its own turn), MCP Tools. The actual work is done by a worker. This keeps Arthur's context small and its LLM call fast/cheap.
+What Arthur **does not** have: Filesystem, Shell, Web-Fetch, direct LLM calls (except its own turn), MCP tools. A worker does the concrete work. This keeps Arthur's context small and its LLM call fast/cheap.
 
-### 3.4 Inbound Handling (the Turn Loop)
+### 3.4 Inbound Handling (The Turn Loop)
 
 All methods ultimately land in the same core routine. Pseudocode sketch:
 
@@ -266,11 +266,11 @@ private void runTurn(process, context) {
     // Inbox → translate new Chat Messages + internal signals
     List<Message> llmInput = buildLlmInput(process, context, inbox);
 
-    // LLM call with Tool definitions
+    // LLM call with tool definitions
     ChatLanguageModel llm = context.llm().acquire(/* per-call */);
     AiResponse response = llm.respond(llmInput, arthurToolSpecs());
 
-    // Process Tool Calls (sequentially in v1). `respond` is the
+    // Process tool calls (sequentially in v1). `respond` is the
     // structured final marker — see structured-engine-output.md.
     for (ToolCall call : response.toolCalls()) {
         ToolCallResult result = context.tools().invoke(call);
@@ -278,11 +278,11 @@ private void runTurn(process, context) {
     }
 
     // `respond` must stand alone in its turn. If `respond`
-    // arrives together with work Tools, the work Tools are executed,
-    // `respond` is rejected with a Tool Result error, and the loop
-    // continues — otherwise the LLM does not see the Tool Results.
+    // arrives together with work tools, the work tools are executed,
+    // `respond` is rejected with a Tool Result Error, and the loop
+    // continues — otherwise the LLM won't see the Tool Results.
     // In the clean case, `respond` delivers Message + awaiting flag.
-    RespondArgs respond = response.respondCall();   // mandatory Tool
+    RespondArgs respond = response.respondCall();   // Mandatory tool
     context.chat().append(ChatMessage.assistant(respond.message()));
 
     // Status decision — explicitly from respond.awaiting_user_input,
@@ -293,25 +293,25 @@ private void runTurn(process, context) {
 
 Details per message type:
 
-- **`UserChatInput`** → pushed as a User Role Message into the LLM input. Additionally persisted via `context.chat().append(ChatMessage.user(...))` — this is the same channel from which later turns read the Chat History.
-- **`ProcessEvent`** with `type=done|failed|blocked` → as a User Role Message with XML wrapper `<process-event sourceProcessId="..." type="...">summary</process-event>` into the LLM input. Arthur recognizes from the tag: this is **not** the user, but a sibling Process. XML wrapper because LLMs reliably recognize structured tags as "not user text" without needing an additional role.
-- **`ToolResult`** → assigned to the LLM as a Tool Result content block (matching `toolCallId`). Standard LLM protocol.
-- **`ExternalCommand`** → mapping to internal action type, possibly direct dispatch without an LLM turn (e.g., "User clicked Approve button" → `process-steer` to the target Process without detour through Arthur).
+- **`UserChatInput`** → pushed as a User-Role Message into the LLM input. Additionally persisted via `context.chat().append(ChatMessage.user(...))` — this is the same channel from which subsequent turns read the Chat History.
+- **`ProcessEvent`** with `type=done|failed|blocked` → pushed as a User-Role Message with an XML wrapper `<process-event sourceProcessId="..." type="...">summary</process-event>` into the LLM input. Arthur recognizes from the tag: this is **not** the user, but a sibling Process. XML wrapper is used because LLMs reliably recognize structured tags as "not user text" without needing an additional role.
+- **`ToolResult`** → assigned to the LLM as a Tool Result Content Block (matching `toolCallId`). Standard LLM protocol.
+- **`ExternalCommand`** → Mapping to internal action type, possibly direct dispatch without an LLM turn (e.g., "User clicked Approve button" → `process-steer` to the target process without detour through Arthur).
 
-**Action Loop Boundaries — Judge, ESC, Wallclock.** The Turn Loop runs a per-round budget (`maxIterations`, Recipe param, default `6`) and must end with **exactly one** terminal action. If the budget is exhausted without a terminal action, the **Action Loop Judge** (LightLlm Recipe `action-loop-judge`) decides whether the loop is *healthy* (→ extend) or *stuck/finished* (→ synthesize an answer). The Judge extends **without a fixed upper limit** as long as it considers the loop healthy — especially `extend` if the model has **announced a concrete next action** but not yet executed it (otherwise Arthur would stop with an "I'll do X soon"). Since Arthur **delegates** to Ford instead of calling many Tools itself, a short Tool list is **not** a loop signal (hence no Frankie `isIdleStuck` mechanism). Instead of an iteration cap, two brakes bound it: **ESC / `/pause`** now intervenes **mid-loop** (status flip or halt flag checked at the iteration head — fulfills the `pause` contract from [think-engines.md §2.1](/specs/think-engines)) and a **Wallclock Net** (30 min per turn, shared across all extensions) as an automatic runaway brake for headless turns. Distinction from the [Completion Guard](/specs/completion-guard): the Judge brings an *unfinished* turn to a terminal action; the Guard runs at the yield point of a *finished-looking* turn.
+**Action Loop Boundaries — Judge, ESC, Wallclock.** The Turn Loop runs a per-round budget (`maxIterations`, Recipe param, default `6`) and must end with **exactly one** terminal action. If the budget is exhausted without a terminal action, the **Action Loop Judge** (LightLlm-Recipe `action-loop-judge`) decides whether the loop is *healthy* (→ extend) or *stuck/finished* (→ synthesize an answer). The Judge extends **without a fixed upper limit** as long as it considers the loop healthy — especially `extend` if the model has **announced a concrete next action** but not yet executed it (otherwise Arthur would stop with an "I'll do X soon"). Since Arthur **delegates** to Ford instead of calling many tools itself, a short tool list is **not** a loop signal (hence no Frankie `isIdleStuck` mechanism). Instead of an iteration cap, two brakes bound it: **ESC / `/pause`** now intervenes **mid-loop** (status flip or halt flag checked at the iteration head — fulfills the `pause` contract from [think-engines.md §2.1](/specs/think-engines)) and a **Wallclock Net** (30 min per turn, shared across all extensions) as an automatic runaway brake for headless turns. Distinction from the [Completion Guard](/specs/shooty): the Judge brings an *unfinished* turn to a terminal action; the Guard runs at the yield point of a *finished-looking* turn.
 
 ### 3.5 Spawning Other Processes
 
 When the LLM calls `process_spawn(recipe="<X>", name="<...>", goal="<...>")` (or `engine="..."` directly):
 
-1. `RecipeResolver.applyDefaulting` resolves the spec: Recipe → Cascade Project/Tenant/Bundled → `AppliedRecipe` with default params + caller merge + Prompt override + Validator templates.
-2. Engine is obtained from `appliedRecipe.engine()` (not from Tool param) — the Recipe author decides which Engine drives the worker.
+1. `RecipeResolver.applyDefaulting` resolves the spec: Recipe → Cascade Project/Tenant/Bundled → `AppliedRecipe` with default params + caller merge + prompt override + validator templates.
+2. Engine is obtained from `appliedRecipe.engine()` (not from tool param) — the Recipe author decides which Engine drives the worker.
 3. New `ThinkProcessDocument` is persisted (Status: `ready`, `sessionId` = current Session, `parentProcessId` = Arthur's id, plus `recipeName`, `promptOverride`, `engineParams`, etc.).
-4. `engine.start(..)` runs on the new Process's own Lane — Arthur does not block on it, as `process_spawn` waits synchronously on the Tool caller's Lane, but the Engine start goes to the worker Lane (LaneScheduler).
-5. Arthur synchronously receives the final `name`, `status`, `engine`, and possibly `recipe` fields as a Tool Result. "Started."
-6. When the worker becomes terminal (DONE/BLOCKED/STOPPED/STALE), the `ParentNotificationListener` automatically creates an `EngineMessageDocument` with `senderProcessId = <Worker>`, `targetProcessId = <Arthur>`, `type = PROCESS_EVENT`. A wakeup is scheduled on Arthur's Lane; on the next Lane Turn, Arthur drains the Inbox and sees the event as `SteerMessage.ProcessEvent`.
+4. `engine.start(..)` runs on the new Process's own Lane — Arthur does not block on it, as `process_spawn` waits synchronously on the tool caller's Lane, but the Engine start goes to the worker Lane (LaneScheduler).
+5. Arthur synchronously receives the final `name`, `status`, `engine`, and optionally `recipe` fields as a Tool Result. "Started."
+6. When the worker becomes terminal (DONE/BLOCKED/STOPPED/STALE), the `ParentNotificationListener` automatically creates an `EngineMessageDocument` with `senderProcessId = <Worker>`, `targetProcessId = <Arthur>`, `type = PROCESS_EVENT`. A wakeup is scheduled on Arthur's Lane; in the next Lane Turn, Arthur drains the Inbox and sees the event as `SteerMessage.ProcessEvent`.
 
-The pattern is: Launch via `process_spawn` → Tool Result returns immediately ("started, Name X, Status ready") → later, when the worker becomes terminal, the `<process-event>` arrives as a User Role Message in Arthur's next turn. Spawning and result consumption are decoupled by the Inbox; Arthur never blocks on a running worker.
+The pattern is: Launch via `process_spawn` → Tool Result returns immediately ("started, Name X, Status ready") → later, when the worker becomes terminal, the `<process-event>` arrives as a User-Role Message in Arthur's next turn. Spawning and result consumption are decoupled by the Inbox; Arthur never blocks on a running worker.
 
 ### 3.6 Message Addressing from the Client
 
@@ -322,11 +322,11 @@ Every `ChatMessage` in the system carries `thinkProcessId`. The client types inp
 | No Process focused (default) | **Arthur** (Arthur's `thinkProcessId`) |
 | User has focused worker Process (UI selection) | **Worker Process** directly — message is steered as `UserChatInput` to the worker |
 
-The focus state lives **on the client**, but the client explicitly sends `targetThinkProcessId` with each input message. The server routes strictly. No server-side "active Process" state per Session.
+The focus state lives **on the client**, but the client explicitly sends `targetThinkProcessId` with each input message. The server routes strictly. No server-side "active process" state per Session.
 
 For Autonomous Sessions (no Arthur): Input must **always** be explicitly addressed to a Process, otherwise an error occurs.
 
-**Structured Asks via Inbox** (optional): For clearly defined decision asks ("pick one of these recipes for the worker") Arthur may create an Inbox item of type `DECISION` instead of a plaintext question. Advantage: the user sees an options menu, the LLM does not have to re-parse the answer from free text, and the item remains with an audit trail. Not mandatory in v1 — Arthur may continue to use plaintext chat; the Inbox subsystem ([`user-interaction.md`](/specs/user-interaction)) is primarily built for Vogon checkpoints and Tool-driven item posting; Arthur can opt-in to use it if the Recipe / use case suggests it.
+**Structured Asks via Inbox** (optional): For clearly defined decision asks ("pick one of these recipes for the worker"), Arthur may create an Inbox item of type `DECISION` instead of a plaintext question. Advantage: the user sees an options menu, the LLM does not have to re-parse the answer from free text, and the item remains with an audit trail. Not mandatory in v1 — Arthur may continue to use plaintext chat; the Inbox subsystem ([`user-interaction.md`](/specs/user-interaction)) is primarily built for Vogon checkpoints and tool-driven item posting; Arthur can opt-in to use it if the Recipe / use case suggests it.
 
 ### 3.7 Foreground/Background
 
@@ -345,15 +345,15 @@ Arthur's LLM context for each turn:
 1. **System Prompt** (static; content from resource file)
 2. **Session Context** from `context.scope()`: current Tenant/Group/Project, User Name, Date
 3. **Project Memory Summary** (top-relevant entries via RAG query on Project Scope) — optional, can be disabled via Settings
-4. **Project RAG AutoInject** (Variant C / Pre-Turn Hybrid) — if AutoInject resolves to `ON` for the turn (Recipe param `rag.autoInject: ON` wins over the Cascade Setting `rag.autoInject.enabled`; innermost-wins, see [rag.md §5](/specs/rag)), Arthur embeds the Inbox user texts against the `_documents`-RAG and inserts a dynamic `<rag-context>` block into the System Prompt. Threshold via `rag.minScore`, Top-K via `rag.topK`. Silent skip for missing RAG / embed error / empty Inbox.
+4. **Project RAG AutoInject** (Variant C / Pre-Turn Hybrid) — if AutoInject resolves to `ON` for the turn (Recipe param `rag.autoInject: ON` wins over the Cascade Setting `rag.autoInject.enabled`; innermost-wins, see [rag.md §5](/specs/rag)), Arthur embeds the Inbox user texts against the `_documents`-RAG and inserts a dynamic `<rag-context>` block into the System Prompt. Threshold via `rag.minScore`, Top-K via `rag.topK`. Silent skip if RAG is missing / embed error / empty Inbox.
 5. **Chat History** of the Session (all `ChatMessage` with `thinkProcessId = arthurId` or `targetThinkProcessId = arthurId`, chronological)
 6. **Tool Definitions** (Arthur's Tool Pool, §3.3)
-7. **Current Turn Input** (the drained `SteerMessage`s as User Role Messages)
+7. **Current-Turn-Input** (the drained `SteerMessage`s as User-Role Messages)
 
 **Limit Handling.** If Chat History becomes too long:
 
 - **v1:** hard token budget per turn (via setting `arthur.maxContextTokens`, default 64k). If exceeded, oldest messages are truncated (no compaction) and a system hint is inserted: "Earlier conversation was truncated."
-- **v2:** Rolling Summary — every N turns, a summary of the older history is generated (via LLM call) and replaces the old messages. Not v1, but field `chatHistorySummary` on `ThinkProcessDocument` already to be provided.
+- **v2:** Rolling Summary — every N turns, a summary of the older history is generated (via LLM call) and replaces the old messages. Not v1, but field `chatHistorySummary` on `ThinkProcessDocument` should already be provided.
 
 ### 3.9 Arthur's Status Behavior
 
@@ -375,12 +375,12 @@ Arthur **never** reaches `done` — an open chat has no goal-done criterion.
 
 ```
 T+0   User connected Desktop Client, creates new Interactive Session in Project "Literature Review"
-      Brain: SessionDocument(sess_7) + ThinkProcessDocument(arth_42, engine=arthur) persisted
+      Brain: Persists SessionDocument(sess_7) + ThinkProcessDocument(arth_42, engine=arthur)
       Arthur.start(arth_42, ctx) in Lane Turn:
         → Welcome message in Chat: "Hi, I'm Arthur. How can I help?"
         → Status: ready
 
-T+30s User types: "Analyze the 5 PDFs in folder /papers/ for contradictions"
+T+30s User types: "Analyze the 5 PDFs in the /papers/ folder for contradictions"
       Client sends WS: { type: "process-steer", targetThinkProcessId: arth_42,
                           message: UserChatInput(content: "...") }
       Brain: Append queue to arth_42, Lane Turn scheduled
@@ -397,7 +397,7 @@ T+30s User types: "Analyze the 5 PDFs in folder /papers/ for contradictions"
         → Tool Result: { name: "paper-diff", status: "READY", engine: "ford",
                          recipe: "analyze" }
         → LLM formulates final Assistant Message: "Starting DeepThink analysis for the 5 PDFs.
-           Id: dp_99. I'll let you know when the result is available."
+           Id: dp_99. I'll let you know when the result is ready."
         → ChatMessage(role=assistant, thinkProcessId=arth_42) persisted + streamed
         → Status: ready
       
@@ -410,7 +410,7 @@ T+3min DeepThink emits ProcessEvent(type=blocked, summary="May I assume the pape
        Arthur.steer(...) Turn:
          → drain: [ProcessEvent(source=dp_99, type=blocked, summary="...")]
          → LLM call: reads the event as <process-event>-tag
-         → LLM responds directly (without Tool Call): "DeepThink (paper-diff) asks: 'May I
+         → LLM responds directly (without tool call): "DeepThink (paper-diff) asks: 'May I
             assume the paper Vaswani2017 as a baseline?'"
          → ChatMessage persisted
          → Status: ready
@@ -418,7 +418,7 @@ T+3min DeepThink emits ProcessEvent(type=blocked, summary="May I assume the pape
 T+4min User types: "Yes, do it."
        Arthur.steer(UserChatInput(...)):
          → drain: [UserChatInput("Yes, do it.")]
-         → LLM decides: answer should go to DeepThink → tool_use process_steer(
+         → LLM decides: Answer should go to DeepThink → tool_use process_steer(
               targetProcessId="dp_99", message="Yes, use Vaswani2017 as baseline")
          → Tool Result: { ok: true }
          → Final Assistant Message: "Forwarded."
@@ -436,9 +436,9 @@ T+15min DeepThink finished, emits ProcessEvent(type=done, summary="3 contradicti
 ## 5. Open Issues
 
 - **Spring Beans vs. Plugins.** Arthur is a fixed Spring Bean in the `vance-brain` module in v1. A plugin mechanism (third parties dynamically loading their own Think Engines) is v2+ and explicitly marked as non-v1 in `think-engines §2`.
-- **Streaming Protocol to the Client.** WebSocket frames for `ChatStreamEvent` are not yet finalized — concrete wire format to be added in [websocket-protokoll](/specs/websocket-protokoll) once the first implementation is ready.
-- **Multi-User Visibility of Arthur Chat.** If multi-user is added later: can other users read the chat history of a foreign Session (read-only)? Currently no — Session is per-user. The rules in `multi-user-collaboration.md §3.4` apply.
+- **Streaming Protocol to the Client.** WebSocket frames for `ChatStreamEvent` are not yet finalized — concrete wire format to be added in [websocket-protokoll](/specs/websocket-protokoll) once the first implementation is complete.
+- **Multi-User Visibility of Arthur Chat.** If multi-user is added later: can other users read the chat history of a foreign session (read-only)? Currently no — Session is per-user. The rules in `multi-user-collaboration.md §3.4` apply.
 - **Arthur Settings.** Concrete settings (`arthur.maxContextTokens`, `arthur.includeProjectMemorySummary`, `arthur.llmProvider`, `arthur.llmModel`) are defined in the Settings System (`settings-system.md`) — only mentioned here, default values to be set with the first implementation.
 - **Rolling Summary (v2).** When to trigger, how to store, how to reconstruct after resume — detailed spec during implementation.
-- **Parallel Tool Calls.** In v1, Arthur serializes Tool Calls within an LLM turn. Whether provider-side parallel Tool Use features are activated remains a later performance decision.
-- **User Focus Switch mid-Worker Turn.** If the user foregrounds a worker while Arthur is `running` — what happens to unfinished Assistant Messages in Arthur's chat? In v1: finish writing, user sees result later when switching back to Arthur. Finer UX (abort-and-resume) v2.
+- **Parallel Tool Calls.** In v1, Arthur serializes tool calls within an LLM turn. Whether provider-side parallel tool use features are activated remains a later performance decision.
+- **User Focus Switch Mid-Worker-Turn.** If the user foregrounds a worker while Arthur is `running` — what happens to unfinished Assistant Messages in Arthur's chat? In v1: finish writing, user sees result later when switching back to Arthur. Finer UX (abort-and-resume) v2.

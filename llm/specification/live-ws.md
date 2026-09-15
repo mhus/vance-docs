@@ -2,12 +2,12 @@
 
 > Multi-channel envelope protocol for external Vancetope clients (Web, Foot, Mobile)
 > and the associated cross-pod chat streaming architecture.
-> See also: [websocket-protokoll](websocket-protokoll.md) (Inner Chat-Frame
-> Format), [architektur-scopes-clients](architektur-scopes-clients.md)
+> See also: [websocket-protocol](websocket-protokoll.md) (Inner Chat-Frame
+> Format), [architecture-scopes-clients](architektur-scopes-clients.md)
 > (Sessions, Scopes), [identity-credentials](identity-credentials.md) (JWT-
-> Auth), [client-protokoll-erweiterbarkeit](client-protokoll-erweiterbarkeit.md)
-> (external Clients).
-> Status: v1 production.
+> Auth), [client-protocol-extensibility](client-protokoll-erweiterbarkeit.md)
+> (external clients).
+> Status: v1 productive.
 
 > History + Refactor Rationale: [planning/live-ws.md](live-ws.md).
 > This document describes only the current final behavior.
@@ -20,17 +20,17 @@ External Vancetope clients (Web-UI, Foot-CLI, Eddie-Worker, Mobile) communicate
 with the Brain via **a single** WebSocket endpoint. The wire format is a
 **multi-channel capable envelope** (`LiveEnvelope`), which wraps the existing
 chat frames (`WebSocketEnvelope`) on the `session` channel variant.
-Other channels (`documents`, `notify`, `progress`, `control`) are reserved in the
+Further channels (`documents`, `notify`, `progress`, `control`) are reserved in the
 protocol but are **not** implemented in v1.
 
-Cross-pod streaming (user WS lands on one pod via load balancer, the Project-Home-Pod is another)
-runs over a separate **pod-to-pod tunnel** with raw chat frames — the Face-Pod unpacks the `LiveEnvelope` and
-passes the inner chat frame 1:1 through the tunnel; responses go the
-reverse way.
+Cross-pod streaming (user WS lands on one pod via load balancer, the Project-Home-Pod
+is another) runs over a separate **pod-to-pod tunnel** with raw chat frames —
+the Face-Pod unpacks the `LiveEnvelope` and passes the inner chat frame 1:1
+through the tunnel; responses go the reverse way.
 
 **Connection Model:** one WS per browser tab / CLI process, one attached
 Session at a time. Session changes within the same connection via
-`session-resume`/`session-unbind` frames — the WS remains open.
+`session-resume`/`session-unbind` frames — the WS remains.
 
 ## 2. Endpoints
 
@@ -46,7 +46,7 @@ not directly accessible from outside.
 
 ### 2.1 Handshake on `/brain/{tenant}/ws`
 
-Identical to [websocket-protokoll](websocket-protokoll.md) §2: JWT in the
+Identical to [websocket-protocol](websocket-protokoll.md) §2: JWT in
 `Authorization: Bearer …` header (or `?token=…` as query fallback for
 browsers), `X-Vancetope-Profile`, `X-Vancetope-Client-Version`, optional
 `X-Vancetope-Client-Name`. JWT is validated by `BrainAccessFilter`,
@@ -66,8 +66,8 @@ Face-Pod carries the tunneled identity in dedicated headers:
 | `X-Vancetope-Forwarded-Client-Ip` | no | Original client IP, for audit; fallback to Face-Pod IP |
 | `X-Vancetope-Profile`, `X-Vancetope-Client-Version`, `X-Vancetope-Client-Name` | as external | Passed through 1:1 |
 
-The Home-Pod-Handler is identical to the external User-WS-Handler — it sees
-a regular user connection, except that the identity comes from the Forwarded-Headers
+The Home-Pod-Handler is identical to the external user WS handler — it sees
+a regular user connection, only the identity comes from the forwarded headers
 instead of JWT.
 
 ## 3. Envelope Format
@@ -85,7 +85,7 @@ Every frame on `/brain/{tenant}/ws` is a `LiveEnvelope`:
 | Field | Required | Description |
 |---|---|---|
 | `channel` | ✓ | Channel router. v1 only `"session"` active |
-| `sessionId` | for `channel="session"`: after first bind | Bound Session-ID (also Face-Pod-Routing). For `session-create`/`session-resume`/`session-bootstrap` it may be empty on the first outgoing frame |
+| `sessionId` | for `channel="session"`: after first bind | Bound Session-ID (also Face-Pod routing). For `session-create`/`session-resume`/`session-bootstrap` it may be empty on the first outgoing frame |
 | `payload` | ✓ | Channel-specific. For `session`: a [WebSocketEnvelope](websocket-protokoll.md) (`{id, type, data, replyTo}`) |
 
 Frame routing on the Face-Pod depends on `payload.type` (see §5).
@@ -94,11 +94,11 @@ Frame routing on the Face-Pod depends on `payload.type` (see §5).
 
 | Channel | Status | Intended for |
 |---|---|---|
-| `session` | v1 production | Chat stream, Session lifecycle, Process lifecycle |
-| `documents` | v1 production | Presence + Live-Push for document writes. Detailspec: [`documents-channel.md`](documents-channel.md) |
-| `pointers` | v1 production | Ephemeral live cursors per document path (pure fan-out, no state). Detailspec: [`pointers-channel.md`](pointers-channel.md) |
-| `signals` | v1 production | Generic ephemeral per-doc signal channel (fan-out, no state/persistence); a `SignalFrame{path,signal,data}` frame with `signal` discriminator. First consumer: `compose-run` status. Detailspec: [`signals-channel.md`](signals-channel.md) |
-| `notify` | reserved | User-bound Notification-Push, cross-session |
+| `session` | v1 productive | Chat stream, Session lifecycle, Process lifecycle |
+| `documents` | v1 productive | Presence + Live-Push for document writes. Detailed spec: [`documents-channel.md`](documents-channel.md) |
+| `pointers` | v1 productive | Ephemeral live cursors per document path (pure fan-out, no state). Detailed spec: [`pointers-channel.md`](pointers-channel.md) |
+| `signals` | v1 productive | Generic ephemeral per-doc signal channel (fan-out, no state/persistence); a `SignalFrame{path,signal,data}` frame with `signal` discriminator. First consumer: `compose-run` status. Detailed spec: [`signals-channel.md`](signals-channel.md) |
+| `notify` | reserved | User-bound notification push, cross-session |
 | `progress` | reserved | `PROCESS_PROGRESS`-Side-Channel per Process |
 | `control` | reserved | Keepalive, Auth-Refresh, Capability-Handshake, Editor-Registration |
 
@@ -117,7 +117,7 @@ userId         — JWT identity (sub-Claim)
 | Concept | Where maintained | Lifecycle |
 |---|---|---|
 | `userId` | JWT-Claim | Constant for the lifetime of the connection |
-| `editorId` | Client-Connection or Brain-Thread, server-assigned (UUID) | Implicitly on WS-Open for user connections, explicitly `editor_register` for Brain-internal (`engine`/`script`/`autonomous`/`system`) — see [planning/live-ws.md] for the planned v2 form. **In v1, `editorId` effectively aligns with the WS lifecycle.** |
+| `editorId` | Client connection or Brain thread, server-assigned (UUID) | Implicitly on WS-Open for user connections, explicitly `editor_register` for Brain-internal (`engine`/`script`/`autonomous`/`system`) — see [planning/live-ws.md] for the planned v2 form. **In v1, `editorId` effectively aligns with the WS lifecycle.** |
 | `sessionId` | Server-persistent (`SessionDocument`), Mongo | Lives independently of connections, survives disconnect/reconnect. Exactly **one** attached client at a time (exclusive lock via `SessionService.bind`) |
 
 ## 5. Session Channel Behavior
@@ -125,7 +125,7 @@ userId         — JWT identity (sub-Claim)
 ### 5.1 Frame Format
 
 `payload` is a regular `WebSocketEnvelope` with all message types from
-[websocket-protokoll §6](websocket-protokoll.md) — `session-create`,
+[websocket-protocol §6](websocket-protokoll.md) — `session-create`,
 `session-resume`, `session-unbind`, `session-bootstrap`, `process-steer`,
 `chat-message-appended`, `assistant-token`, `process-progress`, etc.
 
@@ -135,13 +135,13 @@ userId         — JWT identity (sub-Claim)
 2. **Client sends `session-resume` / `session-bootstrap` / `session-create`** →
    Server binds the Session in `SessionService` + `SessionConnectionRegistry`.
 3. **Reply carries `sessionId`** → Client remembers it and sets it in
-   subsequent Live-Envelope-Frames as a routing hint.
+   subsequent Live-Envelope frames as a routing hint.
 4. **Frame with `payload.type=session-unbind`** → Server unbinds, Client
    resets its cached `sessionId`. WS remains open.
 5. **Disconnect** → Server unbinds automatically after heartbeat miss; a
    new connection can reattach via `session-resume`.
 
-### 5.2a Reconnect in the middle of an ongoing Turn
+### 5.2a Reconnect in the middle of a running Turn
 
 A Turn survives the connection that started it — the "busy" state
 of a client does not: the Web-UI loses the pending
@@ -151,7 +151,7 @@ its responses arrive while the UI shows "idle" — this reads
 as if the agent is acting on its own.
 
 The answer is therefore in the `session-resume` reply: **`activeProcesses`**
-(`[{processId, name}]`) lists the processes that are currently in the middle of a Turn
+(`[{processId, name}]`) names the processes that are currently in the middle of a Turn
 (`RUNNING`/`INIT`; empty if the session is quiet). Both address forms are used because
 the two readers correlate differently — against the `processId` for
 progress pings (Foot) or against the `chatProcessName` (Web).
@@ -162,6 +162,48 @@ reports an `ENGINE_TURN_END` that demonstrably arrives *after* it. A
 separate "which processes are running" request does not have this order and can
 leave a spinner that never closes.
 
+### 5.2b Plan/Todo State on (Re)Connect
+
+The plan state is bound to the connection — a freshly bound
+connection has not seen the current plan. The server provides the
+persisted plan state for each open (= not CLOSED) process of the session
+with **one value per process** (`ProcessPlanState`: mode + todos;
+`PlanStateInitialPusher.collectPlanStates`) — via **two carriers**:
+
+- **Reply carrier** (Web-UI): `planStates` in the `session-resume` and
+  `session-bootstrap` reply, directly next to `activeProcesses`. The reply is
+  the correct carrier because it arrives with the chat process pointer in **one**
+  round trip: a freshly bound client cannot yet correlate pushed
+  `todos-updated` frames — the Web-UI filter on the chat process
+  only takes effect after the bind is complete (§5.2a-
+  justification, verbatim).
+- **Frame carrier** (Foot): `process-mode-changed` (if `mode ≠ NORMAL`;
+  Arthur/Eddie Plan-Mode) and `todos-updated` (if todos exist),
+  pushed to the new connection — Foot correlates by process name alone,
+  without filter race.
+
+The Web-UI discards the frames (filter not yet active) and restores
+from the reply: the store catches `planStates` (the same pattern as
+`chatTurnActiveOnResume`), the chat editor applies them as soon as **both**
+are available — pointer and captured state; whoever arrives later wins.
+From then on, the live frames take over.
+
+Deliberately **no** Engine callback: the plan is a persisted projection
+(`ThinkProcessDocument.mode/todos`), reading it requires no Engine Lane,
+no waking up, no side effects. CLOSED processes are skipped
+(their todos are historical data; a restore would render a box
+that never changes again). Known remainder: `plan-proposed` (Summary +
+planVersion) is not persisted — after reconnect, the Web-UI shows the
+suggested plan steps, but not the "awaiting approval" banner.
+
+When the box closes (empty projection or Mode → `NORMAL`), the Web-UI
+renders a one-time **local `SYSTEM` chat message** with the last box content
+(marker as in the box) — this allows Engines to clear the projection at
+process end without the info disappearing with the box. Local and
+unpersisted: the box is a projection, not a message; where the content
+matters long-term, it is already in the transcript (Benjy's final report
+carries the item list). Details: `readme/plan-state-restore.md`.
+
 ### 5.3 Client Session Change
 
 Changing from Session A → B on the same connection is done by
@@ -170,7 +212,7 @@ is a no-op. The Web-UI implements this in `wsConnectionStore` with a
 10-second grace timer (user pause between editor changes within
 a page does **not** immediately lead to unbind).
 
-## 6. Cross-Pod-Routing
+## 6. Cross-Pod Routing
 
 If the Project-Home-Pod (`ProjectDocument.homeCluster`) is a different pod
 than the one where the user WS lands, the **Face-Pod** tunnels the
@@ -187,7 +229,7 @@ For each session-channel frame, the `HomePodLookupService` decides the routing:
 | otherwise | `sessionId` from Envelope (or bound Session in `ConnectionContext`) → analogous to `session-resume` |
 
 If the endpoint cannot be resolved (project unknown, podless,
-never claimed) → Fallback to **local** processing; local handler
+never claimed) → fallback to **local** processing; local handler
 then delivers the natural error.
 
 ### 6.2 Tunnel Mechanism
@@ -195,17 +237,17 @@ then delivers the natural error.
 - Face-Pod maintains **one** upstream WS per external connection (pooled).
 - Frame pipe is bidirectional and 1:1: `LiveEnvelope.payload` in,
   raw `WebSocketEnvelope` through `/internal/{tenant}/ws/chat`. Responses
-  from the Home-Pod are re-wrapped in `LiveEnvelope { channel:"session", sessionId, payload }`.
-- `WELCOME` frames from the Home-Pod are filtered (Face-Pod has already sent
-  its own Welcome to the user).
+  from the Home-Pod are re-wrapped into `LiveEnvelope { channel:"session", sessionId, payload }`.
+- `WELCOME` frames from the Home-Pod are filtered (Face-Pod has already
+  sent its own Welcome to the user).
 
 ### 6.3 Engine Invariant
 
 Think Engines (Arthur, Eddie, Ford, Marvin, Vogon, …) run **strictly only
 on the Project-Home-Pod**. `ProcessManagerService.requireOwnedByLocalPod`
-enforces this via exception. Cross-Pod-Routing via Engine-Bus
+enforces this via exception. Cross-pod routing via Engine-Bus
 (`/internal/engine-bind`) remains orthogonal — engine-bind is **not**
-used for User-Chat-Streaming.
+used for user chat streaming.
 
 ## 7. Lifecycle Behavior
 
@@ -225,7 +267,7 @@ request. This is not a latency issue, but a liveness issue: the browser's PONGs
 are also in the queue, and the eviction sweep (§7.1) considers a merely busy
 connection dead after two missed pings.
 
-Measured: a `process-pause` waited 70s for an Engine-Lane where a
+Measured: a `process-pause` waited 70s for an Engine Lane where a
 model call was running. During this time, no PONG got through, the sweep closed the
 socket, and the message the user had typed in the meantime was still
 unread in the socket buffer when it was discarded — from the outside, this read
@@ -238,14 +280,14 @@ Therefore, two rules that belong together:
    `WsInboundExecutor` and return. The executor is **per connection
    serial** (a `session-resume` must bind before the `process-steer`
    behind it is dispatched) and **parallel across connections**. The queue is
-   limited (`vance.ws.inboundQueueLimit`, default 256); exceeding this closes
-   the connection with `1013 Service Overload` instead of silently discarding — a
-   lost frame is invisible to the client, a closed socket
+   limited (`vance.ws.inboundQueueLimit`, default 256); beyond that, it closes with
+   `1013 Service Overload` instead of silently discarding — a
+   disappeared frame is invisible to the client, a closed socket
    triggers its reconnect. PONGs continue to run directly on the Read Thread
    and are never queued.
-2. **A handler still does not wait for an Engine-Lane.** Rule 1 saves
+2. **A handler still does not wait for an Engine Lane.** Rule 1 saves
    the connection, not latency: a slow handler still delays
-   the frames of *its* connection. Whoever initiates a Lane, submits and returns
+   the frames of *its* connection. Whoever initiates a Lane submits and returns
    (`LaneScheduler`); where a Cascade truly needs the result,
    waiting is capped. Specifically for pause, see
    [think-engines](think-engines.md) — the halt flag takes effect immediately, the
@@ -300,11 +342,11 @@ Client remembers `sess_abc123` as active sessionId.
 { "channel": "session", "sessionId": "sess_abc123", "payload": {
   "id": "req_2",
   "type": "process-steer",
-  "data": { "content": "hallo", "role": "USER" }
+  "data": { "content": "hello", "role": "USER" }
 }}
 ```
 
-Face-Pod routes via tunnel to the Home-Pod of `sess_abc123`'s Project, if applicable.
+Face-Pod routes via tunnel to the Home-Pod of `sess_abc123`'s project if necessary.
 
 ### 8.3 Server-initiated Notification (Token Stream)
 
@@ -316,7 +358,7 @@ Face-Pod routes via tunnel to the Home-Pod of `sess_abc123`'s Project, if applic
 ```
 
 (Note: `WebSocketSender` automatically wraps the Envelope in
-`LiveEnvelope` if the WS-Session is marked with `ATTR_LIVE_PROTOCOL`
+`LiveEnvelope` if the WS session is marked with `ATTR_LIVE_PROTOCOL`
 — see `repos/vance/server/vance-brain/src/main/java/de/mhus/vance/brain/ws/WebSocketSender.java`.)
 
 ### 8.4 Unbind
@@ -334,18 +376,18 @@ Client may then set the cached sessionId to `null`.
 Deliberately omitted so that the foundation refactor remains small and the
 protocol learns through practice before channels are hardened:
 
-- **`notify`-Channel** as User-bound Push. Today, NOTIFY is still
+- **`notify`-Channel** as user-bound push. Today, NOTIFY is still
   session-scoped; cross-session Notify would require this channel.
 - **`progress`-Channel** as its own Lane for `PROCESS_PROGRESS` — currently
   as a push frame in the `session`-Channel.
 - **`control`-Channel** for Keepalive/Auth-Refresh/Capabilities.
 - **CRDT for simultaneous multi-user editing** on `documents` —
-  deliberately not implemented. The `documents`-Channel provides since v1
-  Presence + Live-Push + 3-way-Merge of the Cortex-Editor-Buffers (see
-  [`documents-channel.md`](documents-channel.md)), but Vancetope remains a
-  Think-Tool and not Google-Docs. The `pointers`-Channel complements since v1
-  ephemeral live cursors for spatial areas (Canvas) — this is pure
-  awareness (who is pointing where), **not** edit sync and no CRDT.
+  deliberately not implemented. The `documents`-Channel has provided
+  Presence + Live-Push + 3-way-Merge of Cortex editor buffers since v1
+  (see [`documents-channel.md`](documents-channel.md)), but Vancetope remains a
+  Think-Tool and not Google-Docs. The `pointers`-Channel has supplemented
+  ephemeral live cursors for spatial areas (Canvas) since v1 — this is pure
+  awareness (who points where), **not** edit sync and no CRDT.
 - **SharedWorker / Multi-Tab-Connection-Sharing** in the browser. Today, one
   WS per tab.
 

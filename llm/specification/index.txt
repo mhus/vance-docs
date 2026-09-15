@@ -16,11 +16,11 @@ https://www.vancetope.com/llm/specification/app-workbook.md
 https://www.vancetope.com/llm/specification/architektur-scopes-clients.md
 https://www.vancetope.com/llm/specification/arthur-engine.md
 https://www.vancetope.com/llm/specification/audit-system.md
+https://www.vancetope.com/llm/specification/benjy-engine.md
 https://www.vancetope.com/llm/specification/bistromath-system.md
 https://www.vancetope.com/llm/specification/centauri-service.md
 https://www.vancetope.com/llm/specification/chat-location-tool.md
 https://www.vancetope.com/llm/specification/client-protokoll-erweiterbarkeit.md
-https://www.vancetope.com/llm/specification/completion-guard.md
 https://www.vancetope.com/llm/specification/cortex.md
 https://www.vancetope.com/llm/specification/damogran-system.md
 https://www.vancetope.com/llm/specification/doc-kind-application.md
@@ -35,12 +35,14 @@ https://www.vancetope.com/llm/specification/doc-kind-graph.md
 https://www.vancetope.com/llm/specification/doc-kind-items.md
 https://www.vancetope.com/llm/specification/doc-kind-map.md
 https://www.vancetope.com/llm/specification/doc-kind-mindmap.md
+https://www.vancetope.com/llm/specification/doc-kind-qrcode.md
 https://www.vancetope.com/llm/specification/doc-kind-records.md
 https://www.vancetope.com/llm/specification/doc-kind-sheet.md
 https://www.vancetope.com/llm/specification/doc-kind-slides.md
 https://www.vancetope.com/llm/specification/doc-kind-timeline.md
 https://www.vancetope.com/llm/specification/doc-kind-tree.md
 https://www.vancetope.com/llm/specification/doc-kind-workpage.md
+https://www.vancetope.com/llm/specification/document-encryption.md
 https://www.vancetope.com/llm/specification/document-lock.md
 https://www.vancetope.com/llm/specification/document-refs.md
 https://www.vancetope.com/llm/specification/document-templates.md
@@ -114,6 +116,8 @@ https://www.vancetope.com/llm/specification/session-duplicate.md
 https://www.vancetope.com/llm/specification/session-lifecycle.md
 https://www.vancetope.com/llm/specification/setting-forms.md
 https://www.vancetope.com/llm/specification/settings-system.md
+https://www.vancetope.com/llm/specification/setup-agent-mode.md
+https://www.vancetope.com/llm/specification/shooty.md
 https://www.vancetope.com/llm/specification/signals-channel.md
 https://www.vancetope.com/llm/specification/skills.md
 https://www.vancetope.com/llm/specification/slartibartfast-engine.md
