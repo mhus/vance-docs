@@ -230,12 +230,12 @@ collapse under that load. Rough current picture (mid-2026):
 | **DeepSeek V4** | Strong choice. Comparable quality to GLM-5.2, very competitive pricing. |
 | **Gemini 3.x Pro / Flash** | Solid. Flash is good for the fast-tier alias, Pro for analyze/deep. Wizard preset. **Stick to 3.x — 2.5 is shaky under agentic load.** |
 | **OpenAI GPT-4o / o-series** | Solid. Wizard preset. |
-| **Anthropic Claude** | **Not recommended.** Anthropic's Usage Policy and Commercial Terms restrict autonomous-agent use — which is the core of what Vancetope does. Capable models, but the terms rule them out for this; confirm your specific use case is covered before relying on them. |
+| **Anthropic Claude** | Solid. Wizard preset — use it with your own Anthropic API key. |
 | **Gemma 4** | The realistic minimum. Works, but expect occasional tool-call failures and weaker long-context reasoning. Use only if you have a hard self-hosting requirement. |
-| **Qwen 3.5** | **Not recommended.** Inconsistent tool-call behaviour and instruction-following under Vancetope's load patterns. |
+| **Qwen 3.8** | Solid. Works well for agentic workloads, also self-hostable. |
 
 The wizard ships presets for **Gemini, OpenAI and Anthropic**. For
-**GLM-5.2, DeepSeek and self-hosted models** (Gemma via Ollama etc.),
+**GLM-5.2, DeepSeek, Qwen and self-hosted models** (Gemma via Ollama etc.),
 finish the wizard with any provider, then switch the active provider in
 the Web UI under Settings → AI, or pre-seed it with
 `confidential/init-settings.yaml` in the source repo.
