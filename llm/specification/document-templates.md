@@ -17,14 +17,14 @@
 | **Document Template** | A pair of definition YAML (`<name>.yaml`) + body file (`<name>.tmpl.<ext>`). Produces exactly **one** new document upon application. |
 | **Application Template** | A definition **without** a body, which instead declares `app: <name>`. Applying it calls `VanceApplication.create()` of this app; the app writes the manifest **and** its derived artifacts. See §2a |
 | **Definition** | The `<name>.yaml`: picker metadata (title, description, icon, tags), optional form (`fields:`), name policy (`name:`), optional type override (`type:`). |
-| **Body** | The `<name>.tmpl.<ext>`: the actual file content as a Pebble template. The extension determines (by default) the target type; the content carries the target Kind in its own frontmatter/`$meta`. |
+| **Body** | The `<name>.tmpl.<ext>`: the actual file content as a Pebble template. The extension (by default) determines the target type; the content carries the target Kind in its own frontmatter/`$meta`. |
 | **Form-Field** | A single input element (string, textarea, boolean, select, …). Shared infrastructure with [Wizards](wizards.md) and [Setting Forms](setting-forms.md) — the same `FormFieldDto`, the same `FormFields.vue` renderer, the same `FormValidator`. |
 
-**Document Templates are not a Spawn path.** A template only generates file content and writes it via the normal [`DocumentService`](../../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) path (Auth, Audit, Lock-Check, Change-Events). No Engine, no Lane-Lock, no Tool-Routing.
+**Document Templates are not a Spawn Path.** A template only generates file content and writes it via the normal [`DocumentService`](../../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) path (Auth, Audit, Lock-Check, Change-Events). No Engine, no Lane-Lock, no Tool-Routing.
 
-**Exactly one document — except for `app:`.** A regular template always writes **one** file. An Application Template (§2a) does not write itself: it delegates to the app, and what is created (manifest, `_index.md`, a first view) is decided by the app. This is the only exception and it is not a softening of the rule, but its consequence — the alternative would be to duplicate the manifest format in a Pebble body, where it would inevitably lag behind the Java code (see §2a).
+**Exactly one document — except for `app:`.** A regular template always writes **one** file. An Application Template (§2a) does not write itself: it delegates to the app, and what results (manifest, `_index.md`, an initial view) is decided by the app. This is the only exception and it is not a softening of the rule, but its consequence — the alternative would be to duplicate the manifest format in a Pebble body, where it would inevitably lag behind the Java code (see §2a).
 
-**Relationship to the previous Kind stub.** The static `buildKindStub` path in the Create dialog ("Enter content" tab with Mime + Kind + Editor) **remains unchanged** as a manual fallback. Document Templates are additive: a new tab **before** the existing ones. The 15 Kind stubs are **not** migrated to bundled templates in this expansion stage.
+**Relationship to the existing Kind Stub.** The static `buildKindStub` path in the Create dialog ("Enter content" tab with Mime + Kind + Editor) **remains unchanged** as a manual fallback. Document Templates are additive: a new tab **before** the existing ones. The 15 Kind stubs are **not** migrated to bundled templates in this expansion stage.
 
 ---
 
@@ -38,7 +38,7 @@ The `<name>.yaml` has the following top-level fields. The `name` comes from the 
 | `description` | `LocalizableText` | yes | Short description (1-2 lines), appears below the title |
 | `icon` | `String` | no | Heroicon name (see [web-ui](web-ui.md) §7) |
 | `tags` | `List<String>` | no | Free tags for filtering/grouping in the picker (e.g., `app`, `planning`, `note`). See §3 |
-| `app` | `String` | no | Discriminator of an [Application](app-workbook.md). Set ⇒ applying dispatches to `VanceApplication.create()` instead of rendering a body; `name` and `type` are then **forbidden**, a body is ignored. See §2a |
+| `app` | `String` | no | Discriminator of an [Application](app-workbook.md). Set ⇒ apply dispatches to `VanceApplication.create()` instead of rendering a body; `name` and `type` are then **forbidden**, a body is ignored. See §2a |
 | `name` | `NamePolicy` | no | Controls filename (free vs. fixed). Default: `{ mode: free }`. See §5 |
 | `folder` | `String` | no | Fixed target folder. If missing, the caller chooses. See §5 |
 | `type` | `String` (Mime) | no | Explicit type override. If missing, the type is derived from the body extension. See §8 |
@@ -52,7 +52,7 @@ The `<name>.yaml` has the following top-level fields. The `name` comes from the 
 
 ## 2a. `app:` — Application Templates
 
-A definition with `app: <name>` has **no body**. Upon application, nothing is rendered; instead, `TemplateService` calls `VanceApplicationRegistry.require(app).create(…)` and passes the form values as `params`.
+A definition with `app: <name>` has **no body**. Nothing renders on apply; instead, `TemplateService` calls `VanceApplicationRegistry.require(app).create(…)` and passes the form values as `params`.
 
 ```yaml
 title:       { de: "Kanban-Board", en: "Kanban board" }
@@ -69,7 +69,7 @@ fields:
     label: { de: "Titel", en: "Title" }
 ```
 
-**Why this was necessary.** A template body can only write one document — i.e., only the `_app.yaml`. However, the `create()` implementations write more: 13 out of 15 eventually call their own `refresh()` (Index, Board, Gantt), Workbook and Wiki seed a first page, Bistromath a first view. As long as the app templates typed their manifest via Pebble, the UI path systematically delivered a **poorer** app than the Tool — and a second, manually maintained schema that lagged behind the Java code (Workbook: `showDescriptions`/`groupBySection`/`defaultPageKind` were missing in the body). `app:` eliminates both: the manifest format has exactly one author, and `*_app_create`-Tool and template tab are the same call.
+**Why this was necessary.** A template body can only write one document — i.e., only the `_app.yaml`. However, the `create()` implementations write more: 13 out of 15 eventually call their own `refresh()` (Index, Board, Gantt), Workbook and Wiki seed an initial page, Bistromath an initial view. As long as the app templates typed their manifest via Pebble, the UI path systematically delivered a **poorer** app than the Tool — and a second, manually maintained schema that lagged behind the Java code (Workbook: `showDescriptions`/`groupBySection`/`defaultPageKind` were missing in the body). `app:` eliminates both: the manifest format has exactly one author, and `*_app_create`-Tool and template tab are the same call.
 
 **Rules:**
 
@@ -77,14 +77,14 @@ fields:
 |---|---|
 | `app:` + `name:` | **Load error.** The app owns the filename (`_app.yaml`) |
 | `app:` + `type:` | **Load error.** The app owns the Mime type |
-| `app:` + existing body | Body is **ignored** + WARN. Not an error, because the body can come from a deeper cascade tier that the definition author does not see — making a template disappear entirely due to an invisible file would be worse than a warning |
+| `app:` + existing body | Body is **ignored** + WARN. Not an error, because the body can come from a deeper cascade tier that the definition author doesn't see — making a template disappear entirely due to an invisible file would be worse than a warning |
 | Name Policy | The loader **synthesizes** `mode: fixed`, `value: _app.yaml`. This keeps the Create dialog unchanged: for `fixed`, it only shows the folder, no name field |
-| Target Folder | The caller's folder **is** the app folder (a `folder:` in the definition wins as usual). No folder ⇒ 400 — a manifest in the project root would make the entire project an app |
-| Already exists | `TemplateService` checks `<folder>/_app.yaml` **before** dispatching and throws `DocumentAlreadyExistsException` ⇒ **409**, as with any other template. Without the pre-check, each app would get its own `ToolException` with a different status |
-| Authorization | `TemplateService` enforces `Document CREATE` on the manifest path with the authenticated Subject **before** dispatching. Necessary because `CreateContext` only carries a nullable `userId` and apps derive their `WriteActor` from it: with an empty `userId` (Service Account Subject), this would become `SecurityContext.SYSTEM` and the check would be omitted. Same pattern as `ForeignAccessSupport` — enforcement at the call site |
-| Field Types | The form values are **re-typed** along the declared field types (`integer`, `boolean`) before dispatch. The web form submits everything as a string, but apps read their params with `instanceof Number`/`instanceof Boolean` — without coercion, a typed value would silently fall back to the app's default |
+| Target Folder | The caller's folder **is** the app folder (a `folder:` in the definition wins as usual). No folder ⇒ 400 — a manifest in the project root would turn the entire project into an app |
+| Already exists | `TemplateService` checks `<folder>/_app.yaml` **before** dispatch and throws `DocumentAlreadyExistsException` ⇒ **409**, as with any other template. Without the pre-check, each app would get its own `ToolException` with a different status |
+| Authorization | `TemplateService` enforces `Document CREATE` on the manifest path with the authenticated Subject **before** dispatch. Necessary because `CreateContext` only carries a nullable `userId` and apps derive their `WriteActor` from it: with an empty `userId` (Service Account Subject), it would become `SecurityContext.SYSTEM` and the check would be omitted. Same pattern as `ForeignAccessSupport` — enforcement at the call site |
+| Field Types | Form values are **re-typed** (`integer`, `boolean`) according to the declared field types before dispatch. The web form submits everything as a string, but apps read their params with `instanceof Number`/`instanceof Boolean` — without coercion, a typed value would silently fall back to the app's default |
 
-**What the Apply returns** remains `{ path, mimeType }` — `path` is the manifest path. `CreateResult` carries more (`lanes`, `artefacts`, `nextStep`), which is the return channel for the LLM Tool path and has no consumer in the REST response.
+**What the apply returns** remains `{ path, mimeType }` — `path` is the manifest path. `CreateResult` carries more (`lanes`, `artefacts`, `nextStep`), which is the return channel for the LLM Tool path and has no consumer in the REST response.
 
 ---
 
@@ -103,7 +103,7 @@ _vance/templates/meeting-notes.tmpl.md     # Body (Pebble), extension = target t
 
 **If the body is missing:** The `TemplateLoader` does not include the template in the listing and logs a WARN (fail-soft, analogous to invalid Wizards). **Exception:** a definition with `app:` does not require a body (§2a).
 
-**Tags** are used for filtering in the picker. Application Templates, for example, have `tags: [app]`, note templates `tags: [note]`. The picker offers tag chips as filters; without filters, all visible templates are shown. Tags deliberately replace a fixed "group" — multiple tags per template are allowed and more flexible than a single category.
+**Tags** are used for filtering in the picker. Application templates, for example, have `tags: [app]`, note templates `tags: [note]`. The picker offers tag chips as filters; without filters, all visible templates are shown. Tags deliberately replace a fixed "group" — multiple tags per template are allowed and more flexible than a single category.
 
 ---
 
@@ -125,9 +125,9 @@ load(tenantId, projectId, name) → Optional<ResolvedTemplate> :=
 
 The associated body (`<name>.tmpl.<ext>`) is loaded **from the same tier** where the definition was found.
 
-When **listing**, all three layers are aggregated and deduplicated by `name` (first layer wins). The listing result contains `name, title, description, icon, tags, source` — no fields, no body.
+For **listing**, all three layers are aggregated and deduplicated by `name` (first layer wins). The listing result contains `name, title, description, icon, tags, source` — no fields, no body.
 
-When **applying**, exactly one template is resolved via cascade, validated + rendered with the posted form values, and written as a new document.
+For **applying**, exactly one template is resolved via cascade, validated + rendered with the posted form values, and written as a new document.
 
 ---
 
@@ -138,17 +138,17 @@ The `name:` section controls the filename of the generated document:
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `mode` | `String` | no | `free` (Default) or `fixed` |
-| `default` | `String` (Pebble) | no | Pre-filling of the name field for `mode: free` (e.g., `meeting-{{ date }}`). Without extension — that comes from the type (§8) |
+| `default` | `String` (Pebble) | no | Pre-fill for the name field in `mode: free` (e.g., `meeting-{{ date }}`). Without extension — that comes from the type (§8) |
 | `value` | `String` | only for `fixed` | Fixed filename including extension (e.g., `_app.yaml`) |
 
 **Path and name separated — as with "new document".** The Create dialog separates target folder (path) and filename into two input fields (identical to the existing Create flow):
 
 - **`mode: free`** — Name field editable, optionally pre-filled with `default`. The folder is freely selectable.
-- **`mode: fixed`** — Name field is locked and shows `value`. The user only selects the **folder** (e.g., `my-notes/` → the template writes `my-notes/_app.yaml`). Application Templates thus live in their own folder, without the definition enforcing a fixed folder — however, they do **not** declare `name:` themselves (this is a load error for `app:`), the loader synthesizes it (§2a). The dialog needs no special handling for this: it sees `fixed` and only shows the folder selector.
+- **`mode: fixed`** — Name field is locked and shows `value`. The user only selects the **folder** (e.g., `my-notes/` → the template writes `my-notes/_app.yaml`). Application templates thus live in their own folder, without the definition enforcing a fixed folder — however, they do **not** declare `name:` themselves (this is a load error for `app:`), the loader synthesizes it (§2a). The dialog needs no special handling for this: it sees `fixed` and only shows the folder selector.
 
 **`folder:` — when only one location is correct.** If the definition declares a folder, it wins over the caller's, and the dialog displays it instead of a folder selector. This is for templates whose result is **only read in one place**: a source configuration under `_vance/config/research/` is read by a loader with a fixed prefix, so leaving the folder free can only create a file that no one reads. Without `folder:`, everything remains as before; `..` is rejected during loading, because a template is authored configuration, and the loader is the place where authored configuration is checked.
 
-**No Overwrite.** If the target file already exists, the Apply fails with an error (HTTP 409). Templates **never** silently overwrite existing documents.
+**No Overwrite.** If the target file already exists, the apply fails with an error (HTTP 409). Templates **never** silently overwrite existing documents.
 
 ---
 
@@ -156,17 +156,17 @@ The `name:` section controls the filename of the generated document:
 
 The body is a Pebble template with the same syntax subset as [Recipe Prompts](recipes.md) and Wizards — `{{ var }}`, `{% if/elseif/else/endif %}`, `{% for x in xs %}`, `{% raw %}`. Compile validation happens during template load (fail-fast: invalid templates do not appear in the listing). Rendering is done via the existing `PromptTemplateRenderer`, but through its **`renderStructured`** path.
 
-**Line breaks are preserved — unlike with Prompts.** Pebble's default swallows the line break directly after a tag. This is correct for prompts (an `{% if %}` alone on a line should not leave a blank line), but for file content, it is destructive: `title: {{ topic }}` on its own line would stick the following line to the value, thereby tearing apart frontmatter or YAML structure — not a cosmetic flaw, but a syntax error. Template bodies are therefore rendered without newline trimming. Price: a block tag alone on a line leaves a blank line, which both YAML and Markdown ignore.
+**Line breaks are preserved — unlike with Prompts.** Pebble's default swallows the line break directly after a tag. This is correct for prompts (an `{% if %}` alone on a line should not leave a blank line), but for file content it is destructive: `title: {{ topic }}` on its own line would stick the following line to the value, thereby tearing apart frontmatter or YAML structure — not a cosmetic flaw, but a syntax error. Template bodies are therefore rendered without newline trimming. Price: a block tag alone on a line leaves a blank line, which both YAML and Markdown ignore.
 
 ### Render Variables
 
 | Variable | Source | Notes |
 |---|---|---|
-| `<field name>` | directly from user input per Field | Scalars for `string`/`textarea`/`boolean`/`select`; lists for `multi_select`/`repeat`. Only if `fields:` is defined |
+| `<field name>` | directly from user input per field | Scalars for `string`/`textarea`/`boolean`/`select`; lists for `multi_select`/`repeat`. Only if `fields:` is defined |
 | `name` | The final chosen filename (without path) | for templates that derive their own title/slug from the name |
 | `date` | Current date (Tenant timezone) | via the existing Date Context Resolver |
 | `user` | Current user (Username) | |
-| `project` | Current Project name | |
+| `project` | Current Project Name | |
 | `lang` | Tenant default language | |
 
 The `name` is available to the body because a frontmatter `title` or similar should often be derived from the filename — without us subsequently injecting frontmatter into the content (that would be forbidden content manipulation; the body builds its own `$meta`/frontmatter itself).
@@ -250,14 +250,14 @@ The field names here are **not** a free choice: they are the keys that `Workbook
 
 ## 8. Type Resolution
 
-The **file extension** of the generated document always comes from the body (`<name>.tmpl.<ext>`) or, for `mode: fixed`, from `name.value`. For `mode: free`, the body extension is appended to the name entered by the user, if it does not have its own extension.
+The **file extension** of the generated document always comes from the body (`<name>.tmpl.<ext>`) or, for `mode: fixed`, from `name.value`. For `mode: free`, the body extension is appended to the name entered by the user if it does not have its own extension.
 
 The **Mime type** is determined as follows:
 
 1. **`type:` set in the definition** → authoritative, overrides the Mime of the generated document. Use case: if the body extension does not map cleanly to a Mime or should deliberately deviate. The file extension remains untouched.
 2. **`type:` missing** → derived from the target file extension (`.md` → `text/markdown`, `.yaml` → `application/yaml`, …), using the same extension→Mime table as the Create dialog.
 
-The **Kind** of the document is **never** set from the definition — it is in the rendered body (`kind:` frontmatter for Markdown, `$meta.kind` for JSON/YAML), where the Kind renderers expect it. The definition deliberately does not contain a `kind` field: duplicate handling would drift and force the content injection hack that project rules prohibit.
+The **Kind** of the document is **never** set from the definition — it is in the rendered body (`kind:` frontmatter for Markdown, `$meta.kind` for JSON/YAML), where the Kind renderers expect it. The definition deliberately does not contain a `kind` field: duplicate maintenance would drift and force the content injection hack that project rules prohibit.
 
 For `app:` (§2a), this section does not apply: extension, Mime, and Kind are determined by the Application — `type:` is forbidden there, and `$meta.kind: application` is set by the manifest codec.
 
@@ -304,7 +304,7 @@ Body: `{ folder: string, name?: string, values?: Record<string, FormValue> }`.
 
 For a definition with `app:` (§2a), steps 3-6 are replaced by: determine folder → enforce `Document CREATE` → check manifest existence (409) → re-type field values → `VanceApplication.create()`.
 
-Response: `{ path, mimeType }` — the frontend's Create flow then opens the file in the appropriate editor; for `app:`, `path` is the manifest path. Errors: 400 for form errors, unusable params (`ToolException` of the app) or missing folder; 403 if authorization applies; 409 if the target exists.
+Response: `{ path, mimeType }` — the frontend's Create flow then opens the file in the appropriate editor; for `app:`, `path` is the manifest path. Errors: 400 for form errors, unusable params (app's `ToolException`), or missing folder; 403 if authorization applies; 409 if the target exists.
 
 ---
 
@@ -325,7 +325,7 @@ The "New Document" dialog ([`CreateDocumentModal.vue`](../../repos/vance/client/
 
 **"Enter content"** and **"Upload"** remain unchanged — the Template tab is purely additive.
 
-The renderer is the shared `FormFields.vue` (the same as Wizards/Setting Forms/Kit Tool Templates), no separate form code.
+The renderer is the shared `FormFields.vue` (same as Wizards/Setting Forms/Kit Tool Templates), no separate form code.
 
 ---
 
@@ -337,21 +337,21 @@ A small initial set under `vance-brain/src/main/resources/vance-defaults/_vance/
 |---|---|---|---|---|
 | `meeting-notes` | vance-brain | free | `note`, `meeting` | Workpage meeting note with form (topic, attendees) |
 | `blank-note` | vance-brain | free | `note` | Empty Markdown note, no form |
-| `workflow` | vance-brain | free | `workflow`, `automation` | Magrathea Workflow (`kind: vance-workflow`) with agent step, approval gate, and terminal states; form asks for description + Recipe |
+| `workflow` | vance-brain | free | `workflow`, `automation` | Magrathea workflow (`kind: vance-workflow`) with agent step, approval gate, and terminal states; form asks for description + Recipe |
 | `mount-local` / `mount-ode` | vance-brain | free | `mount` | [Jaglan](jaglan-system.md) mount configuration under fixed `folder:` |
-| `research-source-*` | vance-brain | free | `research` | [Zarniwoop](zarniwoop-service.md) source configuration (7 variants) |
+| `research-source-*` | vance-brain | free | `research` | [Zarniwoop](zarniwoop-service.md) source configuration — writes `$meta.kind: vance-research-source`, the document Kind with form editor and validation (§8.1) |
 
-**Application Templates** (`app:`, §2a) are provided by the Addons — one per app: `binder`, `calendar`, `canvasbook`, `common-desktop`, `custom-app` (Bistromath), `feeds`, `gtd`, `issues`, `journal`, `kanban`, `links`, `search`, `slideshow`, `wiki`, `workbook`. All have `tags: [app, …]` and collect at least title + description in the form; `feeds`, `search`, and `custom-app` additionally ask for the values that their `create()` reads as params.
+**Application Templates** (`app:`, §2a) are provided by the Addons — one per app: `binder`, `calendar`, `canvasbook`, `common-desktop`, `custom-app` (Bistromath), `feeds`, `gtd`, `issues`, `journal`, `kanban`, `links`, `search`, `slideshow`, `wiki`, `workbook`. All carry `tags: [app, …]` and collect at least title + description in the form; `feeds`, `search`, and `custom-app` additionally ask for the values that their `create()` reads as params.
 
 Until 2026-08-24, they had a Pebble body that typed the `_app.yaml` itself. This was the reason for the rule "a body-write template is only allowed for apps without create side effects" — with `app:`, the rule is moot: no app template writes itself anymore, all 15 go through `create()`.
 
 ---
 
-## 12. What v1 CANNOT do
+## 12. What v1 CANNOT Do
 
 - **Personal Templates** (`_user_<userId>` layer) — v1 is 3-tier (project/tenant/resource).
 - **Multi-File Templates / Scaffolding** — one template = one document. Multiple files are only created via `app:` (§2a), and there the app decides, not the template.
-- **Migration of existing Kind stubs** — `buildKindStub` remains as a manual "Enter content" path, not converted to templates.
+- **Migration of existing Kind Stubs** — `buildKindStub` remains as a manual "Enter content" path, not refactored into templates.
 - **Live Preview** of the rendered document before creation.
 - **LLM Tool** (`document_from_template`) — v1 is Web-UI-only. A tool on the same service is a later, cheap addition.
 - **Conditional Fields** (`showIf`) — not included in v1, same as with Wizards.
@@ -364,7 +364,7 @@ Until 2026-08-24, they had a Pebble body that typed the `_app.yaml` itself. This
 - **Raw Load of Body Files:** The `.tmpl.<ext>` documents contain un-rendered Pebble (`kind: {{ … }}`) and must **not** be Kind-parsed by the `DocumentService` as regular documents. The `TemplateLoader` reads them raw — analogous to how `WizardLoader` reads its YAMLs raw.
 - **Fail-Fast on Load:** Templates with invalid YAML, missing body, or Pebble syntax errors are not included in the listing on boot/refresh (WARN log, frontend simply doesn't see them).
 - **Write Path:** The Apply writes exclusively via `DocumentService` — Auth, Audit, [Document-Lock](document-lock.md), and Change-Events apply as with any other write. This also applies to the `app:` path: there the app writes, but also through `DocumentService`.
-- **`app:` Path — Enforcement at Call Site:** `TemplateService` checks `Document CREATE` with the authenticated Subject **before** dispatching to `create()`. The check must not be left to the app: `CreateContext` only carries a nullable `userId`, and a Service Account Subject (for which `userId` is null) would become `SecurityContext.SYSTEM` in the app and thus bypass the check. See §2a.
+- **`app:` Path — Enforcement at Call Site:** `TemplateService` checks `Document CREATE` with the authenticated Subject **before** dispatching to `create()`. The check must not be left to the app: `CreateContext` only carries a nullable `userId`, and a Service Account Subject (for which `userId` is null) would become `SecurityContext.SYSTEM` in the app, thereby bypassing the check. See §2a.
 
 ---
 
@@ -372,8 +372,8 @@ Until 2026-08-24, they had a Pebble body that typed the `_app.yaml` itself. This
 
 | Phase | Content |
 |---|---|
-| **v1** | Definition + Body schema + shared `FormFieldYamlParser` + `TemplateLoader` (3-tier Cascade, Body-Pairing) + `TemplateService` + `GET /templates`, `GET /{name}`, `POST /apply` + Template tab in Create dialog (shared `FormFields.vue`) + Overwrite-Guard (409) + `type`-Override + 3 Bundled Document Templates (`meeting-notes`, `blank-note`, `workflow`) + Addon-bundled App Manifest Templates via Body-Write (`kanban`, `common-desktop`) |
-| **v1.1** | **`app:`-Routing** (§2a) — Apply dispatches to `VanceApplication.create()`; all 15 App Templates converted to `app:`, their Pebble bodies deleted. Plus three follow-ups in the apps, because `create()` could do less than the respective body: Kanban seeds default columns if none are specified, `FeedsApplication.fromParams` reads `languages`/`exclude`/`include`/`text`, `BistromathConfig.toTableSlug` normalizes the table name |
-| **v1.x** | `?tag`-Filter UI polish + Foot integration (`/new --template <name>`) + Quick-Start from empty folder |
+| **v1** | Definition + Body Schema + shared `FormFieldYamlParser` + `TemplateLoader` (3-tier Cascade, Body Pairing) + `TemplateService` + `GET /templates`, `GET /{name}`, `POST /apply` + Template Tab in Create Dialog (shared `FormFields.vue`) + Overwrite Guard (409) + `type`-Override + 3 Bundled Document Templates (`meeting-notes`, `blank-note`, `workflow`) + Addon-bundled App Manifest Templates via Body-Write (`kanban`, `common-desktop`) |
+| **v1.1** | **`app:`-Routing** (§2a) — Apply dispatches to `VanceApplication.create()`; all 15 App Templates converted to `app:`, their Pebble bodies deleted. Additionally, three follow-ups in the apps because `create()` could do less than the respective body: Kanban seeds default columns if none are specified, `FeedsApplication.fromParams` reads `languages`/`exclude`/`include`/`text`, `BistromathConfig.toTableSlug` normalizes the table name |
+| **v1.x** | `?tag`-Filter UI polish + Foot Integration (`/new --template <name>`) + Quick-Start from empty folder |
 | **v2** | `_user_<userId>` layer (personal templates) + `document_from_template`-LLM Tool + Live Preview |
-| **v3** | Web editor for own templates (edit definition + body in Cortex) + Conditional Fields |
+| **v3** | Web Editor for custom templates (edit definition + body in Cortex) + Conditional Fields |

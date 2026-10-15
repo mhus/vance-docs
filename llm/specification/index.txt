@@ -1,15 +1,18 @@
 https://www.vancetope.com/llm/specification/addon-system.md
 https://www.vancetope.com/llm/specification/agent-document.md
+https://www.vancetope.com/llm/specification/agent-toolbox.md
 https://www.vancetope.com/llm/specification/agrajag-engine.md
 https://www.vancetope.com/llm/specification/anus-setup-wizard.md
 https://www.vancetope.com/llm/specification/app-binder.md
 https://www.vancetope.com/llm/specification/app-calendar.md
 https://www.vancetope.com/llm/specification/app-canvasbook.md
+https://www.vancetope.com/llm/specification/app-designer.md
 https://www.vancetope.com/llm/specification/app-gtd.md
 https://www.vancetope.com/llm/specification/app-issues.md
 https://www.vancetope.com/llm/specification/app-journal.md
 https://www.vancetope.com/llm/specification/app-kanban.md
 https://www.vancetope.com/llm/specification/app-links.md
+https://www.vancetope.com/llm/specification/app-scribblebook.md
 https://www.vancetope.com/llm/specification/app-search.md
 https://www.vancetope.com/llm/specification/app-wiki.md
 https://www.vancetope.com/llm/specification/app-workbook.md
@@ -20,9 +23,11 @@ https://www.vancetope.com/llm/specification/benjy-engine.md
 https://www.vancetope.com/llm/specification/bistromath-system.md
 https://www.vancetope.com/llm/specification/centauri-service.md
 https://www.vancetope.com/llm/specification/chat-location-tool.md
+https://www.vancetope.com/llm/specification/chat-themes.md
 https://www.vancetope.com/llm/specification/client-protokoll-erweiterbarkeit.md
 https://www.vancetope.com/llm/specification/cortex.md
 https://www.vancetope.com/llm/specification/damogran-system.md
+https://www.vancetope.com/llm/specification/desktop-agent-tools.md
 https://www.vancetope.com/llm/specification/doc-kind-application.md
 https://www.vancetope.com/llm/specification/doc-kind-calendar.md
 https://www.vancetope.com/llm/specification/doc-kind-canvas.md
@@ -36,7 +41,9 @@ https://www.vancetope.com/llm/specification/doc-kind-items.md
 https://www.vancetope.com/llm/specification/doc-kind-map.md
 https://www.vancetope.com/llm/specification/doc-kind-mindmap.md
 https://www.vancetope.com/llm/specification/doc-kind-qrcode.md
+https://www.vancetope.com/llm/specification/doc-kind-questions.md
 https://www.vancetope.com/llm/specification/doc-kind-records.md
+https://www.vancetope.com/llm/specification/doc-kind-scribble.md
 https://www.vancetope.com/llm/specification/doc-kind-sheet.md
 https://www.vancetope.com/llm/specification/doc-kind-slides.md
 https://www.vancetope.com/llm/specification/doc-kind-timeline.md
@@ -65,6 +72,8 @@ https://www.vancetope.com/llm/specification/foreign-document-access.md
 https://www.vancetope.com/llm/specification/frankie-engine.md
 https://www.vancetope.com/llm/specification/hactar-engine.md
 https://www.vancetope.com/llm/specification/help-system.md
+https://www.vancetope.com/llm/specification/homes.md
+https://www.vancetope.com/llm/specification/hotblack-service.md
 https://www.vancetope.com/llm/specification/how-do-i.md
 https://www.vancetope.com/llm/specification/identity-credentials.md
 https://www.vancetope.com/llm/specification/image-manipulation.md
@@ -76,11 +85,13 @@ https://www.vancetope.com/llm/specification/jaglan-system.md
 https://www.vancetope.com/llm/specification/jeltz-engine.md
 https://www.vancetope.com/llm/specification/kits.md
 https://www.vancetope.com/llm/specification/knowledge-graph.md
+https://www.vancetope.com/llm/specification/lease-system.md
 https://www.vancetope.com/llm/specification/light-llm-service.md
 https://www.vancetope.com/llm/specification/live-ws.md
 https://www.vancetope.com/llm/specification/llm-resource-management.md
 https://www.vancetope.com/llm/specification/marvin-engine.md
 https://www.vancetope.com/llm/specification/maximegalon-system.md
+https://www.vancetope.com/llm/specification/mcp-project-access.md
 https://www.vancetope.com/llm/specification/mcp-server.md
 https://www.vancetope.com/llm/specification/mcp-tool-routing.md
 https://www.vancetope.com/llm/specification/megadodo-system.md
@@ -89,6 +100,8 @@ https://www.vancetope.com/llm/specification/memory-knowledge-management.md
 https://www.vancetope.com/llm/specification/milliways-system.md
 https://www.vancetope.com/llm/specification/mobile-ui.md
 https://www.vancetope.com/llm/specification/multi-user-collaboration.md
+https://www.vancetope.com/llm/specification/nutrimat-engine.md
+https://www.vancetope.com/llm/specification/oauth-server.md
 https://www.vancetope.com/llm/specification/password-security.md
 https://www.vancetope.com/llm/specification/permission-system.md
 https://www.vancetope.com/llm/specification/plan-mode.md
@@ -115,6 +128,7 @@ https://www.vancetope.com/llm/specification/session-crop.md
 https://www.vancetope.com/llm/specification/session-duplicate.md
 https://www.vancetope.com/llm/specification/session-lifecycle.md
 https://www.vancetope.com/llm/specification/setting-forms.md
+https://www.vancetope.com/llm/specification/settings-panel.md
 https://www.vancetope.com/llm/specification/settings-system.md
 https://www.vancetope.com/llm/specification/setup-agent-mode.md
 https://www.vancetope.com/llm/specification/shooty.md
@@ -127,6 +141,7 @@ https://www.vancetope.com/llm/specification/think-engines.md
 https://www.vancetope.com/llm/specification/tool-availability.md
 https://www.vancetope.com/llm/specification/trigger-actions.md
 https://www.vancetope.com/llm/specification/trillian-engine.md
+https://www.vancetope.com/llm/specification/trillian-exposure.md
 https://www.vancetope.com/llm/specification/trillian-nature-adam.md
 https://www.vancetope.com/llm/specification/ursahooks.md
 https://www.vancetope.com/llm/specification/user-interaction.md
@@ -148,5 +163,7 @@ https://www.vancetope.com/llm/specification/workbook-forms.md
 https://www.vancetope.com/llm/specification/workflows.md
 https://www.vancetope.com/llm/specification/workspace-access.md
 https://www.vancetope.com/llm/specification/workspace-management.md
+https://www.vancetope.com/llm/specification/wowbagger-engine.md
 https://www.vancetope.com/llm/specification/zaphod-engine.md
 https://www.vancetope.com/llm/specification/zarniwoop-service.md
+https://www.vancetope.com/llm/specification/zem-engine.md

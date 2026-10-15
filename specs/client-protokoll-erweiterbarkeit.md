@@ -15,7 +15,7 @@ permalink: /specs/client-protokoll-erweiterbarkeit
 
 ## 1. Core Idea
 
-Everything that connects to the Brain is a client. The protocol is the same — whether a human is in a terminal, a cron job fires, or an external robot knocks.
+Everything that connects to the Brain is a Client. The protocol is the same — whether a human is sitting at a terminal, a cron job fires, or an external robot knocks.
 
 This makes Vancetope an **open platform**: any system that speaks WebSocket + JSON can use Vancetope as a thinking backend.
 
@@ -39,8 +39,9 @@ Before the handshake, the client sets two connection properties via the WebSocke
 
 | Param | Required | Values | Purpose |
 |---|---|---|---|
-| `profile` | no (default `web`) | open string, shape `^[a-z][a-z0-9_-]{0,31}$` | Connection profile. Selects the Recipe profile block for Spawns (see [recipes](/specs/recipes) §6a) |
+| `profile` | no (default `web`) | open string, shape `^[a-z][a-z0-9_-]{0,31}$` | Connection profile. Selects the Recipe profile block for spawns (see [recipes](/specs/recipes) §6a) |
 | `name` | no | String, shape `^[a-zA-Z0-9_-]{1,64}$` | Client identifier for logs/UI |
+| `clientContext` | no | URL-encoded JSON, `de.mhus.vance.api.ws.ClientContext` | Platform info (os/arch/shell/cwd/sandboxEnabled/timezone) — Query fallback for clients that cannot set custom headers ([websocket-protokoll](/specs/websocket-protokoll) Handshake; [desktop-agent-tools](/specs/desktop-agent-tools) §7) |
 
 **Profile is an open string, not an enum.** The server only checks the format (lowercase, alphanumeric + `_-`, ≤ 32 characters). Identity is *not* validated — Tenants can introduce their own profile names (`ci-bot`, `kiosk`, `slack-relay`, …) and create corresponding Recipe profile blocks without requiring changes to the Brain's code. What happens with an unknown profile name is solely decided by the Recipe Resolver (Cascade: exact-match-Block → `profiles.default`-Block → Recipe-Base).
 
@@ -48,23 +49,24 @@ Before the handshake, the client sets two connection properties via the WebSocke
 
 | Value | Meaning |
 |---|---|
-| `foot` | Terminal client (`vance-foot`) — brings shell + filesystem tools + client-side `agent.md` |
-| `web` | Browser UI (`@vance/vance-face`) — no local tools, no client manual. **Wire default** if `?profile=` is missing |
-| `mobile` | Mobile app (planned) — restricted toolset, shorter sessions |
-| `daemon` | Reserved name for `vance-foot -d` headless mode (planned). Currently *no* special behavior — connect proceeds like any other string, falls back to default due to missing Recipe block |
-| `default` | Pseudo-profile — used by the Recipe Resolver as a catch-all key in `profiles.default`, never sent by the client |
+| `foot` | Terminal Client (`vance-foot`) — brings shell + filesystem tools + client-side `agent.md` |
+| `desktop` | Facelift Desktop App (Electron) — Web UI with local capabilities: `client_file_*`/`client_exec_*` only with Electron Bridge + local sharing ([desktop-agent-tools](/specs/desktop-agent-tools)) |
+| `web` | Browser UI (`@vance/vance-face`) — no local tools, no Client Manual. **Wire-Default** if `?profile=` is missing |
+| `mobile` | Mobile App (planned) — restricted tool set, shorter Sessions |
+| `daemon` | Reserved name for `vance-foot -d` headless mode (planned). Currently *no* special behavior — Connect proceeds like any other string, falls back to Default due to missing Recipe block |
+| `default` | Pseudo-profile — used by the Recipe Resolver as a catch-all key in `profiles.default`, never sent by the Client |
 
-**Daemon — planned, not implemented:** When daemon mode arrives, `vance-foot -d` (Spring Boot without JLine/REPL) will handle login like any other Foot connect, but after connecting, it will act as a pure tool provider in a `DaemonRegistry`. Brain tools with `tool_type: daemon` and a matching `daemon_name` will route calls there. Until then, the `daemon` token has no special effect on the server — it is reserved in the spec text, not in the code.
+**Daemon — planned, not implemented:** When Daemon mode arrives, `vance-foot -d` (Spring Boot without JLine/REPL) will handle login like any other Foot Connect, but after connecting, it will act as a pure Tool Provider in a `DaemonRegistry`. Brain Tools with `tool_type: daemon` and a matching `daemon_name` will route calls there. Until then, the token `daemon` has no special effect on the server — it is reserved in the spec text, not in the code.
 
-Open spec points for the daemon iteration: conflict resolution for duplicate `name`, dynamic tool manifest on connect vs. static in Brain tool entry, lifecycle on JWT refresh failure, `chat-process`-spawn suppression for daemon connects.
+Open spec points for the Daemon iteration: conflict resolution for duplicate `name`, dynamic tool manifest on connect vs. static in Brain Tool entry, lifecycle on JWT refresh failure, `chat-process`-spawn suppression for Daemon connects.
 
-**Profile binding of the Session:** When creating a session, the Brain records the connection's profile in `SessionDocument.profile` and in every spawned Process as `connectionProfile`. The session is thus **bound to this profile** — a later resume attempt with a different profile will be rejected with `409 Profile Mismatch` (see `websocket-protokoll.md` §5.1). Reason: Tools/Manuals/Prompt defaults were resolved during spawn via the Recipe profile block; a cross-profile resume would offer incompatible tools to the new client. `session-list` includes the profile in `SessionSummary.profile` so that pickers can hide mismatched sessions or mark them as unselectable. Auto-resume in `session-bootstrap` (without explicit `sessionId`) automatically filters server-side based on the current profile.
+**Profile binding of the Session:** When creating a Session, the Brain records the connection's Profile in `SessionDocument.profile` and in every spawned Process as `connectionProfile`. The Session is thus **bound to this Profile** — a later resume attempt with a different Profile will be rejected with `409 Profile Mismatch` (see `websocket-protokoll.md` §5.1). Reason: Tools/Manuals/Prompt defaults were resolved during spawn via the Recipe profile block; a cross-profile resume would offer incompatible tools to the new client. `session-list` includes the Profile in `SessionSummary.profile` so that pickers can hide mismatched Sessions or mark them as unselectable. Auto-resume in `session-bootstrap` (without explicit `sessionId`) automatically filters server-side based on the current Profile.
 
-**Relationship to `client.type` in the handshake** (§2.2): the two fields are **orthogonal**.
-- `profile` (URL param) → behavior routing: which tools/manuals/Recipe defaults apply
-- `client.type` (Handshake JSON) → identity tag: what *is* this client (`cli`, `slack-bot`, `cron-job`, `external` …) — for logs, service account selection, audit
+**Relationship to `client.type` in the Handshake** (§2.2): the two fields are **orthogonal**.
+- `profile` (URL param) → Behavioral routing: which Tools/Manuals/Recipe defaults apply
+- `client.type` (Handshake JSON) → Identity tag: what *is* this client (`cli`, `slack-bot`, `cron-job`, `external` …) — for logs, service account selection, audit
 
-Examples: an `external` robot client can choose `profile=web` (not bringing client tools). A `cli` can theoretically set `profile=web` if it deliberately wants to forgo its local tools. Consistency between the two is client responsibility, not enforced.
+Examples: an `external` Robot Client can choose `profile=web` (not bringing client tools). A `cli` can theoretically set `profile=web` if it deliberately wants to forgo its local tools. Consistency between the two is client responsibility, not enforced.
 
 ### 2.2 Handshake
 
@@ -80,7 +82,7 @@ Examples: an `external` robot client can choose `profile=web` (not bringing clie
     "is_human": true,
     "capabilities": {
       "chat": true,                   // Can display chat messages
-      "approval": true,               // Can answer approval requests
+      "approval": true,               // Can respond to approval requests
       "streaming": true,              // Can display streamed results
       "notifications": true           // Can receive notifications
     },
@@ -99,11 +101,11 @@ Examples: an `external` robot client can choose `profile=web` (not bringing clie
     ]
   },
   "auth": {
-    "token": "jwt_abc123..."         // Auth token
+    "token": "jwt_abc123..."         // Auth Token
   },
   "session": {
-    "resume": "sess_abc123"          // Optional: resume existing session
-    // or: "project_id": "proj_5"  // New session in this project
+    "resume": "sess_abc123"          // Optional: resume existing Session
+    // or: "project_id": "proj_5"  // New Session in this Project
   }
 }
 ```
@@ -120,7 +122,7 @@ Examples: an `external` robot client can choose `profile=web` (not bringing clie
   "active_think_processes": [
     {
       "id": "tp_12",
-      "title": "Flash Attention Analysis",
+      "title": "Flash Attention Analyse",
       "status": "paused",
       "pending_tasks": 3
     }
@@ -178,10 +180,10 @@ Any external system that connects as a client and interacts with the Brain autom
 
 | Robot Type | Example | What it does |
 |----------|---------|-----------|
-| **CI/CD Step** | GitHub Actions, Jenkins | After deploy: starts architecture review Think Process |
-| **n8n / Zapier Node** | n8n Workflow | On event: triggers Vancetope workflow, waits for result |
-| **External Coding Agent** | IDE or CLI coding assistant with Vancetope Tool | Uses Vancetope as a deep-think backend for complex questions |
-| **Another Vancetope System** | Vancetope Instance B | Cross-system knowledge exchange |
+| **CI/CD Step** | GitHub Actions, Jenkins | After deploy: starts Architecture Review Think Process |
+| **n8n / Zapier Node** | n8n Workflow | On event: triggers Vancetope Workflow, waits for result |
+| **External Coding Agent** | IDE or CLI coding assistant with Vancetope Tool | Uses Vancetope as a Deep Think backend for complex questions |
+| **Another Vancetope System** | Vancetope Instance B | Cross-system Knowledge exchange |
 | **Custom Script** | Python/Node.js Script | Batch import of documents, result export |
 | **Monitoring Bot** | Alerting system | On anomaly: starts analysis Think Process |
 | **Slack Bot** | Slack App | User types in Slack, bot delegates to Vancetope |
@@ -211,7 +213,7 @@ Any external system that connects as a client and interacts with the Brain autom
     ]
   },
   "auth": {
-    "token": "service_token_xyz..."   // Service account token
+    "token": "service_token_xyz..."   // Service Account Token
   },
   "session": {
     "project_id": "proj_vance_dev"
@@ -226,7 +228,7 @@ Robot connects
   → Handshake: type=external, is_human=false, tools=[...]
   → Session is created
 
-Robot starts workflow:
+Robot starts Workflow:
   → { type: "process-start", goal: "Review Architecture after deploy v2.3.1",
       workflow_id: "wf_architecture_review",
       input: { commit_sha: "abc123", changed_files: [...] } }
@@ -235,25 +237,25 @@ Brain works:
   → Brain plans tree, executes Tasks
   → Needs Tool? → If Robot Tool: tool-request to Robot
   → Needs Approval? → Task is blocked (Robot cannot approve)
-     → Notification to human user
+     → Notification to human User
 
 Robot waits for result:
   → Receives: process-status, task-update, stream-chunk
-  → When Think Process is finished: reads result
+  → When Think Process finished: reads result
 
-Robot disconnected:
+Robot disconnects:
   → Session closes
-  → If Think Process is still running: Brain continues autonomously
+  → If Think Process still running: Brain continues autonomously
 ```
 
 ### 3.4 Robot Client that brings Tools
 
-The special thing: a Robot client can register **its own Tools**. Example: a CI/CD bot brings `github_api`, `docker_inspect`, `kubectl_get`. The Brain can use these tools in its Tasks — as long as the Robot is connected.
+The special thing: a Robot Client can register **its own Tools**. Example: a CI/CD bot brings `github_api`, `docker_inspect`, `kubectl_get`. The Brain can use these Tools in its Tasks — as long as the Robot is connected.
 
 ```
 CI-Bot connects with Tools: [github_api, docker_inspect]
   → Brain: "Ah, I can now query GitHub and Docker"
-  → Think Process Task: "Check if the new container starts healthy"
+  → Think Process Task: "Check if the new container starts healthily"
   → Brain sends: tool-request { tool: "docker_inspect", args: { container: "app-v2.3.1" } }
   → CI-Bot executes locally, sends result back
   → Brain uses result for next thinking step
@@ -265,21 +267,21 @@ CI-Bot connects with Tools: [github_api, docker_inspect]
 
 ### 4.1 External Coding Agent as Client
 
-An IDE or CLI coding agent can integrate Vancetope as a Deep-Think-Tool:
+An IDE or CLI coding agent can integrate Vancetope as a Deep Think Tool:
 
 ```
 User in Coding Agent: "Thoroughly analyze the architecture of this repo"
 Agent:
-  → Connects as client to the Vancetope Brain
+  → Connects as a Client to the Vancetope Brain
   → Starts Think Process: "Architecture Review for repo X"
   → Brings Tools: [shell_execute, read_file, git_log]
-  → Brain plans tree, uses the agent's local tools
-  → Result flows back into the agent conversation
+  → Brain plans tree, uses the Agent's local Tools
+  → Result flows back into the Agent conversation
 ```
 
 ### 4.2 MCP Server Mode
 
-Alternatively: Vancetope exposes itself as an **MCP Server**. Then any MCP-capable system (desktop chats, IDE extensions, coding agents) can use Vancetope as a Tool without implementing the client protocol.
+Alternatively: Vancetope exposes itself as an **MCP Server**. Then any MCP-capable system (desktop chats, IDE extensions, coding agents) can use Vancetope as a Tool without implementing the Client Protocol.
 
 ```
 MCP Tool: vance_start_engine
@@ -295,7 +297,7 @@ MCP Tool: vance_search_knowledge
   Output: { results: [...] }
 ```
 
-This is simpler than a full client — but without session, without tools, without streaming. Good for quick queries, not for interactive work.
+This is simpler than a full Client — but without Session, without Tools, without Streaming. Good for quick queries, not for interactive work.
 
 ### 4.3 Dual-Mode
 
@@ -303,7 +305,7 @@ Vancetope can offer both simultaneously:
 
 ```
 Vancetope Brain
-  ├── WebSocket API (full client protocol, sessions, tools, streaming)
+  ├── WebSocket API (full Client Protocol, Sessions, Tools, Streaming)
   │     ├── CLI Client
   │     ├── Desktop Client
   │     ├── Mobile Client
@@ -311,11 +313,11 @@ Vancetope Brain
   │     ├── Cron / Webhook / Linker
   │     └── External Robot Clients
   │
-  └── MCP Server (simple tool calls, stateless)
+  └── MCP Server (simple Tool calls, stateless)
         ├── Desktop Chat Apps
         ├── IDE Extensions
         ├── Coding Agents
-        └── Other MCP-capable systems
+        └── Other MCP-capable Systems
 ```
 
 ---
@@ -325,14 +327,14 @@ Vancetope Brain
 | Client Type | Auth Method |
 |-----------|-------------|
 | Human Clients | OAuth2 / JWT (User Login) |
-| Cron / Linker | Internal Service Token (no external auth) |
+| Cron / Linker | Internal Service Token (no external Auth) |
 | Webhook | Shared Secret in Header |
 | External Robot Clients | Service Account + API Key or OAuth2 Client Credentials |
 | MCP Server | API Key in MCP Config |
 
 ### Service Accounts
 
-For Robot clients, there are Service Accounts:
+For Robot Clients, there are Service Accounts:
 
 ```yaml
 service_account:
@@ -353,7 +355,7 @@ service_account:
 
 ## 6. Client SDK Variants
 
-The TypeScript Client SDK is for human clients (CLI, Desktop, Mobile). For Robot clients, there are lightweight variants:
+The TypeScript Client SDK is for human Clients (CLI, Desktop, Mobile). For Robot Clients, there are lightweight variants:
 
 | Variant | Language | For |
 |----------|---------|-----|
@@ -363,7 +365,7 @@ The TypeScript Client SDK is for human clients (CLI, Desktop, Mobile). For Robot
 | `vance-sdk-java` | Java | JVM-based Systems, Spring Integrations |
 | REST Documentation | Any Language | For everything else — raw WebSocket + JSON |
 
-The Lite SDKs only wrap the WebSocket protocol and message types. No UI components, no local tool registry.
+The Lite SDKs only wrap the WebSocket protocol and message types. No UI components, no local Tool Registry.
 
 ---
 
@@ -383,7 +385,7 @@ const ws = new VanceLiteClient({
 await ws.connect({ projectId: 'proj_5' });
 
 const process = await ws.startThinkProcess({
-  goal: 'Create Weekly Report from last week\'s data',
+  goal: 'Erstelle Weekly Report aus den Daten der letzten Woche',
   workflowId: 'wf_weekly_report',
   input: { data: inputData }
 });
@@ -398,7 +400,7 @@ return result;
 ### Python Script (Scientist)
 
 ```python
-# Batch import of papers into a Vancetope project
+# Batch import of papers into a Vancetope Project
 from vance_sdk import VanceClient
 
 client = VanceClient(
@@ -421,7 +423,7 @@ for pdf_path in glob('papers/*.pdf'):
 
 # Start analysis Think Process for the new papers
 client.start_engine(
-    goal='Analyze the newly imported papers',
+    goal='Analysiere die neu importierten Papers',
     workflow_id='wf_paper_analysis'
 )
 
@@ -464,7 +466,7 @@ jobs:
 
 | Phase | What |
 |-------|-----|
-| **v1 (Phase 4)** | Define WebSocket protocol, human clients |
+| **v1 (Phase 4)** | Define WebSocket Protocol, human Clients |
 | **v1 (Phase 5)** | TypeScript Client SDK |
 | **v2 (Phase 10)** | Lite SDK, Service Accounts, external Client Auth |
 | **v2** | MCP Server Mode |
@@ -477,12 +479,12 @@ jobs:
 
 > **Vancetope is an open platform.**
 >
-> Anything that speaks WebSocket + JSON is a valid client.
-> Human clients bring UIs and local tools.
-> Robot clients bring automation and external tools.
+> Anything that speaks WebSocket + JSON is a valid Client.
+> Human Clients bring UIs and local Tools.
+> Robot Clients bring automation and external Tools.
 > MCP Server Mode provides lightweight access without WebSocket.
 >
-> This makes Vancetope the thinking backend for arbitrary systems.
+> This makes Vancetope the thinking backend for any system.
 
 ---
 

@@ -18,17 +18,17 @@ permalink: /specs/ford-engine
 Ford is the **single-LLM engine** in the Vancetope engine set: one turn = one LLM call (with tool loop), no control over multiple phases or sub-processes. This covers two roles:
 
 - **Generalist Worker** for the orchestrator engines. Arthur, Marvin, Vogon, and Zaphod spawn Ford Recipes (`analyze`, `quick-lookup`, `web-research`, `code-read`, `marvin-worker`, …) for the operational individual tasks that arise in the respective workflow.
-- **Direct Top-Level Chat** for Sessions that do not require a workflow — short research, quick information, tool-driven lookups. In these cases, Ford is the Session Engine, and no orchestrator is in between.
+- **Direct Top-Level Chat** for Sessions that do not require a workflow — short research, quick information, tool-driven lookups. In these cases, Ford is the Session Engine and no orchestrator is in between.
 
-Historically, Ford was also the **Walking Skeleton** for the Think Engine Framework: Registry discovery, auto-start on Session creation, Pending-Queue, Lane-Turn, `ThinkEngineContext`, LLM call, `ChatApi`, WebSocket streaming, Suspend/Resume — everything was first validated end-to-end with Ford. This function remains as a side effect but is no longer the primary reason for its existence.
+Historically, Ford was also the **Walking Skeleton** for the Think Engine framework: Registry discovery, auto-start on Session Create, Pending Queue, Lane Turn, `ThinkEngineContext`, LLM call, `ChatApi`, WebSocket streaming, Suspend/Resume — everything was first validated end-to-end with Ford. This function remains as a side effect but is no longer the primary reason for its existence.
 
 ---
 
 ## 2. What Ford CANNOT do (intentionally)
 
-Ford has **no workflow properties**. What a turn does not include:
+Ford has **no workflow properties**. What a turn does not contain:
 
-- **No orchestration.** Ford does not start sub-processes or control external processes. If sub-workers are needed, that is Arthur's job (or one of the other orchestrators), which in turn spawns Ford.
+- **No orchestration.** Ford does not control external processes and does not execute a workflow. A single sub-worker for a sub-task is allowed via `process_spawn` (part of the Engine Baseline) — but the coordination of multiple workers is Arthur's job (or one of the other orchestrators), who in turn spawns Ford.
 - **No task tree.** No `Node` persistence, no planning, no sub-tasks. Marvin does that.
 - **No phases / gates / checkpoints.** No deterministic multi-step process. Vogon does that.
 - **No multi-head consultation.** No parallel Personas on the same question. Zaphod does that.
@@ -40,19 +40,17 @@ Ford has **no workflow properties**. What a turn does not include:
 
 ## 3. What Ford CAN do
 
-A Lane-Turn does exactly this:
+A Lane Turn does exactly this:
 
-1. `context.drainPending()` → typically a `UserChatInput`.
-2. `context.chat().history()` → reads the chat history of its own Process / Session.
-3. System prompt from the current Recipe (e.g., `analyze`, `web-research`, `marvin-worker`).
-4. Optional memory consultation via Recipe configuration: RAG query over Project/Session memory, Knowledge-Graph lookup, Project documents. Results are appended to the prompt as context.
-5. `context.aiModelService().createChat(...)` → Default LLM via settings cascade. Recipe parameters can override the model.
-6. LLM call with `[systemPrompt, memoryContext?, ...history, newUserMessage]` → Assistant text. Tool loop if Recipe allows tools.
-7. During the call: Token chunks via `context.events().publish(CHAT_MESSAGE_STREAM_CHUNK, ...)`.
-8. After the call: `context.chat().append(ChatMessage.assistant(...))`.
-9. Status → `ready`.
+1. `drainPending()` → the collected Inbox becomes **one** turn. `UserChatInput` lands in the Chat History; `ProcessEvent`, `ToolResult`, and `ExternalCommand` are turn-local and go into the Prompt as `<process-event>`/`<tool-result>`/`<external-command>` XML (a sub-worker spawned by Ford reports back this way).
+2. START-Guards (Shooty), Skill triggers, active Skills.
+3. System Prompt from the Recipe (Pebble, document cascade) plus Memory Block, Tool hints, Skill section, Compaction Summaries, Date/Client Env/Scratchpad, then the active Chat History.
+4. Memory Compaction if the Prompt threatens to fill the context window — then Prompt rebuild.
+5. **Tool Loop** (§4a) with Streaming: Text chunks via `CHAT_MESSAGE_STREAM_CHUNK` live to the client.
+6. After the loop: Persist Assistant Message, flush History Tags, Reply via `emitReply` to Parent Inbox and Session Clients.
+7. Exit status by role (§4).
 
-Other `SteerMessage` variants (`ProcessEvent`, `ToolResult`, `ExternalCommand`) must **not** arrive at Ford — it has no workers and does not make async tool calls. If they do arrive (regression error), Ford logs a warning and discards them.
+Only User Input and final Reply are persisted. Tool Calls and results only live in the turn — they control **this** turn, not the next.
 
 ---
 
@@ -60,32 +58,64 @@ Other `SteerMessage` variants (`ProcessEvent`, `ToolResult`, `ExternalCommand`) 
 
 | Method | Behavior |
 |---------|-----------|
-| `start(process, ctx)` | Writes a short greeting `ChatMessage.assistant` (e.g., "Ford here. Ask me anything."). Status → `ready`. No LLM call. |
-| `resume(process, ctx)` | Drains the queue. If empty, immediately returns to `ready` (no turn). If not empty, executes a turn as with `steer`. |
-| `suspend(process, ctx)` | No cleanup. Chat history is already persistent. Status is set to `suspended` by the Brain. |
-| `steer(process, ctx, msg)` | Core routine: drain, LLM call, Assistant response (see §3). |
-| `stop(process, ctx)` | No cleanup. Status → `stopped`. |
+| `start(process, ctx)` | No greeting (a worker spawned with `steerContent` drains its task immediately). Status → `idle`. No LLM call. |
+| `resume(process, ctx)` | Status → `idle`; the queue wakes up the next turn. |
+| `suspend(process, ctx)` | No cleanup. Status → `suspended`. |
+| `steer` / `runTurn` | Core routine (§3). `runTurn` drains in a loop; before each drain, `haltRequested` is checked (pause contract: the Inbox remains in the queue for resume). After a turn that has closed or parked the process (Worker Safety Stop, ESC/`/pause`, CLOSED/PAUSED/SUSPENDED), the loop ends — mid-turn messages do not trigger another turn on a dead process. |
+| `stop(process, ctx)` | Closes the process (`stopped`). |
 
-Ford **never** reaches `done` (just like Arthur). The turn ends via natural stop (Assistant message without tool call); `awaiting_user_input` is derived from the role: as a **Worker** (parent present), Ford then goes to `idle` (the parent can steer again), as **Primary** (no parent) to `blocked` (waiting for the next user message). A maxIter runaway (Cap 100) or LLM collapse closes a worker terminally (`incomplete`). Terminal contract details: [structured-engine-output §3](/specs/structured-engine-output).
+Ford **never** reaches `done` (just like Arthur). Ford has **two modes**, derived from its role — there is no mode flag:
 
-Ford is `asyncSteer = false` — the default. `process_steer` blocks the calling Lane until Ford's turn is complete and returns the reply as `newMessages`. This is exactly what Arthur and other orchestrators expect.
+| Turn End | **Worker** (Parent present) | **Chat** (Primary, no Parent) |
+|---|---|---|
+| Natural Stop (Answer) | Reply → `idle` (the Parent can steer again) | Reply → `idle` (ready for the next message) |
+| Safety Stop (§4a) | Reply "⚠️ TASK FAILED — …" with reason + partial work → **terminal `incomplete`** (FAILED-ProcessEvent to the Parent) | Reply "⚠️ I stopped this turn because …" with reason + partial work → `blocked`; "continue" resumes |
+| ESC / `/pause` | no Reply; Halt flag → `paused`, Status flip → remains as set | same |
+
+**`blocked` means "obstacle", not "finished".** An answer leaves Ford `idle` in both modes (like Frankie); `blocked` only exists for a chat safety stop. Orchestrators read `blocked` as a question: Magrathea maps `RUNNING → BLOCKED` to `needs_input` (→ `gate_task`), `RUNNING → IDLE` to `success` — a Ford `agent_task` (spawned without a Parent) thus delivers `success` for an answer and `needs_input` only for a stuck agent. (Until 2026-10, a Primary-Ford also parked `blocked` after an answer, so every Magrathea-Ford step ended as `needs_input`.)
+
+Why the Worker **closes** instead of parking resumable: A `blocked` Worker is a questioning Worker for the orchestrators — Arthur automatically forwards the next User Message to it (`activeDelegationWorkerId`), synchronous drivers (Marvin `CALL_RECIPE`, Zaphod heads, `process_spawn wait=true`) read the stop text as a result, and the delegation watchdog cleans it up as `stopped` after inactivity. A Worker that cannot complete its task therefore reports this clearly and ends; to continue means: a fresh Worker with a narrower Scope. In chat mode, the user is present — there, continuing is the correct outcome.
+
+Ford is `asyncSteer = false` — the default. `process_steer` blocks the calling Lane until Ford's turn is complete and returns the Reply as `newMessages`. Exactly what Arthur and other orchestrators expect. Terminal contract details: [structured-engine-output §3](/specs/structured-engine-output).
+
+### 4a. Tool Loop and Safety Nets
+
+The turn ends via **Natural Stop**: As long as the model emits Tool Calls, they are executed and the loop iterates; the first Assistant Message **without** a Tool Call **is** the Reply. There is no mandatory terminal tool and **no routine round limit** — a long, healthy task runs until its Natural Stop.
+
+Each round first checks the **Interrupt** (status SUSPENDED/PAUSED/CLOSED or Halt flag) — before the next LLM call, i.e., promptly. The Safety Nets measure **stuckness, not volume**; the time net is the generous last resort:
+
+| Net | Trigger | Configuration |
+|---|---|---|
+| Idle-Stuck | the same Tool Batch (name + arguments) N times in a row. Pure status polls (`exec_status`, `client_exec_status`, `work_exec_status`) are excluded and instead throttled (growing pause between polls, ESC-capable) | `vance.engine-loop.idle-stuck-threshold` (Default 5, `0` = off); `vance.engine-loop.poll-throttle-step-ms` / `poll-throttle-max-ms` |
+| Empty Reply | neither text nor tool call — no clean stop, but collapse; without a net, the turn would end without a Reply and an asynchronous Parent would wait forever | — |
+| LLM Error | Stream error / Retry budget exhausted — even without previous text, there is a stop text (formerly: Exception) | — |
+| Wallclock | per **turn** (not per process lifetime) | `vance.engine-loop.max-wallclock-minutes` (Default 60), per Recipe `params.maxWallclockMinutes` |
+| Round Limit | **opt-in**: only Recipes with a deliberately hard limit | `params.maxIterations` (missing/`0` = off); set by `quick-lookup` (3), `council-member` (15), `feeds-digest` (8), Benjy-Doer (`maxToolCalls`) |
+
+Every Safety Stop extracts the **best free text** of the rounds as partial work and always has a non-empty stop text — the Reply is often the only signal for the Parent (for Working-WS-Parents, the FAILED-Event is suppressed).
+
+The nets are a common component (`thinkengine/loop`: `ToolLoopSafetyNet`, `LoopLimits`, `SafetyStop`, Properties `vance.engine-loop.*`), which are also used by the Ford-adapted Wowbagger Agent (Pool status polls `wowbagger_status` additionally excluded, same outputs as Ford) and the Session Identities via `AbstractEngineSessionLoop` (Hactar/Vogon/Marvin) — there, a Safety Stop parks the Identity in **both** forms resumable `blocked`, because the machine (Run, phases, tree) owns the lifecycle, not the Agent Turn. Frankie has its own, similar nets (`vance.frankie.*`); Nutrimat remains intentionally independent.
+
+Optionally (`params.validation: true`), Ford corrects a suspiciously short Natural Stop after large Tool results up to twice (Data-Relay-Gap) before it is accepted.
 
 ---
 
 ## 5. Current Role in the Architecture
 
-Ford has two productive uses:
+Ford has two productive use cases:
 
 **As a Worker for Orchestrator Engines:**
 
 - **Arthur** → spawns Ford Recipes (`analyze`, `quick-lookup`, `web-research`, `code-read`) for operational user requests.
-- **Marvin** → spawns `marvin-worker` (Engine: ford, with JSON output schema in the system prompt) for each WORKER node in the Tree.
+- **Marvin** → spawns `marvin-worker` (Engine: ford, with JSON output schema in the System Prompt) for each WORKER node in the Tree.
 - **Vogon** → spawns phase-specific Ford Recipes (one per phase).
 - **Zaphod** → spawns Ford Recipes per head (with per-head Persona append).
 
-**As a Top-Level Engine without Workflow:** Sessions where no orchestrator, no task tree, and no phases are needed — typical for quick research, tool-driven lookups, and simple chat tasks with memory/RAG context.
+**As a Top-Level Engine without Workflow:** Sessions where no orchestrator, no task tree, and no phases are needed — typical for quick research, tool-driven lookups, and simple chat tasks with Memory/RAG context.
 
-Ford itself knows nothing of these constellations — it simply does "one question → one answer" with a tool loop and optional memory context. Which tools are allowed, which system prompt, which Persona, which memory sources — all are Recipe matters.
+Ford itself knows nothing of these constellations — it simply does "one question → one answer" with a Tool Loop and optional Memory context. Which tools are allowed, which System Prompt, which Persona, which Memory sources — all are Recipe matters.
+
+**Tool Surface.** Ford shares the Worker core (`WorkerEngineTools.CORE` — the manifest) with Frankie and adds the Worker Pool per turn: every tool with label `worker` is deferred accessible ([server-tools.md §15](/specs/server-tools)). Recipes add tools to the manifest via `allowedToolsAdd` or remove them via `allowedToolsRemove`; `params.toolPool: false` intentionally keeps a Worker lean (Zaphod-Heads and Magrathea-`agent_task` set it because they remove delegation).
 
 ---
 
@@ -95,27 +125,32 @@ When Ford runs in a real CLI session, the following paths are proven functional:
 
 - [x] `ThinkEngineRegistry` finds Beans, indexed by `name()`.
 - [x] `SessionService.create(type=INTERACTIVE)` atomically creates Session + Process.
-- [x] CLI connects via WebSocket, handshake including client fingerprint.
+- [x] CLI connects via WebSocket, handshake including Client Fingerprint.
 - [x] `process-steer` command atomically lands in `ThinkProcessDocument.pendingMessages`.
-- [x] Lane scheduler starts turn → Status `running` → Engine steer → Status `ready`.
+- [x] Lane Scheduler starts Turn → Status `running` → Engine Steer → Status `ready`.
 - [x] `ThinkEngineContext` is freshly built per turn, all sub-APIs accessible.
-- [x] `AiChat` provider delivers a functional client (settings cascade, trace logging).
-- [x] `ChatMessageService` writes/reads in MongoDB in order.
+- [x] `AiChat` provider delivers a functional client (Settings cascade, Trace logging).
+- [x] `ChatMessageService` writes/reads to MongoDB in order.
 - [x] `ClientEventPublisher.publish(CHAT_MESSAGE_STREAM_CHUNK)` lands live at the client.
-- [x] Client disconnect → Session/Process `suspended`. Reconnect → resume.
+- [x] Client Disconnect → Session/Process `suspended`. Reconnect → resume.
 
-This is the **foundation plate**. On it stand Arthur (Tools + Orchestration), Marvin (Tree-Runner), Vogon (Strategy), Zaphod (Multi-Head).
+The Tool Loop itself is doubly secured:
+
+- `FordLoopTest` (vance-brain, Unit, scripted Streaming model) — each Safety Net in both modes, status poll exception, halt at drain head, drain abort after close; plus a 60-round turn without cap.
+- `FordLoopLlmTest` (qa/ai-test, `@Tag("llm")`, real provider) — Chat Turn with Tool Round ends via Natural Stop → `idle`; opt-in `maxIterations: 1` forces the Safety Stop: in chat resumable `blocked` with stop text, as Arthur-Worker "⚠️ TASK FAILED" + `closed`/`incomplete`.
+
+This is the **foundation plate**. On it stand Arthur (Tools + Orchestration), Marvin (Tree Runner), Vogon (Strategy), Zaphod (Multi-Head).
 
 ---
 
-## 7. Transition to Arthur (historical)
+## 7. Transition to Arthur (Historically)
 
-As long as Arthur was not ready, **Ford was the default** for Interactive Sessions. With Arthur becoming production-ready, this default was changed — Arthur takes over Sessions that require orchestration. However, Ford remains available both as a worker engine in the pool **and** as a top-level engine for Sessions without workflow requirements (see §5).
+As long as Arthur was not finished, **Ford was the default** for Interactive Sessions. With Arthur becoming production-ready, this default was changed — Arthur takes over Sessions that need orchestration. However, Ford remains available both as a Worker Engine in the pool **and** as a Top-Level Engine for Sessions without workflow requirements (see §5).
 
 ---
 
-## 8. Open Points
+## 8. Open Issues
 
-- **LLM Error Handling.** If the LLM call fails (quota, network, over-limit), Ford writes an error `ChatMessage.system` and returns to `ready`. Detailed semantics (retry vs. fail-fast, user communication) will be determined with the first implementation.
-- **Memory Compaction.** First implementation exists (`MemoryCompactionService` triggers via Token-Estimate). Validation of the path still needs to be part of the test plan.
-- **Validator Loop.** Today pattern-based (intent-without-action, data-relay-gap). Structured JSON output validator like Marvin's `marvin-worker` is Recipe-specific, not an Engine concept.
+- **Memory Compaction.** First implementation exists (`MemoryCompactionService` triggers via Token Estimate, once per turn before the loop — not mid-loop like Frankie). Validation of the path still belongs in the test plan.
+- **Validator Loop.** Today pattern-based (data-relay-gap). Structured JSON output validator like Marvin's `marvin-worker` is Recipe-specific, not an Engine concept.
+- **Error Marker on the Reply.** Synchronous drivers (Marvin `CALL_RECIPE`, Zaphod heads, `process_spawn wait=true`) currently recognize a Safety Stop only by text or process status, not by a structured flag.

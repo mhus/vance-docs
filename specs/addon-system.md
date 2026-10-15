@@ -8,12 +8,12 @@ permalink: /specs/addon-system
 
 # Addon System
 
-> Status: v1 in production since 2026-06-03 (slideshow as reference Addon).
+> Status: v1 production since 2026-06-03 (slideshow as reference Addon).
 > Design discussion and discarded alternatives: `planning/addon-system.md`.
 
 The Addon system allows third-party code to extend Brain and Face with Java
 Beans (REST controllers, server tools, Vancetope applications) and Vue 3
-editors. Distribution is as a `.vab` bundle, activation
+editors. Distribution as a `.vab` bundle, activation
 via the `addons` collection in MongoDB, controlled by `vance-anus`
 CRUD. First first-party Addon: `vance-addon-brain-slideshow`.
 
@@ -96,7 +96,7 @@ public class SlideshowAddon {}
 
 ## 3. Persistence: `db.addons`
 
-The `addons` MongoDB collection is the runtime source of truth. Schema
+The MongoDB collection `addons` is the runtime source of truth. Schema
 (via Spring Data MongoDB):
 
 ```
@@ -121,7 +121,7 @@ Three operations write here:
 | `vance-anus addon create/update/enable/disable/delete/set-checksum` | `AddonService` | Full CRUD |
 | Manual `mongosh` | direct | Emergency path, not recommended workflow |
 
-Brain service: `de.mhus.vance.shared.addon.AddonService` is the only
+Brain Service: `de.mhus.vance.shared.addon.AddonService` is the only
 entry, external modules access it (data sovereignty). REST controller
 in `de.mhus.vance.brain.addon.AddonController` only provides read operations.
 
@@ -205,15 +205,15 @@ Reasoning:
   Addon registering an endpoint `/brain/{tenant}/documents/X`
   would collide with the built-in one. The `addon/<id>/` prefix makes
   collisions impossible.
-- **Discoverability.** Anyone seeing an Addon route in logs / network tab
-  immediately knows: this belongs to Addon `<id>` and not to the Core. In
-  the debug path, this saves lookup effort.
+- **Discoverability.** Seeing an Addon route in logs / network tab
+  immediately indicates it belongs to Addon `<id>` and not the Core. This
+  saves lookup effort during debugging.
 - **Hot-Deploy Safety.** During VAB hot-deploy / remove, all routes
   of an Addon are grouped under a single URL tree — cleaner
   cleanup, no stray top-level endpoints.
 
 **Frontend Convention (analogous).** The REST helper in the Addon client
-writes the `addon/<id>/` prefix consistently:
+consistently writes the `addon/<id>/` prefix:
 
 ```ts
 return brainFetch<WorkbookView>('GET', `addon/workbook/scan?${qs}`);
@@ -226,7 +226,7 @@ Addon client only writes the path from `addon/<id>/...`.
 
 ### 5.1 Module Federation Host
 
-vance-face is the host for `@module-federation/vite`. Remote list in v1
+vance-face is a host for `@module-federation/vite`. The remote list in v1 is
 hardcoded in `vance-face/vite.config.ts`, with two mandatory details:
 
 ```ts
@@ -290,12 +290,12 @@ export default defineConfig({
 
 **`base: ''` is mandatory.** Vite default `base: '/'` generates in
 `preload-helper.js` an `assetsURL = function(dep) { return "/"+dep }`
-and bundles chunk preload paths root-absolute (`/assets/X.js`). The
+and bundles chunk preload paths as root-absolute (`/assets/X.js`). The
 host, however, serves the remote files under `/addons/<id>/` — the
 preload HREFs thus end up as `/assets/X.js` instead of
 `/addons/<id>/assets/X.js` and 404. For Addons with eager cross-
 chunk imports (e.g., a codec eager + the view lazy), async component
-load fails completely. Empty base → `assetsURL =
+loading fails completely. Empty base → `assetsURL =
 function(dep, importerUrl) { return new URL(dep, importerUrl).href }`
 and the resolution `new URL('./X.js', chunkUrl)` correctly lands
 under `/addons/<id>/assets/X.js`. Symptom of incorrect
@@ -314,7 +314,7 @@ it internally tries to run `vue-tsc` with its own tsconfig and
 fails on `.vue` files. The actual type generation runs via
 the `vue-tsc -b` step in the build script anyway.
 
-### 5.3 Why Workspace Packages are NOT shared
+### 5.3 Why Workspace Packages are NOT Shared
 
 `@module-federation/vite` emits a `loadShare__<pkg>` module for each entry in the `shared:` block. For **npm packages** (vue, pinia), this is a lazy lookup. For **workspace packages**, the plugin builds top-level `await` code with `await import("./<impl-chunk>.js")`. This impl-chunk in turn statically imports from the loadShare module → ESM cycle with TLA deadlock, no console error, host boot hangs indefinitely (silent failure).
 
@@ -326,9 +326,9 @@ copy. Trade-off:
   → cross-bundle state is instead shared via `globalThis.__VANCE_PLATFORM__`
   (see §5.4)
 
-If a state singleton in `@vance/shared` is added in the future that cannot
-be distributed via `globalThis`, the sharing problem must be
-fundamentally solved — e.g., `@vance/shared` as a published
+If a state singleton in `@vance/shared` that cannot be
+distributed via `globalThis` is added in the future, the sharing problem
+must be fundamentally solved — e.g., `@vance/shared` as a published
 npm package instead of a workspace package.
 
 ### 5.4 `globalThis` State for `@vance/shared`
@@ -336,10 +336,10 @@ npm package instead of a workspace package.
 Because `@vance/shared` is not shared via Federation, each copy
 has its own module-scoped `bindings` variable. When the host
 calls `configurePlatform({ storage, rest })`, it only configures its
-own copy — the Addon copy remains unconfigured and throws
-`platform not configured` on the first `brainFetch` call.
+own copy — the Addon copy remains unconfigured and throws `platform not configured`
+on the first `brainFetch` call.
 
-Solution: `@vance/shared/src/platform/index.ts` externalizes `bindings` into
+Solution: `@vance/shared/src/platform/index.ts` externalizes the `bindings` to
 `globalThis.__VANCE_PLATFORM__`. Each copy reads and writes
 there. Thus:
 - Host copy calls `configurePlatform` on boot → writes to globalThis
@@ -357,13 +357,13 @@ Analogous to Brain, with nginx symlinks as output:
 **Phase 1 — Bundled unpack (without Symlink)**
 
 Like Brain Phase 1: `/default-addons/*.vab` → `/shared/addons/<id>/<ver>/`,
-`.ready` marker. **No symlink** in this phase — it is set in 1c,
-controlled by `db.addons`.
+`.ready` marker. **No symlink** in this phase — it is
+set in 1c, controlled by `db.addons`.
 
 **Pre-Phase — Symlink Wipe**
 
 `find $NGINX_ADDONS_ROOT -mindepth 1 -maxdepth 1 -exec rm -rf {} +` —
-all old symlinks removed. Thus, a restart always reflects the
+all old symlinks removed. This ensures a restart always reflects the
 current `/face/addons` response, even if an Addon was disabled in the meantime.
 
 **Phase 1c — Query Brain + Resolve or Fetch per Row**
@@ -377,14 +377,14 @@ done
 
 60 attempts × 5s = max 5 min wait for Brain. Default
 `BRAIN_INTERNAL_URL=http://brain:9990` (docker-compose service DNS;
-in K8s the internal service DNS). If cap is exceeded, nginx starts
+in K8s the internal service DNS). If the cap is exceeded, nginx starts
 with an empty Addon list — static page runs, `/addons/*` 404.
 
 For each row in the JSON:
 - `bundled:<id>` → `latest_version_for "$name"` scan in `/shared/addons/<name>/*/`,
-  Symlink `$NGINX_ADDONS_ROOT/$id → /shared/addons/<id>/<ver>/face`
+  symlink `$NGINX_ADDONS_ROOT/$id → /shared/addons/<id>/<ver>/face`
 - `http(s)://...` → Cache + Verify (see Brain Phase 1c, identical logic
-  in shell form with curl + sha256sum), then unpack + Symlink
+  in shell form with curl + sha256sum), then unpack + symlink
 
 **Phase 2 — nginx**
 
@@ -407,7 +407,7 @@ face-bootstrap-discovery routes live under it.
 `vance-face`'s `vite.config.ts` contains the `vanceAddonDevServe()` plugin
 that intercepts two paths in the Dev server:
 
-1. **`/addons/<id>/*`** — bridge to
+1. **`/addons/<id>/*`** — bridges to
    `repos/vance/server/vance-addon-brain-<id>/client/dist/<path>`.
    Thus, the Dev server serves the Federation remote files that
    are delivered in the Prod image by the face Entrypoint via nginx symlink.
@@ -418,14 +418,14 @@ that intercepts two paths in the Dev server:
    that have a `remoteEntry.js` as `[{name: <id>, path: "bundled:<id>"}, …]`.
    Without this endpoint, `loadAddonRegistrations()` gets 404 and
    fails silently — Federation imports in the code still run
-   (static imports recognizable by the bundler), but runtime kind
+   (static imports detectable by the bundler), but runtime kind
    contributions via `register()` are never called.
 
-Dev workflow:
+Dev Workflow:
 - `pnpm --filter @vance-addon/<id> build` once → `client/dist/` exists
 - `pnpm --filter @vance/vance-face dev` → Dev server, HMR for vance-face
-- Change Slideshow code → again `pnpm --filter @vance-addon/<id> build`,
-  Hard-Reload in browser
+- Change Slideshow code → `pnpm --filter @vance-addon/<id> build` again,
+  Hard Reload in browser
 
 The middleware is pattern-based: `/addons/<id>/*` automatically maps
 to `vance-addon-brain-<id>` — new Addons do not need config
@@ -439,7 +439,7 @@ Spring Shell commands for the `addons` collection (all `@RequiresAuth`):
 |---|---|
 | `addon list` | All rows (incl. disabled), columns: NAME, PATH, ENABLED, CHECKSUM, CREATED |
 | `addon show --name <n>` | Single row |
-| `addon create --name <n> --path <p> [--checksum sha256:…]` | Insert; fail if name exists |
+| `addon create --name <n> --path <p> [--checksum sha256:…]` | Insert; fails if name exists |
 | `addon update --name <n> --path <p>` | Change path (name immutable) |
 | `addon set-checksum --name <n> --checksum <c>` | Set checksum or delete with empty string |
 | `addon enable --name <n>` / `disable --name <n>` | Flip flag |
@@ -453,8 +453,8 @@ as the Brain controller, thus same data sovereignty, same constraints.
 
 ### 7.1 Produce `.vab`
 
-In the Addon Maven pom, three plugins in the `package` phase: TS Gen (for
-DTOs), exec for `pnpm` (Federation Remote Build), maven-assembly-plugin
+In the Addon Maven pom, three plugins in the `package` phase: TS-Gen (for
+DTOs), exec for `pnpm` (Federation remote build), maven-assembly-plugin
 for the ZIP, maven-antrun-plugin for `.zip → .vab` rename. Complete
 pom template see `readme/addon-development.md`.
 
@@ -522,8 +522,8 @@ in `vance-addon-brain-calendar/src/main/resources/vance-defaults/_vance/manuals/
 
 ## 7b. Document Kind Contribution via `@vance/kind-registry`
 
-An Addon can contribute a new Document Kind (Example: `kind: calendar`).
-The Host dispatches in `DocumentApp.vue` via the Runtime Registry
+An Addon can contribute a new Document Kind (e.g., `kind: calendar`).
+The Host dispatches in `DocumentApp.vue` via the runtime registry
 `@vance/kind-registry`, which, like `@vance/shared`, sits on `globalThis` state
 (`__VANCE_KIND_REGISTRY__`).
 
@@ -556,12 +556,12 @@ Workflow:
 2. Host `vance-face/src/platform/loadAddonRegistrations.ts` fetches
    `/face/addons`, dynamically imports the `./register` expose for each enabled Addon,
    and calls `register()`. With `loadAddonRegistrations()` awaited **before** `mount()`,
-   the Registry is already populated at the first DocumentApp render.
+   the registry is already populated at the first DocumentApp render.
 
 3. `DocumentApp.vue` resolves via `resolveKind('foo')` and renders
    `<component :is="entry.view" :doc="parsed" mode="embedded">`. The Host
-   does not know the Addon-specific Codec — the `parse`/`isParseError`
-   hooks in the Registry entry abstract everything.
+   does not know the Addon-specific codec — the `parse`/`isParseError`
+   hooks in the registry entry abstract everything.
 
 Calendar is the reference implementation
 (`vance-addon-brain-calendar/client/src/register.ts`); see
@@ -570,8 +570,8 @@ Calendar is the reference implementation
 ### 7b.1. Brain-side Kind Registration via `KindHandler`
 
 For the central `doc_write(kind=…, path=…, content=…)` tool and the
-`KindResolver` to recognize an Addon's own Kind as known, the Addon
-**in addition to the client registration** exposes a Spring Bean
+`KindResolver` to recognize an Addon-specific Kind as known, the Addon
+exposes **in addition to the client registration** a Spring Bean
 of type `KindHandler`:
 
 ```java
@@ -589,8 +589,8 @@ public class FooKindHandler implements KindHandler {
 
 Spring's `@ComponentScan(basePackageClasses=<AddonConfig>.class)`
 picks up the Bean. The central `KindRegistry` (in the `vance-shared`
-module, `@Service`) collects all `KindHandler` Beans via Constructor
-Injection at boot and exposes `Set<String> names()` (immutable).
+module, `@Service`) collects all `KindHandler` Beans via constructor
+injection on boot and exposes `Set<String> names()` (immutable).
 
 The `KindResolver` consults `KindRegistry`:
 
@@ -630,7 +630,7 @@ Three patterns, depending on effort:
    or an `@Service` with only `getName()`). No validation; `kind_validate`
    reports "ok". For codec-less, free-form Kinds (`text`, `schema`, `compose`, …).
 2. **Parse-validate** — `CodecKindHandler` with the `parse`+`supports` method
-   references of the Codec (registered in `CodecKindHandlers`). Runs the Codec
+   references of the codec (registered in `CodecKindHandlers`). Runs the codec
    and reports structural malformation as `<kind>-parse` ERROR. The cheap
    baseline for any codec-based Kind (`sheet`, `chart`, `graph`, …).
 3. **Semantic** — a dedicated `@Service` Handler that overrides `validate`
@@ -646,29 +646,30 @@ Not every Kind describes user content. Vance's own configuration is
 also in the Document Layer (Workflows, Recipes, Scheduler, Events, Server Tools,
 Guards, Wizards, Setting Forms) and is typable like any other document.
 Such Kinds carry the prefix **`vance-`**: `vance-workflow` (first representative,
-see [workflows](/specs/workflows) §2.5), in the future `vance-recipe`, `vance-scheduler`, …
+see [workflows](/specs/workflows) §2.5), also `vance-scheduler` ([scheduler](/specs/scheduler) §2a); in the future `vance-recipe`, …
 
 Two rules distinguish this family of content Kinds:
 
-- **Kind ≠ Location.** A configuration document only becomes *active* by being
-  on the cascade path of its loader (`_vance/workflows/<name>.yaml` etc.).
+- **Kind ≠ Location.** A configuration document only becomes *active* if it
+  is on the cascade path of its loader (`_vance/workflows/<name>.yaml` etc.).
   The Kind only says *what* the document is — drafts and copies outside the
   active path carry the same Kind and are validated identically. The Handler
   must therefore **not** use the path as a validation criterion.
 - **Handler unconditional, even if the Loader is not.** Subsystem loaders
   often depend on a feature flag (`MagratheaWorkflowLoader` on
-  `vance.services.magrathea`). The `KindHandler` must not inherit this condition,
-  otherwise a Kind disappears from the Registry depending on the Pod configuration.
-  Practically, this means: validation calls the **static** parse path of the
-  Loader (`MagratheaWorkflowLoader.parseYaml`), not the Bean. The Handler lives
-  in the package of its subsystem (`shared/magrathea/WorkflowKindHandler`), not with
-  the Document Kinds — the domain that owns the format also owns its validation.
+  `vance.services.magrathea`). The `KindHandler` must not
+  inherit this condition, otherwise a Kind disappears from the registry
+  depending on the Pod configuration. Practically, this means: the validation
+  calls the **static** parse path of the Loader (`MagratheaWorkflowLoader.parseYaml`),
+  not the Bean. The Handler lives in the package of its subsystem
+  (`shared/magrathea/WorkflowKindHandler`), not with the Document Kinds —
+  the domain that owns the format also owns its validation.
 
-**Caution `KindResolver`:** the fuzzy fallback only matches *Request contains
+**Attention `KindResolver`:** the fuzzy fallback only matches *Request contains
 registered name*. An LLM that writes `kind: "workflow"` instead of `"vance-workflow"`
-hits nothing and silently defaults to `text`. Prefix Kinds therefore do not belong
-in tool descriptions from which a model should guess the name — they are set
-by the authoring paths (Slartibartfast, Templates).
+will not hit anything and silently fall back to `text`. Prefix Kinds therefore
+do not belong in tool descriptions from which a model should guess the name —
+they are set by the authoring paths (Slartibartfast, Templates).
 
 **Consumers:** the central `KindValidationService` (`vance-shared`) calls
 `handler.validate` and aggregates to `{ ok, errors, warnings, findings[] }`;
@@ -689,25 +690,25 @@ instead of a defective document silently persisting; a separate
 `kind_validate` call after the write is omitted. Central integration point:
 `KindToolSupport.writeBody` / `KindToolSupport.validateWritten` (`vance-brain`).
 The check is **strictly advisory** — it never blocks the write (the body is
-already flushed), and a clean body or a Kind without a validator provides
+already flushed), and a clean body or a Kind without a validator yields
 no `validation` field at all (no noise on plain text writes). The
-`kind-unknown` WARNING is suppressed in the write feedback (missing Addon is
+`kind-unknown`-WARNING is suppressed in the write feedback (missing Addon is
 not an agent error), but remains visible in the explicit `kind_validate` tool.
 
-**Unknown Kind = WARNING, never ERROR:** if no Handler is registered for a set `kind`
+**Unknown Kind = WARNING, never ERROR:** if no handler is registered for a set `kind`
 (Addon not installed / new Kind), `kind_validate` returns a single
-`kind-unknown` WARNING (`ok` remains `true`) — new Kinds and missing Addons
-are never treated as errors. The registration contract (`getName()`) remains
-unaffected.
+`kind-unknown`-WARNING (`ok` remains `true`) — new
+Kinds and missing Addons are never treated as errors. The registration
+contract (`getName()`) remains unaffected.
 
-Complete design + phase plan: `planning/kind-handler.md`.
+Complete design + phase plan: `planning/archive/kind-handler.md`.
 
 ## 7c. Prompt Fragments per Engine
 
 An Addon can inject **trigger instructions** into an Engine system prompt
 — e.g., *"if user says `Calendar` → `calendar_create`"*. This
-complements the `manual_read` pattern for content that **always**
-needs to be in the prompt (tool triggers, hard rules), not just on-demand. Manuals
+complements the `manual_read` pattern for content that **always** needs to be in the prompt
+(tool triggers, hard rules), not just on-demand. Manuals
 remain the source for schema details and deeper instructions.
 
 Convention — one Markdown snippet per Engine per Addon:
@@ -717,11 +718,11 @@ Convention — one Markdown snippet per Engine per Addon:
 ```
 
 Example: `vance-addon-brain-calendar/.../prompts/arthur/calendar.md`
-supplements the Arthur prompt; `prompts/eddie/calendar.md` would supplement Eddie
-if the Addon provides it.
+supplements the Arthur prompt; `prompts/eddie/calendar.md` would
+supplement Eddie if the Addon provides it.
 
 `AddonPromptFragmentRegistry` (in `vance-brain`) scans
-`classpath*:vance-defaults/_vance/prompts/*/*.md` across all JARs at boot,
+`classpath*:vance-defaults/_vance/prompts/*/*.md` across all JARs on boot,
 validates each fragment via Pebble compile (fail-fast), caches per
 Engine sorted alphabetically. Unlike Manuals, fragments do **not**
 run through the Document Cascade — they are pure classpath resources
@@ -741,23 +742,23 @@ An Addon can contribute a new **Block Type** to the WorkPage Block Editor
 navigation block. Dispatch runs via the **Block Registry** in
 `@vance/block-editor` (`blockRegistry.ts`).
 
-**The Registry is deliberately PER-BUNDLE (module-scoped), not globalThis.** Each
+**The registry is deliberately PER-BUNDLE (module-scoped), not globalThis.** Each
 Module Federation bundle (Host, workbook Addon, kanban Addon, …) bundles its
-own copy of `@vance/block-editor` and thus its own Registry. A Block
+own copy of `@vance/block-editor` and thus its own registry. A block
 registered by an Addon is only visible to the editors of **the same bundle**
 — **an app bundles its editor and its blocks together.** Cross-bundle
-contribution (Addon A feeds a Block into the editor of App B) does **not**
-exist: a Tiptap `Node` built in Bundle A carries A's prosemirror instance;
+contribution (Addon A feeds a block into App B's editor) does **not** exist:
+a Tiptap `Node` built in Bundle A carries A's prosemirror instance;
 mixed in an editor from Bundle B, this collides ("Adding different instances
 of a keyed plugin"). The only way out would be to share prosemirror across bundles
 — but `@tiptap/pm` exposes its runtime via **subpaths**
 (`@tiptap/pm/state`, …), and `@module-federation/vite` cannot share them
 (broken loadShare factory). Therefore: per-bundle, no cross-bundle. Design
-Rationale: `planning/block-extension-registry.md`.
+rationale: `planning/block-extension-registry.md`.
 
 The Addon calls `registerBlock(...)` **in the same `./register` expose** where it
-also calls `registerKind(...)` (§7b) — **no additional Host wiring**, because the
-Host loads `register()` at boot anyway (`loadAddonRegistrations`, before the
+also calls `registerKind(...)` (§7b) — **no additional host wiring**, because the
+Host loads `register()` on boot anyway (`loadAddonRegistrations`, before the
 first editor mount). Import via the slim subpath, so that **not** the
 entire editor (and js-yaml) is pulled into the Addon bundle:
 
@@ -793,8 +794,8 @@ instance conflict arises. In the Federation `shared` config of the Addon, theref
 `vue` (+ possibly `pinia`/`vue-i18n`) is listed, **no** `@tiptap/*`.
 
 **Editor in Modal (`<dialog>` Caveat).** If an App Host embeds the editor in a
-`showModal()` dialog (e.g., Kanban card content), the following applies: (a) the dialog is in the browser's
-**Top Layer** — floating menus (Slash, Bubble, Block Handle) and the
+`showModal()` dialog (e.g., Kanban card content), then: (a) the dialog is in the
+browser's **top layer** — floating menus (Slash, Bubble, Block Handle) and the
 drag handle must be attached/teleported to the enclosing `<dialog>`,
 otherwise they render behind it (the `WorkPageEditor` does this automatically via
 `closest('dialog')`); (b) a CSS `transform` on the modal box (e.g., DaisyUI's
@@ -802,34 +803,34 @@ animation) creates a containing block that shifts `position: fixed` children
 (drag handle) — content modals should set `transform: none`
 (`VModal size="lg"|"xl"` does this).
 
-**Codec Routing.** A registered Fence that is **not** a Core Fence is
-routed to a generic `custom` block during parsing and translated into Node Attrs
+**Codec Routing.** A registered Fence that is **not** a Core Fence is routed
+to a generic `custom` block during parsing and translated into Node Attrs
 via `toAttrs`/`toBody` (or the YAML default). Core Fences (`vance-callout`,
-`vance-toggle`, …) are privileged and cannot be overridden. An
-unknown (nowhere registered) Fence remains `unknown-fence` and is
+`vance-toggle`, …) are privileged and **cannot** be overridden. An
+unknown (not registered anywhere) Fence remains `unknown-fence` and is
 passed through losslessly (Placeholder Card). Serialization is **attrs-canonical**
-(`toBody(attrs)`) as long as the Extension is loaded.
+(`toBody(attrs)`) as long as the extension is loaded.
 
 **Host Context / Navigation.** Addon Nodes do **not** receive Host Props via
 `.configure()` (only Core Nodes in the WorkPageEditor do). For
 navigation or Host actions, the NodeView therefore dispatches a **bubbling
-DOM CustomEvent** that the App Host intercepts — the same pattern as the Embed Block
+DOM CustomEvent**, which the App Host catches — the same pattern as the Embed Block
 (`vance:open-embed`). Reference: the Workbook `vance-workbook-index` block fires
 `vance:workbook-goto-index`, which `WorkbookAppKind` catches on its root element
-and jumps to the Index Page.
+and jumps to the index page.
 
 **Read-only Surfaces.** A Block that should also look correct outside the editor
 (read-only `BlockView` — e.g., a read-only WorkPage) provides a
-`view` component (receives `attrs` as Prop). Without `view`, BlockView shows a
+`view` component (receives `attrs` as a Prop). Without `view`, BlockView shows a
 generic Fence Card. A complete Addon Block therefore provides **Node +
 view**.
 
-**Bundled Built-ins.** The blocks supplied by `@vance/block-editor` run
-via the **same** Registry: `vance-callout` is the reference implementation of a
-Registry-driven built-in (each bundle copy self-registers its own
+**Bundled Built-ins.** The blocks shipped with `@vance/block-editor` run
+via the **same** registry: `vance-callout` is the reference implementation of a
+registry-driven built-in (each bundle copy self-registers its own
 callout idempotently on package import — fits the per-bundle model, because each
-editor uses the built-in Node from its own bundle). The difference to
-Addon Blocks is only the trigger — bundled (Import) vs. lazy
+editor uses the built-in Node from its own bundle). The only difference to
+Addon blocks is the trigger — bundled (Import) vs. lazy
 (`loadAddonRegistrations`).
 
 Design history + phases: `planning/block-extension-registry.md`. Author how-to:
@@ -843,7 +844,7 @@ An Addon appends entries to the Cortex menu bar by **declaring them in the manif
 ```yaml
 # META-INF/vance-addon.yaml
 menu:
-  - id: compile             # unique within the Addon; the Host prefixes with <addon>:
+  - id: compile             # unique in the Addon; the Host prepends <addon>:
     slot: extras            # view | actions | extras
     label: "Compile to PDF…"
     expose: ./menu          # optional, Default ./menu
@@ -864,24 +865,23 @@ just eliminated. The bundle is fetched on **click**, never before.
 Addon code exists on the page — hence `kinds`/`mimes` as data instead of as
 a predicate. Both lists are **alternatives**: the entry appears if the
 document matches one of them. Neither declared = the entry is not
-tied to the document and is always visible. `kinds` matches exactly (`canvas` ≠
+document-dependent and is always visible. `kinds` matches exactly (`canvas` ≠
 `canvasbook`), `mimes` as a prefix — necessary because a regular Markdown file
 carries **no** Kind at all and would never be reached by a Kind list.
 
 **Handler.** The expose exports a function (default name `run`) that receives the
 menu context: `projectId`, the active document (`id`/`path`/`name`/
-`mimeType`/`kind`/`text`/`dirty` — `text` is the **editor** state, so potentially
+`mimeType`/`kind`/`text`/`dirty` — `text` is the **editor** state, possibly
 unsaved), the current selection, and two Host callbacks
 (`openDocument(id)`, `revealPath(path)`). It may return a Promise; an
 error appears as a named line below the menu bar, not in the console.
 
 **What the manifest cannot do:** checkboxes, keyboard shortcuts, submenus. The
-hardwired entries (File/View/Actions/Chat) remain where they are — the
-insertion point allows *new* entries, it does not rephrase existing ones.
+hardcoded entries (File/View/Actions/Chat) remain where they are — the
+attachment point allows *new* entries, it does not rephrase existing ones.
 
 An entry without `id`/`label` or with a `slot` that does not exist is
-**discarded** (with WARN in the Brain log). For the slot, this is intentional: an entry silently
-moved to `extras` is one its author won't look for there.
+**discarded** (with WARN in the Brain log). For the slot, this is intentional: an entry silently moved to `extras` is one its author won't look for there.
 
 Host side: `platform/cortexMenu.ts` (Registry) + `platform/loadCortexMenu.ts`
 (Manifest → Registry, Lazy Load on click). Brain side:
@@ -897,7 +897,7 @@ Host side: `platform/cortexMenu.ts` (Registry) + `platform/loadCortexMenu.ts`
 | Self-Heal from Git Source | Not in v1 — URL path is sufficient |
 | Dynamic Remote Registration in vance-face (`/face/addons` as Bootstrap) | Not in v1 — `addonRemotes` hardcoded |
 | K8s Rollout Restart on Install | Not in v1 — Admin does this manually |
-| Shared Volume between Brain and Face | No — each container has its own `.vab` copy + its own cache |
+| Shared Volume between Brain and Face | No — each container has its own `.vab` copy + own cache |
 | Per-Tenant Activation | Not in v1 |
 | Hot Reload without Restart | Not in v1 |
 | Mobile Addons (vance-fingers) | Outside v1 scope |
@@ -916,7 +916,7 @@ Host side: `platform/cortexMenu.ts` (Registry) + `platform/loadCortexMenu.ts`
 
 ## 10. Creating a New Addon
 
-Step-by-step guide with the Slideshow pattern:
+Step-by-step guide using the Slideshow pattern:
 `readme/addon-development.md`.
 
 ## 11. References
@@ -929,3 +929,4 @@ Step-by-step guide with the Slideshow pattern:
 - `vance/vance-anus/src/main/java/de/mhus/vance/anus/shell/AddonCommands.java` — CRUD
 - `repos/vance/client/packages/shared/src/platform/index.ts` — `globalThis` bridge
 - `planning/block-extension-registry.md` — Block extension registry design
+---

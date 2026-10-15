@@ -1,9 +1,9 @@
 # Vancetope — Frankie Think Engine
 
 > **Frankie** is the **generic Pi-style Executor Engine**. It
-> processes a task in multiple turns — LLM call → tool calls →
-> next turn — until one of four stop conditions fires. Frankie
-> knows **no `maxIterations` cap**: it is endless-by-design. Stopping
+> processes a task in multiple turns — LLM call → Tool calls →
+> next turn — until one of four stop conditions is met. Frankie
+> knows **no `maxIterations` cap**: it is endless-by-design. Stop
 > comes from *natural conversation*, *explicit tool terminate*,
 > *external interrupt*, or *safety net*.
 >
@@ -11,7 +11,7 @@
 > (see `instructions/pi-analyse.md`). Where Arthur is the **Hub/Host**
 > and Marvin builds a **dynamic task tree**, Frankie is the
 > **focused Leaf-Worker**: drainPending → LLM → Tools →
-> repeat, until finished.
+> repeat, until complete.
 >
 > See also: [think-engines](think-engines.md) | [arthur-engine](arthur-engine.md) | [marvin-engine](marvin-engine.md) | [recipes](recipes.md) | [shooty](shooty.md) (sits on Frankie's two stop paths)
 
@@ -43,9 +43,9 @@ What Frankie is **not**:
 
 ## 2. Two Operating Modes
 
-Frankie runs either as a **Worker** under a Parent (classic,
+Frankie runs either as a **Worker** under a parent (classic,
 spawned via `process_spawn`) or as a **Session Primary** (directly
-at a Session's chat endpoint — bootstrap with
+at a session's chat endpoint — bootstrap with
 `engine=frankie, recipe=<name>, parentProcessId=null`).
 
 ```
@@ -53,7 +53,7 @@ isWorker = process.getParentProcessId() != null
 ```
 
 The loop is identical — the only behavioral difference lies
-in the Tool Terminate branch (§4.2). Service wiring, stream behavior,
+in the Tool-Terminate branch (§4.2). Service wiring, stream behavior,
 prompt assembly: identical.
 
 ## 3. Data Model
@@ -74,7 +74,7 @@ existing shared services.
 
 Frankie has **four hardcoded stop paths**. There is **no
 Recipe field for stop configuration** — no `maxIterations`, no
-`stopConditions`. Stopping comes from the loop itself.
+`stopConditions`. Stop originates from the loop itself.
 
 ### 4.1 Natural Stop
 
@@ -92,14 +92,14 @@ Behavior is **mode-dependent**:
 
 | Mode | Action |
 |---|---|
-| **Worker** (`parent ≠ null`) | `CloseReason.DONE` — Process closes, Parent's Delegation Pointer released, DONE event with Last Assistant Reply via `ParentNotificationListener.enrichWithLastReply` |
-| **Session Primary** (`parent = null`) | Status `IDLE` — Task finished, session remains open for next task |
+| **Worker** (`parent ≠ null`) | `CloseReason.DONE` — Process closes, Parent's Delegation-Pointer released, DONE event with last assistant reply via `ParentNotificationListener.enrichWithLastReply` |
+| **Session Primary** (`parent = null`) | Status `IDLE` — Task complete, session remains open for next task |
 
 Tool conventions are per Recipe. The convention belongs to the **tool** (it sets `_terminate` in its result), not the engine — Frankie only checks the key. Accordingly, not every Recipe has such a tool:
 
 - **trillian-worker-void** / **trillian-worker-adam** — `trillian_done(summary=...)`, optionally with `data` for a structured payload. The second named exit is `trillian_ask(question=...)`, which leaves the worker parked instead of terminating it.
 - **coding** — **none**. The Coding Worker ends via Natural Stop with a text response (what was changed, which files were affected).
-- **frankie-repair** / **frankie-fook-upstream** (both planned, Recipe and tool do not exist) — would bring `repair_complete(component=..., status=...)` or `ticket_handed_off(ticketId=..., action=...)`.
+- **frankie-repair** / **frankie-fook-upstream** (both planned, Recipe and tool do not exist) — would bring `repair_complete(component=..., status=...)` and `ticket_handed_off(ticketId=..., action=...)` respectively.
 
 > `task_complete` / `task_failed` / `task_needs_input` are the report-back tools of the **`trillian-user`** engine (`taskId` + `result`), not Frankie's. The engine manuals had listed them as Frankie conventions until 2026-08-11 and additionally named `summary` instead of `result` — both incorrect, now corrected.
 
@@ -107,7 +107,7 @@ Tool conventions are per Recipe. The convention belongs to the **tool** (it sets
 
 Process status is set externally to `SUSPENDED` or `CLOSED`
 (via [Process Control Tools](#62-control-tools), UI stop button,
-Session Suspend Cascade, Lane Kill). Frankie reads the status at the
+Session suspend cascade, Lane kill). Frankie reads the status at the
 beginning of **each** loop iteration from Mongo (`thinkProcessService.
 findById(id).getStatus()`) and exits gracefully between turns.
 
@@ -120,35 +120,25 @@ Both set status `BLOCKED` (no auto-close):
 
 **Wallclock Timeout** (`vance.frankie.maxWallclockMinutes`, default 60,
 overridable per Recipe via `params.maxWallclockMinutes`): per
-loop iteration, a deadline is checked, which is reset **per turn**
-— `runTurn` start plus budget, **not** from
-`process.createdAt`. This is crucial: a worker waiting for a
-response and reactivated hours later would otherwise
-hit the safety net in the first iteration just because its process
-is old. The time measured is the time it *works*, not the time it
-exists.
+loop iteration, a deadline is checked, which is reset **per turn** —
+`runTurn` start plus budget, **not** from `process.createdAt`. This is crucial: a worker waiting for a response and reactivated hours later would otherwise hit the safety net in the first iteration just because its process is old. The time measured is the time it *works*, not the time it exists.
 
-The Recipe override exists because one number does not fit both cases:
-a coding worker on a refactoring needs an hour, a worker
-that is supposed to list documents is stuck if it takes ten minutes.
-`0` is valid and means "immediately exceeded"; a negative
-or non-numeric value is a typo and falls back to the property with a WARN,
-instead of disabling the safety net.
+The Recipe override exists because one number does not fit both cases: a coding worker on a refactoring needs an hour, a worker tasked with listing documents is stuck if it takes ten minutes. `0` is valid and means "immediately exceeded"; a negative or non-numeric value is a typo and falls back to the property with a WARN, instead of disabling the safety net.
 
 **Idle-Stuck Detection** (`vance.frankie.idleStuckThreshold`, default 5):
 Sliding window of the last N tool call batch hashes (tool name +
-JSON hash of args). If all N hashes are identical → loop is
-spinning on the wrong track, BLOCKED with diagnostic hint.
+JSON hash of args). If all N hashes are identical → loop is spinning
+on the wrong track, BLOCKED with diagnostic hint.
 
-### 4.5 Empty LLM Response
+### 4.5 Empty-LLM-Response
 
 Special case: LLM responds **neither text nor tool calls** (typical
-provider collapse with too large a tool pool or a model bug). Loop
+provider collapse with too large a tool pool or a model bug). The loop
 would otherwise interpret "natural stop with 0 chars" — silent drop,
 user sees nothing.
 
 Instead: persist a visible error message
-(`FrankieEngine.MODEL_COLLAPSE_MESSAGE`) as Assistant Reply, status
+(`FrankieEngine.MODEL_COLLAPSE_MESSAGE`) as an Assistant Reply, status
 `BLOCKED`. This makes the worker visible in the Inbox and not IDLE-still.
 
 ## 5. Loop Sketch
@@ -160,9 +150,15 @@ public void runTurn(ThinkProcessDocument process, ThinkEngineContext ctx) {
     ThinkProcessStatus exitStatus = IDLE;
     Deque<String> recentToolHashes = new ArrayDeque<>();
 
+    // Empty Inbox → no turn, status unchanged. Each Inbox append
+    // schedules its own Lane turn, but the first one drains everything;
+    // subsequent wakes must not call LLM (otherwise the model responds
+    // to its own last reply). Same contract as Ford.
+    List<SteerMessage> drained = ctx.drainPending();
+    if (drained.isEmpty()) return;
+
     updateStatus(process.getId(), RUNNING);
     try {
-        List<SteerMessage> drained = ctx.drainPending();
         List<SteerMessage> extras = persistUserInputAndCollectExtras(...);
         EngineChatBundle bundle = engineChatFactory.forProcess(process, ctx, NAME);
         List<ToolSpec> toolSpecs = ctx.tools().primaryAsLc4j();
@@ -251,38 +247,46 @@ Frankie is controlled externally via the existing `vance-brain/.../tools/process
 
 | Tool | Effect on Frankie |
 |---|---|
-| `ProcessStopTool` | `status = STOPPED` → exit on next iter |
+| `ProcessStopTool` | `status = STOPPED` → exit on next iteration |
 | `ProcessPauseTool` | `status = SUSPENDED` → graceful pause |
 | `ProcessResumeTool` | `status = RUNNING` → loop resumes work |
 | `ProcessSteerTool` | Steer message in Inbox |
 
 Trigger sources:
-- User chat says "stop" → Parent Engine (Arthur) calls `ProcessStopTool`
+- User chat says "stop" → Parent engine (Arthur) calls `ProcessStopTool`
 - Arthur decides autonomously (worker obsolete, plan changed) → calls `ProcessStopTool`/`ProcessPauseTool`
-- UI Stop button (existing REST/WS path)
-- Session Suspend Cascade (session paused → all children inherit)
-- Lane Kill (operator)
+- UI stop button (existing REST/WS path)
+- Session suspend cascade (session paused → all children inherit)
+- Lane kill (operator)
 
-### 6.3 Engine Default Tools (`allowedTools()`)
+### 6.3 Tool Surface: Core + Worker Pool
 
-Frankie overrides `ThinkEngine.allowedTools()` with the
-engine-intrinsic baseline set:
+Frankie is a worker like Ford and shares its surface
+([server-tools.md §15](server-tools.md)):
 
-| Category | Tools |
-|---|---|
-| Discovery / Intro | `tool_list`, `tool_description`, `how_do_i`, `manual_read`, `manual_list`, `recipe_describe`, `tool_result_read` |
-| Sub-Worker-Spawn | `process_spawn`, `process_status` |
-| User-Facing Signals | `vance_notify` |
-| Basics | `current_time`, `whoami` |
+- **Core (`allowedTools()`)** = `WorkerEngineTools.CORE` (Discovery,
+  `process_spawn`/`process_status`, `vance_notify`, Basics, Scratchpad,
+  Document read side, Research/Web/Memory, `setting_get`, the
+  Work-Target layer) **plus** the plan tools `todo_create`/`todo_update`/
+  `todo_remove` (§9). This is the manifest.
+- **Pool (`toolPoolLabels()` = `{worker}`)** — any tool enabled for workers
+  is added **deferred** per turn: Document writing,
+  Kinds and Apps, Scripting (`execute_javascript`, `execute_python`,
+  `script_run_*`, `python_*`/`node_*`), Media, Inbox, Process control…
+  Accessible via the Discovery block, schema on demand.
 
-12 tools. Domain-specific tools (`client_file_*`, `client_exec_*`
-for Coding; `tool_probe`/`token_refresh` for Repair; GitHub API for
-Fook-Upstream) come from the respective Recipe via
-`allowedToolsAdd`.
+Recipes further filter via `allowedToolsAdd` (pull into manifest),
+`allowedToolsDefer` and `allowedToolsRemove` (also by label). The effective
+allow set at spawn remains `(Core ∪ recipe.add) ∖ recipe.remove`
+(`RecipeResolver.computeAllowed`); the pool is layered on top per turn and is
+not frozen — a newly enabled tool also reaches running
+processes. `params.toolPool: false` disables it (§15.3).
 
-Effective Tool Set =
-`(engineDefault ∪ recipe.allowedToolsAdd) ∖ recipe.allowedToolsRemove`
-(see `RecipeResolver.computeAllowed`).
+Until 2026-10, the allowlist was the entire surface: Frankie had 12 baseline
+tools, the `coding` Recipe added files/exec/docs, everything else
+did not exist — `execute_javascript` and `setting_get` were missing, and a
+coding worker circumvented this by decrypting HIDDEN settings from Mongo
+itself.
 
 ## 7. Prompt Assembly
 
@@ -306,7 +310,7 @@ from producing an unprompted LLM.
 
 ### 7.1 Manual Pool
 
-Frankie has its own Manual Pool:
+Frankie has its own manual pool:
 
 ```
 _vance/frankie/manuals/
@@ -326,10 +330,10 @@ manualPaths:
   - manuals/            # global Vancetope as fallback
 ```
 
-Recipe prefix requirement: Recipe-specific Manuals carry the
+Recipe prefix requirement: Recipe-specific manuals carry the
 Recipe name as a prefix (`coding-bug-fix.md` etc.) — so that during
 lazy load via `manual_read('coding-bug-fix')` it is immediately clear
-which Recipe the Manual belongs to.
+which Recipe the manual belongs to.
 
 ### 7.2 Skills
 
@@ -350,19 +354,19 @@ coding:
 ```
 
 `RecipeLoader` validates the names against the Skill allowlist;
-`ThinkProcessService.seedActiveSkills` pins them into
-`ThinkProcessDocument.activeSkills` during spawn. Use this for Skills that
+`ThinkProcessService.seedActiveSkills` pins them into the
+`ThinkProcessDocument.activeSkills` at spawn. Use this for Skills that
 are thematically related to the Recipe and should always be included
 (project style guide, domain glossary).
 
 **Layer 2 — Manually at Runtime**
 
-Foot CLI (`/skill add <name>`, `/skill clear`, `/skill list`) and
-Web UI connect to `process.activeSkills` via `ProcessSkillCommand`
-or remove entries. Engine-agnostic — Frankie Workers
-behave identically to Ford Processes here.
+Foot-CLI (`/skill add <name>`, `/skill clear`, `/skill list`) and
+Web-UI connect via `ProcessSkillCommand` to `process.activeSkills`
+or remove entries. Engine-agnostic — Frankie workers
+behave identically to Ford processes here.
 
-**How Skill activation flows into the Turn:**
+**How Skill activation flows into the turn:**
 
 1. `runTurn` resolves `process.activeSkills` via `SkillResolver`
    through the User → Project → Tenant → Bundled Cascade.
@@ -370,17 +374,17 @@ behave identically to Ford Processes here.
    `ContextToolsApi` via `withAdditional(...)` — the
    persisted `allowedToolsOverride` remains unchanged.
 3. `SkillPromptComposer.compose(skills, pebbleContext)` renders
-   a Skill System Block, which is appended **after** Engine Default Prompt +
+   a Skill system block, which is appended **after** Engine Default Prompt +
    Recipe Overlay as an additional `SystemMessage`.
 4. In the `finally` block: `dropOneShotSkills(process)` removes
-   `oneShot` Skills after the turn (analogous to Ford).
+   `oneShot` skills after the turn (analogous to Ford).
 
 **No Auto-Trigger.** Unlike Ford / Arthur, Frankie
 **does not** call a `SkillTriggerMatcher`. Reason: Frankie is
-endless-by-design and often drains empty or
-tool-induced Inboxes without new user input per turn — per-turn triggers
-would be spam. If a Skill should automatically dock without explicit
-Recipe pin and without `/skill add`, Layer 3 (spawn-time
+endless-by-design and often drains tool-induced
+inboxes (`EXEC_FINISHED`, child events) without new user input per turn — per-turn triggers
+would be spam. If a Skill should automatically dock without an explicit Recipe pin and without
+`/skill add`, Layer 3 (spawn-time
 and ProcessEvent triggers) is the later extension point; it is
 intentionally not built in v1.
 
@@ -397,8 +401,8 @@ SUSPENDED → RUNNING (resume)
 
 No mode transitions (no EXPLORING/PLANNING/EXECUTING — this is
 the full Plan Mode concept from [plan-mode.md](plan-mode.md),
-which only Hub Engines like Arthur and Eddie manage). Frankie uses the
-**reduced Plan Tracking variant** from §9 — a TodoList without
+which only Hub engines like Arthur and Eddie manage). Frankie uses the
+**reduced plan tracking variant** from §9 — a TodoList without
 a mode machine. Status values come from the shared
 `ThinkProcessStatus` enum.
 
@@ -431,7 +435,7 @@ no hard rule explanations in the prompt.
 | Tool | Schema | Effect |
 |---|---|---|
 | `todo_create` | `{ items: [{ content, activeForm? }] }` | Append. **IDs are server-assigned** (sequential, `max(existing numeric IDs) + 1`, starting at 1, **never reused** — deleted IDs leave gaps). Status always `PENDING`. Item without `content` is silently discarded. Return: `{ ok, created: [{id, content, activeForm?}, ...] }`. |
-| `todo_update` | `{ items: [{ id, status?, content?, activeForm? }] }` | Per-item partial mutate. `id` required. Passed fields overwrite, omitted ones remain. Unknown IDs silently skipped. **Auto-Clear**: if after the update all persisted items are `COMPLETED`, the list is completely cleared. Return: `{ ok, applied, changed, cleared }`. |
+| `todo_update` | `{ items: [{ id, status?, content?, activeForm? }] }` | Per-item partial mutate. `id` mandatory. Provided fields overwrite, omitted ones remain. Unknown IDs silently skipped. **Auto-Clear**: if after the update all persisted items are `COMPLETED`, the list is completely cleared. Return: `{ ok, applied, changed, cleared }`. |
 | `todo_remove` | `{ ids: ["3", "5"] }` | Per-ID deletion. Unknown IDs silently skipped. Return: `{ ok, removed }`. |
 
 All three are mutating (label `write`). All three delegate to three
@@ -448,14 +452,14 @@ mutation. `emitPlanProposed` is fired **only** on the very first
 ### 9.2 Per-Turn Prompt Block
 
 `FrankieEngine.buildTodoListBlock` **always** renders something — either
-an empty-state hint or the current list:
+an empty state hint or the current list:
 
 **Empty List:**
 ```
 No active plan. Use `todo_create({"items":[{"content":"..."}, ...]})` to start one when the task needs structure.
 ```
 
-**List with Items** — **only non-`COMPLETED` are rendered**, IDs
+**List with Items** — **only non-`COMPLETED` items are rendered**, IDs
 visible:
 
 ```
@@ -470,12 +474,12 @@ Use `todo_update` to mark progress, `todo_create` to add steps, `todo_remove` to
 
 Status markers: `[ ]` PENDING, `[~]` IN_PROGRESS. `COMPLETED` is
 invisible — the plan **shrinks** in the prompt with each step,
-exactly the point of the reduced variant. As soon as all items
+which is precisely the point of the reduced variant. As soon as all items
 are `COMPLETED`, the auto-clear in §9.1 takes over and the block
 reverts to the empty state.
 
 No hard rule explanations in the block, no detailed
-tool examples — all details live in the manual `frankie-plan`
+tool examples — all details live in the `frankie-plan` manual
 (§9.3).
 
 ### 9.3 Trigger Convention and Manual
@@ -483,7 +487,7 @@ tool examples — all details live in the manual `frankie-plan`
 Recipe-specific in the `promptPrefix`. `coding` contains a
 "Plan-First for large tasks" clause:
 
-> For tasks that require more than 2-3 file edits or multiple logical phases:
+> For tasks requiring more than 2-3 file edits or multiple logical phases:
 > first `todo_create` with 3-8 steps, then work.
 > Small tasks (one file, one fix) do not need a TodoList.
 
@@ -506,17 +510,17 @@ Reuse of Plan Mode notification types from
 
 | Type | When |
 |---|---|
-| `todos-updated` (`TodosUpdatedNotification`) | After every `todo_create`, `todo_update`, `todo_remove`; additionally on auto-clear with an empty list |
-| `plan-proposed` (`PlanProposedNotification`) | **Only** when `todo_create` is applied to an empty list (hint to Foot/Web UI that a plan is now present) |
+| `todos-updated` (`TodosUpdatedNotification`) | After each `todo_create`, `todo_update`, `todo_remove`; additionally during auto-clear with an empty list |
+| `plan-proposed` (`PlanProposedNotification`) | **Only** when `todo_create` is applied to an empty list (hint to Foot/Web-UI that a plan now exists) |
 
-No new channel type. Foot and Web UI renderers from Plan Mode
+No new channel type. Foot and Web-UI renderers from Plan Mode
 handle notifications engine-agnostically.
 
 ### 9.5 What Frankie Plan Tracking Does Not Do
 
 - **No `plan-proposed → User-Approval` pipeline**. The plan is
   written and immediately executed — no PLANNING state, no
-  chat question "is the plan okay?". If the user cancels/steers,
+  chat question "is the plan suitable?". If the user cancels/steers,
   it happens via the normal control tools (§6.2).
 - **No mode-aware tool filter**. All tools allowed in the Recipe
   remain allowed in all phases — even if the plan is empty,
@@ -537,12 +541,12 @@ handle notifications engine-agnostically.
 ```yaml
 vance:
   frankie:
-    maxWallclockMinutes: 60       # Safety Net §4.4
-    idleStuckThreshold: 5         # Safety Net §4.4
+    maxWallclockMinutes: 60       # Safety-Net §4.4
+    idleStuckThreshold: 5         # Safety-Net §4.4
 ```
 
 Both are overridable by Tenant settings via Cascade. Recipe fields for
-stop conditions do **not** exist — stopping is hardcoded (see §4).
+stop conditions do **not** exist — stop is hardcoded (see §4).
 
 ## 11. Recipes on Frankie
 
@@ -555,34 +559,63 @@ domain tools, only engine defaults.
 ### 11.2 First Productive Recipe (`coding`)
 
 `_vance/recipes/coding.yaml` — Pi-style Coding Worker. Sets
-`allowedToolsAdd` for Foot Client Tools (`client_file_*`,
-`client_exec_*`), its own `promptPrefix` with Coding Operating Principles
-and Anti-Patterns, its own Coding Manuals. Details in
+`allowedToolsAdd` for Foot client tools (`client_file_*`,
+`client_exec_*`), its own `promptPrefix` with coding operating principles
+and anti-patterns, its own coding manuals. Details in
 [coding-recipe.md (planning)](../../planning/archive/coding-recipe.md).
 
 ### 11.3 Planned Service Recipes
 
 `frankie-repair` (MCP reconnect / token refresh, system-spawned),
 `frankie-fook-upstream` (GitHub ticket worker). No engine code
-needed — pure Recipe + Manuals + possibly service trigger wiring.
+needed — pure Recipe + Manuals + optionally service trigger wiring.
+
+### 11.4 Derivations (Engine Forks)
+
+A Recipe changes prompt, model, and tool classification — not the
+consequence of an outcome, not an engine's tool membership, and
+not how steer messages enter the prompt. Where this needs to be different,
+Frankie is **derived**, rather than copied or bent via Recipe. There are two
+derivations:
+
+| Engine | Class | Purpose | Spec |
+|---|---|---|---|
+| `trillian-worker` | `TrillianWorkerEngine` | Per-task worker of a Trillian that can ask questions and parks IDLE (`trillian_ask`) | [trillian-engine](trillian-engine.md) §4.3 |
+| `trillian-head` | `TrillianHeadEngine` | Conversational head of a MultiHead-Trillian: responds in the thread, works with the hub documents, delegates long-running tasks to the loop | [trillian-engine](trillian-engine.md) §6f |
+
+**The Interfaces (Contract).** Everything else — loop, stop paths (§4),
+wallclock net, guard, plan tracking — remains Frankie's and is not
+overridden. Anyone changing Frankie checks the derivations:
+
+| Interface | Default (Frankie) | Overridden by |
+|---|---|---|
+| `onWorkerTerminate(process)` | closes CLOSED/DONE | `trillian-worker` (parks IDLE if a question is open) |
+| `renderForLlm(SteerMessage)` | generic rendering | `trillian-head` (contributions with provenance, full task results) |
+| `persistUserInputAndCollectExtras(...)` | only user input to history, rest turn-local | `trillian-head` (everything to history — a conversation lives across turns) |
+| `defaultPromptPath()` / `engineFallbackPrompt()` | `frankie-prompt.md` (worker doctrine) | `trillian-head` (`trillian-head-prompt.md` — conversational doctrine; Frankie's "no chat partner" would be wrong, a `promptPrefix` cannot undo it) |
+| `systemPromptAddendum(process)` | none | `trillian-head` (Persona + Nature text) |
+| `onNaturalStop(process, finalText)` | nothing (the answer is in chat, where parent/user read) | `trillian-head` (posts the final text to the thread — the counterpart only reads there) |
+| `allowedTools()` / `toolPoolLabels()` / `roles()` | Worker core, Worker pool | `trillian-head` (conversational surface, no pool, role `trillian-task-requester`) |
+
+Recipe param `promptDocument` continues to override the prompt path per
+spawn — even for derivations.
 
 ## 12. Reply Channel and Parent Notification
 
 Frankie emits its responses via standard mechanisms:
 
-- **`ctx.emitReply(text, inResponseToAt, payload)`** — per Natural Stop.
-  Push to UI (`PROCESS_PROGRESS`/`REPLY`) always, Parent Inbox Append
-  only if Parent exists (Worker Mode).
-- **`closeProcess(DONE)`** — per Tool Terminate in Worker Mode.
-  `ParentNotificationListener` queues a DONE `ProcessEvent`,
+- **`ctx.emitReply(text, inResponseToAt, payload)`** — per natural stop.
+  Push to UI (`PROCESS_PROGRESS`/`REPLY`) always, Parent Inbox append
+  only if Parent exists (Worker mode).
+- **`closeProcess(DONE)`** — per tool terminate in Worker mode.
+  `ParentNotificationListener` queues a DONE-`ProcessEvent`,
   `enrichWithLastReply` appends the last Assistant Message.
 
-**Per-Source Collapse in Arthur**: with Frankie, typically two events
-land in Arthur's Inbox (Reply + DONE,
+**Per-Source-Collapse in Arthur**: Frankie typically sends two events to Arthur's Inbox (Reply + DONE,
 both from the same `sourceProcessId`). Arthur's
-`resolveRelayEvent`-Tier-2 collapses per `sourceProcessId` to
+`resolveRelayEvent`-tier-2 collapses per `sourceProcessId` to
 one representative (BLOCKED > SUMMARY > DONE > FAILED > STOPPED),
-so that Arthur can perform a clean RELAY without explicit `eventRef`.
+so Arthur can perform a clean RELAY without an explicit `eventRef`.
 See `arthur-engine.md` §RELAY-Resolution.
 
 ## 13. `producesUserFacingOutput()`
@@ -591,7 +624,7 @@ Frankie returns `true` (default). Its ASSISTANT messages are
 natural language responses — not technical plumbing like with
 Hactar/Slart, which would need to be passed through an `engine-output-translator`.
 
-## 14. What Frankie CANNOT Do
+## 14. What Frankie CANNOT do
 
 - **No full Plan Mode** with modes / approval / read-only
   filter — that remains Arthur/Eddie (see [plan-mode.md](plan-mode.md)).
@@ -614,29 +647,29 @@ Hactar/Slart, which would need to be passed through an `engine-output-translator
 
 In `vance-brain/src/test/java/.../frankie/`:
 
-- `FrankieEngineSkeletonTest` — Metadata, Lifecycle Status Writes,
+- `FrankieEngineSkeletonTest` — Metadata, Lifecycle status writes,
   four stop paths (natural / tool-terminate worker+session /
-  external-interrupt / wallclock / idle-stuck), Empty Response,
-  `allowedTools()` baseline.
+  external-interrupt / wallclock / idle-stuck), Empty-Response,
+  `allowedTools()` baseline
 - `tools/TodoCreateToolTest` — server-assigned IDs (sequential
   max+1), no `id` field on input, `plan-proposed` only on first
-  insert into an empty list, malformed-input handling.
+  insert into an empty list, malformed-input handling
 - `tools/TodoUpdateToolTest` — per-item partial mutate (status /
   content / activeForm), unknown IDs silent skip, auto-clear when
-  every item becomes COMPLETED.
+  every item becomes COMPLETED
 - `tools/TodoRemoveToolTest` — id-list removal, unknown IDs silent
-  skip, `removed`-counter return.
-- `FrankieTodoBlockTest` — Prompt Block Renderer: empty list →
+  skip, `removed`-counter return
+- `FrankieTodoBlockTest` — Prompt block renderer: empty list →
   empty-state hint; populated list → only non-COMPLETED items
-  rendered; all-COMPLETED defensive fallback to empty-state.
+  rendered; all-COMPLETED defensive fallback to empty-state
 
 In `vance-brain/src/test/java/.../arthur/`:
 
-- `ArthurEngineRelayCollapseTest` — Per-Source-Event-Collapse logic
-  (see §11).
+- `ArthurEngineRelayCollapseTest` — Per-source event collapse logic
+  (see §11)
 
 E2E tests per Recipe in `qa/ai-test/` come with the respective
-Recipes — not in this Engine Spec.
+Recipes — not in this engine spec.
 
 ## 16. References
 
@@ -652,4 +685,4 @@ Recipes — not in this Engine Spec.
 - `specification/marvin-engine.md` — Comparison engine (Plan Tree)
 - `specification/recipes.md` — Recipe system
 - `specification/prompts-and-manuals.md` — Prompt discipline
-- `specification/skills.md` — Skill system (user retrofitting of behavior)
+- `specification/skills.md` — Skill system (user behavior customization)

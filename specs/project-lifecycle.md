@@ -8,7 +8,7 @@ permalink: /specs/project-lifecycle
 
 # Vancetope — Project Lifecycle
 
-> Defines the status set of a Project, Pod ownership, the `bring` / `suspend` / `close` transitions, and the relationship to the Workspace. It complements [workspace-management.md](/specs/workspace-management) (what happens *within* a Project on disk) and [session-lifecycle.md](/specs/session-lifecycle) (what runs *within* a Session) — this spec is the overarching framework. Cluster-wide distribution of Projects to Pods (who calls `bring` when on which Pod) is covered in cluster-project-management.md, which sits one layer above.
+> Defines the status set of a Project, Pod ownership, the `bring` / `suspend` / `close` transitions, and the relationship to the Workspace. Complements [workspace-management.md](/specs/workspace-management) (what happens *within* a Project on disk) and [session-lifecycle.md](/specs/session-lifecycle) (what runs *within* a Session) — this spec is the overarching framework. Cluster-wide distribution of Projects to Pods (who calls `bring` when on which Pod) is covered in cluster-project-management.md, which sits one layer above.
 
 ---
 
@@ -29,7 +29,7 @@ When a Project is suspended or closed, all subordinate concepts are tied to it. 
 
 Six statuses on `ProjectDocument.status`:
 
-| Status | Meaning | Workspace Folder | Engines allowed? |
+| Status | Meaning | Workspace Folder | Engines Allowed? |
 |---|---|---|---|
 | `INIT` | Newly created, never recovered, no Workspace on disk | no | no |
 | `RECOVERING` | Pod is bringing the Project online — Workspace recovery is running. Transient. | currently being built | no |
@@ -69,29 +69,29 @@ Six statuses on `ProjectDocument.status`:
 |---|---|---|
 | Lifecycle Status (Intent) | `status` | `ProjectLifecycleService` (see §5) |
 | Ownership (Fact, expires) | `homePodId`, `claimedAt` | `ProjectService.claim` |
-| Does it even need an owner? | `ownerRequired` (derived) + `lifecycleType` (`HOMELESS`/`AUTO`/`EPHEMERAL`/`PERMANENT`) as override | Derived from documents or operator (see cluster-project-management.md §2, §2.1) |
+| Does it even need an owner? | `ownerRequired` (derived) + `lifecycleType` (`HOMELESS`/`AUTO`/`EPHEMERAL`/`PERMANENT`) as override | Derivation from documents or operator (see cluster-project-management.md §2, §2.1) |
 
-In addition, pod-local and **not** in the document: what *this* JVM has actually brought up (`ProjectActivationRegistry`). "Already RUNNING" is not "already running here" — the separation of the three lifecycles is described in `planning/project-ownership-lease-design.md` §2.
+In addition, pod-local and **not** in the document: what *this* JVM has actually brought up (`ProjectActivationRegistry`). "Already RUNNING" is not "already running here" — the separation of the three lifespans is described in `planning/project-ownership-lease-design.md` §2.
 
 ### 4.1 Ownership is a Lease
 
-`homePodId` names the holder, `claimedAt` indicates when it was last renewed. **A lease that is no longer renewed has expired — and an expired lease means that no one owns the Project**, whatever the fields may still say. This is why a crashed Pod is harmless without anyone cleaning up after it: nothing permanent claims to be true, so nothing needs to be cleaned up on shutdown (which wouldn't be possible anyway — `kill -9`, OOM, and Pod eviction do not execute `@PreDestroy`).
+`homePodId` names the holder, `claimedAt` indicates when it was last renewed. **A lease that is no longer renewed has expired — and an expired lease means that no one owns the Project**, whatever the fields may still say. This is why a crashed Pod is harmless without anyone cleaning up after it: nothing permanent claims to be true, so nothing needs to be cleared on shutdown (which wouldn't be possible anyway — `kill -9`, OOM, and Pod eviction do not execute `@PreDestroy`).
 
 **`homePodId`, not `homeNode`.** The holder is the per-JVM fresh `BrainPodDocument.podId` UUID, not the Node name: `vance.cluster.node-name` is configurable, and a restart with a pinned name would otherwise read its own dead predecessor as "already mine". `homeNode` remains as a denormalized display value in the document, **no decision depends on it**.
 
-**Strict read rule:** `homePodId` and `claimedAt` are read in `ProjectOwnership` (`vance-shared.project`) and in the claim path — **nowhere else**. Any other caller queries this class. A handwritten comparison line somewhere in the tree is how the twelve divergent interpretations of `homeNode` arose, and each looked correct individually.
+**Strict Read Rule:** `homePodId` and `claimedAt` are read in `ProjectOwnership` (`vance-shared.project`) and in the claim path — **nowhere else**. Any other caller queries this class. A handwritten comparison line somewhere in the tree is how the twelve divergent interpretations of `homeNode` arose, and each looked correct individually.
 
-Anyone needing an endpoint resolves the holder ID via `ClusterService.resolveEndpointByPodId(podId)`. There is a **second** check there, intentionally: ownership and liveness are two questions with two clocks, and the lease TTL is the longer one. A `kill -9`'d holder retains a valid lease for up to `leaseTtl`, while its `brain_pods` line is `RUNNING` with a dead `host:port` — any hop there would be a connect timeout.
+Anyone needing an endpoint resolves the holder ID via `ClusterService.resolveEndpointByPodId(podId)`. There is a **second** check there, intentionally: ownership and liveness are two questions with two clocks, and the lease TTL is the longer one. A `kill -9`'d holder retains a valid lease for up to `leaseTtl`, while its `brain_pods` line shows `RUNNING` with a dead `host:port` — any hop there would be a connect timeout.
 
 ### 4.2 Status and Ownership are Independent
 
 - `RUNNING` + valid lease → this Pod actively owns the Project
-- `RUNNING` + **expired** lease → the normal case of recovery. Boot self-pull or master distributor bring it back if `ownerRequired` (or `PERMANENT`) demands it — see cluster-project-management.md §5.1/§5.2
-- `SUSPENDED` → will **not** be retrieved. The recovery selector only takes `INIT`/`RECOVERING`/`RUNNING`, because `SUSPENDED` expresses the opposite intent and `bring` pushes any non-RUNNING status to RUNNING: a suspend would otherwise expire with the holder's lease and restart exactly the scheduler whose costs were the reason
+- `RUNNING` + **expired** lease → the normal case for recovery. Boot self-pull or master distributor bring it back if `ownerRequired` (or `PERMANENT`) demands it — see cluster-project-management.md §5.1/§5.2
+- `SUSPENDED` → will **not** be retrieved. The recovery selector only takes `INIT`/`RECOVERING`/`RUNNING`, because `SUSPENDED` expresses the opposite intent and `bring` pushes every non-RUNNING status to RUNNING: a suspend would otherwise expire with the holder's lease and restart exactly the scheduler whose costs were the reason
 
 ### 4.3 The CAS Predicate
 
-`ProjectService.claim` accepts three cases, all decidable **locally on the document**: `homePodId IS NULL` (free), `homePodId == self` (renewal), or `claimedAt` is missing/older than `leaseTtl` (expired). No `liveClusters` set that first needs to be collected and secured against the empty set — and the predicate is thus indexable, where the predecessor required a `$nin` that grew with cluster size.
+`ProjectService.claim` accepts three cases, all decidable **locally on the document**: `homePodId IS NULL` (free), `homePodId == self` (renewal), or `claimedAt` is missing/older than `leaseTtl` (expired). No `liveClusters` set that first needs to be collected and secured against the empty set — and the predicate is thus indexable, where the predecessor needed a `$nin` that grew with cluster size.
 
 Two Pods hitting a fresh Project in parallel will see exactly one winner. The TTL is **read policy**, not baked into the date: increasing it takes effect immediately, instead of waiting for rolling leases.
 
@@ -122,7 +122,7 @@ ProjectDocument close(String tenantId, String projectName, String closedGroupId)
                                            # and status is RUNNING — Claim-Refresh)
 2. status → RECOVERING                     # atomic via transitionStatus
 3. workspaceService.init(tenant, projectId)# auto-recovers Snapshots if present
-4. publish(ProjectEnginesStartRequested)   # Spring event for Engine listeners
+4. publish(ProjectEnginesStartRequested)   # Spring Event for Engine Listeners
 5. status → RUNNING                        # atomic via transitionStatus
 ```
 
@@ -132,7 +132,7 @@ Step 1a covers the reconnect path after Pod death: stale `boundConnectionId` val
 
 From `RECOVERING` (previous Pod crash mid-recovery), `bring` passes through — `workspaceService.init` is crash-safe (see `workspace-management.md` §11.4).
 
-`claim()` acts as a true CAS: two Pods hitting a fresh Project in parallel will see exactly one winner. The second gets `Optional.empty()` back, the wrapper `ProjectManagerService.claimForLocalPod` translates that into a `ClaimRejectedException`. The associated variant `claimForLocalPodOrRedirect` (for connection bind paths) returns a `Redirect` with the endpoint of the current holder in that case, resolved via `ClusterService.resolveEndpointByPodId(homePodId)`.
+`claim()` acts as a true CAS: two Pods hitting a fresh Project in parallel will see exactly one winner. The second gets `Optional.empty()`, which the wrapper `ProjectManagerService.claimForLocalPod` translates into a `ClaimRejectedException`. The associated variant `claimForLocalPodOrRedirect` (for connection bind paths) returns a `Redirect` with the current holder's endpoint in that case, resolved via `ClusterService.resolveEndpointByPodId(homePodId)`.
 
 **Owning is not Running.** `claimForLocalPod` is the raw lease primitive: it makes the Pod the holder and does **not** put the Project into the Activation Registry. Any path that reacts to someone wanting to *use* the Project (Session-Create/Resume/Bootstrap, Workspace-Adopt) must therefore call `bring` — a claimed but never brought Project holds its hooks and schedulers here and executes none of them.
 
@@ -142,12 +142,12 @@ From `RECOVERING` (previous Pod crash mid-recovery), `bring` passes through — 
 
 ```
 1. status → SUSPENDING                       # atomic via transitionStatus
-2. publish(ProjectEnginesStopRequested)      # Spring event for Engine listeners
-3. workspaceService.suspendAll(projectId)    # Snapshots to Mongo, folder gone
+2. publish(ProjectEnginesStopRequested)      # Spring Event for Engine Listeners
+3. workspaceService.suspendAll(projectId)    # Snapshots to Mongo, Folder gone
 4. status → SUSPENDED                        # atomic via transitionStatus
 ```
 
-Idempotent: SUSPENDED → no-op. From SUSPENDING (crash mid-suspend), it restarts from step 2 — `suspendAll` and Engine-Stop are both idempotent.
+Idempotent: SUSPENDED → no-op. From SUSPENDING (Crash mid-suspend), it restarts from step 2 — `suspendAll` and Engine stop are both idempotent.
 
 CLOSED breaks with `ProjectStatusConflictException`. INIT (never recovered) is allowed — goes directly to SUSPENDED without Workspace operations.
 
@@ -172,35 +172,35 @@ Every transition is idempotent, every transient state clearly means "try this st
 
 | Crashed in | On next `bring` | On next `suspend` |
 |---|---|---|
-| `RECOVERING` | continue with Workspace-Init + → RUNNING | complete bring first, then suspend |
-| `SUSPENDING` | bring moves from SUSPENDING → RECOVERING (allowed via transitionStatus) and recovers anew | continue with suspendAll + → SUSPENDED |
+| `RECOVERING` | continue with Workspace-Init + → RUNNING | first complete bring, then suspend |
+| `SUSPENDING` | bring pulls from SUSPENDING → RECOVERING (allowed via transitionStatus) and recovers anew | continue with suspendAll + → SUSPENDED |
 
 `workspaceService.init` and `workspaceService.suspendAll` are defined as crash-safe in §11.4 of workspace-management.md: each takes the Snapshot/Folder pair as the source of truth and brings it to the desired state.
 
-`bring`'s `transitionStatus` allows transitions from any non-CLOSED status to `RECOVERING` — including SUSPENDING. This is intentionally allowed: a crashed SUSPENDING is effectively no longer intended to be suspended (otherwise the user would not have called `bring`) and the recovery path cleans up for recovery.
+`bring`'s `transitionStatus` allows transitions from any non-CLOSED status to `RECOVERING` — including SUSPENDING. This is intentionally allowed: a crashed SUSPENDING is effectively no longer desired to be suspended (otherwise the user would not have called `bring`) and the recovery path cleans up for recovery.
 
 ### 6.1 Boot Self-Pull
 
 On boot — `@EventListener(ApplicationReadyEvent.class)` — `ProjectStartupReclaimer` does two things, and delegates the pulling to `ProjectSelfPullService`:
 
-1. **Derive `ownerRequired` anew** (`releaseNoLongerQualifying`), so that a Project whose last scheduler was deleted during downtime is not fetched for work that no longer exists. Runs **before** the pull, which reads exactly this flag.
+1. **Re-derive `ownerRequired`** (`releaseNoLongerQualifying`), so that a Project whose last scheduler was deleted during downtime is not fetched for work that no longer exists. Runs **before** the pull, which reads exactly this flag.
 2. **Self-Pull:** Greedily pull Projects that need an owner and have no live lease to this Pod — Cap `min(startupScore + 50 %, localHeadroom)`, see cluster-project-management.md §5.1/§5b.
 
-**There is no more stale cleanup.** The predecessor started with an `updateMulti` that nulled `homeNode` on every Project whose owner Node had fallen out of the live registry. With ownership as a lease, there is nothing to clean up: an unrenewed lease has expired, an expired one blocks no one, and the Claim-CAS takes it over at that point. The old wipe was also the **only** reconciliation, and it ran **only here** — a Pod that crashed and restarted within the stale window thus kept its claims forever, and a long-lived cluster never reconciled.
+**There is no more stale cleanup.** The predecessor started with an `updateMulti` that nulled `homeNode` on every Project whose owner node had fallen out of the live registry. With ownership as a lease, there is nothing to clean up: an unrenewed lease has expired, an expired one blocks no one, and the Claim-CAS takes it over at that point. The old wipe was also the **only** reconciliation, and it ran **only here** — a Pod that crashed and restarted within the stale window thus kept its claims forever, and a long-lived cluster never reconciled.
 
-**The candidate selector is "needs an owner and has no live lease"** — the derived `ownerRequired` for `AUTO` Projects plus everything an operator has pinned to `PERMANENT`, and only for statuses that express the intent to run. Its predecessor selected on `PERMANENT` **alone** and thus hit nothing, because nothing in the tree ever wrote that value — hence `brought=0 skipped=0` on every boot (`planning/project-ownership-lease-design.md` §1.1).
+**The candidate selector is "needs an owner and has no live lease"** — the derived `ownerRequired` for the `AUTO` Projects plus everything an operator has pinned to `PERMANENT`, and only for the statuses that express the intent to run. Its predecessor selected on `PERMANENT` **alone** and thus hit nothing, because nothing in the tree ever wrote that value — hence `brought=0 skipped=0` on every boot (`planning/project-ownership-lease-design.md` §1.1).
 
-**Precondition instead of Listener Order:** both barriers of the self-pull — eligibility and headroom — are read from its own `brain_pods` line and respond **permissively** without it. The pull therefore states its precondition itself (`ensureRegistered()` + `isRegistered()`) and otherwise skips; an `@Order` is not sufficient, because an `@EventListener` without `@Order` gets the same `LOWEST_PRECEDENCE`.
+**Precondition instead of Listener Order:** both barriers of the self-pull — eligibility and headroom — are read from its own `brain_pods` line and respond **permissively** without it. The pull therefore states its precondition itself (`ensureRegistered()` + `isRegistered()`) and otherwise omits; an `@Order` is not sufficient, because an `@EventListener` without `@Order` gets the same `LOWEST_PRECEDENCE`.
 
 The boot pull can be disabled via `vance.cluster.self-pull.boot`, an additional periodic pull can be enabled via `.scheduled` (default off) — see §5b of the Cluster Spec.
 
 ### 6.2 Cluster Master Distributor
 
-The former `ProjectWakeupTick` has been replaced by the rotating Cluster Master and its 60s distributor tick — see cluster-project-management.md §4 and §5.2. Only **one** Pod in the cluster holds the Master role and performs the distribution; the other Pods skip it. Race-freedom still comes from the CAS in `ProjectService.claim`, which remains the guarantee.
+The former `ProjectWakeupTick` has been replaced by the rotating Cluster Master and its 60s distributor tick — see cluster-project-management.md §4 and §5.2. Only **one** Pod in the cluster holds the Master role and performs the distribution; the other Pods omit this. Race-freedom still comes from the CAS in `ProjectService.claim`, which remains the guarantee.
 
 Distributor's selector (`ProjectService.findProjectsNeedingOwner`): `status IN (INIT, RECOVERING, RUNNING) AND (lifecycleType=PERMANENT OR (lifecycleType=AUTO AND ownerRequired)) AND (homePodId IS NULL OR Lease expired)`.
 
-`SUSPENDED`/`SUSPENDING` are **not** included, and that's the point: `bring` pushes every non-RUNNING status to RUNNING, so a suspend would not have survived its holder's lease. Targeting runs via eligibility (Labels, §3a of the Cluster Spec) and then utilization `(currentScore/effectiveMaxScore)` of the allowed live Pods.
+`SUSPENDED`/`SUSPENDING` are **not** included, and that's the point: `bring` pushes every non-RUNNING status to RUNNING, so a suspend would not have survived its holder's lease. Targeting is based on eligibility (Labels, §3a of the Cluster Spec) and then utilization `(currentScore/effectiveMaxScore)` of the allowed live Pods.
 
 ---
 
@@ -226,7 +226,7 @@ V2 will implement listeners that enumerate all running Processes via `ThinkProce
 
 ```
 Project (LIFECYCLE status here)
-  └── Sessions (own lifecycle, see session-lifecycle.md)
+  └── Sessions (own Lifecycle, see session-lifecycle.md)
   └── Workspace (own mechanics, see workspace-management.md)
        └── RootDirs (handler-specific: temp, git, ...)
 ```
@@ -247,15 +247,15 @@ Sessions can live independently of the Project status (own lifecycle properties)
 
 | Method | Effect |
 |---|---|
-| `claim(tenant, name, selfPodId, selfNodeName, selfAddress, leaseTtl)` | CAS update: sets `homePodId`/`homeNode`/`claimedAt` and deletes `pendingSince` if `homePodId IS NULL OR == selfPodId OR claimedAt is missing/older than leaseTtl`. `Optional.empty()` = another Pod holds a valid lease. Rejects CLOSED, and podless names with `IllegalArgumentException` |
+| `claim(tenant, name, selfPodId, selfNodeName, selfAddress, leaseTtl)` | CAS update: sets `homePodId`/`homeNode`/`claimedAt` and deletes `pendingSince` if `homePodId IS NULL OR == selfPodId OR claimedAt is missing/older than leaseTtl`. `Optional.empty()` = another Pod holds a valid lease. Rejects CLOSED, and the homeless `_tenant` with `IllegalArgumentException` |
 | `renewLeases(selfPodId, now)` | an `updateMulti` over everything this Pod holds — O(1) per beat, independent of tenant and project count. The **matched** count is the answer to "how many do I still hold" and provides drift detection for free |
-| `releaseLeases(selfPodId, …)` | releases all leases on shutdown. Best-effort: correctness does not depend on it, an unrenewed lease expires itself |
+| `releaseLeases(selfPodId, …)` | releases all leases on shutdown. Best-effort: correctness does not depend on it, an unrenewed lease expires on its own |
 | `releaseLease(tenant, name, selfPodId, …)` | releases **one** lease, guarded by "still belongs to me" — the drain primitive (§5c of the Cluster Spec) |
 | `transitionStatus(tenant, name, expected, target)` | atomic findAndModify; throws `ProjectStatusConflictException` if the status is not expected |
 | `close(tenant, name, closedGroupId)` | sets status=CLOSED + projectGroupId; rejects SYSTEM Projects |
 | `findRunningByHomePodId(podId)` / `findByHomePodId(podId)` | Projects of this holder (RUNNING or status-independent for the heartbeat snapshot). Keyed on the Pod ID with an index behind it, not on the Node name |
-| `sumScoreByHomePodId(podId)` | Sum of `homeResourceScore` — the load the Pod reports about itself per beat |
-| `findProjectsNeedingOwner(leaseTtl, limit[, skip])` | "needs an owner and has no live lease" (§6.2). Index range scan; `skip` because the self-pull discards candidates for a reason the query cannot express |
+| `sumScoreByHomePodId(podId)` | Sum of `homeResourceScore` — the load that the Pod reports about itself per beat |
+| `findProjectsNeedingOwner(leaseTtl, limit[, skip])` | "needs an owner and has no live lease" (§6.2). Index range scan; `skip` because the self-pull discards candidates for a reason that the query cannot express |
 | `findPendingPlacement(leaseTtl, pendingTtl)` | Projects that could not be placed anywhere on the last attempt — the set reported by the demand notification (§5a of the Cluster Spec) |
 | `markPendingPlacement(tenant, name, now)` | sets `pendingSince`, **only if empty**, so it means "waiting since" instead of "last asked" |
 | `setOwnerRequired(tenant, name, value)` / `findOwnerRequired()` | the derived flag; written only if it flips |
@@ -264,26 +264,26 @@ Sessions can live independently of the Project status (own lifecycle properties)
 
 **Removed** with the lease refactoring: `findPermanentOrphans` (replaced by `findProjectsNeedingOwner` — the old selector hit nothing because `PERMANENT` had no writer) and `clearStaleHomeNodes` (there is no stale state to clean up anymore, §6.1).
 
-`ProjectLifecycleService` builds on these methods and adds the Workspace steps and event emission. `ProjectManagerService` (vance-brain) is the Brain-side façade for **Ownership** — it fetches Pod ID, Node name, and lease TTL from `ClusterService` and translates `claim`'s `Optional.empty()` into `ClaimRejectedException` / `ClaimResult.Redirect`. It no longer needs a live set: the CAS predicate is local to the document (§4.3).
+`ProjectLifecycleService` builds on these methods and adds the Workspace steps and event emission. `ProjectManagerService` (vance-brain) is the Brain-side facade for **Ownership** — it retrieves Pod ID, Node name, and lease TTL from `ClusterService` and translates `claim`'s `Optional.empty()` into `ClaimRejectedException` / `ClaimResult.Redirect`. It no longer needs a live set: the CAS predicate is local to the document (§4.3).
 
-**"Which Pod *should* run it" is not here**, but in `ProjectPlacementService` (`vance-brain.cluster.placement`, §5 of the Cluster Spec). The separation is the lesson from seven scattered answers to this question: `ProjectManagerService` enforces a decision, it does not make it.
+**"Which Pod *should* run it" is not defined here**, but in `ProjectPlacementService` (`vance-brain.cluster.placement`, §5 of the Cluster Spec). The separation is the lesson from seven scattered answers to this question: `ProjectManagerService` enforces a decision, it does not make it.
 
 ---
 
 ## 10. What This Spec Does Not Govern
 
-- **Engine listeners** for `ProjectEngines{Start,Stop}Requested` beyond `UrsaSchedulerService` — V2, together with Session suspend cascade from `session-lifecycle.md` §9.
-- **Auto-suspend on inactivity** at the Project level (analogous to Session idle sweep) — comes with the quota sweeper from `workspace-management.md` §9.
+- **Engine Listeners** for `ProjectEngines{Start,Stop}Requested` beyond the `UrsaSchedulerService` — V2, together with Session suspend cascade from `session-lifecycle.md` §9.
+- **Auto-Suspend on inactivity** at the Project level (analogous to Session idle sweep) — comes with the quota sweeper from `workspace-management.md` §9.
 - **Cross-Pod Process Migration:** a running Think Process remains on its Pod. On Pod death, the Process dies, the Project is brought up anew on another Pod, the next trigger may spawn a new Process. No live migration.
 - **Migration of old Mongo data** with status values `PENDING`/`ACTIVE`/`ARCHIVED` or the legacy `podIp` field — the old field remains physically in documents but is no longer read by the mapper; an optional `db.projects.updateMany({}, {$unset: {podIp: ""}})` cleans it up after stabilization. The same applies to the former `requiresOwnerPod` field (see cluster-project-management.md §10).
-- **Distribution of Projects to Pods in the Cluster** — *which* Pod should run a Project, eligibility, score model, Master role: all in cluster-project-management.md. This spec here knows the individual `bring` on the local Pod and the **ownership lease** (§4); the selection before that does not belong here.
+- **Distribution of Projects to Pods in the Cluster** — *which* Pod should run a Project, eligibility, score model, Master role: all in cluster-project-management.md. This spec covers the individual `bring` on the local Pod and the **ownership lease** (§4); the selection before that does not belong here.
 
 ---
 
 ## 11. Relation to Other Specs
 
-- cluster-project-management.md — Cluster-wide distribution: eligibility via labels/selectors (§3a), score and capacity model (§3, §3b), Master role, the placement façade and its triggers (§5), demand notification (§5a), self-pull switches (§5b), drain (§5c). Sits one layer above this spec.
-- [workspace-management.md §11](/specs/workspace-management) — Workspace part of the Suspend/Recover/Close flows. ProjectLifecycleService delegates there.
+- cluster-project-management.md — Cluster-wide distribution: eligibility via labels/selectors (§3a), score and capacity model (§3, §3b), Master role, the placement facade and its triggers (§5), demand notification (§5a), self-pull switches (§5b), drain (§5c). Sits one layer above this spec.
+- [workspace-management.md §11](/specs/workspace-management) — Workspace portion of the Suspend/Recover/Close flows. ProjectLifecycleService delegates there.
 - [session-lifecycle.md](/specs/session-lifecycle) — Session/Engine lifecycle. The Engine hook events (V2) interlock with the Session suspend cascade.
 - [architektur-scopes-clients.md](/specs/architektur-scopes-clients) — Scope hierarchy Tenant → Project Group → Project → Session.
 - [vision.md](/specs/vision) — what a Project is in the product sense.

@@ -2,13 +2,18 @@
   "translations": {
     "addon-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "601c18dc870214abb4f5f9b1146ecf2f50b8c5f3aadedb90b386639c244a3e95",
-      "translated_at": "2026-09-03T11:01:34Z"
+      "source_sha256": "4a6244a274e033ef8fd27aea4e9a06ec03197742bafd540ab6352ce94ba615e8",
+      "translated_at": "2026-10-15T09:44:27Z"
     },
     "agent-document.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "578c6e8a4cc67fd1a4d96ed1903f2ef12e2b5ed739dbaf2be14472d437de1098",
-      "translated_at": "2026-08-28T07:47:23Z"
+      "source_sha256": "0e1914467058f539d8d98c566dedb9ef8c7272544440e895f6977669718fe83f",
+      "translated_at": "2026-10-15T09:44:35Z"
+    },
+    "agent-toolbox.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "718be007c6e22b4acfc4a8ba18a8eaa9a03bebfc1b3ff874b3a6e8e39545c7f2",
+      "translated_at": "2026-10-15T09:44:46Z"
     },
     "agrajag-engine.md": {
       "model": "gemini-2.5-flash",
@@ -35,6 +40,11 @@
       "source_sha256": "b8560255255580c71c296f3d601ad5f71c31630f9ce0f154949a7fabacb635cf",
       "translated_at": "2026-08-28T07:48:46Z"
     },
+    "app-designer.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "d54d4dabaab4c09d152c9ad055fe9925635c342a9951a798bb277b1aed4baddc",
+      "translated_at": "2026-10-15T09:45:09Z"
+    },
     "app-gtd.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "428b918ca6f0fd675836769823778b07a1ec46c43947b58ba93f4f3f2223b6a9",
@@ -60,6 +70,11 @@
       "source_sha256": "8107d15827a1110cd21fe531f5f0f81e2f7e89c7a61583769f48b045b1fc978e",
       "translated_at": "2026-09-03T11:02:56Z"
     },
+    "app-scribblebook.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "f2f2fc770cfae300fb639553f026db00253b324173678429b20b53a3f00fcdc4",
+      "translated_at": "2026-10-15T09:45:14Z"
+    },
     "app-search.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "c7410efac05d56716f6c180d0b16f17074489eb6a34e51386721e1739442f9e8",
@@ -82,8 +97,8 @@
     },
     "arthur-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9166f35ad9fb6e802581c9b29286f9c4577b457c20111a6c29dd47db7ab9d12e",
-      "translated_at": "2026-09-15T12:49:48Z"
+      "source_sha256": "ec6520fd79e352f11d7a5c32dcca9a5fbdf28f9fede84487d51296c097a566dc",
+      "translated_at": "2026-10-15T09:45:44Z"
     },
     "audit-system.md": {
       "model": "gemini-2.5-flash",
@@ -92,8 +107,8 @@
     },
     "benjy-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "b4eb8e0a5fc55a965f3b0b7bb4f1f713bfe82afab8fb1df900c638cf5b122e0e",
-      "translated_at": "2026-09-15T12:50:11Z"
+      "source_sha256": "ce7296dd99527f8f4c7e831c6b95b591a085fa73193cdf9fd1f7b833a276d64d",
+      "translated_at": "2026-10-15T09:46:09Z"
     },
     "bistromath-system.md": {
       "model": "gemini-2.5-flash",
@@ -102,28 +117,38 @@
     },
     "centauri-service.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "d246c78556c2f10880ec299a66016dc0d35c69384dd4c4ee3b65be875679cb4b",
-      "translated_at": "2026-08-28T07:54:40Z"
+      "source_sha256": "26bf8197014f494aff2fc0f03522f27823007bb022f869bef9bb8f9be131c52f",
+      "translated_at": "2026-10-15T09:47:13Z"
     },
     "chat-location-tool.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "edf6553a94151a4a6c6d562844368705ff9a8a640b544f232cc93b61ad80db1d",
       "translated_at": "2026-09-03T11:03:06Z"
     },
+    "chat-themes.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "908fcac533a370e17ba6cedf1d15695debaf74da492548faa8dd34f4464ccccb",
+      "translated_at": "2026-10-15T09:47:32Z"
+    },
     "client-protokoll-erweiterbarkeit.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "f8d58ad341cb61d83f40c6b3311fbd5444e77d69d7be34a7ab01c7fbb4391f36",
-      "translated_at": "2026-08-28T07:54:59Z"
+      "source_sha256": "68d10e01466af0e7d2b3d8dc3d8d82b883a494cc32f5adfc2a0c0b9f0caf8e94",
+      "translated_at": "2026-10-15T09:47:51Z"
     },
     "cortex.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "dbc50fa7bb0de1a383378e0926317edfef1a7f677440aebda5fd5059188bfb7a",
-      "translated_at": "2026-09-03T11:03:35Z"
+      "source_sha256": "55b4af0f5e21c3adcfde25b1331e659b7ad8ff0e79bb663f96a8e4619df99d99",
+      "translated_at": "2026-10-15T09:48:18Z"
     },
     "damogran-system.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "564ef3601881a51114a16b082de5bbfe7e7f7aa1cf488bd435159751d3ccd333",
       "translated_at": "2026-08-28T07:56:24Z"
+    },
+    "desktop-agent-tools.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "8265b1529d98d8db1259613cdefe77c588a76000b790ccbf70cf54c437dd71e6",
+      "translated_at": "2026-10-15T09:48:42Z"
     },
     "doc-kind-application.md": {
       "model": "gemini-2.5-flash",
@@ -190,10 +215,20 @@
       "source_sha256": "d2895b09e4ce43b287ec0ab9a84f7d8caf97efdf0c9333f8641a83ae7db61d7b",
       "translated_at": "2026-09-15T12:50:20Z"
     },
+    "doc-kind-questions.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "f8a08824eb75f5e8a1bfc988a9b271d278e5e1543490b2a995b05bbfdc74ee39",
+      "translated_at": "2026-10-15T09:48:50Z"
+    },
     "doc-kind-records.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "baeeb8a46a817f9f6a0fb026a72c91609f0eeaef981d2d9549b9ce718c087821",
       "translated_at": "2026-08-28T08:00:25Z"
+    },
+    "doc-kind-scribble.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "cbd9ef295f338b115d653c60d44ca0e6261046b9217ad73c66b904c51ca35d03",
+      "translated_at": "2026-10-15T09:49:02Z"
     },
     "doc-kind-sheet.md": {
       "model": "gemini-2.5-flash",
@@ -237,8 +272,8 @@
     },
     "document-templates.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "217a3e2cdbe7128deae9cf82d6b899fdf9af8ea56a453f00200c6d9c3ffe6043",
-      "translated_at": "2026-08-28T08:03:10Z"
+      "source_sha256": "29fd0962b46156a9de91f039d666d6168492880ba13c77ecb96551ba54e0c523",
+      "translated_at": "2026-10-15T09:49:30Z"
     },
     "document-versioning.md": {
       "model": "gemini-2.5-flash",
@@ -252,13 +287,13 @@
     },
     "eddie-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "5effb56426d1b6a7b43fbe1dbf8770dbfb265846c96887ef217ae82b7d284584",
-      "translated_at": "2026-09-15T12:51:38Z"
+      "source_sha256": "610d25a5ba82fa4cd0aeb9cdbb2672ae5bfc63a46dc6425a9bed7aef708d65ff",
+      "translated_at": "2026-10-15T09:50:25Z"
     },
     "engine-commands.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "043646ab34ce57a0723d1073686017cc3dfb6da4dc0fc99b3410b8a29830a415",
-      "translated_at": "2026-09-15T12:51:53Z"
+      "source_sha256": "6d388b1d269ea0529d2b0104e8ecdeb03734e795bc1db246294da3aa5c7ea1c4",
+      "translated_at": "2026-10-15T09:50:40Z"
     },
     "events.md": {
       "model": "gemini-2.5-flash",
@@ -272,8 +307,8 @@
     },
     "fenchurch-service.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "e9028e3c0189e1e1cd08ccec706c765898a6bd1743a1459dfc016af870324df1",
-      "translated_at": "2026-08-28T08:06:27Z"
+      "source_sha256": "7a6482de0cf90e9108918cf09647794749259d8606cc850f0384bea79e831472",
+      "translated_at": "2026-10-15T09:51:24Z"
     },
     "file-transfer.md": {
       "model": "gemini-2.5-flash",
@@ -302,18 +337,18 @@
     },
     "foot-sandbox.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "6b03730188674c23a6f5119db8df6f5ef2d07c1d796a890d8ffeec241a73b321",
-      "translated_at": "2026-08-28T08:08:38Z"
+      "source_sha256": "d3d8dbcae7a34a078ac67b8014f693fda8879329957d12b93bf87b2be3d3dc51",
+      "translated_at": "2026-10-15T09:51:41Z"
     },
     "foot-tool-packs.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "4823dc75268d3865b4b92b7c3c24d015dcaa92cd8864ae8ac30c794ddaedd5b0",
-      "translated_at": "2026-08-28T08:08:45Z"
+      "source_sha256": "ec8e6185cfbb352a9dbb857b9df3e94069280fd68fd7e0cbf64cb368830380d5",
+      "translated_at": "2026-10-15T09:51:50Z"
     },
     "ford-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "b9566ba5cb3f531204f6bdd0c1a54a4899e3c9f46021fad1756806afb80ed3f4",
-      "translated_at": "2026-08-28T08:08:55Z"
+      "source_sha256": "ff85aec7a5755e06bde83b309db982ff02c444531cc0bbcba1c6395914db1323",
+      "translated_at": "2026-10-15T09:52:05Z"
     },
     "foreign-document-access.md": {
       "model": "gemini-2.5-flash",
@@ -322,23 +357,33 @@
     },
     "frankie-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "0738457e55aa40ee516b4debd9e5dd0b99e73e74b55dc360b9da9f3d70dc882d",
-      "translated_at": "2026-09-15T12:53:23Z"
+      "source_sha256": "913b3b5838d9e419299eb9f155b2583fa095a022fd05a10665985da449ce9e5d",
+      "translated_at": "2026-10-15T09:52:40Z"
     },
     "hactar-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "ab5dc34bc909b40a51831a4118152c0e3f643515deeab811f189aaf304122e1a",
-      "translated_at": "2026-08-28T08:09:43Z"
+      "source_sha256": "745ba5b2817734457c761dff89a34c3dcef37a9018d977a528534253cb1599e7",
+      "translated_at": "2026-10-15T09:52:56Z"
     },
     "help-system.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "4b2809be3a77c25593ad9727ad3cc24e6cf76f91de2b68a9427010e0d9554bb2",
       "translated_at": "2026-08-28T08:09:50Z"
     },
+    "homes.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "a62c004bb837631e8066661475bd4e024bce1eaee6b3d1fd40b4e50f9b67615c",
+      "translated_at": "2026-10-15T09:53:04Z"
+    },
+    "hotblack-service.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "89cd1343dd2c5f550cfd689657f791db6c2c13f28f07393b0d2e5dda8a3500fd",
+      "translated_at": "2026-10-15T09:53:35Z"
+    },
     "how-do-i.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "664cfa9a674bca9e6fb5bd07cf6da217dae2ae70fcb759b7bdab85fb1e15dd10",
-      "translated_at": "2026-08-28T08:10:21Z"
+      "source_sha256": "e27eac51ee4afd19bcc175d960dd4c08ce64666d5dd8c594defc3454ad342749",
+      "translated_at": "2026-10-15T09:54:08Z"
     },
     "identity-credentials.md": {
       "model": "gemini-2.5-flash",
@@ -352,13 +397,13 @@
     },
     "inline-and-embedded-content.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "925072709a2c8a144c3ae1135735d340915e472d4e11495d7a4a812f95f6d511",
-      "translated_at": "2026-08-28T08:12:02Z"
+      "source_sha256": "38065b0569e2f85bae7db8833a8396d8b1dc2cb484ee9165d1d608bb2b0d5609",
+      "translated_at": "2026-10-15T09:55:08Z"
     },
     "integration-tokens.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "caae51a6d9ada53c60493f3de579f13042cce440733e83326c91b64185b037e5",
-      "translated_at": "2026-09-03T11:03:50Z"
+      "source_sha256": "1468e2fe83fd24ed6a81fc96a046d1ec86192911b13c5e3c8a5ad7e361e782ac",
+      "translated_at": "2026-10-15T09:55:26Z"
     },
     "integrationen-externe-systeme.md": {
       "model": "gemini-2.5-flash",
@@ -372,8 +417,8 @@
     },
     "jaglan-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "fa5f35aca9619ebccadd34c6903fe9e0c149314981099d005e40f99212827cde",
-      "translated_at": "2026-08-28T08:12:57Z"
+      "source_sha256": "f46e6779e1ba22a4cc62ae347b8771a7fa014baed1bc08ce8f69790d4aefc39d",
+      "translated_at": "2026-10-15T09:55:58Z"
     },
     "jeltz-engine.md": {
       "model": "gemini-2.5-flash",
@@ -382,43 +427,53 @@
     },
     "kits.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "8ac02a04a6569b620a212df4ceb924bdabcda6f6408f0540fdc69d080c6b0c50",
-      "translated_at": "2026-09-15T12:54:25Z"
+      "source_sha256": "ac112ebfac4841514e2d5218eb8e5ba4d1959e202e2ae437368ffd17b4af0cdc",
+      "translated_at": "2026-10-15T09:57:03Z"
     },
     "knowledge-graph.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "d59e1af66166979990ed10150d5c8cf645021c87b9d1314f27b3c80cb074cca3",
       "translated_at": "2026-08-28T08:14:26Z"
     },
+    "lease-system.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "f7915c4066e5af7ca7033d0a4213662117f62a8e16b681a014c7c9a445066b9c",
+      "translated_at": "2026-10-15T09:57:20Z"
+    },
     "light-llm-service.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9a4c724c09ebed315bca2bca2d8a2fef6b79edfb2560ee32d99a55bf9f6f0b29",
-      "translated_at": "2026-08-28T08:14:42Z"
+      "source_sha256": "170ad1a7d1f93722238bc6f18366d5fd65bf13c12880541f81c1fe817639e3b0",
+      "translated_at": "2026-10-15T09:57:39Z"
     },
     "live-ws.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "e7c7fbde8fa625ed089fda72551f26ed314100c0323f50ecf34b7ff31c96b08c",
-      "translated_at": "2026-09-15T12:54:47Z"
+      "source_sha256": "ec33473f383f0d6f6adf87d45365d2938e290e95e5abda787c800b7195cb4df0",
+      "translated_at": "2026-10-15T09:58:03Z"
     },
     "llm-resource-management.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9e96cc9ff109b06c894b89ece94d464cbb7b5dd17ac330c33a73a26791a3cfa8",
-      "translated_at": "2026-09-15T12:56:02Z"
+      "source_sha256": "0468a40ae03cba7351ea91fa1ddefc8adae131d2e7fb4669e07136b4c5cab5e2",
+      "translated_at": "2026-10-15T09:59:18Z"
     },
     "marvin-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "bd5387b85e5317b89d84800a9e6bbf18522114f98ce17bb46bdabdc55270bd24",
-      "translated_at": "2026-09-15T12:56:36Z"
+      "source_sha256": "5028373aef579b7f25211d04f4d268d598ecd8dc0a8488c7df3fa939a531ea38",
+      "translated_at": "2026-10-15T09:59:55Z"
     },
     "maximegalon-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "680921d88ab5d2d384ecaa0961ea85ac1fe8f091638d6e316c6ce7ca9457848d",
-      "translated_at": "2026-08-28T08:17:07Z"
+      "source_sha256": "a80eec452eb45bedfce3b4dd253bff660056c159b9c7f29bb168d5aefa8d2e7c",
+      "translated_at": "2026-10-15T10:00:29Z"
+    },
+    "mcp-project-access.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "468b1a10653f24a5699b706dba12a8d80a6db947a2c096e178d6906a97be0368",
+      "translated_at": "2026-10-15T10:00:40Z"
     },
     "mcp-server.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "4d8dc5e1bc5fa503d2c72495a3685c7cf19fbe2fcd422a9658c79a59de4e2b22",
-      "translated_at": "2026-08-28T08:17:21Z"
+      "source_sha256": "25f16b3f6ca2fabbdad5de2e95518aa7994cf55dbf86fe2237a45f39cd0e9e01",
+      "translated_at": "2026-10-15T10:00:56Z"
     },
     "mcp-tool-routing.md": {
       "model": "gemini-2.5-flash",
@@ -455,6 +510,16 @@
       "source_sha256": "5a168b5dd9ac82f18899cb894816c5623022e9eb0f850f335741d79ff7edc867",
       "translated_at": "2026-08-28T08:20:02Z"
     },
+    "nutrimat-engine.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "563df3f0fae630cbc9055f2b5dbc5ed39723327f17e569a99ad78285c0719ead",
+      "translated_at": "2026-10-15T10:01:29Z"
+    },
+    "oauth-server.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "f63a5d968f58ef42b4521503de8dcbc5ac151b274d809cb948a9d7e2ab11ae8a",
+      "translated_at": "2026-10-15T10:02:05Z"
+    },
     "password-security.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "e2531617ae59467935409611b5fd5b2d292b31322aaa4d34ae46db67db3af716",
@@ -462,8 +527,8 @@
     },
     "permission-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "a0099038ea03d2fa14bfd2f501edb7fd1c33e2c32e772569f5f8660300a87b76",
-      "translated_at": "2026-08-28T08:20:42Z"
+      "source_sha256": "344efa60b1c90359d80f93fcf0a49e00eae94e7cf10adf54ebc985012cbc776a",
+      "translated_at": "2026-10-15T10:02:31Z"
     },
     "plan-mode.md": {
       "model": "gemini-2.5-flash",
@@ -487,28 +552,28 @@
     },
     "project-lifecycle.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "f37d2586d1c0db27992276240c388852321bac0b8f864085b63cbd8f3dccd70d",
-      "translated_at": "2026-08-28T08:22:27Z"
+      "source_sha256": "84008af5e650c362191367f2d2ca621ab917aacb3606c84e60df498afa11435c",
+      "translated_at": "2026-10-15T10:02:54Z"
     },
     "project-maintenance.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "3d3f508279184adb7656cde68e262e8a28581882940a4e0a5a5b02e54419ed38",
-      "translated_at": "2026-08-28T08:22:51Z"
+      "source_sha256": "3156d95094f991c09961a4fe58b12af72e28045cca365ccd60464c6b7d2cddba",
+      "translated_at": "2026-10-15T10:03:19Z"
     },
     "prompt-caching.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "4fc9d8642181319646f51f4c5bf314139f0c1b10672ea7ed5ac86b64ca771da4",
-      "translated_at": "2026-08-28T08:23:15Z"
+      "source_sha256": "9b3ce0a5969af50ea328b97825002a4c47cfd88e558e8395795906196f97eb78",
+      "translated_at": "2026-10-15T10:03:58Z"
     },
     "prompts-and-manuals.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "36f147b91b9f1509a889a7668f3c4087da29ef3cf97cbabe52c8a1d29edd9d91",
-      "translated_at": "2026-08-28T08:23:44Z"
+      "source_sha256": "b5cf428a0812936c97aab31eb0e0892f92833138d168c61c1295f94ad85b84ae",
+      "translated_at": "2026-10-15T10:04:27Z"
     },
     "rag.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "79c85d560a4c193f819a0a000e563f6fe696b16693e53df25d90382997f56738",
-      "translated_at": "2026-08-28T08:24:06Z"
+      "source_sha256": "c0c6940fb1d8ed804ebe6836a115cb4d0914f7e7bfce3e55887d4505d899e89c",
+      "translated_at": "2026-10-15T10:04:49Z"
     },
     "recipe-routing.md": {
       "model": "gemini-2.5-flash",
@@ -517,13 +582,13 @@
     },
     "recipes.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9bd58e681f51096c359544d4aadec87100c373b3e63b91e5b8b7c0a28ec5d369",
-      "translated_at": "2026-09-15T12:58:30Z"
+      "source_sha256": "61c8b72a030a6978f7e3f8bdf298814840f70a732f570d564f5160b5ecac2251",
+      "translated_at": "2026-10-15T10:05:51Z"
     },
     "report-themes.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "97d1ee0f189df146afdfe83ab4a01687ca1956f5e8e2dc3e6238ac9bdbcdd0d1",
-      "translated_at": "2026-09-03T11:07:26Z"
+      "source_sha256": "4182cd6a902e1e34abef42eedf08fe75d80440363779e7f79760c34f993983de",
+      "translated_at": "2026-10-15T10:06:24Z"
     },
     "responsive-focus-layout.md": {
       "model": "gemini-2.5-flash",
@@ -537,8 +602,8 @@
     },
     "scheduler.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "6488880382fee97dcf622ee3fb41e3cc0c41bb24b94be13a6e97e8de83324091",
-      "translated_at": "2026-08-28T08:26:18Z"
+      "source_sha256": "5759df6a7cb2d17b3ed1a5337dce1d11227b5bda6997cc7d05666533984083cd",
+      "translated_at": "2026-10-15T10:06:59Z"
     },
     "script-document-api.md": {
       "model": "gemini-2.5-flash",
@@ -547,8 +612,8 @@
     },
     "script-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "5ddf9c187f8b5eb63076e881106b0eba7665ad7589c5990fb56d4e3f696e1351",
-      "translated_at": "2026-08-28T08:27:18Z"
+      "source_sha256": "495489460654e9de6a5c7bd906f66ee8514848e1ac6fd12be9bbb514708841b3",
+      "translated_at": "2026-10-15T10:07:42Z"
     },
     "selection-reference.md": {
       "model": "gemini-2.5-flash",
@@ -557,8 +622,8 @@
     },
     "server-tools.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "0bc1a9b6b470e382ac8fb0c90588bc63540cecaa5b7a8babc9b0de0a9e50a16e",
-      "translated_at": "2026-09-15T12:59:31Z"
+      "source_sha256": "afb41bf347879ae947bea2fca223db5fcb0361bbf937c907222c96903a6540a2",
+      "translated_at": "2026-10-15T10:08:28Z"
     },
     "session-compact.md": {
       "model": "gemini-2.5-flash",
@@ -577,13 +642,18 @@
     },
     "session-lifecycle.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "11a076b20efc0633a7ab419f160d53ff611e9a9f522eafcc24de720375306369",
-      "translated_at": "2026-08-28T08:29:05Z"
+      "source_sha256": "bfcb64f828cc2a410254e6393bbbe1b7aa65df9c4e5a4b040ea57a03272fd44f",
+      "translated_at": "2026-10-15T10:09:22Z"
     },
     "setting-forms.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "edd5c4f53fd50f6ee24e27f0b02b62ea1999dfd15c1db42a37f1783f2f7ed2f7",
-      "translated_at": "2026-09-03T11:08:50Z"
+      "source_sha256": "9f2ce1e81b0420e2c6377f826549971806c6c17ffcd3848a19e7e1d004cdbf24",
+      "translated_at": "2026-10-15T10:10:00Z"
+    },
+    "settings-panel.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "cf6c90b0e447f8faf6637f1f04c90ffd05f61ba63ff044eb6ec2406b24a5e66f",
+      "translated_at": "2026-10-15T10:10:28Z"
     },
     "settings-system.md": {
       "model": "gemini-2.5-flash",
@@ -597,8 +667,8 @@
     },
     "shooty.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "63195f06d11e6d6a3dacc6db2371bd1af773364e269f016ea9510103623785f0",
-      "translated_at": "2026-09-15T13:00:04Z"
+      "source_sha256": "b480e4fbf19317836327c08a150b493bbac28d7ff6a77a417b464e4eced59161",
+      "translated_at": "2026-10-15T10:10:54Z"
     },
     "signals-channel.md": {
       "model": "gemini-2.5-flash",
@@ -607,13 +677,13 @@
     },
     "skills.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "17dec96b20bf7b2e5eec3b81d391625fb2cdb2aec75132fdd3d3c3825734a1f0",
-      "translated_at": "2026-09-15T13:00:59Z"
+      "source_sha256": "e2cde1f942695152cc4897ebaf783cb5247ce5073b5564acd8c31da820916914",
+      "translated_at": "2026-10-15T10:12:09Z"
     },
     "slartibartfast-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "fe6790ba88f69c611c98aeb2e79d5341a55b8c7bef81ac637a8123ca074509ab",
-      "translated_at": "2026-09-15T13:01:45Z"
+      "source_sha256": "e02a992c2e51714052af38a497dc958fa5d6d19d340b45da31097914017f6c12",
+      "translated_at": "2026-10-15T10:12:54Z"
     },
     "structure-tool.md": {
       "model": "gemini-2.5-flash",
@@ -622,13 +692,13 @@
     },
     "structured-engine-output.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "3cd36be9c4cca44044268ea664872c384cb643e6c6fd70860e05a204176c7126",
-      "translated_at": "2026-08-28T08:32:10Z"
+      "source_sha256": "3de822411c5f5992106374d0fa8391198775f0198943cf1dfd57fa39bd58d176",
+      "translated_at": "2026-10-15T10:12:59Z"
     },
     "think-engines.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "3a092d3732b5b472e1d624f170258695ca630d8169ec75d069fee911c7f29daf",
-      "translated_at": "2026-08-28T08:33:00Z"
+      "source_sha256": "ede995446daca93f81b2e439315a39b541348718550c3029fed17cdd04711301",
+      "translated_at": "2026-10-15T10:13:27Z"
     },
     "tool-availability.md": {
       "model": "gemini-2.5-flash",
@@ -642,13 +712,18 @@
     },
     "trillian-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "8064e626e785210578f4a42d872136508e102ca2248126bcfd4587b405ee2c60",
-      "translated_at": "2026-09-03T11:09:58Z"
+      "source_sha256": "656a34623e34bce75745e1d9cf0d3195847a2ab70ccf45ff513e4896fd767096",
+      "translated_at": "2026-10-15T10:14:43Z"
+    },
+    "trillian-exposure.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "64744d4cf5367bdd834700e9a032bb00594458ee245132dbec51e158c728bd7e",
+      "translated_at": "2026-10-15T10:14:55Z"
     },
     "trillian-nature-adam.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "4d8ef02eafe4189304f76c8defebbf126daad80fbba0edbe82a1569213eb49da",
-      "translated_at": "2026-08-28T08:34:58Z"
+      "source_sha256": "370780281bd3a8453e1d4ed1070abe8dac84d18a0750e3451e3b83dbfa6e4531",
+      "translated_at": "2026-10-15T10:15:36Z"
     },
     "ursahooks.md": {
       "model": "gemini-2.5-flash",
@@ -672,13 +747,13 @@
     },
     "user-progress-channel.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "733c28f057563aa35e497b0edc458bf778fcd5503d8af230dba97390a8410408",
-      "translated_at": "2026-08-28T08:36:38Z"
+      "source_sha256": "5e26a956b9a0b3237694214eec4b863f5361cb28c546eb27c7e0dd1f6999a1c8",
+      "translated_at": "2026-10-15T10:16:04Z"
     },
     "vance-facelift.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9a0ec5cf30ab2179e85a836d843cd6c856d3940ffc4fc0fc23cfece2789cfacc",
-      "translated_at": "2026-09-15T13:02:13Z"
+      "source_sha256": "1bb227acb86fa99e2bb2cb4311b3ab9e7085b4b729269c2a5a79806be39c7958",
+      "translated_at": "2026-10-15T10:16:34Z"
     },
     "vault-access.md": {
       "model": "gemini-2.5-flash",
@@ -692,8 +767,8 @@
     },
     "vogon-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "cf935002117917d87a23d5ad0071e7f23979bcd2c0e69bcc40d23cbf1ba7f822",
-      "translated_at": "2026-08-28T08:37:40Z"
+      "source_sha256": "2f69b38c3c800ce11659f365f95a5c2142875527d42cd4d76fa0bb48aa4144af",
+      "translated_at": "2026-10-15T10:16:51Z"
     },
     "voice-mode.md": {
       "model": "gemini-2.5-flash",
@@ -707,8 +782,8 @@
     },
     "web-ui.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "40c4c8dc8c4b565cef772a986386eccc784931900fbbf02594e33d643a50b912",
-      "translated_at": "2026-09-15T13:03:26Z"
+      "source_sha256": "9c288aa04f7275ad10a721c50af167b31393db7c2cf6f51abd4961bd5598d7ea",
+      "translated_at": "2026-10-15T10:18:04Z"
     },
     "webdav.md": {
       "model": "gemini-2.5-flash",
@@ -717,18 +792,18 @@
     },
     "websocket-protokoll.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "42a30284dfb4fd9954951c49facd2f44a96c15aeea0dda9ad665d43a130981dc",
-      "translated_at": "2026-09-15T13:03:54Z"
+      "source_sha256": "d425f1eb058adb53daa187cfd4dab2199d00270a44d82ec43b54381f75ca0e3b",
+      "translated_at": "2026-10-15T10:18:32Z"
     },
     "wizards.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "1c7f08be3d77029d4645e1a8a770c01984263530695fe90669da62f94adda79f",
-      "translated_at": "2026-08-28T08:39:48Z"
+      "source_sha256": "920bc67b810fc971a9b9e5d4027a582d7688bbfcff3115016e81826c808e4c52",
+      "translated_at": "2026-10-15T10:18:53Z"
     },
     "work-target.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "8c5519efcbe2cefdf1e69851cff80d71354c1c8806b9a0a208258067c1c56119",
-      "translated_at": "2026-09-15T13:04:27Z"
+      "source_sha256": "624de4d1135fc71d132c7f69034bb1446f4babdb62d3124a5bcc43953ab92d8a",
+      "translated_at": "2026-10-15T10:19:28Z"
     },
     "workbook-forms.md": {
       "model": "gemini-2.5-flash",
@@ -737,8 +812,8 @@
     },
     "workflows.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "56661d905f1d12bf69345a0096c165cb525fe52003a66f9941c90352156b0664",
-      "translated_at": "2026-08-28T08:41:32Z"
+      "source_sha256": "ca8660c9629374a5f4eddc12f038c407578ccd9e61c3f60439abf7188ebfad4b",
+      "translated_at": "2026-10-15T10:20:29Z"
     },
     "workspace-access.md": {
       "model": "gemini-2.5-flash",
@@ -750,15 +825,25 @@
       "source_sha256": "d4f1ffe538e094ee55f936372deb1275eec3dcb4297ac4e5cf56f4da7744f152",
       "translated_at": "2026-09-15T13:05:25Z"
     },
+    "wowbagger-engine.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "e4f689c20e300456265f1a173aaa2fa6a0b769f2962b5e49560d86e0348456a5",
+      "translated_at": "2026-10-15T10:20:47Z"
+    },
     "zaphod-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "22ec9c5f9bce0051e295b9820113640388aab6308d91e269853740394d8a7066",
-      "translated_at": "2026-09-15T13:05:59Z"
+      "source_sha256": "71ea00b3025525b11152915c25dfeaab7486a1999cd00f449b3d82cd664d3a6f",
+      "translated_at": "2026-10-15T10:21:20Z"
     },
     "zarniwoop-service.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "6a0cf8a85aee7e9c0199939ac42a2ac2fc2c2a19d1fc6e5c7cfe06676d0bff47",
-      "translated_at": "2026-08-28T08:43:31Z"
+      "source_sha256": "7fb552dc0144b26b6da49dd4cc808d1d7cfea0f6e6b4c26b3ff9e4384657318e",
+      "translated_at": "2026-10-15T10:22:10Z"
+    },
+    "zem-engine.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "e443728631a6239bba66e81ecc6defbc2940db9119524d97e27ae1a9a99ec81a",
+      "translated_at": "2026-10-15T10:22:31Z"
     }
   },
   "version": 1

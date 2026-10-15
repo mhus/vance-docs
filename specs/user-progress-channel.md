@@ -10,7 +10,7 @@ permalink: /specs/user-progress-channel
 
 > Live status for the user while Engines are working. **One** message class `PROCESS_PROGRESS` with three payload variants, separate from the authoritative chat stream. Ephemeral, not in conversation history.
 >
-> Supplement to: [client-protocol-extensibility](/specs/client-protokoll-erweiterbarkeit) | [websocket-protocol](/specs/websocket-protokoll) | [arthur-engine](/specs/arthur-engine) | [eddie-engine](/specs/eddie-engine)
+> Supplement to: client-protocol-extensibility | websocket-protocol | [arthur-engine](/specs/arthur-engine) | [eddie-engine](/specs/eddie-engine)
 
 ---
 
@@ -18,12 +18,12 @@ permalink: /specs/user-progress-channel
 
 Currently, the user sees **nothing** during Engine operation:
 
-- Tool calls (Web-Search, File-Write, `process_spawn`) run as a black box — the user only gets the result after the Lane-Turn ends.
-- Sub-Engine spawn (Eddie spawns Arthur) is invisible to the user until the `ProcessEvent(DONE)` returns via `pendingMessages`. Eddie waits on the Lane, the user waits for Eddie.
+- Tool calls (Web-Search, File-Write, `process_spawn`) run as a black box — the user only gets the result after the Lane turn ends.
+- Sub-Engine spawn (Eddie spawns Arthur) is invisible to the user until `ProcessEvent(DONE)` returns via `pendingMessages`. Eddie waits on the Lane, the user waits for Eddie.
 - Token consumption and LLM roundtrip count are only in the TRACE log (`AiTraceLogger`), not visible to the user.
 - Plan-driven Engines (Marvin's Task-Tree, Vogon's Phase-Gate) track their progress internally — the user only sees the final summary.
 
-The existing chat path (`CHAT_MESSAGE_STREAM_CHUNK` → `CHAT_MESSAGE_APPENDED`) is **authoritative**: what passes through it is part of the conversation history, goes back into the LLM context, and is persisted. Status pings, tool start markers, and token counters do not belong there — they would contaminate the context and make the chat unreadable.
+The existing chat path (`CHAT_MESSAGE_STREAM_CHUNK` → `CHAT_MESSAGE_APPENDED`) is **authoritative**: what passes through it is part of the conversation history, goes back into the LLM context, and is persisted. Status pings, tool start markers, and token counters have no place there — they would contaminate the context and make the chat unreadable.
 
 Therefore: **a dedicated side channel with its own message class, without context feedback, without persistence**.
 
@@ -35,9 +35,9 @@ Therefore: **a dedicated side channel with its own message class, without contex
 
 | Variant | Frequency | Content | Who generates? |
 |---|---|---|---|
-| `metrics` | high (per LLM roundtrip) | numerical: tokens, LLM calls, wall-clock | centrally in the AI layer |
+| `metrics` | high (per LLM roundtrip) | numeric: tokens, LLM calls, wall-clock | centrally in the AI layer |
 | `plan` | low (on plan mutation) | structured: tree / phase snapshot | engine-specific (Marvin, Vogon) |
-| `status` | medium (tool boundaries, status asides) | free text + tag | tool layer + Engine |
+| `status` | medium (tool boundaries, status asides) | free text + tag | tool layer + engine |
 
 **One** `MessageType.PROCESS_PROGRESS`, an envelope with `source` and `kind`, three optional payload fields. The client distinguishes by `kind` discriminator and renders accordingly (counter HUD vs. plan panel vs. toast stream).
 
@@ -45,13 +45,13 @@ Advantages over three separate message types:
 
 - Unified routing/filtering in the client (one subscribe point instead of three).
 - `source` block is defined exactly once and sent with every message.
-- Later variants (e.g., `quota_warn`, `model_fallback`) are additive without a new top-level type.
+- Future variants (e.g., `quota_warn`, `model_fallback`) are additive without a new top-level type.
 
 ---
 
 ## 3. Envelope
 
-Every `PROCESS_PROGRESS` message **always** carries the source block. In a session, the user often sees multiple processes in parallel (Eddie + spawned Arthur), and the client must be able to attribute which process produced the update.
+Every `PROCESS_PROGRESS` message **always** carries the source block. In a session, the user often sees multiple processes in parallel (Eddie + spawned Arthur), and the client must be able to attribute which update was produced by whom.
 
 ```
 ProcessProgressNotification {
@@ -60,7 +60,7 @@ ProcessProgressNotification {
   processName       String           // technical name (e.g., "security_audit")
   processTitle      String?          // display name (e.g., "Security Audit Q2")
   engine            String           // "arthur" | "eddie" | "marvin" | "vogon" | ...
-  sessionId         String           // Routing key for ClientEventPublisher
+  sessionId         String           // routing key for ClientEventPublisher
   parentProcessId   String?          // if sub-process — for hierarchy rendering
 
   // === Discriminator ===
@@ -72,13 +72,13 @@ ProcessProgressNotification {
   status            StatusPayload?
 
   // === Telemetry ===
-  emittedAt         Instant          // Server timestamp
+  emittedAt         Instant          // server timestamp
 }
 
 enum ProgressKind { METRICS, PLAN, STATUS }
 ```
 
-`processName`/`processTitle`/`engine` are redundant to the `processId` lookup but are **included** so that the client can render without an additional REST call (even for late-join, before it has the process list).
+`processName`/`processTitle`/`engine` are redundant to the `processId` lookup but are **included** so the client can render without an additional REST call (even for late-join, before it has the process list).
 
 ---
 
@@ -136,7 +136,7 @@ PlanNode {
 
 ### Frequency
 
-Snapshot push on every plan mutation (node created, status change, node completed). **No diff protocol in v1** — the entire tree is sent. For Marvin with hundreds of nodes, optimization (patch format) is possible later, but not now.
+Snapshot push on every plan mutation (node created, status change, node completed). **No diff protocol in v1** — the entire tree is sent. For Marvin with hundreds of nodes, optimization is possible later (patch format), but not now.
 
 ### Persistence
 
@@ -153,18 +153,21 @@ StatusPayload {
   tag               StatusTag        // see below
   text              String           // recommendation: ≤ 120 characters, no hard limit
   detail            String?          // optional, longer context (tooltip / click-to-expand)
-  tool              String?          // only for TOOL_START/TOOL_END: the raw tool name
-  failed            Boolean?         // only for close pings: operation ended in error
+  tool              String?          // only on TOOL_START/TOOL_END: the raw tool name
+  teaser            String?          // call teaser on _START, outcome teaser on _END (see below)
+  failed            Boolean?         // only on close pings: operation ended in error
   operationId       String?          // correlates _START ↔ _END / NODE_DONE / PHASE_DONE
-  usage             UsageDelta?      // only filled for "done" tags (see §6a)
+  usage             UsageDelta?      // only filled on "done" tags (see §6a)
 }
 ```
 
 `tool` and `failed` are **structured alongside** the prose in `text`, not instead of it. The reason is the client: `text` is an English sentence ("Calling tool: doc_read"), from which neither a compact localized line ("doc_read · 4s") nor a success/failure statement can be derived without parsing the phrasing — thereby making a prose string a wire contract.
+`teaser` is the **call teaser** on `TOOL_START` (subject of the action: "src/Main.java, 42 lines, 1234 chars"; for `file_write`/`file_edit` additionally a capped preview block of the written lines in patch notation) and the **outcome teaser** on `TOOL_END` ("Wrote 1234 chars"). It is generated server-side by `ToolTeasers` (`vance-toolpack`) — a central, name-keyed implementation shared by the Foot terminal (`ClientToolPrettyRenderer`) and Web UI, so that terminal and browser do not diverge. Important: the teaser is **distilled, never raw** — it names the subject of the call (path, command, query) and caps everything; parameter values like file contents or secret values never cross the wire. Soft caps: first line ≤ 120 characters, total ≤ 8 lines / 480 characters. `text` remains the prose fallback line for tools without a teaser; clients render the teaser as-is (it is a wire contract, but not a format for parsing).
 
-`failed` is intentionally tri-state: `null` means *not applicable* (open pings, single pings). If it were a primitive `false`, a client could not distinguish the absence of an error flag on an open ping from a successful completion. The cause is human-readable in `detail`.
+`failed` is intentionally tri-valued: `null` means *not applicable* (open pings, single pings). If it were a primitive `false`, a client could not distinguish the absence of an error flag on an open ping from a successful completion. The cause is human-readable in `detail`.
 
 ```
+
 enum StatusTag {
   TOOL_START,        // "Calling tool: web_search"
   TOOL_END,          // "Tool web_search done (3 results)"
@@ -174,8 +177,8 @@ enum StatusTag {
   FILE_READ,
   DELEGATING,        // "Spawning sub-process: arthur (security_audit)"
   WAITING,           // "Waiting for user input on inbox item #42"
-  NODE_DONE,         // Marvin: Task-Tree node completed (with usage)
-  PHASE_DONE,        // Vogon: Phase completed (with usage)
+  NODE_DONE,         // Marvin: task tree node completed (with usage)
+  PHASE_DONE,        // Vogon: phase completed (with usage)
   SCRIPT_PROGRESS,   // explicit `vance.process.progress(...)` from the script (Hactar)
   INFO               // catch-all for engine-specific status asides
 }
@@ -194,19 +197,21 @@ UsageDelta {
 
 - **Not in the conversation history.** The text does NOT flow into `pendingMessages`, NOT into the LLM context on the next roundtrip. Pure side-channel push.
 - **Ephemeral.** If you miss the moment, you don't see it. No Mongo persist, no reconnect replay. Past status is irrelevant — `status` is a real-time ping, not an audit log.
-- **Soft limit 120 characters.** Recommendation in engine implementation; no server-side cut. A hard 140-character cut led to cryptic abbreviations, which we want to avoid.
-- **`usage` is optional.** Server overhead per operation is a subtraction from process totals — no additional measurement. If values are unknown or uninteresting (e.g., pure filesystem tool), omit the field. The `metrics` variant remains the high-frequency push per LLM roundtrip; `status.usage` is the less frequent "stage completed" view.
+- **Soft limit 120 characters.** Recommendation in the engine implementation; no server-side cut. A hard 140-character cut led to cryptic abbreviations, which we want to avoid.
+- **`usage` is optional.** Server overhead per operation is a subtraction from the process totals — no additional measurement. If values are unknown or uninteresting (e.g., a pure filesystem tool), omit the field. The `metrics` variant remains the high-frequency push per LLM roundtrip; `status.usage` is the rarer "stage completed" view.
 
 ### Tool Reporting in Detail
 
 **Local Tools** (executed in `vance-brain` — `web_search`, `process_spawn`, `process_steer`, etc.):
 
-- A wrapper / listener on the Tool Executor (analogous to `ArthurEngine.invokeOne`) emits `status(TOOL_START)` before execution, `status(TOOL_END)` afterward. For `TOOL_END`, `usage` is calculated from the token delta of the process totals since the start (see §6a) — for tools with nested LLM calls (sub-engines, summarize, RAG), these are the true costs of this tool; for pure FS tools, `tokensIn=tokensOut=llmCalls=0` with `elapsedMs` filled.
+- A wrapper / listener on the tool executor (analogous to `ArthurEngine.invokeOne`) emits `status(TOOL_START)` before execution, `status(TOOL_END)` afterwards. For `TOOL_END`, `usage` is calculated from the token delta of the process totals since the start (see §6a) — for tools with nested LLM calls (sub-engines, summarize, RAG), these are the true costs of this tool; for pure FS tools, `tokensIn=tokensOut=llmCalls=0` with `elapsedMs` filled.
 - Tool implementation can additionally send engine-specific pings (e.g., `web_search` pushes `status(SEARCH, query)` with the specific query string, not just the tool name).
+- The teaser is calculated at the dispatch location (`ContextToolsApi` → `ToolTeasers.describe`) and attached to both pings; the `ToolInvocationListener` only sees the distilled teaser, never the raw args/results.
+- **Delegated legs do not emit their own ping.** A wrapper (`file_write`) dispatches its backend (`client_file_write`) via `invokeDelegate`; the wrapper ping carries the same teaser — a second, identical line per call would only be noise in the activity list. Similarly, the usage counter does not count delegated legs (measured 2026-08-12).
 
 **Workspace Tools** (executed in the client via `CLIENT_TOOL_INVOKE` — file operations on the user's machine):
 
-- **Brain pushes the `status(TOOL_START)` ping** as soon as it sends out the `CLIENT_TOOL_INVOKE`. Rationale: unified code path, the client does not need its own status logic. Cost is an additional WS message — negligible.
+- **Brain pushes the `status(TOOL_START)` ping** as soon as it sends out the `CLIENT_TOOL_INVOKE`. Rationale: unified code path, the client does not need its own status logic. The cost is one additional WS message — negligible.
 - On `CLIENT_TOOL_RESULT` return: `status(TOOL_END)`. `usage.elapsedMs` is the Brain's internal work (sending until result) — not the client-side wall-clock.
 
 ---
@@ -229,18 +234,18 @@ UsageDelta {
 |---|---|---|
 | `TOOL_START` | `TOOL_END` | Tool Executor Decorator (Brain) |
 | `DELEGATING` | `TOOL_END` (or own `NODE_DONE`) | Eddie / Marvin (Sub-Process Spawn) |
-| (Node status `running`) | `NODE_DONE` | Marvin (Node transition `done`/`failed`) |
-| (Phase start `INFO`) | `PHASE_DONE` | Vogon (Phase change) |
+| (Node Status `running`) | `NODE_DONE` | Marvin (Node Transition `done`/`failed`) |
+| (Phase Start `INFO`) | `PHASE_DONE` | Vogon (Phase Change) |
 
 `SEARCH`, `FETCH`, `FILE_*`, `WAITING`, `SCRIPT_PROGRESS`, `INFO` have **no** lifecycle counterpart — they are single pings without `operationId`. If lifecycle is needed, use `TOOL_START`/`TOOL_END` and describe the tool in `text`.
 
-> **Current state deviates (as of 2026-08-25).** Only `TOOL_START`/`TOOL_END` is actually correlated (`ProgressToolListener`). `DELEGATING` (Marvin, Magrathea), `NODE_DONE` (Marvin), and `PHASE_DONE` (Slartibartfast) all go through simple `emitStatus` **without** `operationId`, and are therefore effectively single pings. Clients must treat them as completed — modeled as open operations, their line would spin forever. The table describes the goal, not the current state; whoever implements it will also implement the client reduction (`chatActivity.ts`, §6b).
+> **Current implementation deviates (as of 2026-08-25).** Only `TOOL_START`/`TOOL_END` is actually correlated (`ProgressToolListener`). `DELEGATING` (Marvin, Magrathea), `NODE_DONE` (Marvin), and `PHASE_DONE` (Slartibartfast) all go through simple `emitStatus` **without** `operationId`, and are thus effectively single pings. Clients must therefore treat them as completed — if modeled as open operations, their line would spin forever. The table describes the goal, not the current state; whoever implements it should also implement the client reduction (`chatActivity.ts`, §6b).
 
 ### Token Delta Calculation (Server)
 
-The Tool Executor Decorator takes a snapshot of the process totals (`tokensInTotal`, `tokensOutTotal`, `llmCallCount` from `ThinkProcessDocument` — same source as `metrics` variant) before the tool call. After tool end, the difference is calculated and attached to `UsageDelta`. This ensures that LLM calls that occurred _within_ a sub-engine tool are also correctly counted for the calling operation.
+The Tool Executor Decorator takes a snapshot of the process totals (`tokensInTotal`, `tokensOutTotal`, `llmCallCount` from `ThinkProcessDocument` — same source as `metrics` variant) before the tool call. After the tool ends, the difference is calculated and attached to `UsageDelta`. This ensures that LLM calls that occurred _within_ a sub-engine tool are also correctly attributed to the calling operation.
 
-Marvin and Vogon nodes maintain the same snapshot at node entry and calculate at the `NODE_DONE`/`PHASE_DONE` ping. Sub-node subtotals roll up via the respective engine's tree aggregation — the spec there is authoritative.
+Marvin and Vogon nodes maintain the same snapshot upon node entry and calculate it for the `NODE_DONE`/`PHASE_DONE` ping. Sub-node subtotals roll up via the respective engine's tree aggregation — the spec there is authoritative.
 
 ### Wall-Clock in the Client
 
@@ -250,18 +255,18 @@ Implementation v1 (vance-foot): `Map<operationId, Instant started>` is populated
 
 ### 6b. Activity Strip (Web UI)
 
-The Web UI renders the channel in **two** places, and the distinction is between lookup and perception:
+The Web UI renders the channel in **two** places, and the distinction is between looking up and perceiving:
 
-- **`ProgressFeed`** in the right panel of `/chat` — the complete list of all kinds, to be opened if one wants to know something.
+- **`ProgressFeed`** in the right panel of `/chat` — the complete list of all kinds, to be opened when one wants to know something.
 - **`ChatActivityStrip`** in `ChatView` — *one* line between transcript and composer, which answers whether anything is still happening at all. Because it sits in `ChatView`, it applies to `/chat` **and** to the Cortex side panel (`ChatSidePanel`), which previously did not subscribe to the channel at all and thus remained silent during long tool runs.
 
-The strip is **not a chat message**, and this is the crucial decision: the channel is by definition ephemeral (not persisted, no replay). Rendered as bubbles, tool calls would disappear after every reload, leaving gaps in the transcript — a history that lies. A line that collapses into a summary when idle does not have this problem: it never claims to be history.
+The strip is **not a chat message**, and this is the crucial decision: the channel is by definition ephemeral (not persisted, no replay). If rendered as bubbles, tool calls would disappear after every reload, leaving gaps in the transcript — a history that lies. A line that collapses into a summary when idle does not have this problem: it never claims to be history.
 
 Reduction in `chatActivity.ts` (framework-agnostic, so correlation is testable without component mount):
 
 - `TOOL_START`/`TOOL_END` are paired via `operationId`; a close without an open counterpart is recorded as an already completed entry instead of being discarded.
-- **Single pings** about past events that never start a running clock: `PROVIDER`, `COMPACTION`, `SCRIPT_PROGRESS`, `DELEGATING`, `SEARCH`, `FETCH`, `FILE_READ`, `FILE_WRITE`, `NODE_DONE`, `PHASE_DONE`, `INFO`. The fact that `DELEGATING` and `PHASE_DONE` are listed here **contradicts the lifecycle table in §6a** and follows reality: Marvin, Magrathea, and Slartibartfast send them via simple `emitStatus` without `operationId`. Modeled as correlated opens, their lines would spin forever. (`SEARCH`, `FILE_READ`, `FILE_WRITE` currently have **no** emitter in the tree — included because they belong to the wire enum, not because they occur. `INFO` only reaches the client with `progress=verbose`.)
-- `ENGINE_TURN_START`/`_END` serve **only** as a bracket (clear list, switch to summary); they are not displayed as lines. The bracket is counted exclusively by the **own chat process**: the turn end of a worker must not collapse the strip while the chat is still working.
+- **Single pings** about past events that never start a running clock: `PROVIDER`, `COMPACTION`, `SCRIPT_PROGRESS`, `DELEGATING`, `SEARCH`, `FETCH`, `FILE_READ`, `FILE_WRITE`, `NODE_DONE`, `PHASE_DONE`, `INFO`. The fact that `DELEGATING` and `PHASE_DONE` are listed here **contradicts the lifecycle table in §6a** and follows reality: Marvin, Magrathea, and Slartibartfast send them via simple `emitStatus` without `operationId`. If modeled as correlated opens, their lines would spin forever. (`SEARCH`, `FILE_READ`, `FILE_WRITE` currently have **no** emitter in the tree — included because they belong to the wire enum, not because they occur. `INFO` only reaches the client with `progress=verbose`.)
+- `ENGINE_TURN_START`/`_END` serve **only** as a bracket (clear list, switch to summary); they are not displayed as lines. The bracket is counted exclusively by the **own chat process**: the end of a worker's turn must not collapse the strip while the chat is still working.
 - If something is running **without** an active chat turn (background worker), the strip remains visible — this silence is precisely what it aims to explain.
 
 **`WAITING` gets its own slot** instead of a list line, for two measured reasons. Fenchurch heartbeats the same waiting state every few seconds with *changing* text ("... 1:23 elapsed") — as a list, these would be dozens of near-duplicates. And a waiting state is not an event that happened, but a condition that persists: the interesting number is its **duration**, and that only survives if the ping refreshes a slot instead of creating a line (`since` remains at the first ping of the stretch).
@@ -270,7 +275,7 @@ This leads to three rules:
 
 - **Coexistence with the running tool.** An image generation is a running `image_generate` **and** a waiting for the provider. The strip shows both: the tool in the header (it names *what* is happening), the waiting state as a second line (it explains *why it takes time*). The duration in the header always belongs to the text next to it.
 - **Cleared process-scoped.** A tool boundary or single ping only clears the slot if it comes from the **same process**. A worker's tool work says nothing about whether the chat process is still stuck at its gate.
-- **`ENGINE_TURN_END` does NOT clear the slot.** Parking at the gate *is* how a turn ends (Vogon goes `BLOCKED` and yields) — deleting it there would remove the very line that explains why nothing follows. A waiting state that was only *within* the turn is cleared by the close of its own tool; it does not need the turn bracket for that.
+- **`ENGINE_TURN_END` does NOT clear the slot.** Parking at the gate *is* how a turn ends (Vogon goes `BLOCKED` and yields) — deleting it there would remove precisely the line that explains why nothing follows. A waiting state that only existed *within* the turn is cleared by the close of its own tool; it does not need the turn bracket for that.
 
 A waiting state is displayed with `⏳`, never with the spinner: waiting is not progress, and a spinner would imply work that is not happening.
 
@@ -296,10 +301,10 @@ ClientEventPublisher.publish(sessionId, notification)
         └─► WebSocketSender.sendNotification(connection, message)   // non-blocking
 ```
 
-- **Asynchronous** (non-blocking) — Engine/Lane-Turn is not blocked.
-- **Silent-Drop** on missing connection — pings are ephemeral, no buffering.
-- **`ProgressEmitter`** is the only caller for `PROCESS_PROGRESS`. Responsibility: populate the source block (`processId`, `processName`, `processTitle`, `engine`, `sessionId`, `parentProcessId`) based on the current engine context. Engines/Tools only build the payload; the envelope is central. This ensures we never see a `PROCESS_PROGRESS` message without a source.
-- **Multi-Pod Routing**: as long as `SessionConnectionRegistry` is single-pod, cross-pod pings are lost. If Eddie runs on Pod A and the user is connected to Pod B, the registry lookup requires a cluster backplane (Redis Pub/Sub or similar) — scaling follow-up, not v1.
+- **Asynchronous** (non-blocking) — Engine/Lane turn is not blocked.
+- **Silent drop** if connection is missing — pings are ephemeral, no buffering.
+- **`ProgressEmitter`** is the only caller for `PROCESS_PROGRESS`. Responsibility: populate the source block (`processId`, `processName`, `processTitle`, `engine`, `sessionId`, `parentProcessId`) based on the current engine context. Engines/tools only build the payload; the envelope is central. This ensures we never see a `PROCESS_PROGRESS` message without a source.
+- **Multi-Pod Routing**: as long as `SessionConnectionRegistry` is single-pod, cross-pod pings are lost. If Eddie runs on Pod A and the user is connected to Pod B, the registry lookup needs a cluster backplane (Redis Pub/Sub or similar) — scaling followup, not v1.
 
 ### New `MessageType` Entry
 
@@ -324,13 +329,13 @@ User ──"analyze this"──▶ Eddie ──spawn──▶ Arthur (Sub-Proces
 
 Today: While Arthur works (minutes range), the user sees nothing. Eddie is parked on its Lane, Arthur communicates "upwards" via Mongo messages.
 
-**Solution**: Arthur (and every Sub-Engine) pushes `PROCESS_PROGRESS` messages **directly to the `sessionId`** via `ProgressEmitter`/`ClientEventPublisher`, **not** via the Eddie Lane. Eddie does not hear this — the user does. `parentProcessId` in the envelope makes the hierarchy visible to the client.
+**Solution**: Arthur (and any sub-engine) pushes `PROCESS_PROGRESS` messages **directly to the `sessionId`** via `ProgressEmitter`/`ClientEventPublisher`, **not** via the Eddie Lane. Eddie does not hear this — the user does. `parentProcessId` in the envelope makes the hierarchy visible to the client.
 
 ```
 Arthur ──PROCESS_PROGRESS (source=arthur, parent=eddie)──▶ User-WS
    │
    └──ProcessEvent(DONE)─────────────────────────────────▶ Eddie's pendingMessages
-                                                            (authoritative, Lane-Turn)
+                                                            (authoritative, Lane Turn)
 ```
 
 **Separation**:
@@ -338,28 +343,28 @@ Arthur ──PROCESS_PROGRESS (source=arthur, parent=eddie)──▶ User-WS
 - **Side Channel** (`PROCESS_PROGRESS`): direct to session, ephemeral, for user visibility.
 - **Lane Channel** (`pendingMessages` / `ProcessEvent`): engine-to-engine, persistent, authoritative.
 
-Eddie reacts to `DONE` on the next Lane-Turn and produces its user-facing response as a regular chat stream. The side channel has no influence on this.
+Eddie reacts to `DONE` on the next Lane turn and produces its user-facing response as a regular chat stream. The side channel has no influence on this.
 
-The client can decide, based on `parentProcessId`, whether to render sub-process updates indented under the parent or as a separate HUD entry — a rendering question, not a protocol question.
+The client can decide, based on `parentProcessId`, whether to render sub-process updates indented under the parent or as a standalone HUD entry — a rendering question, not a protocol question.
 
 ---
 
 ## 9. Configuration
 
-Per Process via Recipe parameter (see [recipes](/specs/recipes)):
+Per Process via Recipe param (see [recipes](/specs/recipes)):
 
 ```yaml
 params:
   progress: normal      # off | normal | verbose
 ```
 
-- `off` — no `metrics`, no `status`, `plan` still included (plan is structurally important)
+- `off` — no `metrics`, no `status` asides, `plan` **and the turn boundaries** (`ENGINE_TURN_START`/`ENGINE_TURN_END`) still included — both are structural, not verbose: busy spinner, Foot's one-shot turn gate and remote drivers track turns via them, and since the persist-bound `process-steer`-ack (`planning/active-message-queue.md` §2), the turn pings are the only signal that a turn is running
 - `normal` — `metrics` aggregated, `status` for tool boundaries and explicit `SCRIPT_PROGRESS` from scripts
 - `verbose` — additionally engine-specific `INFO` pings, every tool detail
 
-`SCRIPT_PROGRESS` is intentionally not `INFO`: an explicit `vance.process.progress(...)` call in the script is *intended* by the script author — it does not belong in the filterable engine-aside bucket.
+`SCRIPT_PROGRESS` is deliberately not `INFO`: an explicit `vance.process.progress(...)` call in the script is *intended* by the script author — it does not belong in the filterable engine aside bucket.
 
-Default: `normal`. User-global override later via Settings (`ux.progress.default`), not v1.
+Default: `normal`. User-global override later via settings (`ux.progress.default`), not v1.
 
 ---
 
@@ -375,12 +380,12 @@ Default: `normal`. User-global override later via Settings (`ux.progress.default
 - Marvin & Vogon emit `plan` on mutation, plus `status(NODE_DONE)` / `status(PHASE_DONE)` with `usage` at node/phase end
 - Arthur emits `status` for tool boundaries and sub-process spawn
 - Eddie emits `status(DELEGATING)` on sub-engine spawn (paired with `TOOL_END` on sub-process result)
-- vance-foot renders all three variants (HUD line, plan panel, toast stream) and measures wall-clock per `operationId` client-side
-- `params.progress` is honored
+- Vance-Foot renders all three variants (HUD line, plan panel, toast stream) and measures wall-clock per `operationId` client-side
+- `params.progress` honored
 
 **Excluded**:
 
-- Web UI rendering (plan panel component, HUD widget) — follow-up with Web UI editor work
+- Web UI rendering (plan panel component, HUD widget) — followup with Web UI editor work
 - Cross-pod routing via cluster backplane
 - Plan diff protocol (full snapshots are sufficient)
 - Persistence of `status` history (ephemeral by definition)
@@ -392,10 +397,10 @@ Default: `normal`. User-global override later via Settings (`ux.progress.default
 ## 11. Implementation Steps
 
 1. `MessageType.PROCESS_PROGRESS` + Envelope DTO (`ProcessProgressNotification`) + Enums (`ProgressKind`, `StatusTag`) + three payload classes (`MetricsPayload`, `PlanPayload`, `StatusPayload`) + `UsageDelta` + `PlanNode` in `vance-api/ws`. All with `@GenerateTypeScript` for Web UI.
-2. `ProgressEmitter` in `vance-brain/events`: central service that populates the source block from `ThinkProcessDocument`/Engine context and forwards to `ClientEventPublisher`. Methods: `emitMetrics(...)`, `emitPlan(...)`, `emitStatus(...)` plus `openOperation(tag, text)` (assigns `operationId`, pushes `_START`) / `closeOperation(operationId, tag, text, usage)` (pushes `_END` variant with `usage` filled).
-3. AI layer hook (on `AiTraceLogger` or `ChatResponse` wrapper): accumulates tokens on the Process Doc, calls `ProgressEmitter.emitMetrics(...)` after each roundtrip. Token totals on the `ThinkProcessDocument` are the source for `UsageDelta` snapshots in §6a.
+2. `ProgressEmitter` in `vance-brain/events`: central service that populates the source block from `ThinkProcessDocument`/Engine context and forwards it to `ClientEventPublisher`. Methods: `emitMetrics(...)`, `emitPlan(...)`, `emitStatus(...)` plus `openOperation(tag, text)` (assigns `operationId`, pushes `_START`) / `closeOperation(operationId, tag, text, usage)` (pushes `_END` variant with `usage` filled).
+3. AI layer hook (on `AiTraceLogger` or `ChatResponse` wrapper): accumulates tokens on the Process Doc, calls `ProgressEmitter.emitMetrics(...)` after each roundtrip. Token totals on `ThinkProcessDocument` are the source for `UsageDelta` snapshots in §6a.
 4. `ToolExecutionInterceptor` in `vance-brain`: decorator around the Tool Executor path (Arthur's `invokeOne`). Before execution: `openOperation(TOOL_START, …)` + snapshot (`tokensInTotal`, `tokensOutTotal`, `llmCallCount`, `Instant.now()`). After execution: calculate difference, `closeOperation(operationId, TOOL_END, …, usage)`. For pure FS tools, token fields are 0 — `elapsedMs` remains filled.
 5. `CLIENT_TOOL_INVOKE` path: Brain pushes `status(TOOL_START)` on sending, attaches `operationId` to the `CLIENT_TOOL_INVOKE` message; on `CLIENT_TOOL_RESULT` return, Brain builds the `TOOL_END` ping with `usage` (`elapsedMs` = Brain roundtrip time).
-6. Marvin & Vogon: `emitPlanSnapshot()` at mutation points, calls `ProgressEmitter.emitPlan(...)` with current tree. At node entry, take snapshot of process totals; on node transition to `done`/`failed`, `closeOperation(NODE_DONE, …, usage)` (Marvin) or `PHASE_DONE` (Vogon).
-7. `params.progress` in `RecipeResolver` as a default param; `ProgressEmitter` filters before push (no constant check in every engine).
-8. vance-foot: three renderers (HUD line with `\r` overwrite, Plan Panel via Lanterna, Toast Stream as ANSI dim lines below the chat) — all subscribe to the same `PROCESS_PROGRESS` point, dispatch by `kind`. For each `operationId`, `Instant started` is held locally; on `_END`, wall-clock difference is rendered (spinner tick ~250 ms, runs only if operation map is not empty).
+6. Marvin & Vogon: `emitPlanSnapshot()` at mutation points, calls `ProgressEmitter.emitPlan(...)` with current tree. On node entry, hold snapshot of process totals; on node transition to `done`/`failed`, `closeOperation(NODE_DONE, …, usage)` (Marvin) or `PHASE_DONE` (Vogon).
+7. `params.progress` in `RecipeResolver` as default param; `ProgressEmitter` filters before push (no constant check in every engine).
+8. Vance-Foot: three renderers (HUD line with `\r` overwrite, plan panel via Lanterna, toast stream as ANSI dim lines below the chat) — all subscribe to the same `PROCESS_PROGRESS` point, dispatch by `kind`. For each `operationId`, `Instant started` is held locally; on `_END`, wall-clock difference is rendered (spinner tick ~250 ms, runs only if operation map is not empty).

@@ -73,7 +73,7 @@ Vue Router 4 + Tailwind). Bundle: only the Picker/Manage/Lock UI.
 - `src/lock/lockStore.ts` — PIN hash + salt in Preferences,
   Unlocked flag in-memory (§7).
 - `src/views/ShellView.vue` — Host for the native per-account
-  WKWebView. Persistent header (account switcher + Home + Reload
+  WKWebView. Persistent header (Account Switcher + Home + Reload
   + Manage); native WebView fills the rest (`VanceAccountWebView`
   plugin).
 - `ios-template/` — committed source files for native iOS setup,
@@ -130,7 +130,7 @@ as a URL scheme).
 ### 3.1 Isolation
 
 Each account in `accountStore` has a UUID (`crypto.randomUUID()`).
-The plugin creates a WKWebView per UUID with
+The plugin creates a WKWebView for each UUID with
 `WKWebsiteDataStore(forIdentifier: UUID(accountId)!)` — iOS 17+ feature
 for persistent, named data stores. Cookies, IndexedDB, LocalStorage,
 Service Workers live separately per UUID.
@@ -161,14 +161,14 @@ to live.
 ### 3.2 Geometry
 
 Wrapper header (Vue, in the Capacitor main WebView) is persistently
-on top. The plugin places the Account WebView **below** the
+above. The plugin places the Account WebView **below** the
 header. `ShellView.vue` measures the header height via `ResizeObserver` +
 `window.resize` and calls `setBounds(...)`.
 
 iOS Capacitor config: `contentInset: 'never'` so that CSS y=0 coincides
-with UIKit y=0 — otherwise the native WebView overlaps the header
+with UIKit y=0 — otherwise the native WebView overlays the header
 by the safe-area-top height. JS floor 110pt in `currentBounds()` as
-a cold-start defensive (env(safe-area-inset-top) can return 0 in the very first
+cold-start defensive (env(safe-area-inset-top) can return 0 in the very first
 frame).
 
 ### 3.3 The `window.vanceFacelift`-Bridge
@@ -198,9 +198,9 @@ Swift dispatches by `action` field.
   `isFacelift()` (User-Agent match) is the gate — if `false`,
   `window.vanceFacelift` is undefined.
 - Extensions to the bridge are **additive**: new actions without
-  schema bump are allowed, as long as existing calls continue to work.
+  schema bump are allowed, as long as existing calls continue to run.
 
-## 4. `vance-facelift://`-URL-Scheme
+## 4. `vance-facelift://`-URL Scheme
 
 Registered in `Info.plist` via `CFBundleURLTypes`. WebView
 navigation to `vance-facelift://<action>[?params]` is intercepted
@@ -213,7 +213,7 @@ by the plugin's WKNavigationDelegate, canceled, and emitted as a
 |---|---|
 | `vance-facelift://back-to-picker` | Native WebView `dismiss()`, Router → `/manage`. |
 | `vance-facelift://add-account` | dismiss, Router → `/add`. |
-| `vance-facelift://switch-account` | Open bottom sheet (account switcher). |
+| `vance-facelift://switch-account` | Open bottom sheet (Account Switcher). |
 
 **Contract:**
 
@@ -237,11 +237,28 @@ Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15
 (KHTML, like Gecko) Mobile/15E148 VanceFacelift/0.1.0
 ```
 
+The Electron desktop (**Vancetope**, `facelift-desktop`) appends **two**
+tokens — first the general one, then a desktop-only addition
+(`DESKTOP_USER_AGENT_TOKEN` in `account-view-manager.ts`):
+
+```
+… Chrome/130.0.0.0 Electron/44.3.0 Safari/537.36 VanceFacelift/0.1.0 VanceFaceliftDesktop/0.1.0
+```
+
+The addition is the gate for **desktop-only extensions** of the web UI:
+features that make no sense on iPad/iPhone branch on
+`isFaceliftDesktop()` and are thus dormant on iOS/Android (and in the browser).
+Never sniff by device string (`iPhone`/`iPad`) — the
+explicit token is the contract. The tokens also flow as HTTP `User-Agent`
+header to the Brain, so server-side differentiation would also be possible.
+
 **Detection Contract (`@vance/shared/facelift/index.ts`):**
 
 ```ts
 export function isFacelift(): boolean;
 export function getFaceliftVersion(): string | null;
+export function isFaceliftDesktop(): boolean;
+export function getFaceliftDesktopVersion(): string | null;
 export function requestBackToPicker(): void;
 export function requestSwitchAccount(): void;
 export function requestAddAccount(): void;
@@ -250,15 +267,23 @@ export function requestAddAccount(): void;
 `isFacelift()` matches `/\bVanceFacelift\//`. Brain-side identical via
 `User-Agent` HTTP header — the Brain may respond differently to Facelift
 (cookie settings, optionalized routes, etc.), but v1 does not do this.
+`isFaceliftDesktop()` matches `/\bVanceFaceliftDesktop\//` and always implies `isFacelift()`.
+
+**UA is UI-Gate, not Capability-Gate:** `isFaceliftDesktop()` controls
+cosmetics (desktop-only extensions of the web UI). The capability for the
+agent tools (`client_file_*`/`client_exec_*`) is solely decided by the
+bridge injected by Electron preload (`window.vanceDesktopTools`) plus the
+local permission — both exist only in the actual desktop app and cannot be
+faked via UA. See [desktop-agent-tools](desktop-agent-tools.md) §6.
 
 `request*()` helpers fire `window.location.href = 'vance-facelift://
 <action>'`; no-op outside of Facelift.
 
-## 6. `/config.json` — Brain Runtime Configuration
+## 6. `/config.json` — Runtime Configuration of the Brain
 
 Statically delivered under `vance-face`'s nginx root as
-`/config.json`. Pod entrypoint overwrites with Pod env values at
-container start (no Vite `VITE_*` variable pattern — image remains
+`/config.json`. Pod entrypoint overwrites with Pod env values at container start
+(no Vite `VITE_*` variable pattern — image remains
 deployment-agnostic).
 
 **Schema (v1):**
@@ -281,8 +306,8 @@ deployment-agnostic).
 
 **Consumers:**
 
-- `vance-face` itself (`src/platform/runtimeConfig.ts`) — displays
-  `title` + `backlink` below the "vance" wordmark on the login
+- `vance-face` itself (`src/platform/runtimeConfig.ts`) — shows
+  `title` + `backlink` under the "vance" wordmark on the login
   page + in the EditorTopbar.
 - Wrapper `verifyVanceUrl(url)` in `facelift-bridge/src/accounts/
   verifyVanceUrl.ts` — before `addAccount()` + on faceUrl edit, it fetches
@@ -294,8 +319,8 @@ deployment-agnostic).
   GET runs via `CapacitorHttp` (URLSession, no CORS preflight). In
   the Electron desktop shell, CapacitorHttp would fall back to browser `fetch`
   — CORS preflight, which a Vance deployment does not answer for
-  `/config.json` (by design native, no CORS).
-  Therefore, the desktop shell routes the Verify-GET through the
+  `/config.json` (natively by design, no CORS).
+  Therefore, the desktop shell routes the verify GET through the
   Electron main process (`window.faceliftDesktop.httpGet`, Node `fetch`,
   no CORS) — the same no-CORS behavior as the native path. The
   IPC wiring lives in `facelift-desktop/src/ipc.ts`
@@ -315,12 +340,11 @@ Lock before every wrapper boot, but **optional**. Vue routes with
 `meta.skipLockGuard !== true` are blocked by the router `beforeEach`
 as long as the gate is not open.
 
-The PIN is intentionally **not** mandatory. An app that
-requires a self-invented credential before showing anything
-is a wall — and App Review faces it without recourse. Those who
-decline setup can proceed; the decision is remembered until a PIN
-is set under Accounts → Security. What the lock protects is
-a device that someone else could pick up — this
+The PIN is intentionally **not** mandatory. An app that requires a self-
+invented credential before showing anything is a wall — and App Review
+is stuck without a way out. Those who decline setup can proceed; the decision
+is remembered until a PIN is set under Accounts → Security. What the lock
+protects is a device that someone else could pick up — this
 trade-off belongs to the owner.
 
 The router does not know the rule itself: `evaluateLockGate()` in the
@@ -342,20 +366,20 @@ reinstallation lands on the setup page and not in a PIN
 lock loop without a reset button).
 
 Unlock flag (`isUnlocked()`) is **in-memory**. App background →
-foreground remains unlocked; hard kill from the multitasker re-locks
-on the next cold start.
+foreground remains unlocked; hard kill from multitasker re-locks
+on next cold start.
 
 **Setup Flow:**
 
 - `/lock/setup` → enter PIN (4–6 digits) → Confirm → save.
 - "Not now" only as long as **no** PIN is configured. Via
-  `/manage` → "Change PIN", one exists, and skipping would read
-  as "remove" there — this screen does not do that.
+  `/manage` → "Change PIN", one exists, and skipping would
+  read as "remove" there — this screen does not do that.
 - On re-setup via `/manage` → "Change PIN" v1: no old PIN check
   (app is unlocked, that is the implicit authority). v2 adds
   verification.
 - Without PIN, the Manage entry is "Set PIN" instead of "Change PIN",
-  and the Face ID toggle is hidden: The unlock screen otherwise has
+  and the Face ID toggle is hidden: the unlock screen otherwise has
   no credential to fall back on.
 
 **Unlock Flow:**
@@ -378,7 +402,7 @@ otherwise on the first Face ID attempt.
 ## 8. App Group + Share Extension Data Flow
 
 App Group Identifier: `group.de.mhus.vance.facelift`. Activated on
-both targets (App + VanceShareExtension) via entitlement file. App
+both targets (App + VanceShareExtension) via Entitlement file. App
 Groups require Apple Developer Program — Personal Team in Xcode
 cannot activate it (planning/vance-facelift-share-extension.md).
 
@@ -399,7 +423,7 @@ Bridge methods in the plugin: `setAccountSnapshot({accountsJson})`,
 
 Extension UI (see `client_web/packages/facelift-bridge/ios-template/
 VanceShareExtension/ShareViewController.swift`): SLComposeService-
-ViewController with account picker + project picker; on "Post" POST
+ViewController with Account Picker + Project Picker; on "Post" POST
 to `/brain/{tenant}/share/inbox` (Bearer token from `credentials.json`).
 
 **Brain Endpoint (`vance-brain/src/main/java/de/mhus/vance/brain/
@@ -430,7 +454,7 @@ Visible **only** if:
 - `navigator.userAgent` matches `/iPhone|iPad|iPod/`
 - `!isFacelift()` — i.e., not already in the wrapper
 
-Tap → `window.location.href = 'vance-facelift://'`. iOS starts the
+Tap → `window.location.href = 'vance-facelift://'`. iOS launches the
 Facelift app if installed (the URL scheme is registered);
 otherwise, nothing visually happens (App Store link comes in Phase 2,
 once Vancetope is in the Store).
@@ -439,7 +463,7 @@ once Vancetope is in the Store).
 
 Source SVGs under `facelift-bridge/assets/icon-source.svg` +
 `splash-source.svg` with the mathematical italic v (U+1D463, STIX
-Two Math) as a trademark. Pipeline:
+Two Math) as trademark. Pipeline:
 
 1. `pnpm assets:regenerate-png` — `qlmanage`-based SVG→PNG
    conversion (macOS-only, no dev dep needed)
@@ -472,7 +496,7 @@ build ad-hoc.
 - **No browser mode.** The WebView is limited to the Brain origin of
   the respective account URL; navigations are not further
   filtered (Vancetope Brain is the trusted source).
-  Hard-origin lock + external link to Safari is Phase 2 (cf.
+  Hard origin lock + external link to Safari is Phase 2 (cf.
   planning, if needed).
 - **No Push Notifications.** APNs setup + server dispatcher are
   Phase 4 (planning/vance-facelift-share-extension.md noted).
@@ -481,7 +505,7 @@ build ad-hoc.
   opens the app) come when Brain delivers Apple Site Association.
 - **No iCloud Sync of the account list.** App uninstallation =
   account list gone. Re-entry accepted.
-- **No Voice / STT, no Camera Plugin in the Wrapper.** The existing
+- **No Voice / STT, no Camera plugin in the wrapper.** The existing
   browser file inputs in `vance-face` (Documents upload, Chat
   attach) open the iOS system picker — which offers Photo Library +
   Take Photo + Files app anyway. Capacitor plugins are only
@@ -494,8 +518,8 @@ build ad-hoc.
 ## 13. Reference
 
 - `planning/vance-facelift.md` — Architecture decisions (MPA-vs-
-  SPA-Shell, Wrapper-vs-Native, Bridge Model)
-- `planning/vance-facelift-share-extension.md` — Status + Steps for
+  SPA-shell, wrapper-vs-native, bridge model)
+- `planning/vance-facelift-share-extension.md` — Status + steps for
   the Share Extension after Dev Program activation
 - `planning/vance-facelift-device-deploy.md` — Personal Team
   (free, 7-day) vs. Paid Dev Program ($99/year) for deployment
@@ -508,3 +532,59 @@ build ad-hoc.
   hosts); §3 Editor Inventory, §7 Style Guide
 - `specification/user-interaction.md` — Inbox model that the
   Share Extension fills
+
+## 13. Live Tabs per Profile (Stage 1: Desktop, 2026-10-12)
+
+Each profile has **multiple tabs** (1–10, default 1): each tab is its
+**own WebView** with its own session binding, all tabs share the
+profile partition (Login, Cookies, LocalStorage). Planning including Mobile
+stage: `planning/desktop-profile-tabs.md` — Model B ("Live Tabs"),
+intentionally against URL tabs (state loss on switch = the frustration
+that tabs are meant to prevent).
+
+**Ownership:** The **Shell** (Vue, `facelift-bridge` — one
+code for Desktop and Mobile) owns the tab list in RAM: IDs, titles,
+active; **not persistent** — app start = one tab. The **Native Host**
+caches one WebView per `(accountId, tabId)` (Electron:
+`account-view-manager.ts`, Views map with composite key; iOS: plugin,
+Stage 2 — same DataStore isolation per account).
+
+**Semantics:**
+
+- `present({accountId, tabId?, url, bounds})` — show tab (create or
+  re-attach); `url` loaded only on first creation. If `tabId` is missing:
+  active tab of the profile (first present creates tab "1").
+- Tab switch = only hides/shows — **no reload**, page state
+  (inputs, scroll, WS) survives. Verification criterion for Stage 1
+  was exactly that (text in chat composer → switch tab → back → text
+  is still there, without new navigation entry).
+- `closeTab` destroys the WebView; min 1 (× hides itself), max 10 (+
+  hides itself) — Shell rules, not native.
+- Bounds/reload/navigateHome address the active tab (or all
+  tabs of the active profile for setBounds).
+- **Tab title**: URL-derived (page type · Project) — the Native Host
+  pushes `tabUrl` on `did-navigate`; the Shell cannot
+  read the WebView DOM. (Actual document titles: later stage.)
+
+**Two-Finger Swipe = back/forward (2026-10-12):** Electron has NO
+native two-finger history navigation — the Chromium content overscroll
+(`OverscrollHistoryNavigation`) is REMOVED from the binary (verified against
+Electron 44's framework: null hits), the mac swiper lives in
+the Chrome layer that Electron does not include, and the Electron PR that
+ports it is unmerged. The trackpad swipe arrives with
+default settings as **Wheel events with deltaX** — Face
+classifies them itself (`platform/swipeHistory.ts`, Desktop-gated via
+the bridge; in the browser, the native swipe remains): horizontal-dominant +
+250px threshold → `history.back()/forward()`. **Consumption protection:**
+`preventDefault`ed events (Canvas/Scribble) invalidate the sequence,
+horizontally scrollable ancestors (Sheets) block the direction,
+vertical-dominant is scrolling. The 3-finger window `swipe` event remains
+as a secondary path (requires the trackpad setting "with two or three
+fingers").
+
+**Deliberate Consequences:** Memory = one renderer process per tab
+(cap 10 is the deliberate price); profile switch leaves other
+tabs loaded (otherwise B would be broken on switch); two tabs on the
+same chat session = `allowMultipleClients` case (browser parity).
+iOS gets an LRU valve against memory pressure in Stage 2 (longest
+inactive, non-active tab unloaded, rehydration on switch).

@@ -6,7 +6,7 @@
 
 An external integration needs credentials that are **not** the full credentials of its human user. A browser plugin that adds links to a list should be able to add links to a list — and nothing else. It keeps its credentials for months on a device that is not the server.
 
-This brings together three requirements that otherwise conflict:
+This combines three requirements that would otherwise be mutually exclusive:
 
 1. **Long-lived** — nobody types a password into an extension monthly.
 2. **Narrow** — the credentials must only access the surface area of the integration.
@@ -16,7 +16,7 @@ The existing `ACCESS` token only fails (1), and the `REFRESH` token only fails (
 
 ## 2. What it is not
 
-**Not a second authorization path.** An Integration Token is an **authentication method**, not a reason to bypass credential requirements. There is no `/public/` namespace, no endpoint that checks its own key, and no controller that behaves differently for this case than usual. The token passes through the same filter chain, sets the same three request attributes as a JWT, and lands in the same `SecurityContext`.
+**Not a second authorization path.** An Integration Token is an **authentication mechanism**, not a reason to bypass credential requirements. There is no `/public/` namespace, no endpoint that checks its own key, and no controller that behaves differently for this case than usual. The token passes through the same filter chain, sets the same three request attributes as a JWT, and lands in the same `SecurityContext`.
 
 The reason is mechanical, not aesthetic: `SecurityContextFactory.fromRequest` **throws** if the attributes are missing. A controller behind an open prefix therefore cannot call `authority.enforce(request, …)` — it would have to invent its authorization outside the permission system, and the same resource would have two doors with different locks. Whoever had the key would have rights not listed in any grant.
 
@@ -32,7 +32,7 @@ A token carries two restrictions, and both are necessary because each alone leav
 
 A **name**, not a path list. It is resolved at **check time** against the beans in the running process.
 
-This is the fundamental decision of this system. These tokens are by definition long-lived; a path list baked in at mint time is a permission decision that freezes on that day, while URLs continue to evolve. Specifically in this tree: `POST`, `PATCH`, and `DELETE` on `/addon/links/entry` are **the same path**. If someone splits this, a year-old token would grant too much or too little — without error, without a trace.
+This is the fundamental decision of this system. These tokens are by definition long-lived; a path list baked in at mint time is a permission decision that freezes on that day, while URLs continue to evolve. Specifically in this tree: `POST`, `PATCH`, and `DELETE` on `/addon/links/entry` are **the same path**. If someone splits this, a year-old token would be too broad or too narrow — without error, without trace.
 
 The price is that you cannot tell what a token is allowed to do just by looking at it. The profile registry answers this, with the current truth.
 
@@ -42,9 +42,9 @@ A profile is a **ceiling**, never a permission.
 
 The alternative would have been to merge the surface areas into *one* profile. Then someone would have to declare a profile that names routes of two foreign modules — and a profile describes an **integration**, not an app. As a list, each profile stays with its owner, and the union is the human's decision at minting.
 
-This does not break §4: the union of two ceilings remains capped by the account's grants and the project pin. The rule states that the token cannot do more than the account — not that it may only have one capability.
+This does not violate §4: the union of two ceilings remains capped by the account's grants and the project pin. The rule states that the token cannot do more than the account — not that it may only have one capability.
 
-Two rules during checking: **an unknown profile kills the token** (it was issued to carry a capability that this Brain no longer has; silently serving the rest answers a different question), and **if any carried profile requires a project, the token needs one** — the alternative would be to decide the pin per hit route, then "is this token pinned?" would depend on which endpoint it is currently calling.
+Two rules during checking: **an unknown profile kills the token** (it was issued to carry a capability that this Brain no longer has; silently serving the rest answers a different question), and **if any carried profile requires a project, the token needs one** — the alternative would be to decide the pin per route hit, then "is this token pinned?" would depend on which endpoint it is currently calling.
 
 ### 3.2 Project Pin (`pid`) — which segment
 
@@ -54,16 +54,18 @@ Therefore, the token additionally carries the project, and `PermissionService` c
 
 A profile that does not require a project must explicitly state this (`requiresProject()`); the default is `true`, because a token that has forgotten which project reaches all.
 
+Conversely, a profile without project relevance (`mcp`, `agents`) **refuses** a pin: minting responds 400 if such a profile is requested with `projectId` or mixed with a project-required profile in a token, and `NarrowedCredentialCheck` rejects a token with `pid` and such a profile at runtime. Reason: behind these doors, tool execution builds the `SecurityContext` from the user alone — the pin would only act at the entrance gate and would appear pinned without being so.
+
 ## 4. Intersection, never Union
 
 > **The security property:** an Integration Token can **never do more** than the account behind it — only less.
 
-Enforced in `PermissionService.check`, at the same place that already guards "exactly one provider, otherwise boot fail". The `PermissionResolver`-SPI does **not even see** the narrowing — no provider, not even an EE governor, can accidentally widen a narrowed context.
+Enforced in `PermissionService.check`, at the same place that already guards "exactly one provider, otherwise boot fail". The `PermissionResolver`-SPI does **not even see** the narrowing — no provider, not even an EE Governor, can accidentally broaden a narrowed context.
 
 Three subtleties, all with a test:
 
 - **The narrowing is checked before the system trust shortcut.** `WriteReason.SYSTEM` means "this write operation is policy-legitimate", not "this caller may write to another project". Scope is answered before policy, otherwise the system branch would carry a narrowed token out of its project.
-- **Resources without a project are rejected** — Tenant, User, Team, Inbox-Item, tenant-scoped Setting. Fail-closed, because "we cannot classify" must not be read as "it's okay": otherwise, every new `Resource` type would silently widen every already issued token.
+- **Resources without a project are rejected** — Tenant, User, Team, Inbox-Item, tenant-scoped Setting. Fail-closed, because "we cannot classify" must not be read as "it's okay": otherwise, every new `Resource` type would silently broaden every already issued token.
 - **The `switch` is exhaustive over the sealed `Resource`.** A new type breaks compilation exactly here — the moment when it must be decided whether it carries a project.
 
 ## 5. Revocation
@@ -71,11 +73,12 @@ Three subtleties, all with a test:
 A JWT is self-contained: once signed, it is valid until expiration, and there is no way back. The registry entry (`integration_tokens`, key `jti`) is the way back.
 
 - **Unknown `jti` is considered revoked.** Covers both: a mint that died between signing and writing, and a manually deleted entry.
-- **Every write operation on the entry touches exactly one field** (`$set` via `MongoTemplate`), never a `save()` of the currently read document. Otherwise, `lastUsedAt` is a lost update on the field that must never lose: request reads the entry, owner revokes, request writes back its outdated copy — and `revokedAt` is silently `null` again, permanently. Revocation is conditional on `revokedAt is null`, which structurally keeps the original timestamp instead of via read-then-write.
+- **Every write operation on the entry touches exactly one field** (`$set` via `MongoTemplate`), never a `save()` of the currently read document. Otherwise, `lastUsedAt` is a lost update on the field that must never lose: request reads the entry, owner revokes, request writes back its outdated copy — and `revokedAt` is silently `null` again, permanently. Revocation is conditioned on `revokedAt is null`, which structurally keeps the original timestamp instead of via read-then-write.
 - **The project pin is cross-checked**, just like Tenant and User: the signature proves that the claims are ours, the comparison proves that they were minted *for this entry*. This is where a **project rename** stops the token instead of silently redirecting it — a signed claim cannot follow a rename. Without the check, a token whose project was renamed would point to the **new** project that inherits the old name. The maintenance handler additionally stamps `revokedAt` during a rename, so the owner's list also reflects this.
 - **The entry is written before the token.** The error case is then an entry without a token (harmless, appears in the list) instead of a token without an entry.
 - **No TTL index.** An expired entry remains — it is what the owner sees in "my tokens".
-- **The token itself is never stored.** It appears exactly once, in the mint response. An interface that can display credentials again is a second place from which they can leak.
+- **Minted with an OAuth login** (caller is an OAuth `account` token): the entry carries `parentGrantId` = caller's Grant and is revoked with the Grant ([oauth-server.md](oauth-server.md) §5.4) — otherwise, a token minted via a stolen, long-revoked CLI login would survive. A mere expiration of the grant does not revoke.
+- **The token itself is never stored.** It appears exactly once, in the mint response. An interface that can display a credential again is a second place from which it can leak.
 
 ### 5.1 The Cache TTL *is* the Revocation Latency
 
@@ -89,26 +92,26 @@ Crucially, **who sets the number**: the latency is an operator's configuration, 
 
 `POST /brain/{tenant}/integration-tokens` — **only for oneself** and **only with an `ACCESS` token**.
 
-The second condition is more important: a narrowed credential must not generate credentials, otherwise it would escape its own restrictions profile by profile. The same rule from which `AccessController.refreshToken` only accepts `ACCESS`.
+The second condition is more important: a narrowed credential must not generate credentials, otherwise it would escape its own restriction profile by profile. The same rule from which `AccessController.refreshToken` only accepts `ACCESS`.
 
-Additionally, the mint requires `WRITE` on the pinned project. The intersection from §4 would make an overly broad token ineffective anyway — but a token that logs in and then loses every call is a bad thing to pass around. Better to reject at the moment of error.
+Additionally, minting requires `WRITE` on the pinned project. The intersection from §4 would make an overly broad token ineffective anyway — but a token that logs in and then loses every call is a bad thing to pass around. Better to reject at the moment of error.
 
 | Route | |
 |---|---|
-| `GET …/integration-tokens/profiles` | What this Brain offers — source for the mint form |
+| `GET …/integration-tokens/profiles` | What this Brain offers — source of the mint form |
 | `GET …/integration-tokens` | Own tokens (never with value) |
 | `POST …/integration-tokens` | Mint; response carries the token **once** |
 | `DELETE …/integration-tokens/{tokenId}` | Revoke |
 
-Lifetime: Default 90 days, maximum 365. Generous, because revocation is the control and expiration is the safety net — but not unlimited: a credential whose issuance no one remembers should expire on its own.
+Lifetime: Default 90 days, Maximum 365. Generous, because revocation is the control and expiration is the safety net — but not unlimited: a credential whose issuance no one remembers should expire on its own.
 
-A foreign token ID during revocation is **404, not 403** — a stranger should not learn that an ID exists through a "you are not allowed".
+A foreign Token ID during revocation is **404, not 403** — a stranger should not learn that an ID exists through a "you are not allowed" message.
 
-The mint writes an audit entry at **WARN**: unlike a login, it creates something that continues to run while no one is watching.
+Minting writes an Audit entry to **WARN**: unlike a login, it creates something that continues to run while no one is watching.
 
 ## 7. Declaring Profiles
 
-`IntegrationScopeProfile` is a bean, declared by the owner of the surface area — the same seam as `ShareHandler`, `RunSource`, `DamogranTask`. Duplicate `id` or a profile without surface areas **break the boot**: an ambiguity in an authorization input is a startup error, not a warning.
+`IntegrationScopeProfile` is a Bean, declared by the owner of the surface area — the same seam as `ShareHandler`, `RunSource`, `DamogranTask`. Duplicate `id` or a profile without surface areas **break boot**: an ambiguity in an authorization input is a startup error, not a warning.
 
 `IntegrationSurface` carries **method and path**, path Ant-style and relative to the Tenant-Root. A pattern without a leading `/` is rejected — it would never match and would appear configured.
 
@@ -122,18 +125,26 @@ GET  /addon/links/entry/lookup
 POST /addon/links/capture
 ```
 
-This is a narrower permission than it seems: **a token with this profile cannot read the list.** It can ask for a URL it already knows, fetch group names, and save. This is exactly what such a tool does — badge, dropdown, save.
+This is a narrower permission than it looks: **a token with this profile cannot read the list.** It can ask for a URL it already knows, fetch group names, and save. This is exactly what such a tool does — badge, dropdown, save.
 
 Two omissions are instructive:
 
-- **`GET /addon/links/scan`** is excluded. A capture tool only wanted the full list to answer "is this page already saved"; `/entry/lookup` answers that with one entry.
-- **`POST /addon/links/groups`** is excluded, although `GET` on the same path is included — and it *rewrites the headings*. This is the sharpest case for method-aware surface areas in this profile: reading the contents of a dropdown must not carry the right to redefine them. A path-based profile would have silently allowed both here.
+- **`GET /addon/links/scan`** is excluded. A capture tool only wanted the full list to answer "is this page already saved"; `/entry/lookup` answers that with a single entry.
+- **`POST /addon/links/groups`** is excluded, even though `GET` on the same path is included — and it *rewrites the headings*. This is the sharpest case for method-aware surfaces in this profile: reading the contents of a dropdown must not carry the right to redefine them. A path-based profile would have silently allowed both here.
 
-Also excluded: `/entry` with all three verbs, `/entry/viewed` (a capture tool doesn't check anything off — nothing it knows says a human has read a page), `reorder`, `group/rename`, `rebuild`.
+Also excluded: `/entry` with all three verbs, `/entry/viewed` (a capture tool does not check anything off — nothing it knows says that a human has read a page), `reorder`, `group/rename`, `rebuild`.
+
+### 7.0 Included: the MCP doors
+
+`mcp-project` (`POST|GET /mcp/*`, pin required), `agents` (`POST|GET /agents`,
+without pin) and `mcp` (`POST|GET /mcp`, without pin; the global door,
+additionally gated by `mcp-global-access.yaml`). These same three profiles also
+carry the OAuth tokens for the doors — the [OAuth Server](oauth-server.md) is a
+second form of issuance for the same narrowing, not a second narrowing.
 
 ### 7.1a Included: `web-grab`
 
-Exactly one surface area, `POST /grab` — see [web-grab.md](web-grab.md). No
+Exactly one surface, `POST /grab` — see [web-grab.md](web-grab.md). No
 read route: a grab writes what the browser already has. Separated from
 `links-capture` instead of merged into a "browser-extension" profile, because a
 token can carry both, and the union is then the human's decision instead of one
@@ -143,16 +154,11 @@ Such a tool never needs to delete: `/capture` is idempotent on the URL and repor
 
 ## 7.2 User Interface
 
-There is (yet) no central "my tokens" page; minting happens where access is
-needed — for `links-capture` behind the ⚙ of the Links app
-(`app-links.md` §8.2). The REST connection is nevertheless in **`@vance/shared`**
-(`rest/integrationTokens.ts`), not in the addon: the credential belongs to the
-account, not the app that happens to offer the button — and the profile page as
-a second caller should not have to rebuild this.
+There is (yet) no central "my tokens" page; minting happens where access is needed — for `links-capture` behind the ⚙ of the Links app (`app-links.md` §8.2). The REST connection is nevertheless in **`@vance/shared`** (`rest/integrationTokens.ts`), not in the addon: the credential belongs to the account, not the app that happens to offer the button — and the profile page as a second caller should not have to rebuild this.
 
 ### The Connection String
 
-What a third-party tool needs, in a copyable field
+What a third-party tool needs, in a field for copying
 (`@vance/shared/rest/integrationConnection.ts`):
 
 ```
@@ -165,17 +171,17 @@ vancetope1.<base64url({brainUrl, tenant, projectId, target?, profile, token, exp
 
 ## 8. Limitations (v1)
 
-- **The WebSocket is blocked.** After the upgrade, the `SecurityContext` is built from `ConnectionContext`, which only carries Tenant and User — a pinned token would emerge **unpinned**. Today, no one declares this; precisely for this reason, the block is already there, otherwise the first profile with `/ws` would silently expose an un-narrowed socket. To open it correctly means: teach `ConnectionContext` the narrowing.
-- **No central token page.** Minting and revocation are only available where a profile offers an interface for it (today: the ⚙ of the Links app). A list across all profiles belongs in the profile but is not built.
-- **No CORS.** The Brain does not set CORS headers; this is a header issue, not an auth issue. From an MV3 background worker with `host_permissions`, it is not needed; from a content script, an open endpoint would not help either.
+- **The WebSocket is locked.** After the upgrade, the `SecurityContext` is built from `ConnectionContext`, which only carries Tenant and User — a pinned token would emerge **unpinned**. Today, no one declares this; precisely for this reason, the lock is already in place, otherwise the first profile with `/ws` would silently expose an un-narrowed socket. To open it correctly means: teach `ConnectionContext` the narrowing.
+- **Minting only at the point of need.** Minting is only available where a profile offers an interface for it (today: the ⚙ of the Links app). **Listing and Revoking** across all profiles has been available since the OAuth server on `connected-accounts.html` ("Apps with access to your account", along with the OAuth grants).
+- **No CORS.** The Brain does not set CORS headers; this is a header question, not an auth question. From an MV3 background worker with `host_permissions`, it is not needed; from a content script, an open endpoint would not help either.
 - **The project pin is a single project**, not a list.
 
 ## 9. Maintenance
 
 `integration_tokens` carries `projectId` **and** `userId`, thus has both handlers:
 
-- **User Handler**, `OWNED`, Order **400** (before the usual block): an orphaned credential is not stale data, but a living secret — and here sharper, because the entry *is* the revocation instance. If it remained, the token would continue to authenticate externally as a user who no longer exists. The early position is a security margin, not a cascade: a partially failed run should not be one that left behind a functional credential.
-- **Project Handler**, Order 100: Deletion **is** revocation (unknown `jti` = dead). If the entry remained, the next project with the same name would be born with a stranger's living credential. The **rename revokes**: the pin lives in the signed claims and cannot follow a rename; the entry therefore no longer describes the token afterwards — the cross-check in §5 closes the hole, the `revokedAt` stamp makes it visible in the list.
+- **User Handler**, `OWNED`, Order **400** (before the usual block): an orphaned credential is not stale data, but a living secret — and here, sharper, because the entry *is* the revocation instance. If it remained, the token would continue to authenticate externally as a user who no longer exists. The early position is a security margin, not a cascade: a partially failed run should not be one that left behind a functional credential.
+- **Project Handler**, Order 100: Deleting **is** revoking (unknown `jti` = dead). If the entry remained, the next project of the same name would be born with a stranger's living credential. The **rename revokes**: the pin lives in the signed claims and cannot follow a rename, so the entry no longer describes the token afterwards — the cross-check in §5 closes the hole, the `revokedAt` stamp makes it visible in the list.
 
 ## 10. Reference
 

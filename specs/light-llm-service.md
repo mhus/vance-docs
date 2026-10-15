@@ -10,26 +10,26 @@ permalink: /specs/light-llm-service
 
 > A central helper service for **single-shot LLM calls** using a Recipe as a configuration profile. No Process spawn, no Lane lock, no dedicated chat audit trail. If you need a quick LLM call (classification, title generation, discovery, anti-hallucination check, summary), use this service instead of writing your own `ThinkEngine` or wiring `ChatModel` directly.
 >
-> The Recipe system serves as a **configuration layer** (model alias, Pebble template, schema retry budget, fallback models) — exactly the same mechanism that Engines already use today. Tenants can reconfigure individual Light LLM use cases via Recipe overrides without code intervention.
+> The Recipe system serves as a **configuration layer** (model alias, Pebble template, schema retry budget, fallback models) — exactly the same mechanism that Engines already use today. Tenants can reconfigure individual Light LLM use cases via Recipe overrides without code changes.
 >
 > See also: [recipes](/specs/recipes) | [llm-resource-management](/specs/llm-resource-management) | [jeltz-engine](/specs/jeltz-engine) | [how-do-i](/specs/how-do-i)
 
 ---
 
-## 1. Purpose & Delimitation
+## 1. Purpose & Scope
 
 **Problem.** Several use cases require a single-shot LLM call with tenant-configurable model selection, a Pebble-templated Prompt, and optional JSON schema validation:
 
 - Discovery (`how_do_i` — Source-Catalog matching, see [how-do-i](/specs/how-do-i))
 - Title generation for Sessions
 - Intent classification for routing
-- Inbox Summary generation
+- Inbox summary generation
 - Anti-hallucination cross-check
 - Future: pseudonymization, keyword extraction, sentiment check
 
-Building each of these calls as its own mini-`ThinkEngine` is expensive overkill: spawn lifecycle, chat history writing, Lane lock, Process event routing. Most use cases don't need any of that — just the LLM call itself.
+Building each of these calls as its own mini-`ThinkEngine` is expensive overkill: spawn lifecycle, chat history writing, Lane lock, Process event routing. Most use cases need none of this — only the LLM call itself.
 
-`JeltzEngine` internally does exactly what we want here — but as a spawned Engine, because it was intended as a user-facing worker. We need the same pattern as a **non-spawn** service API.
+`JeltzEngine` internally does exactly what we want here — but as a spawned Engine, because it was designed as a user-facing worker. We need the same pattern as a **non-spawn** service API.
 
 **Solution.** An `@Service` bean that centrally encapsulates the pattern *"Recipe as config profile → ChatModel.chat → Schema loop"*. First consumer: `DiscoveryService`. Other use cases can be added later without duplicating the pattern.
 
@@ -56,10 +56,15 @@ public interface LightLlmService {
      */
     Map<String, Object> callForJson(LightLlmRequest req);
 
+    // Raw call with cost telemetry: reply text, the model that actually
+    // answered (fallbacks name themselves) and its token usage. Bulk
+    // engines meter per-call cost from it.
+    LightLlmTextAnswer callWithUsage(LightLlmRequest req);
+
     /**
-     * Like callForJson, additionally including the identity of the model that
-     * responded — as `<providerInstance>:<modelName>`, i.e., in the same form
-     * as `modelAlias` in the Usage Ledger.
+     * Like callForJson, additionally with the identity of the model that
+     * answered — as `<providerInstance>:<modelName>`, i.e., in the same
+     * form as `modelAlias` in the Usage Ledger.
      */
     LightLlmJsonAnswer callForJsonWithModel(LightLlmRequest req);
 }
@@ -73,9 +78,12 @@ public class LightLlmRequest {
     Map<String,Object> pebbleVars; // optional — for promptPrefix rendering
     Map<String,Object> schema;     // optional — passed to callForJson()
     Integer maxAttempts;           // optional — overrides recipe.params.maxAttempts
+    Integer maxTokens;             // optional — overrides recipe.params.maxTokens (output cap)
     String tenantId;               // required — tenant scope for settings + API keys
     String projectId;              // optional — project scope for settings cascade
+    @Nullable String userId;       // optional — USER tier of the skill cascade (§2a)
     String processId;              // optional — innermost scope (caller's process)
+    List<String> skills;          // optional — single-shot skill composition (§2a)
 }
 
 public class SchemaValidationException extends LightLlmException {
@@ -89,6 +97,15 @@ public class LightLlmException extends RuntimeException { … }
 
 **Convention:** `recipeName` MUST be a Recipe marked as an *internal config profile* (Frontmatter `internal: true` or tag). The standard Recipe selector (for `DELEGATE` path) ignores these Recipes; they are only accessible via the service API.
 
+### 2a. Skill Composition (`skills`)
+
+A single-shot call has **no tool loop** — `skill_activate` advertising and auto-triggers are useless there; the model cannot activate anything. What a caller (e.g., Benjy's controller stages, [benjy-engine](/specs/benjy-engine) §4) needs instead is **composition**: the bodies and INLINE-reference docs of configured Skills go directly into the System Prompt, after the rendered `promptPrefix`.
+
+- `skills`: Skill names, resolved via `SkillResolver` cascade (`userId` opens the USER tier; null as everywhere for system calls). The **activation mode** ([skills](/specs/skills) §4g) is irrelevant — the selection is a conscious caller decision like `defaultActiveSkills`, not an activation path.
+- **Fail-fast, never silent:** a Skill that does not resolve in scope, is disabled, declares `ON_DEMAND` reference docs (there is no `manual_read` in single-shot), or only contains `tools:`/`manualPaths:`/`activate:` (which have no effect there), will fail the call with a clear message (`LightLlmException`). Validation lives in `SingleShotSkillComposer` — Benjy performs the same check at process start, so a broken Recipe parks the run as BLOCKED before the first controller call burns money.
+- `tools:`/`manualPaths:`/`activate:`/`deactivate:`/`run:` are documented no-ops — the single-shot has neither a tool loop nor a Lane.
+- `args`-binding is omitted: no activation path with arguments; compose time is the call.
+
 ---
 
 ## 3. Recipe as Config Profile
@@ -99,14 +116,14 @@ The `LightLlmService` reads the following fields from the Recipe:
 |---|---|
 | `params.model` | Model alias (e.g., `default:fast`, `default:analyze`) |
 | `params.fallbackModels` | Resilient Layer fallback list |
-| `params.maxAttempts` | Schema retry budget (default 3) |
+| `params.maxAttempts` | Schema retry budget (Default 3) |
 | `params.temperature`, `topP`, `topK` | Standard LLM parameters (passed through to `ChatModel`) |
 | `promptPrefix` | Pebble template → rendered with `pebbleVars` and standard render context; forms the **System Message** |
 | `engine` | **documentary** — not used for spawning (should be `jeltz` or `light-llm` by convention) |
 | `internal` *(new)* | Frontmatter marker `true` — the Recipe selector skips these Recipes |
-| `allowedTools`, `manualPaths` | **ignored** — Light LLM calls have no Tool Use, no Manual Loads |
+| `allowedTools`, `manualPaths` | **ignored** — Light LLM calls have no tool use, no manual loads |
 
-**What is not read:** all Engine lifecycle fields (Validators, Action schemas, Plan Mode hints) — Light LLM is single-shot without Engine behavior.
+**What is not read:** all Engine lifecycle fields (Validators, Action Schemas, Plan Mode hints) — Light LLM is single-shot without Engine behavior.
 
 ---
 
@@ -134,7 +151,7 @@ promptPrefix: |
 
 If the caller provides `pebbleVars=Map.of("sources", catalogMarkdown, "intent", intentString)`, both variables are available.
 
-**Conflict behavior:** Caller variables overwrite standard variables if the key is the same. Defensive convention: Custom variables in a namespace (e.g., `vars.sources` instead of `sources`) if there is a risk of collision.
+**Conflict behavior:** Caller variables override standard variables if the key is the same. Defensive convention: Custom variables in a namespace (e.g., `vars.sources` instead of `sources`) if there is a risk of collision.
 
 ---
 
@@ -165,7 +182,7 @@ if attempt > maxAttempts:
 
 **Correction Message Append:** appended as an additional `AiMessage` + `UserMessage("Schema validation failed: ...")` to the `messages` list, so the LLM sees what it got wrong the first time. Identical pattern to Jeltz.
 
-**Schema Format:** `Map<String,Object>` in the JSON-Schema-light dialect (see `JsonSchemaLight.java`). Supports: `object`, `array`, `string`, `boolean`, `integer`, `number`, `enum`, `required`, `properties`, `items`. No full JSON schema support (no `oneOf`, `allOf`, …) — intentionally minimal.
+**Schema Format:** `Map<String,Object>` in the JSON-Schema-light dialect (see `JsonSchemaLight.java`). Supports: `object`, `array`, `string`, `boolean`, `integer`, `number`, `enum`, `required`, `properties`, `items`. No full JSON Schema support (no `oneOf`, `allOf`, …) — intentionally minimal.
 
 ---
 
@@ -185,13 +202,13 @@ is **atomic** — there is no partially delivered output — so a
 retry is unconditionally safe here, unlike with streaming.
 
 **Deadline.** `AiChatOptions.syncCallDeadline` limits how long the
-layer **continues trying** (a running request belongs to the HTTP timeout).
+layer **continues trying** (an ongoing request belongs to the HTTP timeout).
 For Engine turns, it remains empty; `LightLlmService` sets 90 seconds,
 because Light consumers typically sit behind a synchronous HTTP request,
 whose caller has long given up before the default ladder
 (5 attempts, 5/10/20/40s) is through.
 
-**Which model responded** is then only known to this layer —
+**Which model answered** is then only known to this layer —
 after a fallback, it is not the requested one. It reports it via
 `AiChatOptions.syncAnsweredBy`; `callForJsonWithModel` passes it through as
 `LightLlmJsonAnswer.model`.
@@ -205,13 +222,13 @@ Anthropic prompt cache layer.
 
 **Metrics** (Micrometer, low-cardinality tags):
 
-| Metric | Tags | What |
+| Metric | Tags | Description |
 |---|---|---|
 | `vance.lightllm.calls` | `recipe`, `outcome` (`success`, `schema_failed`, `llm_error`) | Counter of all Light LLM calls |
-| `vance.lightllm.attempts` | `recipe` | DistributionSummary of number of attempts per call |
+| `vance.lightllm.attempts` | `recipe` | DistributionSummary of the number of attempts per call |
 | `vance.lightllm.duration` | `recipe`, `outcome` | Timer |
 
-**Audit:** by default, no dedicated chat history entry (that's the point — no Process spawn, no dedicated Lane). If needed, individual use cases (Discovery, for example) can write the result to their own Audit Document — this is the caller's responsibility, not the service's.
+**Audit:** by default, no dedicated chat history entry (that's the point — no Process spawn, no dedicated Lane). If needed, individual use cases (Discovery, for example) can write the result to their own audit document — this is the caller's responsibility, not the service's.
 
 ---
 
@@ -223,9 +240,9 @@ All under `lightllm.*`, Cascade Project → Tenant → Default:
 |---|---|---|---|---|
 | `lightllm.enabled` | bool | true | v1 | Master switch |
 | `lightllm.maxAttempts.default` | int | 3 | v1 | Schema retry default if neither Recipe nor Request override |
-| `lightllm.timeoutSeconds` | int | 30 | v2 | Per-call timeout (before Provider Layer timeouts). Currently not implemented — langchain4j has no direct timeout hook; provider-specific timeouts apply. |
+| `lightllm.timeoutSeconds` | int | 30 | v2 | Per-call timeout (before Provider Layer timeouts). Currently not implemented — langchain4j has no direct timeout hook; Provider-specific timeouts apply. |
 
-Per-use-case settings (e.g., `discovery.recipe`) reside in the respective consumer specs.
+Per-use-case settings (e.g., `discovery.recipe`) live in the respective consumer specs.
 
 ---
 
@@ -238,8 +255,9 @@ Per-use-case settings (e.g., `discovery.recipe`) reside in the respective consum
 | `userPrompt` empty | `LightLlmException("userPrompt required")` |
 | `ctx.tenantId` missing | `LightLlmException("tenant scope required")` |
 | Pebble render error (syntax error in template) | `LightLlmException` with template position |
-| Primary model error → Fallbacks successful | success, logged `vance.llm.calls{outcome=fallback}` |
-| Primary + all fallbacks failed | `LightLlmException("LLM call failed: …")` |
+| `skills` entry does not resolve / disabled / ON_DEMAND docs / nothing composable | `LightLlmException` with Skill name and reason (§2a — fail-fast, never silent) |
+| Primary Model error → Fallbacks successful | success, logged `vance.llm.calls{outcome=fallback}` |
+| Primary + all Fallbacks failed | `LightLlmException("LLM call failed: …")` |
 | Schema loop fails after `maxAttempts` | `SchemaValidationException(attempts, lastInvalidValue, lastError)` |
 
 ---
@@ -257,7 +275,7 @@ Per-use-case settings (e.g., `discovery.recipe`) reside in the respective consum
 | Audit Trail | optional via Caller | mandatory via Process |
 | Use Case | Classification, Discovery, Title Gen, … | User-Facing Chat, Worker, Plan Execution |
 
-**Long-term (not v1):** Jeltz, Hactar framing/drafting, Zaphod synthesis could consolidate their internal schema loops on `LightLlmService` — the spawn wrapper remains for audit trail use cases. Migration **only** after `LightLlmService` is stable in production.
+**Long-term (not v1):** Jeltz, Hactar-Framing/Drafting, Zaphod-Synthesis could consolidate their internal schema loops on `LightLlmService` — the spawn wrapper remains for audit trail use cases. Migration **only** when `LightLlmService` is stable in production.
 
 ---
 
@@ -281,27 +299,26 @@ After L1–L4, the service is in production and Discovery runs on it. Further co
 `{ recipe, text }`. The counterpart to purpose-specific routes like `/follow-up`:
 here, **the caller** names the Recipe.
 
-**Two gates that answer different questions.** `internal: true` is enforced
-by the service (config profile, not a spawnable worker) — without it, a
+**Two gates that answer different questions.** `internal: true` is enforced by
+the service (config profile, not a spawnable worker) — without it, a
 caller could run a full worker Recipe as a one-shot prompt. `web: true`
-is enforced by the route: is this Recipe even intended to be triggered
-from a browser? Only the person who wrote the Recipe knows this, and the
-default is no.
+enforces the route: is this Recipe even intended to be triggered from a browser?
+Only the Recipe author knows this, and the default is no.
 
 **Why the flag is on the Recipe and not on the caller.** The obvious
 design was a per-app permission — but a custom app *is* a web client,
-and every web client reaches the same route with the same Session. A
-per-app flag would be a fiction that reads like a boundary. The only
-decision is which Recipes should be exposed, and this decision belongs in the
-document where the model, template, and retry budget are already stated.
+and every web client reaches the same route with the same session. A
+per-app flag would be a fiction that reads like a boundary. The only decision
+is which Recipes should be exposed, and this decision belongs in the
+document where the model, template, and retry budget are already defined.
 
 Authorization is `Project READ`, as with `/follow-up`. What this buys and what
-it doesn't: it keeps strangers out, it doesn't measure anyone. Cost control **is**
+it doesn't: it keeps outsiders out, it doesn't measure anyone. Cost control **is**
 the Recipe — it fixes the model, prompt template, and attempt budget. A
-per-caller rate limit is intentionally not yet present here; that belongs next to the
-rest of the quota machinery, not in this controller.
+per-caller rate limit is intentionally not yet present here; that belongs alongside
+the rest of the quota machinery, not in this controller.
 
-Failure modes, intentionally different: unknown name `404`, defective
+Error scenarios, intentionally different: unknown name `404`, defective
 Recipe document `422` (the fix is in the document, not the call), missing
 web release `403` with the missing line in the message, service rejection
 (including `internal`) `422`.
@@ -313,8 +330,8 @@ its `custom.rest`. See `_vance/manuals/bistromath/rest.md`.
 starts a **Worker** from the web and honors the same `web: true`. A
 second flag would have been necessary if the cases could collide — they
 cannot: a config profile is `internal: true` and rejected here (with
-reference to `/light-llm`), a spawnable Recipe is `internal: false` and rejected there.
-One flag, one meaning ("a web client may trigger this Recipe"), the *how*
+reference to `/light-llm`), a spawnable Recipe is `internal: false` and rejected
+there. One flag, one meaning ("a web client may trigger this Recipe"), the *How*
 follows from `internal`. Authorization there is `Project WRITE`
 instead of `READ` — it starts work. The spawn core itself
 (`ProcessSpawnService`: resolve Recipe → create Process → start Engine **on the
@@ -324,9 +341,9 @@ opportunity to violate it.
 
 ## Status
 
-Spec is in Draft as of 2026-05-26. Design decisions:
+Spec is Draft as of 2026-05-26. Design decisions:
 
-- **Single-shot, no Tool Use, no Streaming** — intentionally minimal scope.
+- **Single-shot, no tool use, no streaming** — intentionally minimal scope.
 - **Recipe as config profile, not as spawn vehicle** — new frontmatter marker `internal: true` prevents accidental spawn.
 - **Schema loop identical to `JeltzEngine`** — no second validation implementation.
 - **Resilient Layer + Prompt Caching used for free** — no special path.

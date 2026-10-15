@@ -1,6 +1,6 @@
 # Vancetope — Server Tools
 
-> A **Server Tool** is a configurable instance of a Tool Type, addressed by Engines/Recipes via its `name`. Server Tool configurations live as YAML documents under `server-tools/<name>.yaml` in the [DocumentService](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) and are resolved via the standard cascade (`project` → `_tenant` → `classpath:vance-defaults/server-tools/`) — Built-in Beans serve as an additional fallback layer. Recipes reference Tools by `name` or by label selector (`@<label>`).
+> A **Server Tool** is a configurable instance of a Tool Type, addressed by Engines/Recipes via its `name`. Server Tool configs live as YAML documents under `server-tools/<name>.yaml` in the [DocumentService](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) and are resolved via the standard cascade (`project` → `_tenant` → `classpath:vance-defaults/server-tools/`) — Built-in Beans serve as an additional fallback layer. Recipes reference Tools by `name` or by label selector (`@<label>`).
 >
 > **Storage Refactor (May 2026):** The former Mongo collection path (`server_tools` + `ServerToolDocument` as persisted entity + `ServerToolBootstrapService`) has been replaced. Implementation status in [`readme/server-tools-config.md`](../../readme/server-tools-config.md), migration plan in [`planning/server-tools-to-documents.md`](../../planning/archive/server-tools-to-documents.md). Where "Mongo" / "ServerToolDocument" still appears below, it is historical — the active architecture is Document-based.
 >
@@ -25,7 +25,7 @@
 
 ## 2. Server Tool Config Schema
 
-Server Tool configurations are YAML documents in the Document Store, read by the `ServerToolLoader` and parsed into the record [`ServerToolConfig`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/servertool/ServerToolConfig.java).
+Server Tool configs are YAML documents in the Document Store, read by the `ServerToolLoader` and parsed into the record [`ServerToolConfig`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/servertool/ServerToolConfig.java).
 
 ```yaml
 # documents/server-tools/<name>.yaml
@@ -41,13 +41,13 @@ parameters:               # type-specific (see §3); lazily validated on lookup
   …
 ```
 
-**Required fields**: `type`, `description`. `name` is derived from the filename — if also specified in YAML, it must match (sanity check on write). `parameters` can be empty if the type requires no configuration.
+**Required fields**: `type`, `description`. `name` is derived from the filename — if also specified in YAML, it must match (sanity check on write). `parameters` can be empty if the type requires no config.
 
 **Storage**: one `DocumentDocument` per Tool, Path = `server-tools/<name>.yaml`. Cascade resolution runs via `DocumentService.lookupCascade(tenantId, projectId, path)` with the proven Project → `_tenant` → classpath order. Audit fields (`createdAt`/`updatedAt`/`createdBy`) live on the underlying Document — the Tool config does not duplicate them.
 
 **`name` convention**: lowercase-snake_case, as with Built-in Tools (`web_search`, `doc_how_to_arthur`). The Recipe Resolver matches case-sensitive.
 
-**Carrier class `ServerToolDocument`**: still exists as a parameter type for `ToolFactory.create(...)` — a pure POJO without persistence, which the loader layer uses to encapsulate its config into the format expected by factories. Nothing about it is Mongo-relevant anymore.
+**Carrier class `ServerToolDocument`**: still exists as a parameter type for `ToolFactory.create(...)` — a pure POJO without persistence, used by the loader layer to encapsulate its config into the format expected by factories. Nothing about it is Mongo-relevant anymore.
 
 ---
 
@@ -68,29 +68,29 @@ public interface ToolFactory {
 }
 ```
 
-Built-in Types in v1 (proposal, final catalog will be maintained via implementation tasks):
+Built-in Types in v1 (proposal, final catalog will be maintained via implementation orders):
 
 | Type | Purpose | `parameters` |
 |---|---|---|
-| `doc_lookup` | Expose a document from the Document Cascade Layer as a Tool — LLM can read it without `tool_list` | `{ path: "documents/how_to_arthur.md" }` |
+| `doc_lookup` | Expose document from the Document Cascade Layer as a Tool — LLM can read it without `tool_list` | `{ path: "documents/how_to_arthur.md" }` |
 | `mcp` | Tool call to an MCP server (server-side configured, not client-side) | `{ server: "jira", toolName: "search_issues" }` |
 | `rest` | Generic REST call with parameter mapping | `{ url, method, headers, bodyTemplate, responseSchema }` |
 | `prompt_template` | LLM call with fixed prompt prefix; easy-to-create "mini-agent" | `{ promptPrefix, model, modelSize }` |
-| `scripted` | JavaScript snippet that runs via the sandboxed `GraaljsScriptExecutor`. Inputs are bound as top-level variables, the `vance.*` host object for sibling tool calls is available. See §3.1. | `{ engine, inputs[], source \| scriptPath, timeoutMs }` |
+| `scripted` | JavaScript snippet running via the sandboxed `GraaljsScriptExecutor`. Inputs are bound as top-level variables, the `vance.*` host object for sibling tool calls is available. See §3.1. | `{ engine, inputs[], source \| scriptPath, timeoutMs }` |
 
 ### 3.1 `scripted` — Tool with Inline JavaScript
 
-A `scripted` Tool bundles a small JavaScript body with declared inputs. On invocation, the input values are bound as top-level variables into the script scope. The script runs in the same sandbox profile as the built-in `execute_javascript` Tool (no IO, no threading, no native, statement limit + wall-clock timeout). The `vance.*` host API is available — scripts can use `vance.tools.call(name, params)` for sibling tool invocations.
+A `scripted` Tool bundles a small JavaScript body with declared inputs. On invocation, input values are bound as top-level variables into the script scope. The script runs in the same sandbox profile as the built-in `execute_javascript` tool (no IO, no threading, no native, statement limit + wall-clock timeout). The `vance.*` host API is available — scripts can use `vance.tools.call(name, params)` for sibling tool invocations.
 
 **Configuration in `ServerToolDocument#parameters`:**
 
 | Field | Type | Meaning |
 |---|---|---|
-| `engine` | `string` (default `javascript`) | Reserved for future engines (Python via GraalPy). Currently only `javascript` is allowed. |
+| `engine` | `string` (default `javascript`) | Reserved for future engines (Python via GraalPy). Currently only `javascript` allowed. |
 | `timeoutMs` | `integer` (default `5000`, max `30000`) | Wall-clock timeout per invocation. |
 | `inputs` | `array` (required, can be empty) | List of declared Tool inputs. Each entry: `{ name, type, description?, required? }`. The LLM-visible JSON schema of the Tool is generated from `inputs`. |
 | `source` | `string` | Inline JavaScript source. Exactly one of `source` / `scriptPath` is required. |
-| `scriptPath` | `string` | Path of a Document (Cascade `Project → _tenant → classpath`) that contains the script source. Read anew per invocation — edits to the Document become active without Tool reload. |
+| `scriptPath` | `string` | Path of a Document (Cascade `Project → _tenant → classpath`) containing the script source. Read anew per invocation — edits to the Document become active without Tool reload. |
 
 **Allowed `inputs[].type` values:** `string`, `number`, `integer`, `boolean`, `object`, `array`. Default `required` is `true` — to declare an optional input, set it explicitly. The input name `vance` is reserved (host object).
 
@@ -138,7 +138,7 @@ const issue = vance.tools.call("jira_get_issue", { id: ticket });
 ({ summary: issue.summary, status: issue.status })
 ```
 
-**Security note:** `scripted` Tools have access to all sibling Tools that the spawning Process would see via Allow-Filter — i.e., the same sandbox profile as `execute_javascript`. A malicious Kit can potentially cause significant damage via a script Tool. **Kit installation is an act of trust** — review the `source` / `scriptPath` content before import, just like any other configuration from an external source.
+**Security note:** `scripted` Tools have access to all sibling Tools that the spawning Process would see via allow-filter — i.e., the same sandbox profile as `execute_javascript`. A malicious Kit could potentially cause significant damage via a script Tool. **Kit installation is an act of trust** — review the `source` / `scriptPath` content before import, just like any other configuration from an external source.
 
 Tool Types are **always code** and not configurable via `ServerToolDocument` themselves — otherwise, we would have a circular dependency.
 
@@ -155,7 +155,7 @@ Tool Types are **always code** and not configurable via `ServerToolDocument` the
 4. Optional.empty()
 ```
 
-**First match wins.** Project override beats `_tenant` beats Built-in. A disabled Document (`enabled=false`) counts as a hit and **breaks the cascade** — meaning a project can specifically disable a system Tool by creating a Document with the same name and `enabled=false`. If the system Tool should pass through, the Project Document is deleted instead of disabled.
+**First match wins.** Project override beats `_tenant` beats Built-in. A disabled Document (`enabled=false`) counts as a match and **breaks the cascade** — meaning a project can specifically disable a system Tool by creating a Document with the same name and `enabled=false`. If the system Tool should pass through, the Project Document is deleted instead of disabled.
 
 **`projectId == "_tenant"`**: collapses the first two steps into a single read (consistency with `DocumentService.lookupCascade`).
 
@@ -165,12 +165,12 @@ For listing endpoints (`ServerToolService.listAll(tenantId, projectId)`), the ca
 
 ## 5. Override Semantics
 
-When a Project Document overrides a `_tenant` Document or a Built-in with the same `name`:
+When a Project Doc overrides a `_tenant` Doc or a Built-in with the same `name`:
 
-- **Complete Replace, no Field Merge.** The override Document describes the Tool completely — otherwise, it becomes unclear which fields are currently active. Consistent with Recipe Cascade (§3 in [recipes.md](recipes.md)).
-- **`primary` is explicit.** It is not inherited from the overridden source in the override — `primary` must be set in the Project Document. Default is `false` (Tool is only reachable via `tool_list`). To make a system primary Tool a secondary Tool in the project, set `primary=false`.
-- **Labels are replaced, not merged.** The override Document carries the complete label list. To retain system labels, copy them into the Project Document.
-- **`type` may change.** A Project Document may use a different `type` than the overridden `_tenant` Document — the override is conceptually a new Tool with the same name.
+- **Complete replace, no field merge.** The override Document completely describes the Tool — otherwise, it becomes unclear which fields are currently active. Consistent with Recipe Cascade (§3 in [recipes.md](recipes.md)).
+- **`primary` is explicit.** It is not inherited from the overridden source in the override — `primary` must be set in the Project Doc. Default is `false` (Tool is only reachable via `tool_list`). To make a system primary Tool a secondary Tool in the project, set `primary=false`.
+- **Labels are replaced, not merged.** The override Doc carries the complete label list. To retain system labels, copy them into the Project Doc.
+- **`type` may change.** A Project Doc may use a different `type` than the overridden `_tenant` Doc — the override is conceptually a new Tool with the same name.
 
 ---
 
@@ -191,7 +191,7 @@ allowedToolsRemove:
 
 **Resolver time**: When a `ThinkProcessDocument` is spawned, `RecipeResolver.applyDefaulting` resolves label selectors via `ServerToolService.findByLabel(tenantId, projectId, label)` to concrete Tool names. The result is persisted in `ThinkProcessDocument.allowedToolsOverride` as a flat list of names — a frozen snapshot, no late re-evaluations.
 
-**Consequence**: If a new Tool with the same label is created after spawning, the running Process does not receive it. This is intentional — reproducibility of a spawn result is more important than live updates.
+**Consequence**: If a new Tool with the same label is created after spawning, the running Process does not receive it. This is intentional — reproducibility of a spawn result is more important than live updates. An exception is the worker pool (§15.2): it is not a Recipe requirement, but the set of available Tools, and is resolved per turn.
 
 **Built-in Tools can carry labels.** The Built-in layer of the cascade is read on boot; a Bean can implement `Set<String> labels()` on `Tool` (default method, empty set). This allows `@web` to work even if `web_search` does not exist as a `ServerToolDocument`.
 
@@ -204,13 +204,13 @@ The existing `ToolDispatcher` currently aggregates `ServerToolSource` (Built-in 
 ```
 ToolDispatcher
   ├── ConfiguredToolSource   ← ServerToolDocument (Project + _tenant)
-  ├── BuiltInToolSource      ← Spring Bean Tools  (currently "ServerToolSource")
+  ├── BuiltInToolSource      ← Spring Bean Tools  (today "ServerToolSource")
   └── ClientToolSource       ← Foot Tools via WebSocket
 ```
 
 **Order of sources** corresponds to the cascade: `ConfiguredToolSource` first-wins over `BuiltInToolSource`. The Dispatcher queries them sequentially.
 
-**The current Spring Bean collector** will be renamed from `ServerToolSource` → `BuiltInToolSource`, so that the new `ConfiguredToolSource` does not inherit the freed name and remains semantically clear: "configured" = from Document, "built-in" = from code.
+**The current Spring Bean collector** will be renamed from `ServerToolSource` → `BuiltInToolSource`, so that the new `ConfiguredToolSource` does not inherit the vacated name and remains semantically clear: "configured" = from Document, "built-in" = from Code.
 
 `ContextToolsApi` (Engine whitelist filter) remains unchanged — it still sees flat Tool names from the resolved Recipe.
 
@@ -255,11 +255,11 @@ vance-brain/src/main/resources/vance-defaults/server-tools/
    …
 ```
 
-`DocumentService.lookupCascade` automatically includes the resource layer entries if neither `_tenant` nor the user project says anything about the same name. Tenant overrides occur as soon as a Tenant explicitly writes a `_vance/server-tools/<name>.yaml` — after that, the Tenant YAML wins. To revert to default = delete the Tenant Document.
+`DocumentService.lookupCascade` automatically includes the resource layer entries if neither `_tenant` nor the user project has anything for the same name. Tenant overrides occur as soon as a tenant explicitly writes a `_vance/server-tools/<name>.yaml` — after that, the Tenant YAML wins. To revert to default = delete the Tenant Document.
 
-The former `ServerToolBootstrapService` has been removed; there is no longer a Tenant seed step.
+The former `ServerToolBootstrapService` has been removed; there is no longer a tenant seed step.
 
-**Hot-Reload**: not v1. Classpath resources are fixed at Brain startup. Tenant and Project YAMLs are updated directly via `ServerToolRegistry.refreshOne` — no restart is required for this.
+**Hot-Reload**: not v1. Classpath resources are fixed at Brain startup. Tenant and Project YAMLs are updated directly via `ServerToolRegistry.refreshOne` — no restart is needed for this.
 
 ---
 
@@ -279,11 +279,11 @@ The clean separation:
 ## 11. Out of Scope (v1)
 
 - **Per-User-Tools.** Tools are project-scoped, not user-scoped. This covers current use cases and avoids a fourth cascade layer.
-- **Tool Versioning.** There is no history Document; updates overwrite in-place (`@Version` only protects against concurrent writes). Auditing comes with the general audit system, not here.
-- **Per-Tool Quota / Rate-Limit.** Cross-Tool Quotas continue to run via `LlmResourceService` and `CredentialService` — not here.
+- **Tool Versioning.** There is no history doc; updates overwrite in-place (`@Version` only protects against concurrent writes). Auditing comes with the general audit system, not here.
+- **Per-Tool Quota / Rate-Limit.** Cross-Tool quotas continue to run via `LlmResourceService` and `CredentialService` — not here.
 - **UI for Tool Configuration.** Web UI gets only read listings in v1 (in the "Tools" editor); editing via CLI / REST.
 - **Live Re-evaluation of Label Selectors** in running Processes (see §6).
-- **Per-Process Tool Override.** There is currently `ThinkProcessDocument.allowedToolsOverride` — this spec does not change that. To have a fixed list of Tools per Process, continue to use this mechanism.
+- **Per-Process Tool Override.** There is currently `ThinkProcessDocument.allowedToolsOverride` — this spec does not change that. To have a fixed Tool list per Process, continue to use this mechanism.
 
 ---
 
@@ -295,7 +295,7 @@ For the transition:
 2. **`ServerToolSource` is renamed to `BuiltInToolSource`** (see §7).
 3. **The new `ConfiguredToolSource` + `ServerToolService` + `ServerToolRepository` + `ServerToolDocument` are created in `vance-shared` (Document/Repository) and `vance-brain` (Service, Source, Factories)** — analogous to the DocumentService split.
 4. **`server-tools.yaml`-Bootstrap** creates the default `_tenant` Tools (Doc lookups for the `documents/how_to_*.md` resources, possibly pre-configured MCP stubs).
-5. **Recipes-YAML is not touched** — existing `allowedToolsAdd / allowedToolsRemove` lists function unchanged. Label selectors (`@<label>`) are added additively where appropriate.
+5. **Recipes-YAML is not touched** — existing `allowedToolsAdd / allowedToolsRemove` lists function unchanged. Label selectors (`@<label>`) are added where appropriate.
 
 Timing for migration of individual Built-in Tools to `ServerToolDocument`: only if they actually need to become configurable. No mass migration "just because it's possible".
 
@@ -303,48 +303,48 @@ Timing for migration of individual Built-in Tools to `ServerToolDocument`: only 
 
 ## 13. Discovery Surface — How the LLM Finds Secondary Tools
 
-Primary Tools are included with their full schema in every turn in the manifest; deferred/secondary Tools are not. The path to them involves three meta-Tools (`vance-brain/.../tools/builtins/`, all `primary=true`, `read-only`, `contributesPrak=false`) plus a passive prompt block:
+Primary Tools are included with their full schema in the manifest for every turn; deferred/secondary Tools are not. The path to them involves three meta-Tools (`vance-brain/.../tools/builtins/`, all `primary=true`, `read-only`, `contributesPrak=false`) plus a passive prompt block:
 
 | Surface | What it provides |
 |---|---|
 | **Discovery Block** (passive, no Tool) | `ContextToolsApi.discoveryBlockMarkdown()` renders the deferred Tools of the Allow Set as `name — searchHint`, grouped by pack prefix with a `promptHint` per pack. Names are thus **in context**, only the schemas are not. |
-| **`tool_list(prefix?)`** | Names of **all** callable Tools, without descriptions: `inContext` (schema already in manifest) and `available` (callable, schema on request), plus `packHints` — a usage line per Multi-Tool-Pack (`<prefix>__*`). `prefix` filters case-insensitive on name prefix. |
-| **`tool_description(names)`** | Description + `paramsSchema` for a **list** of names (max. 25 per call; overflow lands in `skipped`). Activates deferred Tools via `ThinkProcessService.activateDeferredTool` — from the next turn, they are in the Primary Manifest (until the decay TTL expires without use). Unknown names go into `unknown`; if **no** name resolves, it's an error. |
-| **`invoke_tool(name, params)`** | Named-Call-Indirection via the bound `ContextToolsApi` — same Allow-Set/Role/Profile check as a direct Tool call. Unnecessary for the regular case: activation happens via `tool_description`. **No direct call to names not in the manifest (2026-09-12):** Endpoints with restricted Tool call decoding (observed: GLM-5.3-verda via vLLM) **silently** discard calls to names outside the `tools` array in streaming — the Engine sees an empty response and the turn dies. The prompt block (Discovery + Demoted) therefore writes Activate-First: `tool_description(names=[…])`, call once the Tool is in the manifest. On permeable endpoints (Ollama, Anthropic), this costs an extra roundtrip on first use — consciously traded for turns that don't die anywhere. |
+| **`tool_list(prefix?)`** | Names of **all** callable Tools, without descriptions: `inContext` (schema already in manifest) and `available` (callable, schema on request), plus `packHints` — a usage line per multi-Tool pack (`<prefix>__*`). `prefix` filters case-insensitive on name prefix. |
+| **`tool_description(names)`** | Description + `paramsSchema` for a **list** of names (max 25 per call; excess goes into `skipped`). Activates deferred Tools via `ThinkProcessService.activateDeferredTool` — from the next turn, they appear in the Primary Manifest (until the decay TTL expires without use). Unknown names go into `unknown`; if **no** name resolves, it's an error. |
+| **`invoke_tool(name, params)`** | Named-Call-Indirection via the bound `ContextToolsApi` — same Allow-Set/Role/Profile check as a direct Tool call. Unnecessary for the regular case: activation happens via `tool_description`. **No direct call to names not in the manifest (2026-09-12):** Endpoints with restricted Tool call decoding (observed: GLM-5.3-verda via vLLM) **silently** discard calls to names outside the `tools` array in streaming — the Engine sees an empty response and the turn dies. The prompt block (Discovery + Demoted) therefore writes Activate-First: `tool_description(names=[…])`, call once the Tool is in the manifest. On permissive endpoints (Ollama, Anthropic), this costs an extra roundtrip on first use — consciously traded for turns that don't die anywhere. |
 
 ### 13.1 Capability Floor — `tool_list` + `tool_description` are not configurable away
 
-`ContextToolsApi.MANDATORY_TOOLS` = `{tool_list, tool_description}`. `classify` forces these two **after** Role-Gate, Profile-Gate, `allowedToolsRemove`, and `allowedToolsDefer` into the Primary Bucket — and adds them to an Engine `allowedTools()` that does not list them.
+`ContextToolsApi.MANDATORY_TOOLS` = `{tool_list, tool_description}`. `classify` forces these two **after** Role Gate, Profile Gate, `allowedToolsRemove`, and `allowedToolsDefer` into the Primary bucket — and adds them to an Engine's `allowedTools()` that doesn't list them.
 
-**Why hardcoded:** These two are the exit from a lean manifest. A Recipe (or the Allow Set of a new Engine) that removes them does not produce an error, but a model that answers "I can't do that" while the Tool is in the Dispatcher. This failure mode is invisible in logs and expensive in trust; the floor costs two small schemas (~150 tokens).
+**Why hardcoded:** These two are the exit from a lean manifest. A Recipe (or the Allow Set of a new Engine) that removes them produces not an error, but a model that responds "I can't do that" while the Tool is in the Dispatcher. This failure mode is invisible in logs and expensive in trust; the floor costs two small schemas (~150 tokens).
 
 **The floor provides discovery, not access.** Both Tools are scoped to `invocableToolNames()` — a tightly caged Vogon phase with Allow Set `{doc_write}` sees exactly `doc_write` through `tool_list`, and `tool_description` describes nothing outside this cage (non-invocable names return as `unknown`; the Discovery pair itself always remains describable). The Allow Set remains the authority over what is callable.
 
-**Consciously not in the floor:** `invoke_tool` (deferred Tools are directly callable → convenience, and its presence tempts models to wrap every call), `how_do_i` (needs Recipe + LLM credentials, may legitimately be missing), `manual_read` (depends on existing Manuals). Extending is a policy decision — `ContextToolsApiClassifyTest` nails down membership so it doesn't silently drift.
+**Consciously not in the floor:** `invoke_tool` (deferred Tools are directly callable → convenience, and its presence tempts models to wrap every call), `how_do_i` (needs Recipe + LLM creds, may legitimately be missing), `manual_read` (depends on existing Manuals). Extending is a policy decision — `ContextToolsApiClassifyTest` nails down membership so it doesn't silently drift.
 
 Engines may continue to declare the names themselves (Ford, Frankie, Trillian do this): `allowedTools()` is also read as a pure declaration — `RecipeResolver` forms `(engineDefault ∪ add) ∖ remove` from it, the Magrathea controller displays it. The floor makes the declaration optional, not wrong.
 
-Complementary, but **not** a replacement: `how_do_i` ([how-do-i](how-do-i.md)) answers intent questions semantically (LLM call over Manuals + Skills + Non-Primary Tool cards). `tool_list` answers the deterministic question "what exists".
+Complementary, but **not** a replacement: `how_do_i` ([how-do-i](how-do-i.md)) answers intent questions semantically (LLM call over Manuals + Skills + Non-Primary-Tool cards). `tool_list` answers the deterministic question "what exists".
 
 **Design decision (2026-08-05).** `tool_list`/`tool_description` have **replaced** `find_tools`/`describe_tool` (no aliases). Rationale:
 
 - **Names instead of substring search.** ~272 statically registered Tool names cost ~1.3k tokens — cheaper than the old Discovery Block with searchHints and complete. The old matcher searched by substring over `name` + `description` and completely ignored `searchHint`; a Tool with a brief description was practically unfindable. Visible names are filtered better by the model than a server matcher.
-- **Batch instead of N roundtrips.** A REST pack has 15–20 sub-Tools; described individually, that's 20 roundtrips before the LLM can act — in practice, this ends in "I can't do that" instead of a Tool call.
-- **Pack Hints instead of Pack Descriptions.** Machine-generated names (`gmail_users_messages_modify` = "mark mail as read") are the one case where the name does not convey the intent. A hint line per pack costs one line instead of a description per sub-Tool.
+- **Batch instead of N roundtrips.** A REST pack has 15–20 sub-Tools; describing them individually means 20 roundtrips before the LLM can act — in practice, this ends in "I can't do that" instead of a Tool call.
+- **Pack Hints instead of Pack Descriptions.** Machine-generated names (`gmail_users_messages_modify` = "mark mail as read") are one case where the name does not convey the intent. A hint line per pack costs one line instead of a description per sub-Tool.
 
-### 13.2 Empty-Response-Detection — the Proof for the Silent Phantom Drop
+### 13.2 Empty-Response-Detection — The Proof for the Silent Phantom Drop
 
-Activate-First (§13) prevents the most common case. The detection catches what still slips through: A model names a Tool **outside** the `tools` array — the call is never decoded, and on drop endpoints, the turn dies silently (§13, `invoke_tool`). A wrong Tool call is always an error to fix; however, the name itself **never arrives as data** at the server. Evidence reconstruction therefore runs in the Resilient Layer, where the complete `ChatRequest` still exists:
+Activate-First (§13) prevents the most common case. Detection catches what still gets through: A model names a Tool **outside** the `tools` array — the call is never decoded, and on drop endpoints, the turn dies silently (§13, `invoke_tool`). A wrong Tool call is always an error to fix; however, the name itself **never arrives as data** at the server. Evidence reconstruction therefore runs in the Resilient Layer, where the complete `ChatRequest` still exists:
 
-1. **Firing Point:** Both Resilient models (sync + streaming) fire the request to the `EmptyResponseDiagnosticSink` after exhausting empty retries — **never** on `finish=LENGTH` (deterministic wall, no evidence), **exactly once** per logical call (Fire-Once-Guard in `AiModelService.createChat`, because chained setups nest the layers).
-2. **Candidate Diff:** The diagnosis (`EmptyResponseDiagnosticService`) tokenizes the conversation text and cuts it against the Built-in inventory names and the actually offered `tools` array — a name that is in the text but was not offered is the phantom candidate. `origin` classifies the source: `prompt` (Recipe/Prompt teaches a Tool without `allowedToolsAdd`), `user` (user request outside the surface), `context` (history).
+1. **Firing Point:** Both Resilient models (sync + streaming) fire the request to the `EmptyResponseDiagnosticSink` after exhausting empty retries — **never** on `finish=LENGTH` (deterministic wall, no evidence), **exactly once** per logical call (Fire-Once-Guard in `AiModelService.createChat`, because chained setups nest layers).
+2. **Candidate Diff:** The diagnosis (`EmptyResponseDiagnosticService`) tokenizes the conversation text and compares it against the built-in inventory names and the actually offered `tools` array — a name that appears in the text but was not offered is the phantom candidate. `origin` classifies the source: `prompt` (Recipe/Prompt teaches a Tool without `allowedToolsAdd`), `user` (user request outside the surface), `context` (history).
 3. **Reporting:** Megadodo **always** receives a WARN line (`llm.diagnostic`, see [megadodo-system](megadodo-system.md) §3.2) — phantom as well as blank; Fook only for the phantom and through a dedup gate ([fook-service](fook-service.md) §8.1).
 
-Why the diagnosis is not in the Engine code: The Engines only see the empty response — the request is their interface out. The detection belongs where the error becomes visible, not where it is suspected.
+Why the diagnosis is not in the Engine code: The Engines only see the empty response — the request is their interface out. Detection belongs where the error becomes visible, not where it is suspected.
 
 ## 14. Tool Surface Budget — Hard `maxTools` Limit of Endpoints
 
-OpenAI wire endpoints validate the length of the `tools` array **before** the model sees anything. A manifest that is too large returns as HTTP 400:
+OpenAI Wire endpoints validate the length of the `tools` array **before** the model sees anything. A manifest that is too large returns an HTTP 400:
 
 ```
 Invalid 'tools': array too long. Expected an array with maximum length 128,
@@ -353,32 +353,35 @@ but got an array with length 163 instead.   (code=array_above_max_length)
 
 No tokens consumed, no inference — and every subsequent chain entry behind the same endpoint responds identically. The limit is thus a property of the **endpoint**, not the model: a gateway (Cortecs, OpenRouter, vLLM) enforces it for all models it serves.
 
-This leads to a requirement that did not exist before: `primary` was a *set* (everything that was primary fit), now it needs an *order*. And because importance is task-dependent (in the workspace `file_*`/`exec_*` count, in document work `doc_*`), it cannot be statically fixed.
+This leads to a requirement that did not exist before: `primary` was a *set* (everything that was primary fit), now it needs an *order*. And because importance is task-dependent (in the workspace, `file_*`/`exec_*` count; in document work, `doc_*`), it cannot be statically fixed.
+**Desktop Session Surface:** A Desktop Session (`?profile=desktop`, Facelift app) registers up to **14 additional Agent Tools** (`client_file_*` ×9, `client_exec_*` ×5, [desktop-agent-tools](desktop-agent-tools.md) §4.1) in addition to the UI state Tools. Family demotion accounts for this: the demotion unit is the first `_` segment, i.e., **one** `client` family — UI state and Agent Tools are demoted together, never individually. The budget of a Desktop Session thus corresponds to a Foot Session (the same `client` family block); the limit is not exceeded by the Desktop app.
 
 ### 14.1 Where the Limit Stands
 
-`maxTools` in the model catalog — provider default in `_provider.yaml`, per-model override in the model Document:
+`maxTools` in the model catalog — provider default in `_provider.yaml`, per-model override in the model document:
 
 | Location | Meaning |
 |---|---|
 | `_vance/model/<instance>/_provider.yaml` → `maxTools: 128` | Default for every model of this instance. Bundled for `openai`. |
 | `_vance/model/<instance>/<slug>.yaml` → `maxTools: 64` | Override for a model. |
-| `maxTools: 0` in the model Document | Explicitly "this model has no limit" — suppresses the provider default (same convention as an empty `unsupportedParams` list). |
+| `maxTools: 0` in the model document | Explicitly "this model has no limit" — suppresses the provider default (same convention as an empty `unsupportedParams` list). |
 | Field missing everywhere | No known limit; triage is a no-op (Anthropic today). |
 
-**The sidecar is attached to the instance name, not the `wireType`.** `ModelCatalog.providerSpec` looks up `_provider.yaml` under the `<instance>` directory. A gateway instance `cortecs` therefore **does not** inherit the bundled `openai` default — the limit is in its own `_vance/model/cortecs/_provider.yaml`. This is intentional: the number is a property of the endpoint, and a gateway is a different endpoint than OpenAI, even if it speaks the same wire format.
+**The sidecar is attached to the instance name, not the `wireType`.** `ModelCatalog.providerSpec` looks up `_provider.yaml` under the `<instance>` directory. A gateway instance `cortecs` therefore does **not** inherit the bundled `openai` default — the limit is in its own `_vance/model/cortecs/_provider.yaml`. This is intentional: the number is a property of the endpoint, and a gateway is a different endpoint than OpenAI, even if it speaks the same wire format.
 
 The bundled `cortecs` sidecar for the same reason **does not** set `maxTools`: what limit this gateway enforces is unmeasured. An invented number would silently shrink the Tool surface, a missing one lets `ObservedToolLimitRegistry` learn the real limit from the first rejection. The sidecar only carries the `wireType` there (see [llm-resource-management](llm-resource-management.md) §3).
 
-**Never from auto-discovery.** No listing endpoint names the number — it is an API limit, not an observation, so a manual layer like pricing.
+**Never from Auto-Discovery.** No listing endpoint names the number — it is an API limit, not an observation, so a manual layer like pricing.
 
-**Minimum across the Chain.** The manifest is built once per turn, the Resilient Layer then potentially moves to fallback. `ToolBudgetService` therefore takes `min` over Primary + all `fallbackModels`; a budget that only knows the first entry produces a manifest that the fallback must reject.
+**Minimum across the Chain.** The manifest is built once per turn, the Resilient Layer then potentially moves to fallback. `ToolBudgetService` therefore takes `min` across Primary + all `fallbackModels`; a budget that only knows the first entry produces a manifest that the fallback must reject.
 
-**Self-correction on Drift.** If an endpoint still rejects, `ObservedToolLimitRegistry` learns the number from the error message (per Pod, in-memory) and the next turn cuts appropriately. The Resilient Layer in this case **does not** switch the chain further — the same request form fails identically everywhere — but breaks with a clear message. The permanent correction is `maxTools:` in the catalog; the WARN line says so.
+**Self-correction on Drift.** If an endpoint still rejects, `ObservedToolLimitRegistry` learns the number from the error message (per Pod, in-memory) and the next turn cuts appropriately. In this case, the Resilient Layer **does not** switch the chain further — the same request form fails identically everywhere — but aborts with a clear message. The permanent correction is `maxTools:` in the catalog; the WARN line states this.
 
 ### 14.2 What is Trimmed
 
-`ContextToolsApi.classify` ends the bucket decision with a budget stage (`ToolTriage`): as long as `primary ∪ activated` exceeds the budget, **entire Tool families** move to deferred. Order — broad class first, measured demand only within a class:
+`ContextToolsApi.classify` concludes the bucket decision with a budget level (`ToolTriage`): as long as `primary ∪ activated` exceeds the budget, **entire Tool families** move to deferred.
+
+**Engine roles apply on every classification path (Fix 2026-10).** Unrestricted Engines (`allowedTools()` empty, the Ford default) materialize their base since the fix **before** all special paths from the full Dispatcher universe — **role-filtered**. Previously, `classify` jumped to an "unrestricted" marker early path for an empty base + empty filter, whose per-Tool `primary()` fallback (`visibleResolved`, `budgetUnrestricted`) skipped the `requiresEngineRoles` check: every unrestricted Engine saw all role-guarded families (`hactar_*`, `wowbagger_*`, `trillian_*`, `cross_process_create`, Agrajag health writer …). Observed live as a Hactar operator called `cross_process_create` (role-guarded to `trillian-user`) and the spawn collapsed due to missing params. The marker early path is removed — materialization today costs a `resolveAll` per turn (map lookups), but §7b applies literally: role membership is a property of Engine identity, not classification mode. Order — broad class first, measured demand only within a class:
 
 | Class | Source |
 |---|---|
@@ -390,16 +393,16 @@ The bundled `cortecs` sidecar for the same reason **does not** set `maxTools`: w
 | Pack | `<pack>__<op>` (REST/MCP/IMAP) — come in bulk per connected account |
 | `allowedToolsDropFirst` | Recipe: "less important" |
 
-- **Family = Demotion Unit** (`ToolFamily`): Pack prefix before `__`, otherwise the first `_`-segment. A half-visible pack is the worst state — the model starts and hits a wall.
+- **Family = Demotion Unit** (`ToolFamily`): Pack prefix before `__`, otherwise the first `_` segment. A half-visible pack is the worst state — the model starts and hits a wall.
 - **A named hint cuts a Tool out of its family.** `doc_note_add` in `allowedToolsDropFirst` separates it from `doc_*`, instead of taking the whole family. An entry can also be a prefix pattern (`doc_*`) to rank a group without 40 names.
 - **Order determines membership, not sorting.** The sent array remains alphabetical (`visibleResolved`) — this is cache prefix stability.
-- **Reserve.** `vance.tools.budget.external-reserve` (default 1) keeps the slot free for the Engine action Tool that is appended to the spec list **outside** of classification (`StructuredActionEngine`) — with 128 classified Tools, it would otherwise be 129 on the wire. `activation-headroom` is **0**: every path that increases the manifest after classification runs through triage again — a `tool_description` activation because `tools()` reclassifies, and `withAdditional` (Skill Tools) because it explicitly readjusts. A standing buffer would only park capability without value in the Discovery Block. `max-activated-tools` (default 40) prevents a long Process from filling the manifest with activations.
-- **Subsequent extension is readjusted.** `ContextToolsApi.withAdditional` (Skill Tools) is the only place that increases primary *after* the cut. It re-executes triage on the combined set and ranks the new Tools as "keep" — a Skill is explicitly active, so its Tools beat what the Recipe only had as default in the manifest anyway. For this, the Surface carries the budget context (`withBudget`).
+- **Reserve.** `vance.tools.budget.external-reserve` (default 1) keeps the slot free for the Engine action Tool that is appended to the spec list **outside** classification (`StructuredActionEngine`) — with 128 classified Tools, it would otherwise be 129 on the wire. `activation-headroom` is **0**: every path that expands the manifest after classification runs through triage again — a `tool_description` activation because `tools()` reclassifies, and `withAdditional` (Skill Tools) because it explicitly readjusts. A standing buffer would only park capability without value in the Discovery Block. `max-activated-tools` (default 40) prevents a long Process from filling the manifest with activations.
+- **Subsequent expansion is readjusted.** `ContextToolsApi.withAdditional` (Skill Tools) is the only place that expands primary *after* the cut. It re-executes triage on the combined set and ranks the new Tools as "keep" — a Skill is explicitly active, so its Tools override what the Recipe only had as default in the manifest anyway. For this, the surface carries the budget context (`withBudget`).
 - **Floor > Budget** is a configuration error and throws `ToolBudgetException`, instead of silently cutting off the exit.
 
 ### 14.3 Nothing Disappears
 
-Demoted Tools remain in the Allow Set, retain their Discovery line, and are directly callable (auto-activation on first call). The price of a wrong triage decision is **one roundtrip, not capability** — therefore, the rule can be coarse and explainable. Every demotion is logged (INFO with families + numbers, TRACE with every Tool name in demotion order); a silently cut manifest reads to the model as "does not exist".
+Demoted Tools remain in the Allow Set, retain their Discovery line, and are directly callable (auto-activation on first call). The price of a wrong triage decision is **one roundtrip, not capability** — therefore, the rule can be coarse and explainable. Every demotion is logged (INFO with families + numbers, TRACE with each Tool name in demotion order); a silently cut manifest reads to the model as "does not exist".
 
 **The Discovery Block is therefore split into two parts** — and this is not cosmetic, but the condition for §14.2's alphabetical array to be useful at all:
 
@@ -408,15 +411,71 @@ Demoted Tools remain in the Allow Set, retain their Discovery line, and are dire
 | `discoveryBlockMarkdown()` | deferred **minus** those demoted this round | in the **static** system prefix, behind the prompt cache marker |
 | `demotedDiscoveryBlockMarkdown()` | exactly those demoted this round | in a **separate dynamic** system message behind the marker |
 
-Membership in the second half follows activation recency and measured demand (§14.4), thus changing **between turns**. If it were in the cache-anchored prefix, every shift in ranking would cost a complete re-reading of Engine Prompt + Recipe Prefix + Manual Hooks — precisely the property for which the Tool array is sorted alphabetically. This was real: the demoted names were in the static prefix and broke the cache with every turn change.
+Membership in the second half follows activation recency and measured demand (§14.4), thus changing **between turns**. If it were in the cache-anchored prefix, every shift in ranking would cost a complete re-read of Engine Prompt + Recipe Prefix + Manual Hooks — precisely the property for which the Tool array is sorted alphabetically. This was real: the demoted names were in the static prefix and broke the cache with every turn change.
 
-The second half is **empty in the normal case** (the budget cuts nothing), and its header explicitly tells the model that an invocation by name still works — the Engine activates the Tool on first use.
+The second half is **empty in the normal case** (the budget cuts nothing), and its header explicitly tells the model that a call by name still works — the Engine activates the Tool on first use.
 
 ### 14.4 Measurement Data
 
 Two clocks, strictly separated:
 
 - **Activation Recency** per Process (`activatedDeferredTools`, timestamp) — the strong signal, free, no leaking between users.
-- **Cross-Session Demand** per Project **and Role** (`tool_usage_stats`, `ToolUsageService`): Key is `(tenantId, projectId, recipeName, toolName)`, where `recipeName` falls back to the Engine name if a Process has no Recipe. Role-scoped, because demand is role-specific — a coding worker with 153 `file_read` says nothing about what the chat orchestrator in the same project needs; a common pool would let the busiest worker educate the ranking of all others. `calls` (successful invocations) **and** `discoveryHits` (`tool_description` lookups) are counted. Counting only calls would be self-reinforcing — what is demoted is called less often and would remain demoted; discovery demand faces the hurdle and is the more honest signal. **Not** counted is the delegated half of a wrapper call (`file_read` → `client_file_read`): this is a mechanical consequence, not a second demand — for this, `ToolInvocationListener` carries its own `beforeDelegate`/`afterDelegate` hooks, which by default act like normal ones (progress pings remain) and are only silenced by the counter. Separate collection, not Micrometer: Tool name as a metric tag is borderline over ~340 Tools, and Prometheus data is not queryable from the Brain. **Visible** in the Insights tab "Tool Usage" (`GET /brain/{tenant}/admin/projects/{project}/insights/tool-usage`) — a table per role with calls, discovery lookups, and last use; read-only, because the numbers are a consequence of agent behavior and there is nothing to configure.
+- **Cross-Session Demand** per Project **and Role** (`tool_usage_stats`, `ToolUsageService`): Key is `(tenantId, projectId, recipeName, toolName)`, where `recipeName` falls back to the Engine name if a Process has no Recipe. Role-scoped because demand is role-specific — a coding worker with 153 `file_read` says nothing about what the chat orchestrator in the same project needs; a common pool would let the busiest worker educate the ranking of all others. `calls` (successful invocations) **and** `discoveryHits` (`tool_description` lookups) are counted. Counting only calls would be self-reinforcing — what is demoted is called less often and would remain demoted; discovery demand is before the hurdle and is the more honest signal. **Not** counted is the delegated half of a wrapper call (`file_read` → `client_file_read`): this is a mechanical consequence, not a second demand — for this, `ToolInvocationListener` has its own `beforeDelegate`/`afterDelegate` hooks, which by default act like normal ones (progress pings remain) and are only silenced by the counter. Separate collection, not Micrometer: Tool name as a metric tag is borderline over ~340 Tools, and Prometheus data is not queryable from the Brain. **Visible** in the Insights tab "Tool Usage" (`GET /brain/{tenant}/admin/projects/{project}/insights/tool-usage`) — a table per role with calls, discovery lookups, and last use; read-only, because the numbers are a consequence of agent behavior and nothing is configurable.
 
-  **No retention, and this is a waiver, not an omission.** Nothing deletes a line — not even for a `_user_<login>` project whose user is gone. The cardinality is `(tenant × project × recipe × tool)`, both repository queries run over the unique index, so an old line costs storage, not query time; and a line that is never written again stops influencing the ranking on its own, because the order is comparative. Above all: there is **no project deletion path** in the tree, so a TTL here would be the only cleanup rule in a system that otherwise has none. If one comes, pruning this collection belongs there.
+  **No retention, and this is a renunciation, not an oversight.** Nothing deletes a line — not even for a `_user_<login>` project whose user is gone. Cardinality is `(tenant × project × recipe × tool)`, both repository queries run over the unique index, so an old line costs storage, not query time; and a line that is never written again stops influencing the ranking on its own because the order is comparative. Above all: there is **no project deletion path** in the tree, so a TTL here would be the only cleanup rule in a system that otherwise has none. If one comes, pruning this collection belongs there.
+
+### 14.5 Turn Stability of the Surface
+
+§14.2 sorts the array alphabetically and §14.3 splits the Discovery Block — but sorting and block layout alone do not stabilize the token stream: **membership changes bust the prefix**. The OpenAI Wire implicitly caches, block-wise over the token stream from position 0 — `tools` array first, then messages. If the beginning differs, the entire cache is gone, no matter how identical the rest is (measured live against Cortecs: identical prompt → 2048 of 2176 tokens cached; same prompt with ~14 differing initial tokens → 0). Three rules therefore make the surface turn-stable:
+
+- **Demand Ranking is frozen per Process** (`ToolBudgetService.frozenDemand`): The demand snapshot is pinned per `(tenant, processId, role)` at the first surface of the Process. Demand counters mutate after each Tool call and only break ties *within* a class — but precisely these tie-breaks decide which families the cut demotes. Re-ranking per turn therefore flips the demoted set turn by turn, and each flip shifts alphabetical positions in the array. Live remain: limit (limit-learn is a re-freeze reason), activation recency (growth), the mode filter (Plan Mode transitions legitimately change the surface). A new Process samples fresh — long-term demand continues to shape new spawns.
+- **Pack Materialization is declared, not timed** (`ServerToolRegistry.ResolvedTool`): The materialized pack listing is cached for 60s per `(Config, User-Scope)`; a materialization error returns the last good list instead of silently shrinking the surface — the surface is a declaration, not a liveness probe. A pack that never materialized falls out via fail-open as before.
+- **Drift is measurable** (`llm_traces`): Every round trip carries `toolsCount` + `toolsBytes` on the first line of the turn — consistent surface ⇒ consistent numbers, drift reads as a change. The verification metric is `cacheReadTokens` in the Usage Ledger: two consecutive turns of the same Process with a stable surface must cache.
+
+Remaining open: Health suffixes on Tool descriptions (`primaryAsLc4j` + `ToolHealthService`) change schemas mid-process — moving them to the dynamic Discovery Block is the remaining step towards complete turn stability (Track in `planning/tool-surface-stability.md`, B4).
+
+## 15. Release by Label — The Worker Pool
+
+The Worker Engines (Ford, Frankie, and what inherits from Frankie) are workhorses: they should be able to reach every Tool suitable for task work. Until 2026-10, each Engine carried a list of names for this, and a Tool outside this list did not exist for the worker — neither in the manifest nor deferred; `tool_list` and `tool_description` were not enough. Every new Tool had to be added to every Engine and every Recipe. The failure was silent: `setting_get` was in Ford's list, missing in Frankie's, and a coding worker therefore decrypted the HIDDEN setting themselves from Mongo instead of calling the Tool; `execute_javascript` was missing from both.
+
+### 15.1 The Decision Lies with the Tool
+
+Every built-in Tool carries **exactly one** release decision as a label (`ToolLabels` in `vance-toolpack`):
+
+| Label | Meaning |
+|---|---|
+| `worker` | released for workers — the default for task work (documents, kinds, apps, files, exec, scripting, research, media, process spawn) |
+| `operator` | consciously **not** for workers: setup, admin, and authoring surfaces — `setting_set`, `vault_secret_*`, `ai_models_discover`, Kit lifecycle (`kit_install`/`apply`/`update`/…, reading remain `kit_list`/`kit_status`), Hooks, Scheduler, Events, `tool_template_*`, UI branding, Permission Tools, `doc_lock_*` (a lock against the AI must not be solvable by the AI), `doc_purge`, `project_create` |
+| `internal` | belongs to an Engine and is meaningless outside — Trillian's session/task/user Tools, Agrajag's health/probe Tools, `hactar_*`/`marvin_*`/`wowbagger_*` (control of *this* process), Frankie's `todo_*`, Arthur's `respond`, Eddie's hub navigation. The own Engine reaches them by name in its Allow Set or via role gate |
+
+**Why on the Tool and not on the Engine:** Whoever writes a Tool knows if it is suitable for workers — the Engine does not. With the label, a decision is made once, where the knowledge lies; Engines and Recipes consume the set instead of evaluating each Tool. This fits the addon rule: an addon Tool goes to the workers without the core knowing it.
+
+**Why Opt-in instead of open pool:** An open default ("everything except…") would silently pass every new admin/creator Tool to every worker. Release is a conscious statement by the author.
+
+**The decision is mandatory.** `ToolReleaseDecisionTest` (in the Dev Bundle `vance-brain-all1`, the only module with Brain and all addons on one classpath) scans all `@Component` Tools and requires exactly one of the three labels. A new Tool without a decision breaks the build — it can neither remain silently invisible nor silently slip through. Factory Tools from operator configuration (MCP/REST packs, SMTP/IMAP, scripted, doc-lookup) carry the configured labels and are not in scope; an operator releases a pack Tool for workers by giving it the `worker` label.
+
+The label is **not an authorization**: Every call is still checked against the caller's grants. It only states whether the Tool appears on a worker's surface.
+
+**Label Vocabulary.** In addition to the release decision, Tools carry **effect labels** (`read-only`, `write`, `executive`, `side-effect` — `read-only` also determines `Tool.safety()`) and **family/domain labels** (`document`, `calendar`, `gtd`, `settings`, …). The labels that runtime code selects on are constants in `ToolLabels`. During cleanup in 2026-10, unified: `read` → `read-only` (Tools that create a file — `scribble_ocr`, Scribble PDF export — became `write`), `documents` → `document`; the target group label `eddie` (172 Tools, evaluated by no one) is removed — there is exactly one target group concept, the release decision. `prakLabels()` is a separate vocabulary (domains for Prak Insights) and unaffected by this.
+
+**Selectors must hit.** `RecipeLabelSelectorTest` (also `vance-brain-all1`) checks that every `"@label"` selector in a bundled Recipe hits at least one built-in Tool — an unknown selector would otherwise silently expand to nothing, and a typo or a renamed label would silently disable an `allowedToolsRemove`. Excluded are labels that only exist at runtime: `browser` (Foot packs) and `mail` (SMTP/IMAP from operator configuration).
+
+### 15.2 Core and Pool
+
+An Engine declares two things:
+
+- **`allowedTools()` — the Core.** The manifest: the Tools a worker needs for most tasks (`WorkerEngineTools.CORE`, Ford and Frankie share it; Frankie adds `todo_*`). Small by design — until 2026-06-21, Ford ran unrestricted, and the full catalog in the manifest caused Gemini Flash class models to lose focus.
+- **`toolPoolLabels()` — the Pool.** For the workers `{worker}`. Every Tool with one of these labels enters the surface **per turn**, as **deferred** (name + hint in the Discovery Block, schema on demand via `tool_description`). Role Gate, Profile Gate, and `allowedToolsRemove` (also by label, e.g., `"@side-effect"`) apply to Pool Tools just the same; an `allowedToolsAdd` entry that names a Pool Tool "promotes" it into the manifest.
+
+Mechanism: `ContextToolsApi.classify` takes the labeled Tools of the Dispatcher after the base (before `add` inclusion, so `add` on a Pool Tool means "pull up") and assigns them as deferred. Empty labels or an unrestricted (empty) base make the Pool a no-op.
+
+**Per Turn, not on Spawn.** Unlike the label selectors of a Recipe (§6, frozen snapshot), the Pool is resolved with each turn. The snapshot serves the reproducibility of what a Recipe *requires*; the Pool, however, describes what is *released* — a later released Tool also reaches running processes, and processes with an old frozen Allow Set also get it. For turn stability (§14.5), Pool membership only changes if Tools or labels change, i.e., with a deploy or pack configuration.
+
+### 15.3 Disabling the Pool
+
+Engine param `toolPool: false` disables the Pool for a process. Two spawn paths set it because they consciously narrow the worker, and the Pool would otherwise return what was removed per turn:
+
+- **Zaphod Heads** (`ZaphodEngine.withoutToolPool`) — without orchestration family (`process_spawn`, `process_steer`, `process_stop`, …).
+- **Magrathea `agent_task`** (`AgentTaskExecutor`) — without `process_spawn`, so that the step remains the entire step.
+
+A Recipe sets it if a worker should consciously remain lean (small model, narrowly defined task). Only an explicit `false` disables it.

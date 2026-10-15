@@ -20,7 +20,7 @@
 
 ## 1. Role and Classification
 
-Vancetope currently has three parallel storage/exec surfaces:
+Vancetope currently has three parallel Storage/Exec surfaces:
 
 | Surface | Where | Tool-Prefix | Lifetime |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Vancetope currently has three parallel storage/exec surfaces:
 | Persistent Documents | MongoDB | `doc_*` | persistent, indexed |
 
 Engines (especially Frankie + `coding`-Recipe) want to use the first
-two **seamlessly** — depending on whether a Foot client is connected
+two **seamlessly** — depending on whether a Foot-Client is connected
 or not. Directly hardcoding a set breaks on profile switches and
 overloads the LLM manifest with two quasi-identical operations per
 file action.
@@ -39,14 +39,14 @@ file action.
 deferred. During a wrapper call, the `WorkTargetDispatcher` decides
 which backend is actually executed.
 
-`file_delete` is the newest addition and demonstrates why the wrapper
-layer is not just cosmetic: its two backends (`work_file_delete`,
+`file_delete` is the newest addition and shows why the wrapper layer
+is not just cosmetic: its two backends (`work_file_delete`,
 `client_file_delete`) are **deferred**, meaning they are not in any
 turn manifest. They would only be discoverable if the model explicitly
-used `how_do_i` or `tool_list` — which it does not do for a
+used `how_do_i` or `tool_list` — which it doesn't do for a
 straightforward task. Without wrappers, deletion would be implemented
 but practically unreachable. On the CLIENT side, there is also a
-separate sandbox gate — a read permission does not allow deletion;
+separate sandbox gate — a read permission does not allow deletion,
 see `specification/public/foot-sandbox.md` §3.1.
 
 ## 2. Data Model
@@ -62,16 +62,16 @@ enum WorkTargetKind { CLIENT, WORK, DAEMON }
 
 | Field | Meaning |
 |---|---|
-| `kind = CLIENT` | Dispatches to `client_*` via the session-bound Foot. `targetName` is ignored — Foot operates against its own `--workdir`. |
-| `kind = WORK` | Dispatches to `work_*`. `targetName` selects a named RootDir of the Project; `null` → per-Process-Temp-RootDir (lazy via `WorkspaceService`, `deleteOnCreatorClose=true` — cleared on Process close). |
-| `kind = DAEMON` | Dispatches to `client_*`, but **not** via the Session — instead, via the named `profile=daemon` Foot addressed by `targetName`. Routing via `DaemonRegistry` (`(tenantId, projectId, targetName)`). `targetName` is **mandatory** (record constructor throws otherwise). Offline Daemon → `ToolException` with a clear message. |
+| `kind = CLIENT` | dispatch to `client_*` via the session-bound client. `targetName` is ignored — the client operates against its own Workdir (Foot: `--workdir`; Desktop app: per-account Workdir). CLIENT can be fulfilled by the Foot-CLI **or** the Facelift desktop app ([desktop-agent-tools](desktop-agent-tools.md) §4.1) — same `client_*` names, same session-bound WS. |
+| `kind = WORK` | dispatch to `work_*`. `targetName` selects a named RootDir of the Project; `null` → per-Process-Temp-RootDir (lazy via `WorkspaceService`, `deleteOnCreatorClose=true` — cleared when the Process closes). |
+| `kind = DAEMON` | dispatch to `client_*`, but **not** via the session — instead, via the named `profile=daemon` Foot addressed by `targetName`. Routing via `DaemonRegistry` (`(tenantId, projectId, targetName)`). `targetName` is **mandatory** (record constructor throws otherwise). Offline Daemon → `ToolException` with a clear message. |
 
-**Daemon Routing Detail:** A `profile=daemon` Foot registers its
+**Daemon-Routing Detail:** A `profile=daemon` Foot registers its
 manifest under the exact `client_*` names (`client_file_read`,
 `client_exec_run`, …) — the same backend names the Dispatcher knows
 for CLIENT. DAEMON thus sends the `client_*` name unchanged as the
-wire tool name to the Daemon WS; only the WS resolution and the
-pending registry (`DaemonRegistry`, correlation prefix `dt-`) differ
+wire tool name to the Daemon-WS; only the WS resolution and the
+Pending-Registry (`DaemonRegistry`, Correlation-Prefix `dt-`) differ
 from the session-bound CLIENT path (`ct-`). Both paths share the
 `DaemonToolInvoker`-Seam and the identical `CLIENT_TOOL_INVOKE`/
 `CLIENT_TOOL_RESULT` protocol. Daemon registration + routing see
@@ -81,13 +81,13 @@ from the session-bound CLIENT path (`ct-`). Both paths share the
 sub-key `dirName` are still read by `WorkTarget.fromMap(...)`
 (fallback to `targetName`); only `targetName` is written.
 
-**Pseudo-Projects (`_user_<login>`, `_tenant`, `_vance`):** no
-special path. These Projects are `ProjectKind.SYSTEM` +
-`LifecycleType.HOMELESS` and get the same RootDir path
+**System Projects (`_user_<login>`, `_tenant`):** no special path.
+These Projects are `ProjectKind.SYSTEM` (the Hub `AUTO`, `_tenant`
+`HOMELESS`) and get the same RootDir path
 (`~/.vancetope/workspaces/<tenant>/<projectId>/`). Since Recipes
-typically do **not** set a `dirName` on them, all WORK calls land
-in a Temp-RootDir that disappears on Process close — de facto
-"Workspaces are temporary" without needing to explicitly model this
+typically **do not** set a `dirName` on them, all WORK calls land in
+a Temp-RootDir that disappears when the Process closes — de-facto
+"Workspaces are temporary" without needing to explicitly model that
 in the layer. See `specification/workspace-management.md` §7.3-§8
 for RootDir lifecycle.
 
@@ -106,11 +106,10 @@ workTarget:
 
 ## 3. Inheritance on Spawn
 
-Sub-workers inherit the `workTarget` of their Spawn-Parent
-(Unix-cwd-style — snapshot on spawn, then process-local). This
-ensures all workers in a Session **automatically** see the same
-backend without Recipes or callers having to explicitly set it
-each time.
+Sub-Workers inherit the `workTarget` of their Spawn-Parent
+(Unix-cwd-style — snapshot on Spawn, then process-local). This means
+all Workers of a Session **automatically** see the same backend
+without Recipes or Callers having to explicitly set it every time.
 
 Inheritance pipeline on `process_spawn` (highest → lowest priority):
 
@@ -125,15 +124,15 @@ Caller-Override and Recipe-Default land in `recipeParams` (highest priority);
 if `workTarget` is missing there, the service looks at the Parent and copies
 its entry into the fresh-engineParams.
 
-**Important — Copy, not Live-Link:** the child Process receives a
-**copy** of the Parent-Map. If the child later calls `work_target_set`,
+**Important — Copy, not Live-Link:** the Child-Process receives a
+**copy** of the Parent-Map. If the Child later calls `work_target_set`,
 this only changes its own `engineParams.workTarget` — Parent and
 siblings remain unaffected. This allows for a safe sandbox switch
-within a single worker without sabotaging other workers.
+within a single Worker without sabotaging other Workers.
 
-## 4. Default Resolution
+## 4. Default-Resolution
 
-If, after §3, no explicit `workTarget` is present on `engineParams`,
+If, after §3, no explicit `workTarget` is present in `engineParams`,
 `WorkTargetService.defaultFor(process)` resolves it:
 
 ```
@@ -143,10 +142,10 @@ else
     return WorkTarget(WORK, null);
 ```
 
-Meaning: Foot-Connected → CLIENT (default Coding-UX), otherwise WORK
+This means: Foot-Connected → CLIENT (default Coding-UX), otherwise WORK
 with process-temp-RootDir.
 
-**Recipe-Defaults** override auto-resolution. Example `coding.yaml`:
+**Recipe-Defaults** override the auto-resolution. Example `coding.yaml`:
 
 ```yaml
 params:
@@ -163,23 +162,23 @@ profiles:
 
 `WorkTargetDispatcher` is a Spring-`@Service`. Per wrapper call:
 
-1. Resolve Process, read `WorkTarget` (or default).
+1. Resolve Process, read `WorkTarget` (or default it).
 2. For `CLIENT`: Check Foot-Connectivity. If disconnected →
    `ToolException` with a clear message ("call `work_target_set` or
-   reconnect"). Clean up params (Foot-Tools do not know `dirName`).
+   reconnect"). Clean up params (Foot-Tools don't know `dirName`).
 3. For `DAEMON`: Strip `dirName` from params (Foot-Client-Tools
-   do not know it), build `DaemonKey` from `(process.tenantId,
-   process.projectId, targetName)` and send the `client_*`-backend
+   don't know it), build `DaemonKey` from `(process.tenantId,
+   process.projectId, targetName)` and send the `client_*`-backend-
    name via `DaemonToolInvoker.invoke(key, clientName, params,
    timeout)` to the Daemon-WS. **Early-return** — no
-   `ToolBus`/`ToolDispatcher`-path. Offline/stale Daemon → the invoker
+   `ToolBus`/`ToolDispatcher`-path. Offline/stale Daemon → the Invoker
    throws a clear `ToolException`. Timeout via
    `vance.worktarget.daemon-timeout-seconds` (Default 60s).
-4. For `WORK`: if the caller has not set `dirName` itself
+4. For `WORK`: if the Caller has not set `dirName` itself
    and the Target has a `targetName` → inject it as a `dirName`-param
    (the WorkTarget field is generic, the tool param name remains `dirName`).
-   Otherwise, pass it on (`WorkspaceDirResolver` will then fall back to
-   Process-Temp).
+   Otherwise, pass it on (`WorkspaceDirResolver` will then fall back
+   to Process-Temp).
 5. Backend call (CLIENT / WORK):
    - With `ToolBus` (3-arg `Tool.invoke`): via `bus.invoke(backendName, params)` —
      respects Engine-Allow-Set / primary-defer-filter.
@@ -189,17 +188,17 @@ profiles:
 
 ### 4.1 Param Contract — Three Schemas, One Truth
 
-Each wrapper involves **three** schemas: its own and one for each backend. These drift, and the dispatcher passes parameters unchanged — a parameter not read by the active backend therefore **silently disappeared**. For a caller, "ignored" is indistinguishable from "had no effect"; an agent then tries a larger number, then another, and eventually starts diagnosing the tool. (Specifically on 2026-08-11: `file_read maxChars` was declared as "WORK only", while the CLIENT backend paginates via `startLine`/`maxLines` instead — which the wrapper did not offer. A Frankie turn burned 8 iterations and four spawned Agrajag diagnostic processes on this.)
+Each wrapper involves **three** schemas: its own and one for each backend. These drift, and the dispatcher passes parameters unchanged — a parameter not read by the active backend therefore **silently disappeared**. For a caller, "ignored" is indistinguishable from "had no effect"; an agent then tries a larger number, then another, and eventually starts diagnosing the tool. (Specifically on 2026-08-11: `file_read maxChars` was declared as "WORK only", while the CLIENT backend paginated via `startLine`/`maxLines` instead — which the wrapper did not offer. A Frankie turn burned 8 iterations and four spawned Agrajag diagnostic processes on this.)
 
-Three rules derived from this:
+Three rules follow:
 
-1. **The wrapper parameter must mean the same thing on both backends.** Where only one backend had a capability, the other side is brought up to par, not the parameter documented as target-specific. A wrapper parameter that invents a name no backend reads is a bug.
+1. **The wrapper parameter must mean the same thing on both backends.** Where only one backend had a capability, the other side is brought up to speed, not the parameter documented as target-specific. A wrapper parameter that invents a name no backend reads is a bug.
 2. **The wrapper declares the full union.** A parameter supported by both backends but concealed by the wrapper is a capability the LLM cannot reach — and the reason an agent writes `exec_run "grep -n -i -A3 …"` instead of using `file_grep`.
 3. **Unsupported parameters are reported, not swallowed.** `WorkTargetDispatcher.rejectUnknownParams` knows two cases: *unknown to all* (hallucinated name) and *declared-but-ineffective* (the wrapper advertises it, the active backend does not implement it) — the second is more dangerous because the caller read the name from the schema. Parameters declared only by the **backend** remain allowed (backends legitimately offer more than the wrapper advertises). **Fail-open**: if the backend is not resolvable or declares no properties, nothing is rejected. A validation layer must never be the reason a working call starts to fail.
 
-`dirName` is the one deliberate exception to "declared means it works": WORK-only, silently removed on CLIENT/DAEMON, documented as ignored there in every wrapper. For job ID tools (`exec_status`/`exec_tail`/`exec_kill`), it does not exist at all — these address a running process, not a directory.
+`dirName` is the one deliberate exception to "declared means it works": WORK-only, silently removed on CLIENT/DAEMON, documented as ignored there in every wrapper. For job ID tools (`exec_status`/`exec_tail`/`exec_kill`), it doesn't exist at all — these address a running process, not a directory.
 
-**Shared Walk-Defaults.** Depth limit, default line cap, and the generated-content filter (`node_modules`, `target`, `dist`, `.git`, …) are located in `de.mhus.vance.api.tools.FileWalkDefaults` — in `vance-api`, because that is the only module that **both** sides are allowed to see (`vance-foot` is by design restricted to `vance-api`). A `file_grep` that skips `node_modules` on one target and enters it on another would be the wrapper failing at its sole task. The `limit`-**upper bounds** deliberately remain per tool (grep 1000 match lines, find 2000 file lines — different units); they only need to match between CLIENT and WORK of the same tool.
+**Shared Walk-Defaults.** Depth limit, default line cap, and the Generated-Content-Filter (`node_modules`, `target`, `dist`, `.git`, …) are in `de.mhus.vance.api.tools.FileWalkDefaults` — in `vance-api`, because that is the only module that **both** sides are allowed to see (`vance-foot` is by design limited to `vance-api`). A `file_grep` that skips `node_modules` on one target and enters it on another would be the wrapper failing at its sole task. The `limit`-**upper bounds** deliberately remain per tool (grep 1000 match lines, find 2000 file lines — different units); they only need to match between CLIENT and WORK of the same tool.
 
 ### 4.2 The Symmetry Guard
 
@@ -215,7 +214,7 @@ The test iterates over all 13 triples and checks:
 
 ### 4.3 Vocabulary — One Concept, One Parameter Name
 
-The symmetry rules from §4.1 ensure that a tool understands the same thing on both targets. They say nothing about whether **two** tools name the same concept identically — and this is precisely where the `file_*` and `doc_*` families had shortcomings: a line window was called `offset`/`limit` in `doc_read_lines` and `startLine`/`maxLines` in `file_read`, a path scope was `folder`, `parentPath`, or `pathPrefix` depending on the listing tool, an edit was `old_string` here and `oldText` there. Each variant costs the model a guess, and a failed guess is silent: the unknown key is dropped, the tool responds about something else.
+The symmetry rules from §4.1 ensure that a tool understands the same thing on both targets. They say nothing about whether **two** tools name the same concept identically — and this is precisely where the `file_*` and `doc_*` families had debts: a line window was called `offset`/`limit` in `doc_read_lines` and `startLine`/`maxLines` in `file_read`, a path scope was `folder`, `parentPath`, or `pathPrefix` depending on the listing tool, an edit was `old_string` here and `oldText` there. Each variant costs the model a guess, and a failed guess is silent: the unknown key is dropped, the tool responds about something else.
 
 Canonical, for the families `doc_*`, `file_*`, `work_file_*`, `client_file_*`:
 
@@ -229,18 +228,18 @@ Canonical, for the families `doc_*`, `file_*`, `work_file_*`, `client_file_*`:
 | Path prefix scope | `pathPrefix` | `folder`, `parentPath` |
 | Target of a write operation | `newPath` | `targetPath`, `target` |
 | Search/replace text | `oldText`, `newText`, `replaceAll` | `old_string`, `new_string`, `replace_all` |
-| Result upper limit | `limit` | — |
+| Result upper bound | `limit` | — |
 | Project | `projectId` | `project` |
-| Document ID | `id` | `documentId` |
-| If-Match Guard (Content checksum) | `contentHash` (Result) / `expectedContentHash` (Parameter) | — |
+| Document-Id | `id` | `documentId` |
+| If-Match-Guard (Content checksum) | `contentHash` (Result) / `expectedContentHash` (Parameter) | — |
 
 After the renaming, `limit` **only** means "upper bound of results" and `maxLines` **only** means "number of lines" — previously, `limit` was one thing in `doc_read_lines` and another in `doc_find`/`doc_grep`/`file_find`.
 
-**One name per concept also means: one name per unit.** `doc_replace_lines` addresses lines and is therefore called `fromLine`/`toLine`; `doc_get_selection` cuts with `substring()` and is therefore called `fromChar`/`toChar`. Unifying both to `fromLine`/`toLine` would have been worse than the original `from`/`to`: a model passing `fromLine=12` to a character offset would not get an error, but the wrong snippet. Where unification would obscure the unit, the unit wins.
+**One name per concept also means: one name per unit.** `doc_replace_lines` addresses lines and is therefore called `fromLine`/`toLine`; `doc_get_selection` cuts with `substring()` and is therefore called `fromChar`/`toChar`. Unifying both to `fromLine`/`toLine` would have been worse than the original `from`/`to`: a model that passes `fromLine=12` to a character offset gets no error, but the wrong snippet. Where unification would obscure the unit, the unit wins.
 
 **The narrowness of the scope is part of the rule, not a shortcut.** Outside these families, the same words mean something different and retain their spelling: `from`/`to` are time ranges in the Calendar-/Gantt-/Journal-tools and node IDs in `canvas_edge_add`; `folder` is the app folder in about 35 Application-tools (`kanban_*`, `gtd_*`, `issue_*`, …); `targetPath` is the output file of the seven `image_*`-tools; `target` is an edge end in the Graph and Relations tools. A global renaming would have been incorrect.
 
-**Aliases remain readable but undeclared.** Old spellings are still accepted at runtime (`KindToolSupport.paramStringAliased` and siblings) so that prompts, manuals, and calls already in use do not break. They are **not** in the schema — otherwise, the second name would again be an option. Guard: `ToolVocabularyTest` (`vance-brain`, runs in `wb build`) checks the declared side against the table and fails with "`offset` → use `startLine`" if an old spelling returns.
+**Aliases remain readable, but undeclared.** Old spellings continue to be accepted at runtime (`KindToolSupport.paramStringAliased` and siblings) so that prompts, manuals, and calls already in progress do not break. They are **not** in the schema — otherwise, the second name would again be an option. Guard: `ToolVocabularyTest` (`vance-brain`, runs in `wb build`) checks the declared side against the table and fails with "`offset` → use `startLine`" if an old spelling returns.
 
 ## 5. Tools
 
@@ -272,19 +271,18 @@ explicitly set to avoid class name collisions with Brain-side
 | `work_target_get` | Report current Target + available alternatives (Foot-Connected, RootDir names, names of online `profile=daemon` Foots in the Project). |
 | `work_target_set` | Switch Target. `kind` ∈ {CLIENT, WORK, DAEMON}, optional `targetName` (WORK: RootDir; DAEMON: Daemon name, mandatory). Persistent on `engineParams.workTarget`. |
 
-Not primary, because the Recipe usually sets the Target stably and
-the LLM does not need to inspect or switch it. Reachable for
-exceptional needs via `tool_list(prefix='work_target')`.
+Not primary, because the Recipe usually sets the Target stably and the
+LLM does not need to inspect or switch it. Reachable via
+`tool_list(prefix='work_target')` for exceptional needs.
 
-### 5.3 Backend Tools
+### 5.3 Backend-Tools
 
-Remain in the Engine-Allow-Set (otherwise the Dispatcher cannot
-call them), but:
+Remain in the Engine-Allow-Set (otherwise the Dispatcher cannot call them), but:
 
 - In Recipes, **remove** them from the LLM manifest via `allowedToolsDefer`
-  so the LLM does not have to choose between three sets of the same
-  operation. Example `coding.yaml` lists all 24
-  `client_*`/`work_*`-names under `allowedToolsDefer`.
+  so that the LLM does not have to choose between three sets of the same
+  operation. Example `coding.yaml` lists all 24 `client_*`/`work_*` names
+  under `allowedToolsDefer`.
 - Tool-Level `primary=true/false` is orthogonal: Foot-Tools are
   `primary=true` for Direct-Use in other Engines (Arthur, etc.),
   Recipe-Defer overrides this per-Recipe.
@@ -292,12 +290,12 @@ call them), but:
 ### 5.4 Exec-Output: Truncation and Paging
 
 `exec_run` / `exec_status` stream the full `stdout`/`stderr` of a
-job into two files on disk; the paths are returned as `stdoutPath` /
-`stderrPath` in the Tool-Result. Only a window with `inlineOutputCharCap`
-(Default **8,000** chars, `vance.exec.inlineOutputCharCap`) is included inline.
+job into two files on disk; the paths are provided as `stdoutPath` /
+`stderrPath` in the tool result. Only a window with `inlineOutputCharCap`
+(Default **8,000** chars, `vance.exec.inlineOutputCharCap`) is sent inline.
 
-If either stream exceeds the cap, the renderer truncates using
-**HEAD_TAIL**: ~20% beginning + sentinel + ~80% end. Sentinel format:
+If one of the two streams exceeds the cap, the renderer **HEAD_TAIL**:
+~20% start + sentinel + ~80% end. Sentinel format:
 
 ```
 <head><newline>…[truncated, N chars omitted]<newline><tail>
@@ -310,9 +308,10 @@ harmless startup lines and force a second tool call to `tail`-en.
 Additionally set in the render:
 
 - `truncated: true` if at least one stream was truncated.
-- `hint`: Instruction to the LLM to use further `exec_run` calls with
-  bounded commands against `stdoutPath`/`stderrPath` for targeted paging
-  (`head -N`, `tail -N`, `sed -n 'A,Bp'`, `grep -m N`).
+- `hint`: Instruction to the LLM to use further `exec_run` calls
+  with bounded commands against `stdoutPath`/`stderrPath` for
+  targeted paging (`head -N`, `tail -N`, `sed -n 'A,Bp'`,
+  `grep -m N`).
 
 Other tools in the WorkTarget-Layer (e.g., `file_read`, `file_grep`) have
 **their own** paging parameters and do not use this truncation — it
@@ -328,15 +327,16 @@ on the `X-Vancetope-Client-Context` header during handshake (see
 [websocket-protokoll](websocket-protokoll.md) §2); the server parks it in
 the `ConnectionContext`.
 
-For turns with a bound client connection, engines inject a **dynamic**
+For turns with a bound client connection, Engines inject a **dynamic**
 `## Environment`-System-Block (`PromptEnvironmentBlock`, appended next to
 the date block via `PromptDateContextResolver`). The block names the OS,
-working directory, the actual exec shell (`/bin/sh` vs. `cmd.exe`), and
-the sandbox state — so the LLM generates commands in the correct dialect
-(Windows-`cmd.exe` instead of bash), instead of assuming POSIX and failing
-on a Windows-Foot. The lookup is `process → sessionId → ClientToolRegistry.entry → ConnectionContext`;
-it is a **no-op** without a bound client (headless / web) or without a sent
-`ClientContext`. Ephemeral, not persisted — the block exists only as long
+working directory, the actual Exec-Shell (`/bin/sh` vs. `cmd.exe`), and
+the Sandbox state — so that the LLM generates commands in the correct
+dialect (Windows-`cmd.exe` instead of bash), instead of assuming POSIX
+and failing on a Windows-Foot. The lookup is
+`process → sessionId → ClientToolRegistry.entry → ConnectionContext`; it
+is **no-op** without a bound client (headless / web) or without a sent
+`ClientContext`. Ephemeral, not persisted — the block only exists as long
 as the connection is active.
 
 ### 5.6 If-Match: `contentHash` / `expectedContentHash`
@@ -345,11 +345,11 @@ Until 2026-09, `file_edit` matched blindly on the current file content: if
 anyone (user in editor, second process, Skill) had changed it between
 `file_read` and `file_edit`, the snippet was silently replaced in an outdated
 context — no error, no hint, just a more broken file ("silent stale edit").
-The If-Match-Guard closes precisely this gap, using the same pattern as the
-[documents-channel](documents-channel.md) with ETag/`If-Match` — but at the
-file level and without session status.
+The If-Match-Guard closes exactly this gap, using the same pattern that the
+[documents-channel](documents-channel.md) uses with ETag/`If-Match` — but at
+the file level and without session status.
 
-**Protocol:** `file_read` returns `contentHash` in every result — SHA-256
+**Protocol:** `file_read` provides `contentHash` in every result — SHA-256
 (64 hex characters) over the **complete file** in UTF-8, regardless of which
 window (`startLine`/`maxLines`) or `maxChars`-cap was served. `file_edit`
 and `file_write` optionally accept `expectedContentHash`: if the parameter
@@ -357,7 +357,7 @@ is missing, the old behavior applies unchanged; if it does not match the
 current file hash, the change is **rejected** with an instruction to reread
 the file. The hash identifies the file state, not the served view — any
 change anywhere in the file invalidates it (conservatively, but correctly).
-Successful edits and writes themselves return the new `contentHash`, so
+Successful edits and writes themselves return the new `contentHash`, so that
 consecutive changes can be chained without a re-read.
 
 **Details:**
@@ -367,13 +367,13 @@ consecutive changes can be chained without a re-read.
   `qa/`; Vocabulary-Guard: `ToolVocabularyTest`). The Dispatcher rejects
   undeclared parameters — the Guard is never silently inert on one side.
 - Check order in edit: Hash **before** the snippet match. A stale file usually
-  makes the oldText unfoundable anyway — then the model should be advised
-  to "read again", not "expand your snippet context".
+  makes the oldText unfoundable anyway — then the model should receive "read
+  again" as advice, not "expand your snippet context".
 - `file_write` with `expectedContentHash` on a disappeared file:
-  Rejection ("no longer exists"), no silent resurrect. Without Guard,
-  Write remains the deliberate full-overwrite unchanged.
+  Rejection ("no longer exists"), no silent resurrect. Without Guard, Write
+  remains unchanged as the deliberate full-overwrite.
 - Blank `expectedContentHash` (empty string) is rejected instead of ignored — an
-  empty value signals a confused caller, not a lack of Guard intent.
+  empty value signals a confused caller, not a missing Guard-intent.
 - Implementation: `ContentHashes` in `vance-toolpack` (`core`), shared by foot
   and brain. Foot-Reads hash windowed via Streaming (8-KB-Buffer),
   unwindowed from already read content; WORK-side resolves via
@@ -381,11 +381,52 @@ consecutive changes can be chained without a re-read.
   `vance-shared` deliberately remains without toolpack-Dependency — there is no
   hashing there, the tools hash themselves.
 - The hash costs an additional stream pass of the file per Read —
-  consciously accepted: the edit reads the entire file anyway, and
+  consciously accepted: the edit reads the file completely anyway, and
   correctness gain outweighs I/O.
 - No Session status, no Registry: the hash lives exclusively in the
   Tool-Result and the next Tool-Call. Foot-Reconnects, Compaction,
   Cross-Pod — all irrelevant; an outdated hash simply fails cleanly.
+
+### 5.7 Doc-Side: If-Match Twin and Scan Budget
+
+The `doc_*`-family (Storage-Surface, §7) uses **the same If-Match protocol**
+since 2026-09-16 — there with higher relevance, as documents are precisely
+the place for parallel edits (user's Cortex tab + Agent in the same Doc):
+
+- `doc_read` and `doc_read_lines` provide `contentHash` in every result (SHA-256
+  over the **full** body, never over the truncated window),
+- `doc_edit`, `doc_append`, `doc_replace_lines`, `doc_write` accept optional
+  `expectedContentHash`: if the parameter is missing → old behavior; Mismatch →
+  rejection with "read again" advice; Blank-String → error; `doc_write` with
+  hash on disappeared path → rejection (no silent resurrect); Hash-Check **before**
+  any content match (snippet/line anchor), so that a stale Read produces the
+  "read again" advice instead of a content mismatch hint,
+- successful Writes return the new `contentHash` (chainable),
+- Implementation: Guard central in `KindToolSupport` (`enforceContentHashMatch`,
+  `checkContentHash`), Hash via `ContentHashes` (vance-toolpack, shared by file_*).
+
+**Scan-Budget (Class-3 Costs).** Multi-Doc-Scans (`doc_grep_path`, `doc_count` in
+prefix mode) cost O(number of Docs) Storage-Fetches — the match limit does not
+limit a miss-scan. `DocScanBudget` (vance-brain, `tools.kinds`) limits:
+
+- `maxScannedDocs` — Param, Default 500, Hard-Cap 2000; Stop → `truncated: true` +
+  `warning` ("… narrow the pathPrefix"). Instead of `maxDepth`: document paths are a
+  flat virtual tree, a top folder can hold 10,000 Docs.
+- Per-Doc-Cap 2 MB (like `file_grep`/`MAX_FILE_BYTES`) — checked against `size`-metadata,
+  oversize-Docs are **never read**, only counted as `skippedOversized`.
+- Total-Bytes-Budget 50 MB as a second termination condition.
+- Deterministic order (path sorting), so Early-Stops are fair.
+- `'*'` (entire Project-Scan) excludes Mounts (`_ext/`): a Mounted-Read can be an
+  external Fetch — different cost profile. Explicit `_ext/…`-prefix scans
+  deliberately. Age-encrypted Docs are generally excluded (Ciphertext).
+
+Also parity with the file family: `doc_head_tail` (head/tail lines, 1-based,
+with `lineNumber`-Rows), `doc_count` (a Doc or prefix scan, optional Regex-
+Matching à la `file_count`), `doc_find` with `pathGlob` (relative to `pathPrefix`,
+`GlobMatchers`), `minSizeBytes`/`maxSizeBytes`, `createdAfter`/`createdBefore`
+(Doc-Rows have no updatedAt — createdAt is the honest equivalent) and
+`sortBy` (`path`/`size`/`created`). Planning + cost estimation:
+`planning/doc-file-tool-parity.md`.
 
 ## 6. Engine Integration
 
@@ -407,14 +448,14 @@ public class FrankieEngine implements ThinkEngine {
 ```
 
 `BaseEngineTools.WORK_TARGET` (in `tools.worktarget`) contains the 12
-wrappers + 2 meta-tools + all 24 backend names. An Engine adopting the
-layer includes this set in its `allowedTools()` and is done.
-Recipes must remove the backends from the manifest via `allowedToolsDefer`
+wrappers + 2 meta-tools + all 24 backend names. An Engine that adopts
+the layer adds this set to its `allowedTools()` and is done.
+Recipes must remove the backends via `allowedToolsDefer` from the manifest
 — otherwise the LLM sees duplicates.
 
 ## 7. What is NOT part of the WorkTarget-Layer
 
-- **Document-Operations (`doc_*`)** — different Storage-Surface with different
+- **Document-Operations (`doc_*`)** — another Storage-Surface with different
   semantics (persistent, indexed, ranked). Document-Tools are separate,
   no dispatch via WorkTarget.
 - **Skill-Tools** — Skills have their own activation mechanism via
@@ -424,20 +465,20 @@ Recipes must remove the backends from the manifest via `allowedToolsDefer`
 
 ## 8. Workspace-Confinement & Exec-Isolation (WORK-Backends)
 
-The WORK-backends run brain-side and **headless** — there is no
-prompt for user interaction like with the Foot-Sandbox. The rule is
-strict: **everything outside the Workspace folder (RootDir) is forbidden.**
+The WORK-Backends run Brain-side and **headless** — there is no
+prompt for confirmation as with the Foot-Sandbox. The rule is strict:
+**everything outside the Workspace-Folder (RootDir) is forbidden.**
 
 **File-Tools (`work_file_*`) — Path-Confinement.** Every relative path is
-centrally resolved by `WorkspaceRootService` (vance-shared) and checked
-for containment; `WorkspaceService.resolve()` delegates there. Two layers:
+centrally resolved by `WorkspaceRootService` (vance-shared) and checked for
+containment; `WorkspaceService.resolve()` delegates there. Two layers:
 
 1. **Syntactic:** `base.resolve(path).normalize()` must still
    `startsWith(base)` — collapses `..`-traversal.
 2. **Symlink:** the deepest existing ancestor of the target path is checked
    via `toRealPath()` and must remain within the real base. This closes the
    gap where a symlink *inside* the RootDir points outwards (which `normalize()`
-   alone misses). A dangling symlink is conservatively rejected.
+   alone overlooks). A dangling symlink is conservatively rejected.
 
 Violation → `WorkspaceException` (REST/Tool-Error), no Prompt.
 
@@ -461,28 +502,29 @@ no shell re-interpolation); active only with a valid `{cmd}`-placeholder.
 See also [foot-sandbox](foot-sandbox.md) §11 (same mechanism pattern
 client-side).
 
-**Kill/Deadline — graceful Process-*tree* (Brain *and* Foot).** A job runs
+**Kill/Deadline — graceful process-*tree* (Brain *and* Foot).** A job runs
 as `/bin/sh -c "<command>"`; `destroyForcibly()` on this shell alone would
-leave children (compiler, trainer, …) orphaned. Both Exec implementations
-— Brain `ExecManager.terminateTree(...)` and Foot
-`ClientExecutorService.terminateTree(...)` (each used by `kill`, Cleanup
-and Deadline-Watchdog) — therefore snapshot Process **+ all Descendants**,
-first send **SIGTERM** (clean shutdown / checkpoint), then after the
-Grace (`vance.exec.killGraceMs`, Default 10s; Foot-constant) **SIGKILL** to
+leave children (compiler, trainer, …) orphaned and running. Both Exec
+implementations — Brain `ExecManager.terminateTree(...)` and Foot
+`ClientExecutorService.terminateTree(...)` (each used by `kill`, Cleanup,
+and Deadline-Watchdog) — therefore snapshot process **+ all descendants**,
+first send **SIGTERM** (clean shutdown / checkpoint), then after the Grace
+(`vance.exec.killGraceMs`, Default 10s; Foot-constant) **SIGKILL** to
 survivors — non-blocking via the Watchdog-Scheduler. The Watchdog-Kill
-applies upon expiration of the optional `deadlineSeconds`; without a deadline,
-the job runs until its natural end (intended for long-running tasks).
-Important for CLIENT/DAEMON-Compose, where `exec` runs on the Foot/Daemon.
+applies when the optional `deadlineSeconds` expires; without a deadline, the
+job runs until its natural end (intended for long-running tasks). Important
+for CLIENT/DAEMON-Compose, where `exec` runs on the Foot/Daemon.
 
 **Configuration & Deployment.** The block lives in `application.yml`
-(`vance.exec.isolation`), `mode` is overridable via `VANCE_EXEC_ISOLATION_MODE`
-env-variable, Default `none` (even in the Cloud, so Dev/Net-dependent
+(`vance.exec.isolation`), `mode` can be overridden by `VANCE_EXEC_ISOLATION_MODE`
+env-variable, Default `none` (even in the Cloud, so that Dev/Net-dependent
 commands do not break). The **Brain-Docker-Image includes `bubblewrap`**,
-so the provided default wrapper works immediately once an operator sets
-`mode: custom` — prerequisite is a container runtime that allows
-unprivileged user namespaces. The default wrapper binds only `/usr` `/bin`
-`/lib` (+ `/lib64`/`/etc/ssl` if present) read-only plus the Job-RootDir
-read-write and disables the network; operators tune it for their workloads.
+so that the provided default wrapper works immediately there, as soon as
+an operator sets `mode: custom` — prerequisite is a container runtime that
+allows unprivileged user namespaces. The default wrapper binds only
+`/usr` `/bin` `/lib` (+ `/lib64`/`/etc/ssl` if present) read-only plus
+the Job-RootDir read-write and disables the network; operators tune it
+for their workloads.
 
 ## 9. References
 

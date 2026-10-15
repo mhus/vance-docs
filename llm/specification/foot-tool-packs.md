@@ -11,7 +11,7 @@ A **Tool Pack** is a JSON file that describes a tool family that Foot offers to 
 | `mcp_server` | MCP server, either as a subprocess (`transport: stdio`) or via HTTP (`transport: http`) |
 | `rest_api` | OpenAPI spec → one tool per operation |
 
-The sub-tools appear as `<pack>__<subtool>` (`chrome__take_snapshot`). Labels from the pack file plus automatic `mcp`, `mcp:<pack>`, `side-effect` — this allows Recipes to address a capability instead of generated names (see [recipes.md](recipes.md) §6.2).
+Sub-tools appear as `<pack>__<subtool>` (`chrome__take_snapshot`). Labels from the pack file plus automatic `mcp`, `mcp:<pack>`, `side-effect` — this allows Recipes to address a capability instead of generated names (see [recipes.md](recipes.md) §6.2).
 
 ```json
 {
@@ -42,11 +42,11 @@ Pack definitions are read from **two** directories — the same file format in b
 
 without losing the other global packs. If `./.vancetope/foot-tools/` is missing, Foot behaves exactly as before.
 
-This is intentionally **different** from other `.vancetope` resolution: `access.yaml`, `project.eddie.yaml`, `config.yaml`, and the Session Anchors follow "Project **instead of** global" (`VancePaths.activeDir()`). For packs, addition is correct — if someone adds their own MCP server in a project, they don't want to lose their global packs.
+This is intentionally **different** from the rest of the `.vancetope` resolution: `access.yaml`, `project.eddie.yaml`, `config.yaml`, and the session anchors follow "project **instead of** global" (`VancePaths.activeDir()`). For packs, addition is correct — if someone adds their own MCP server in a project, they don't want to lose their global packs.
 
 `--no-local` disables the project level for the entire run; then only the global level counts.
 
-The Spring property `vance.foot.tools.dir` replaces only the **global** level (test path); the project level remains unaffected.
+The Spring property `vance.foot.tools.dir` replaces exactly the **global** level (test path); the project level remains unaffected.
 
 ## 3. Selection via `.vancetope/config.yaml`
 
@@ -65,7 +65,7 @@ Order of the three filters before materialization: pack file `enabled` → `tool
 
 ## 4. Trust Gate for Project Packs
 
-A pack definition contains a **command line** that Foot starts (`npx -y chrome-devtools-mcp@latest`), or an endpoint to which tool traffic goes. As long as packs only come from the home directory, the user wrote them themselves. A definition at the project level, however, is content of the working directory: `git clone` + `vancetope` would execute what the repo author has placed there — and this happens **before** any sandbox gate, because the [Foot Sandbox](foot-sandbox.md) checks brain-driven `client_exec_run`/`client_file_*` calls, not the materialization of a pack.
+A pack definition contains a **command line** that Foot starts (`npx -y chrome-devtools-mcp@latest`), or an endpoint to which tool traffic goes. As long as packs only come from Home, the user has written them themselves. A definition at the project level, however, is content of the working directory: `git clone` + `vancetope` would execute what the repo author has stored there — and this happens **before** any sandbox gate, because the [Foot Sandbox](foot-sandbox.md) checks brain-driven `client_exec_run`/`client_file_*` calls, not the materialization of a pack.
 
 Therefore, each project pack asks once:
 
@@ -78,7 +78,7 @@ Load it? [1] once  [2] always for this project  [3] no ›
 - **Global packs never ask.**
 - **"always"** lands in `<global .vancetope>/trusted-packs.yaml` — never in the project, otherwise the repo could authorize itself.
 - An entry matches on **name + started command/endpoint**. If the repo later changes the command, the consent no longer applies, and it will be asked again.
-- Without an interactive terminal (daemon, `--no-ui`, `--skill`-one-shot, dumb terminal), there is no one to ask: the pack will **not** be loaded, with a WARN line. Silent loading would be the wrong default precisely in cases of doubt. If it is needed there, move it to the global `foot-tools/`.
+- Without an interactive terminal (daemon, `--no-ui`, `--skill`-one-shot, dumb terminal), there is no one to ask: the pack will **not** be loaded, with a WARN line. Silent loading would be the wrong default precisely in case of doubt. If it is needed there, move it to the global `foot-tools/`.
 - Timeout (25 s) and unclear answer count as rejection.
 
 ```yaml
@@ -106,3 +106,7 @@ Two consequences:
 - **No trust downgrade per sub-tool.** Consent applies to the pack, not to individual sub-tools (`disabledSubTools` in the pack file remains the adjustment knob).
 - **No prompt via the REST debug interface.** `--rest-api` without PTY counts as "not askable" → project packs are rejected.
 - **No revoke command.** To withdraw consent: delete the line from `trusted-packs.yaml`.
+
+## 7. The Second Pack Host: The Desktop App
+
+The Facelift desktop app (Vancetope) loads MCP servers with the **same user contracts** (two levels, selection via `config.yaml`, trust requirement for project packs), but a different file format and storage location: **a single** `~/.vancetope/mcp.json` (`mcpServers` map) instead of individual pack files, project level at the account workdir (`<workdir>/.vancetope/mcp.json`), trust via native dialog instead of REPL, `trusted-packs.yaml` per account instead of global. See [desktop-agent-tools](desktop-agent-tools.md) §12. Foot continues to read its classic directories unchanged; joint reading of `mcp.json` is on the roadmap.
