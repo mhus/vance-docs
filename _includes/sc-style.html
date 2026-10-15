@@ -157,6 +157,11 @@
                      --sans: "Inter", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Meiryo", sans-serif; }
   :root[lang="ja"] h1, :root[lang="ja"] h2, :root[lang="ja"] h3 { letter-spacing: 0; word-break: auto-phrase; line-height: 1.2; }
   :root[lang="ja"] p, :root[lang="ja"] li { line-break: strict; }
+  /* Simplified Chinese: same treatment with the platform's Chinese face. */
+  :root[lang="zh"] { --display: "Inter Tight", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+                     --sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif; }
+  :root[lang="zh"] h1, :root[lang="zh"] h2, :root[lang="zh"] h3 { letter-spacing: 0; line-height: 1.2; }
+  :root[lang="zh"] p, :root[lang="zh"] li { line-break: strict; }
   @media (max-width: 1060px) { .nav-links { gap: 18px; } .nav-links a { font-size: 14.5px; } .nav-cta .gh-label { display: none; } }
   @media (max-width: 860px) { .nav-links { display: none; } }
   .nav-cta { white-space: nowrap; }

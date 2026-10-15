@@ -1,0 +1,23 @@
+{
+  "nav.apps": "应用",
+  "nav.agents": "智能体",
+  "nav.connect": "连接",
+  "nav.trust": "信任",
+  "nav.docs": "文档",
+  "nav.cta": "开始使用",
+  "foot.product": "产品",
+  "foot.apps": "应用&amp;文档",
+  "foot.agents": "智能体&amp;引擎",
+  "foot.connect": "客户端&amp;集成",
+  "foot.trust": "安全&amp;自托管",
+  "foot.vision": "Vancetope 是什么",
+  "foot.learn": "学习",
+  "foot.start": "开始使用",
+  "foot.tours": "功能导览",
+  "foot.stories": "用例故事",
+  "foot.concepts": "概念",
+  "foot.architecture": "架构",
+  "foot.resources": "资源",
+  "foot.community": "社区",
+  "footer.copy": "© 2025–2026 Mike Hummel · 文档遵循 CC BY 4.0 协议"
+}
