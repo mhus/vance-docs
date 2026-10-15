@@ -25,6 +25,7 @@ https://www.vancetope.com/llm/specification/centauri-service.md
 https://www.vancetope.com/llm/specification/chat-location-tool.md
 https://www.vancetope.com/llm/specification/chat-themes.md
 https://www.vancetope.com/llm/specification/client-protokoll-erweiterbarkeit.md
+https://www.vancetope.com/llm/specification/corporate-design.md
 https://www.vancetope.com/llm/specification/cortex.md
 https://www.vancetope.com/llm/specification/damogran-system.md
 https://www.vancetope.com/llm/specification/desktop-agent-tools.md
@@ -135,6 +136,7 @@ https://www.vancetope.com/llm/specification/shooty.md
 https://www.vancetope.com/llm/specification/signals-channel.md
 https://www.vancetope.com/llm/specification/skills.md
 https://www.vancetope.com/llm/specification/slartibartfast-engine.md
+https://www.vancetope.com/llm/specification/sso-login.md
 https://www.vancetope.com/llm/specification/structure-tool.md
 https://www.vancetope.com/llm/specification/structured-engine-output.md
 https://www.vancetope.com/llm/specification/think-engines.md
@@ -158,6 +160,7 @@ https://www.vancetope.com/llm/specification/web-ui.md
 https://www.vancetope.com/llm/specification/webdav.md
 https://www.vancetope.com/llm/specification/websocket-protokoll.md
 https://www.vancetope.com/llm/specification/wizards.md
+https://www.vancetope.com/llm/specification/wonko-engine.md
 https://www.vancetope.com/llm/specification/work-target.md
 https://www.vancetope.com/llm/specification/workbook-forms.md
 https://www.vancetope.com/llm/specification/workflows.md

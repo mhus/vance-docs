@@ -112,8 +112,8 @@
     },
     "bistromath-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "e0c253db6129baf3da85e21341e1579ae688bff60344c38a3ee79e56805aa32b",
-      "translated_at": "2026-08-28T07:53:40Z"
+      "source_sha256": "7e5c644538c4a4a1ecb99d7ea8a1844f2a9b03673d0ab34e4f4de217c684ade5",
+      "translated_at": "2026-10-15T21:06:31Z"
     },
     "centauri-service.md": {
       "model": "gemini-2.5-flash",
@@ -134,6 +134,11 @@
       "model": "gemini-2.5-flash",
       "source_sha256": "68d10e01466af0e7d2b3d8dc3d8d82b883a494cc32f5adfc2a0c0b9f0caf8e94",
       "translated_at": "2026-10-15T09:47:51Z"
+    },
+    "corporate-design.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "4f9b86e509f351a8464947e2553380ea6c4a5edb4787e54812fd790f04b18a03",
+      "translated_at": "2026-10-15T21:06:54Z"
     },
     "cortex.md": {
       "model": "gemini-2.5-flash",
@@ -685,6 +690,11 @@
       "source_sha256": "e02a992c2e51714052af38a497dc958fa5d6d19d340b45da31097914017f6c12",
       "translated_at": "2026-10-15T10:12:54Z"
     },
+    "sso-login.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "9a6647eeffef4156283eef543e9b2205b8c7e0beade25b97e871edcb4375b0fb",
+      "translated_at": "2026-10-15T21:04:26Z"
+    },
     "structure-tool.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "a07e07a2c29cdb2d7b04430c7a23d75017f8afb26ec7f1b94d43f95597f27a2f",
@@ -697,8 +707,8 @@
     },
     "think-engines.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "ede995446daca93f81b2e439315a39b541348718550c3029fed17cdd04711301",
-      "translated_at": "2026-10-15T10:13:27Z"
+      "source_sha256": "1c2d354f20425fdbb064746efc31fc56b55903763951b8c622f16b6be2b48fb1",
+      "translated_at": "2026-10-15T21:04:02Z"
     },
     "tool-availability.md": {
       "model": "gemini-2.5-flash",
@@ -712,8 +722,8 @@
     },
     "trillian-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "656a34623e34bce75745e1d9cf0d3195847a2ab70ccf45ff513e4896fd767096",
-      "translated_at": "2026-10-15T10:14:43Z"
+      "source_sha256": "993e225fb6b068ed5ff1fdb2bacdf9e449fde397fbd0a7ce7fb19d0cbe570ab4",
+      "translated_at": "2026-10-15T21:08:14Z"
     },
     "trillian-exposure.md": {
       "model": "gemini-2.5-flash",
@@ -782,8 +792,8 @@
     },
     "web-ui.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9c288aa04f7275ad10a721c50af167b31393db7c2cf6f51abd4961bd5598d7ea",
-      "translated_at": "2026-10-15T10:18:04Z"
+      "source_sha256": "68cc54a63d2553e41049bbeb9f68f7416920b4fc338f81dacc24d1991b982cd5",
+      "translated_at": "2026-10-15T21:09:26Z"
     },
     "webdav.md": {
       "model": "gemini-2.5-flash",
@@ -799,6 +809,11 @@
       "model": "gemini-2.5-flash",
       "source_sha256": "920bc67b810fc971a9b9e5d4027a582d7688bbfcff3115016e81826c808e4c52",
       "translated_at": "2026-10-15T10:18:53Z"
+    },
+    "wonko-engine.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "4dd031a9b03b6f9588b49e76ae843fb786872be5b4c30b95a3aa7c53ac681d96",
+      "translated_at": "2026-10-15T21:03:29Z"
     },
     "work-target.md": {
       "model": "gemini-2.5-flash",
@@ -827,8 +842,8 @@
     },
     "wowbagger-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "e4f689c20e300456265f1a173aaa2fa6a0b769f2962b5e49560d86e0348456a5",
-      "translated_at": "2026-10-15T10:20:47Z"
+      "source_sha256": "8e9eeb372f47c0489f70731c516e2b90e3f7e5fa60b07021effcad1437c6815a",
+      "translated_at": "2026-10-15T21:09:43Z"
     },
     "zaphod-engine.md": {
       "model": "gemini-2.5-flash",
