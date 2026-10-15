@@ -146,7 +146,7 @@ origin:
   branch: main
   commit: a4f32b1                  # the installed state
   installedAt: 2026-08-17T10:00:00Z
-  installedBy: hummel@sipgate.de
+  installedBy: jane@example.com
 descriptor:                        # the authored kit.yaml, parsed
   artifact: false
   installable: true
@@ -754,7 +754,7 @@ origin:
   branch: main
   commit: a4f32b1
   installedAt: 2026-04-30T14:23:00Z
-  installedBy: hummel@sipgate.de
+  installedBy: jane@example.com
 descriptor:
   inherits:
     - url: https://github.com/mhus/kits.git

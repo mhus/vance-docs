@@ -286,7 +286,7 @@ options:
   - label: "Private"
     description: "mhus@personal.de"      # optional, one line
   - label: "Work"
-    description: "hummel@sipgate.de"
+    description: "me@work.example"
   - label: "All"
     description: "both sequentially"
 ```
