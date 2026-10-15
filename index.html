@@ -1,0 +1,330 @@
+---
+title: Vancetope
+layout: landing
+hero_device: true
+nav_order: 1
+description: "A personal project: a self-hosted workspace where LLM agents work assignments over hours and days — in real apps, on your documents, shaped almost entirely from its own data. Not a product."
+permalink: /
+---
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1 data-i18n="hero.h1">Give AI a place.</h1>
+        <p class="lede" data-i18n="hero.lede">Vancetope gives AI a place — and with it, an application: a workspace of documents, sheets, canvas and boards where agents sit with your data and don’t chat on the side, they do the work. For an answer in five minutes or an assignment that runs for days. For work and for life, kept apart. On your own server.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="{{ '/getting-started' | relative_url }}"><span data-i18n="cta.start">Get started</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/mhus/vance">
+            {% include sc-icon-github.html %}
+            <span data-i18n="cta.github">Star on GitHub</span>
+          </a>
+        </div>
+        <p class="hero-note" data-i18n="hero.note">Self-hosted with Docker in a few minutes — bring your own model. <a href="{{ '/getting-started' | relative_url }}">Install&nbsp;→</a></p>
+      </div>
+
+      <a class="device" id="device" href="{{ '/howtos/uc-iron/' | relative_url }}" aria-label="A live Vancetope think-process — click to open the matching page.">
+        <div class="device-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="title">think-process</span>
+          <span class="agent">engine: <span id="engine">marvin</span></span>
+        </div>
+        <div class="device-body">
+          <div class="row"><span class="k">assignment</span><span class="v" id="assignment">“Research the properties of iron”</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">status</span><span class="v"><span class="pill running" id="pill"><span class="led"></span><span id="pill-text">RUNNING</span></span></span></div>
+          <div class="row" style="margin-top:6px"><span class="k">scope</span><span class="v" id="scope">project <span class="doc">iron-research</span> · session <span class="doc">#a77e</span></span></div>
+          <div class="log" id="log" aria-hidden="true"></div>
+          <div class="device-foot" id="device-foot">↳ see how it works</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <a class="latest" href="{{ '/blog/vancetope-0-5-0/' | relative_url }}">
+        <span class="ver">v0.5.0</span>
+        <span class="txt" data-i18n="latest.txt">Agents with a door, bulk work over thousands of records, decision models, and a desktop app whose agents work on your local files.</span>
+        <span class="go" data-i18n="latest.go">Release notes →</span>
+      </a>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="origin.eyebrow">Why it exists</p>
+      <h2 data-i18n="origin.h2">AI had no application.</h2>
+      <p data-i18n="origin.p">Someone once told me AI chats have no application — you open ChatGPT and there’s just a text box; what are you supposed to do with it? It stuck with me. Vancetope is my answer: give AI a place — somewhere it lives, right next to your data — and with a place it finally has an application, something real to do.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="apps.eyebrow">Real surfaces</p>
+        <h2 data-i18n="apps.h2">Real apps — AI-made and connected.</h2>
+        <p data-i18n="apps.p">Not a chat window, but the tools you actually work in — all AI-native: have them created, filled, reshaped and linked. Because everything is a document, it all hangs together, and it’s shared live — people and agents at once.</p>
+      </div>
+      <div class="cards">
+        <a class="card" href="{{ '/howtos/cortex/' | relative_url }}"><h3>Cortex</h3><p data-i18n="apps.cortex">Chat, document and execute on one surface — every kind of document, with the agent right beside it.</p></a>
+        <a class="card" href="{{ '/howtos/workbook/' | relative_url }}"><h3>Workbook</h3><p data-i18n="apps.workbook">Pages in a block editor — with forms, quizzes and runnable script blocks.</p></a>
+        <a class="card" href="{{ '/howtos/sheet/' | relative_url }}"><h3>Sheet</h3><p data-i18n="apps.sheet">Spreadsheets with functions — pipe the results onward.</p></a>
+        <a class="card" href="{{ '/howtos/canvas/' | relative_url }}"><h3>Canvas</h3><p data-i18n="apps.canvas">Think spatially: nodes, links and groups on an open plane.</p></a>
+        <a class="card" href="{{ '/howtos/kanban/' | relative_url }}"><h3>Kanban, Issues &amp; GTD</h3><p data-i18n="apps.boards">Plan work, track it through, keep your own list clean.</p></a>
+        <a class="card" href="{{ '/apps/#new' | relative_url }}"><h3>Scribble &amp; Designer</h3><p data-i18n="apps.new">Handwriting the agent can read and draw on; design collections with a live preview.</p></a>
+      </div>
+      <p class="apps-more"><a href="{{ '/apps/' | relative_url }}" style="color:inherit" data-i18n="apps.more">…plus wiki, journal, calendar, finance, slides, mindmaps, maps, audio, images — and apps the agent builds for you. See all apps →</a></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="cases.eyebrow">See it in action</p>
+        <h2 data-i18n="cases.h2">What people get done with it.</h2>
+        <p data-i18n="cases.p">Real walk-throughs — one request grows into research, charts, documents and decks. Each is a slideshow you can follow step by step.</p>
+      </div>
+      <div class="cards">
+        <a class="card" href="{{ '/howtos/uc-iron/' | relative_url }}"><h3>Research a topic, end to end</h3><p data-i18n="cases.iron">Deep-research with Marvin, reshape it into a mindmap, illustrate it, compile a document — and export a PDF. All in one conversation.</p></a>
+        <a class="card" href="{{ '/howtos/uc-stock/' | relative_url }}"><h3>Size up a stock with live data</h3><p data-i18n="cases.stock">Pull a stock’s prices off the web, chart them as candlesticks, and get an assessment that cites the numbers it stands on.</p></a>
+        <a class="card" href="{{ '/howtos/uc-talent/' | relative_url }}"><h3>Stress-test an idea with a panel</h3><p data-i18n="cases.talent">Stand up a reusable council of AI personas, throw a pitch at it, and get one synthesised verdict — the disagreement kept intact.</p></a>
+      </div>
+      <p class="apps-more"><a href="{{ '/howtos/' | relative_url }}" style="color:inherit" data-i18n="cases.more">…and more — data analysis, research to slides. See all how-tos and stories →</a></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="pillars.eyebrow">What makes it tick</p>
+        <h2 data-i18n="pillars.h2">A few ideas do most of the work.</h2>
+        <p data-i18n="pillars.p">Everything else is a consequence of these.</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar">
+          <span class="idx">01</span>
+          <h3 data-i18n="p1.h">Everything is a document</h3>
+          <p data-i18n="p1.p">Recipes, prompts, skills, schedulers, hooks, guards, settings, even apps — all documents. A new automation is a new document. The system reshapes itself from its own data, and so can agents.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">02</span>
+          <h3 data-i18n="p2.h">Agents drive (almost) everything</h3>
+          <p data-i18n="p2.p">Nearly every capability is a tool: write documents, spawn workers, set triggers, research, delegate. You give the direction and step in whenever you want — the flow stays visible.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">03</span>
+          <h3 data-i18n="p3.h">Code drives the flow</h3>
+          <p data-i18n="p3.p">Engines are Java algorithms with a lifecycle — the code decides when the model is called and when work is done. Few engines, many recipes. That’s what lets an assignment run for days without drifting.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">04</span>
+          <h3 data-i18n="p4.h">Built to work in, together</h3>
+          <p data-i18n="p4.p"><code>Cortex</code> unites chat, documents and execute on one surface — live-edited with other people and with agents in the same session. Presence, merge, versioning and discussions included.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">05</span>
+          <h3 data-i18n="p5.h">Projects draw the boundaries</h3>
+          <p data-i18n="p5.p">A project is a bounded area with its own documents, config and agents. Settings, memory and permissions inherit down a scope cascade — tenant, project, user, session.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">06</span>
+          <h3 data-i18n="p6.h">It runs itself</h3>
+          <p data-i18n="p6.p">Schedulers, lifecycle hooks and webhooks fire recipes, scripts or workflows. Persistent agents keep a journal, wake on their own schedule — and pause to ask instead of guessing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="ex.eyebrow">Go deeper</p>
+        <h2 data-i18n="ex.h2">There’s a lot under the surface.</h2>
+        <p data-i18n="ex.p">Vancetope has grown well past a chat with documents. Four tours, each one page:</p>
+      </div>
+      <div class="cards c2 explore">
+        <a class="card" href="{{ '/apps/' | relative_url }}">
+          <span class="tag" data-i18n="ex.apps.tag">apps &amp; documents</span>
+          <h3 data-i18n="ex.apps.h">Everything you work in</h3>
+          <p data-i18n="ex.apps.p">Fifteen apps and thirty-odd document kinds — from workbook and kanban to handwriting, audio and apps the agent builds itself, sandboxed.</p>
+        </a>
+        <a class="card" href="{{ '/agents/' | relative_url }}">
+          <span class="tag" data-i18n="ex.agents.tag">agents &amp; engines</span>
+          <h3 data-i18n="ex.agents.h">Work that doesn’t fit into a turn</h3>
+          <p data-i18n="ex.agents.p">Deep research trees, bulk runs over thousands of records, fast decision models, councils, and persistent agents with a home, a journal and a schedule.</p>
+        </a>
+        <a class="card" href="{{ '/connect/' | relative_url }}">
+          <span class="tag" data-i18n="ex.connect.tag">clients &amp; integrations</span>
+          <h3 data-i18n="ex.connect.h">One brain, many doors</h3>
+          <p data-i18n="ex.connect.p">Web, desktop, terminal, mobile, a browser extension — and MCP in both directions, guarded by a real OAuth server, so other agents can work with yours.</p>
+        </a>
+        <a class="card" href="{{ '/trust/' | relative_url }}">
+          <span class="tag" data-i18n="ex.trust.tag">security &amp; self-hosting</span>
+          <h3 data-i18n="ex.trust.h">Your server, your keys</h3>
+          <p data-i18n="ex.trust.p">End-to-end encrypted documents, sandboxes on every machine an agent touches, guards before dangerous commands, quotas — and nothing phoning home.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="work.eyebrow">Work and life</p>
+      <h2 data-i18n="work.h2">One place for whatever you’re working on.</h2>
+      <p data-i18n="work.p">Work or personal — Vancetope holds both, kept apart in separate tenants. A five-minute question or a project that runs for weeks; something off the web, a document to reshape, files right there on your machine. It’s open-ended on purpose: the stuff you’d otherwise scatter across a dozen apps tends to just fit here.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="kits.eyebrow">Project kits</p>
+        <h2 data-i18n="kits.h2">Start a project ready to work.</h2>
+        <p data-i18n="kits.p">A kit is a git bundle of skills, recipes, tools and settings. Install one and a project arrives preconfigured — thinking patterns, worker recipes, tool packs, defaults. And kits inherit, so they compose:</p>
+      </div>
+      <div class="kit-chain" aria-label="Kits inherit: basic, then code-development, then security">
+        <span class="kit-node">basic</span>
+        <span class="kit-arrow">→</span>
+        <span class="kit-node">code-development</span>
+        <span class="kit-arrow">→</span>
+        <span class="kit-node">security</span>
+      </div>
+      <div class="chips">
+        <a class="chip" href="{{ '/kits' | relative_url }}#research">research</a>
+        <a class="chip" href="{{ '/kits' | relative_url }}#writing">writing</a>
+        <a class="chip" href="{{ '/kits' | relative_url }}#learning">learning</a>
+        <a class="chip" href="{{ '/kits' | relative_url }}#communication">communication</a>
+        <a class="chip" href="{{ '/kits' | relative_url }}#finance-thinking">finance-thinking</a>
+        <a class="chip" href="{{ '/kits' | relative_url }}#legal-thinking">legal-thinking</a>
+        <a class="chip" href="{{ '/kits' | relative_url }}#mail-assistant">mail-assistant</a>
+        <span class="chip plus" data-i18n="kits.plus">+ build your own</span>
+      </div>
+      <p class="kit-note" data-i18n="kits.note">The interesting part isn’t the bundled ones — it’s that a kit is <em>just a git repo</em>. Point a project at yours and it’s productive from the first message.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="ai.eyebrow">The proof is the product</p>
+      <h2 data-i18n="ai.h2">Written by agents. <em>On purpose.</em></h2>
+      <p data-i18n="ai.p">Every line of Vancetope is AI-written — directed, reviewed and shaped by one human. That’s not a confession, it’s the whole point: Vancetope is what working <em>with</em> agents over months actually builds — a large, coherent system you can run, read and change. The tool and the demo are the same thing.</p>
+    </div>
+  </section>
+
+  <section class="closer">
+    <div class="wrap closer-grid">
+      <div>
+        <p class="eyebrow" data-i18n="closer.eyebrow">Honest bit</p>
+        <h2 data-i18n="closer.h2">It’s a personal project.</h2>
+        <p data-i18n="closer.p1">I built Vancetope to develop LLM agents and shape them until I could actually work productively with them. Over time everything I found interesting went in — plus a few things I think others might get something out of.</p>
+        <p data-i18n="closer.p2">No support contract and no roadmap promises — it’s a project, not a product. The source is public: read it, run it, take it for a spin. It’s source-available rather than classic open source, and where it goes from here I’m keeping open.</p>
+        <p class="signature">— Mike Hummel</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><span class="fk" data-i18n="fact.stack">stack</span><span class="fv">Java 25 · Spring Boot 4 · MongoDB · langchain4j</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.clients">clients</span><span class="fv" data-i18n="fact.clients.v">web · macOS desktop · CLI · iOS &amp; Android · browser extension</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.license">license</span><span class="fv">BSL 1.1 → AGPLv3 on 2029-06-23</span></div>
+        <div class="fact"><span class="fk" data-i18n="fact.status">status</span><span class="fv" data-i18n="fact.status.v">beta · v0.5 · self-hosted</span></div>
+      </div>
+    </div>
+  </section>
+
+<script type="application/json" id="i18n-de">
+{
+  "hero.h1": "Gib der AI einen Ort.",
+  "hero.lede": "Vancetope gibt der AI einen Ort — und damit eine Application: einen Arbeitsplatz mit Dokumenten, Sheets, Canvas und Boards, in dem Agenten bei deinen Daten sitzen und nicht nebenher chatten, sondern die Arbeit machen. Für eine Antwort in fünf Minuten oder einen Auftrag, der Tage läuft. Beruflich und privat, sauber getrennt. Auf deinem eigenen Server.",
+  "cta.start": "Loslegen",
+  "cta.github": "Auf GitHub sternen",
+  "hero.note": "Mit Docker in ein paar Minuten selbst gehostet — das Modell bringst du mit. <a href=\"/getting-started\">Installieren&nbsp;→</a>",
+  "latest.txt": "Agenten mit eigener Tür, Bulk-Arbeit über tausende Datensätze, Entscheidungsmodelle und eine Desktop-App, deren Agenten auf deinen lokalen Dateien arbeiten.",
+  "latest.go": "Release-Notes →",
+  "origin.eyebrow": "Warum es das gibt",
+  "origin.h2": "AI hatte keine Application.",
+  "origin.p": "Jemand sagte mir mal: AI-Chats haben keine Application — du machst ChatGPT auf, und da steht nur ein Textfeld; was fängst du damit an? Das ist hängengeblieben. Vancetope ist meine Antwort: Gib der AI einen Ort — wo sie ist, direkt neben deinen Daten — und mit einem Ort hat sie endlich eine Application, etwas Echtes zu tun.",
+  "apps.eyebrow": "Echte Oberflächen",
+  "apps.h2": "Echte Apps — von AI erzeugt und verbunden.",
+  "apps.p": "Kein Chatfenster, sondern die Werkzeuge, mit denen man wirklich arbeitet — alle AI-nativ: erzeugen, füllen, umbauen, verknüpfen lassen. Weil alles ein Dokument ist, hängt es zusammen — und live geteilt, mit Menschen und Agenten zugleich.",
+  "apps.cortex": "Chat, Dokument und Ausführung auf einer Fläche — jede Art Dokument, der Agent direkt daneben.",
+  "apps.workbook": "Seiten im Block-Editor — mit Formularen, Quizzen und ausführbaren Skript-Blöcken.",
+  "apps.sheet": "Tabellen mit Funktionen — Ergebnisse weiter in eine Pipeline.",
+  "apps.canvas": "Räumlich denken: Knoten, Verbindungen und Gruppen auf einer offenen Fläche.",
+  "apps.boards": "Arbeit planen, durchverfolgen, die eigene Liste sauber halten.",
+  "apps.new": "Handschrift, die der Agent lesen und bemalen kann; Design-Sammlungen mit Live-Vorschau.",
+  "apps.more": "…dazu Wiki, Journal, Kalender, Finanzen, Slides, Mindmaps, Karten, Audio, Bilder — und Apps, die der Agent für dich baut. Alle Apps ansehen →",
+  "cases.eyebrow": "In Aktion",
+  "cases.h2": "Was Leute damit erledigen.",
+  "cases.p": "Echte Durchläufe — aus einer Anfrage werden Recherche, Charts, Dokumente und Präsentationen. Jeder ist eine Slideshow zum Mitverfolgen.",
+  "cases.iron": "Tiefenrecherche mit Marvin, zur Mindmap umbauen, bebildern, ein Dokument zusammenstellen — und als PDF exportieren. Alles in einem Gespräch.",
+  "cases.stock": "Kurse einer Aktie aus dem Web ziehen, als Candlesticks charten und eine Einschätzung bekommen, die die Zahlen nennt, auf denen sie steht.",
+  "cases.talent": "Einen wiederverwendbaren Rat aus AI-Personas aufstellen, einen Pitch reinwerfen und ein zusammengeführtes Urteil bekommen — der Dissens bleibt erhalten.",
+  "cases.more": "…und mehr — Datenanalyse, Recherche zu Slides. Alle How-tos und Geschichten →",
+  "pillars.eyebrow": "Was es ausmacht",
+  "pillars.h2": "Ein paar Ideen tragen den Großteil.",
+  "pillars.p": "Alles Weitere folgt daraus.",
+  "p1.h": "Alles ist ein Dokument",
+  "p1.p": "Recipes, Prompts, Skills, Scheduler, Hooks, Guards, Settings, sogar Apps — alles Dokumente. Ein neuer Automatismus ist ein neues Dokument. Das System baut sich aus seinen eigenen Daten um — und Agenten können das auch.",
+  "p2.h": "Agenten steuern (fast) alles",
+  "p2.p": "Nahezu jede Fähigkeit ist ein Tool: Dokumente schreiben, Worker starten, Trigger setzen, recherchieren, delegieren. Du gibst die Richtung vor und greifst ein, wann du willst — der Ablauf bleibt sichtbar.",
+  "p3.h": "Code steuert den Ablauf",
+  "p3.p": "Engines sind Java-Algorithmen mit Lifecycle — der Code entscheidet, wann das Modell gefragt wird und wann die Arbeit fertig ist. Wenige Engines, viele Recipes. Deshalb kann ein Auftrag tagelang laufen, ohne abzudriften.",
+  "p4.h": "Zum Arbeiten gebaut — gemeinsam",
+  "p4.p": "<code>Cortex</code> vereint Chat, Dokumente und Ausführung auf einer Fläche — live editiert mit anderen Menschen und mit Agenten in derselben Session. Presence, Merge, Versionierung und Diskussionen inklusive.",
+  "p5.h": "Projekte grenzen ab",
+  "p5.p": "Ein Projekt ist ein abgegrenzter Bereich mit eigenen Dokumenten, Konfiguration und Agenten. Settings, Memory und Rechte vererben sich die Scope-Kaskade hinunter — Tenant, Projekt, User, Session.",
+  "p6.h": "Es läuft von selbst",
+  "p6.p": "Scheduler, Lifecycle-Hooks und Webhooks feuern Recipes, Skripte oder Workflows. Persistente Agenten führen ein Journal, wachen nach eigenem Zeitplan auf — und halten an, um zu fragen, statt zu raten.",
+  "ex.eyebrow": "Tiefer einsteigen",
+  "ex.h2": "Unter der Oberfläche steckt viel.",
+  "ex.p": "Vancetope ist längst mehr als ein Chat mit Dokumenten. Vier Touren, je eine Seite:",
+  "ex.apps.tag": "Apps &amp; Dokumente",
+  "ex.apps.h": "Alles, worin du arbeitest",
+  "ex.apps.p": "Fünfzehn Apps und gut dreißig Dokument-Arten — von Workbook und Kanban bis Handschrift, Audio und Apps, die der Agent selbst baut, in der Sandbox.",
+  "ex.agents.tag": "Agenten &amp; Engines",
+  "ex.agents.h": "Arbeit, die nicht in einen Turn passt",
+  "ex.agents.p": "Tiefe Recherche-Bäume, Bulk-Läufe über tausende Datensätze, schnelle Entscheidungsmodelle, Räte — und persistente Agenten mit Zuhause, Journal und Zeitplan.",
+  "ex.connect.tag": "Clients &amp; Integrationen",
+  "ex.connect.h": "Ein Brain, viele Türen",
+  "ex.connect.p": "Web, Desktop, Terminal, Mobile, eine Browser-Erweiterung — und MCP in beide Richtungen, bewacht von einem echten OAuth-Server, damit andere Agenten mit deinen arbeiten können.",
+  "ex.trust.tag": "Sicherheit &amp; Self-Hosting",
+  "ex.trust.h": "Dein Server, deine Schlüssel",
+  "ex.trust.p": "Ende-zu-Ende-verschlüsselte Dokumente, Sandboxen auf jeder Maschine, die ein Agent anfasst, Guards vor gefährlichen Befehlen, Quoten — und nichts telefoniert nach Hause.",
+  "work.eyebrow": "Arbeit und Privat",
+  "work.h2": "Ein Ort für alles, woran du arbeitest.",
+  "work.p": "Beruflich oder privat — Vancetope hält beides, sauber getrennt in eigenen Tenants. Eine Fünf-Minuten-Frage oder ein Projekt über Wochen; etwas aus dem Web, ein Dokument zum Umbauen, Dateien direkt auf deiner Maschine. Bewusst offen: Was du sonst über ein Dutzend Apps verstreust, passt hier meist einfach rein.",
+  "kits.eyebrow": "Project Kits",
+  "kits.h2": "Ein Projekt startklar aufsetzen.",
+  "kits.p": "Ein Kit ist ein Git-Bundle aus Skills, Recipes, Tools und Settings. Installier eins, und ein Projekt kommt vorkonfiguriert — Denkmuster, Worker-Recipes, Tool-Packs, Defaults. Und Kits erben, also komponieren sie:",
+  "kits.plus": "+ bau dein eigenes",
+  "kits.note": "Das Spannende sind nicht die mitgelieferten — sondern dass ein Kit <em>einfach ein Git-Repo</em> ist. Zeig ein Projekt auf deins, und es ist ab der ersten Nachricht produktiv.",
+  "ai.eyebrow": "Der Beweis ist das Produkt",
+  "ai.h2": "Von Agenten geschrieben. <em>Mit Absicht.</em>",
+  "ai.p": "Jede Zeile von Vancetope ist AI-geschrieben — dirigiert, reviewt und geformt von einem Menschen. Das ist kein Geständnis, sondern der ganze Punkt: Vancetope ist das, was dabei herauskommt, wenn man über Monate <em>mit</em> Agenten arbeitet — ein großes, kohärentes System, das man laufen lassen, lesen und ändern kann. Tool und Beweis sind dasselbe.",
+  "closer.eyebrow": "Ehrlich gesagt",
+  "closer.h2": "Es ist ein persönliches Projekt.",
+  "closer.p1": "Ich habe Vancetope gebaut, um LLM-Agenten zu entwickeln und sie so zu formen, dass ich damit wirklich produktiv arbeiten kann. Über die Zeit ist alles reingewandert, was ich spannend fand — plus ein paar Dinge, von denen ich glaube, dass andere was davon haben.",
+  "closer.p2": "Kein Support-Vertrag, keine Roadmap-Versprechen — ein Projekt, kein Produkt. Der Quellcode ist öffentlich: lesen, ausprobieren, laufen lassen. Er ist source-available, kein klassisches Open Source, und wohin die Reise geht, halte ich mir offen.",
+  "fact.stack": "Stack",
+  "fact.clients": "Clients",
+  "fact.clients.v": "Web · macOS-Desktop · CLI · iOS &amp; Android · Browser-Erweiterung",
+  "fact.license": "Lizenz",
+  "fact.status": "Status",
+  "fact.status.v": "Beta · v0.5 · self-hosted"
+}
+</script>

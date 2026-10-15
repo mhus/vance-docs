@@ -1,0 +1,316 @@
+---
+title: Agents & engines
+layout: landing
+nav_order: 1.2
+description: "How work runs in Vancetope: a handful of engines where code drives the flow, many recipes on top, skills and guards to steer them — from a quick answer to bulk runs and persistent agents that work for days."
+permalink: /agents/
+---
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="hero.eyebrow">Agents &amp; engines</p>
+      <h1 data-i18n="hero.h1">Agents that work for days, <em>not just for a turn.</em></h1>
+      <p class="lede" data-i18n="hero.lede">A chat answers. Vancetope works: it breaks an assignment down, spawns workers, waits, checks, asks when it has to and carries on when you’re gone. The trick is that the model doesn’t drive the flow — an engine does, and the engine is code.</p>
+      <nav class="toc" aria-label="On this page">
+        <a href="#engines" data-i18n="toc.engines">Engines</a>
+        <a href="#bulk" data-i18n="toc.bulk">Bulk &amp; decisions</a>
+        <a href="#trillian" data-i18n="toc.trillian">Persistent agents</a>
+        <a href="#steer" data-i18n="toc.steer">Steering</a>
+        <a href="#auto" data-i18n="toc.auto">Runs by itself</a>
+        <a href="#memory" data-i18n="toc.memory">Memory</a>
+        <a href="#models" data-i18n="toc.models">Your models</a>
+      </nav>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="engines">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="eng.eyebrow">Engines</p>
+        <h2 data-i18n="eng.h2">A handful of engines, many recipes.</h2>
+        <p data-i18n="eng.p">An engine is a Java algorithm with a lifecycle: it decides when the model is called, which tools it gets and when the work is done. A recipe picks an engine and configures it — prompt, tools, model, skills. You spawn work by recipe name; a new kind of assignment is a new recipe, not new code.</p>
+      </div>
+      <div class="engines-wrap">
+        <div class="engines">
+          <div class="eng-group" data-i18n="g.talk">Conversation</div>
+          <a class="eng" href="{{ '/specs/arthur-engine' | relative_url }}"><span class="name">arthur</span><span class="role" data-i18n="role.arthur">reactive chat</span></a>
+          <a class="eng" href="{{ '/specs/eddie-engine' | relative_url }}"><span class="name">eddie</span><span class="role" data-i18n="role.eddie">your personal hub</span></a>
+          <a class="eng" href="{{ '/specs/zaphod-engine' | relative_url }}"><span class="name">zaphod</span><span class="role" data-i18n="role.zaphod">multi-head council</span></a>
+
+          <div class="eng-group" data-i18n="g.work">Workers</div>
+          <a class="eng" href="{{ '/specs/ford-engine' | relative_url }}"><span class="name">ford</span><span class="role" data-i18n="role.ford">fast worker</span></a>
+          <a class="eng" href="{{ '/specs/frankie-engine' | relative_url }}"><span class="name">frankie</span><span class="role" data-i18n="role.frankie">focused worker · coding</span></a>
+          <a class="eng" href="{{ '/specs/benjy-engine' | relative_url }}"><span class="name">benjy</span><span class="role" data-i18n="role.benjy">orchestration for small models</span></a>
+
+          <div class="eng-group" data-i18n="g.deep">Deep work</div>
+          <a class="eng" href="{{ '/specs/marvin-engine' | relative_url }}"><span class="name">marvin</span><span class="role" data-i18n="role.marvin">deep-think task tree</span></a>
+          <a class="eng" href="{{ '/specs/vogon-engine' | relative_url }}"><span class="name">vogon</span><span class="role" data-i18n="role.vogon">phases, gates, checkpoints</span></a>
+          <a class="eng" href="{{ '/specs/workflows' | relative_url }}"><span class="name">magrathea</span><span class="role" data-i18n="role.magrathea">workflow runtime</span></a>
+
+          <div class="eng-group" data-i18n="g.scale">Scale &amp; decisions</div>
+          <a class="eng" href="{{ '/specs/wowbagger-engine' | relative_url }}"><span class="name">wowbagger</span><span class="role" data-i18n="role.wowbagger">bulk records</span></a>
+          <a class="eng" href="{{ '/specs/zem-engine' | relative_url }}"><span class="name">zem</span><span class="role" data-i18n="role.zem">decision models</span></a>
+          <a class="eng" href="{{ '/specs/jeltz-engine' | relative_url }}"><span class="name">jeltz</span><span class="role" data-i18n="role.jeltz">schema-validated answer</span></a>
+
+          <div class="eng-group" data-i18n="g.more">Autonomy, review, authoring</div>
+          <a class="eng" href="{{ '/specs/trillian-engine' | relative_url }}"><span class="name">trillian</span><span class="role" data-i18n="role.trillian">persistent agent</span></a>
+          <div class="eng"><span class="name">wonko</span><span class="role" data-i18n="role.wonko">review loop</span></div>
+          <a class="eng" href="{{ '/specs/slartibartfast-engine' | relative_url }}"><span class="name">slartibartfast</span><span class="role" data-i18n="role.slart">plan &amp; recipe architect</span></a>
+
+          <div class="eng-group" data-i18n="g.sys">Under the floor</div>
+          <a class="eng" href="{{ '/specs/hactar-engine' | relative_url }}"><span class="name">hactar</span><span class="role" data-i18n="role.hactar">script executor</span></a>
+          <a class="eng" href="{{ '/specs/agrajag-engine' | relative_url }}"><span class="name">agrajag</span><span class="role" data-i18n="role.agrajag">tool health diagnosis</span></a>
+          <a class="eng" href="{{ '/specs/nutrimat-engine' | relative_url }}"><span class="name">nutrimat</span><span class="role" data-i18n="role.nutrimat">loop lab</span></a>
+        </div>
+        <div class="engines-foot" data-i18n="eng.foot">+ services &nbsp;·&nbsp; <span class="live">zarniwoop</span> research &nbsp;·&nbsp; <span class="live">fenchurch</span> images &nbsp;·&nbsp; <span class="live">hotblack</span> audio &nbsp;·&nbsp; <span class="live">fook</span> triage &nbsp;·&nbsp; <span class="live">ursa</span> triggers &nbsp;·&nbsp; <span class="live">light-llm</span> single shots</div>
+      </div>
+      <p class="apps-more"><a href="{{ '/recipes' | relative_url }}" style="color:inherit" data-i18n="eng.recipes">Browse the bundled recipes →</a></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="bulk">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-i18n="bulk.eyebrow">Bulk &amp; decisions · new in 0.5</p>
+        <h2 data-i18n="bulk.h2">Thousands of records, one steady run.</h2>
+        <p data-i18n="bulk.p1"><b>Wowbagger</b> is for the work no chat can hold: classify every ticket, extract fields from every contract, rate every lead. A Ford agent steers; a mechanical worker pool does the records. Each published chunk is a commit, so a run survives a pod switch and resumes where it stopped.</p>
+        <ul>
+          <li data-i18n="bulk.l1"><b>Preflight</b> with <code>wowbagger_check</code> before a single token is spent.</li>
+          <li data-i18n="bulk.l2"><b>Wakeups</b> for progress, failure cooldown and heartbeat — the agent looks in, not over every record.</li>
+          <li data-i18n="bulk.l3"><b>Pluggable workers</b>: a light LLM call, a script, or a Zem decision — each behind a model gate.</li>
+          <li data-i18n="bulk.l4"><b>A cost report</b> at the end of every run.</li>
+        </ul>
+        <p data-i18n="bulk.p2" style="margin-top:14px"><b>Zem</b> brings decision models — System One for agents. A typed question goes in (yes/no, one of N, a score), a calibrated probability comes out: fast, cheap, no prose. The bundled <code>command-safety</code> recipe asks “is this shell command dangerous?” before it runs.</p>
+      </div>
+<pre class="snippet"><span class="c">wowbagger · support-triage · run #w19c</span>
+check     4,812 records · schema ok   <span class="g">✓</span>
+pool      8 workers  <span class="a">zem</span> · <span class="a">light-llm</span>
+chunk     ██████████████░░░░░  31 / 49
+wake      progress · 3 retried · 0 lost
+publish   chunk 31 → <span class="a">triage/out/</span>
+…
+done      <span class="g">4,812 tagged</span>
+cost      412k in · 38k out · 1 report</pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="trillian">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="tr.eyebrow">Persistent agents</p>
+        <h2 data-i18n="tr.h2">An agent with a home, a journal and a schedule.</h2>
+        <p data-i18n="tr.p">Trillian isn’t a session you open — it’s an agent that lives in Vancetope. It has its own identity and hub, wakes on its own schedule, keeps a journal and reflects on it. When it needs you, it parks the question in your inbox and waits instead of guessing.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/trillian-engine' | relative_url }}"><span class="kicker">identity</span><h3 data-i18n="tr.a.h">Its own account</h3><p data-i18n="tr.a.p">A headless service account, a home project, a model gate — the agent works with exactly the rights you gave it.</p></a>
+        <a class="feat" href="{{ '/specs/trillian-nature-adam' | relative_url }}"><span class="kicker">natures</span><h3 data-i18n="tr.b.h">Natures</h3><p data-i18n="tr.b.p">A nature decides what a wakeup is worth. Several conversation heads let one agent hold many conversations at once.</p></a>
+        <a class="feat" href="{{ '/specs/trillian-exposure' | relative_url }}"><span class="kicker">exposure</span><h3 data-i18n="tr.c.h">A door for other agents</h3><p data-i18n="tr.c.p">Claude Code, Cursor or another Vancetope can talk to a Trillian over the agents MCP — gated, long-polled, closed when idle.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="steer">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="st.eyebrow">Steering</p>
+        <h2 data-i18n="st.h2">You give the direction. The flow stays visible.</h2>
+        <p data-i18n="st.p">Everything an agent is told lives in documents you can read and change — and you can reach into a running process at any time.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/recipes' | relative_url }}"><span class="kicker">recipes</span><h3>Recipes</h3><p data-i18n="s.recipes">Engine + prompt + tools + model in one YAML. Picked from a searchable, categorised picker — or routed semantically from what you asked.</p></a>
+        <a class="feat" href="{{ '/specs/skills' | relative_url }}"><span class="kicker">skills</span><h3>Skills</h3><p data-i18n="s.skills">Capabilities that come and go: activation levels, a turn lifecycle that clears itself, and skills that travel with delegated workers.</p></a>
+        <a class="feat" href="{{ '/specs/prompts-and-manuals' | relative_url }}"><span class="kicker">manuals</span><h3 data-i18n="s.manuals.h">Manuals</h3><p data-i18n="s.manuals">Detail the model pulls on demand instead of carrying in every prompt — short prompts, deep knowledge.</p></a>
+        <a class="feat" href="{{ '/specs/engine-commands' | relative_url }}"><span class="kicker">//verb</span><h3 data-i18n="s.cmd.h">Engine commands</h3><p data-i18n="s.cmd">A control plane next to the conversation: switch the model, toggle thinking, set a guard, read the scratchpad — mid-run.</p></a>
+        <a class="feat" href="{{ '/specs/plan-mode' | relative_url }}"><span class="kicker">plan</span><h3 data-i18n="s.plan.h">Plan mode</h3><p data-i18n="s.plan">Explore and plan first, then switch explicitly to doing — with a todo list you can watch update live.</p></a>
+        <a class="feat" href="{{ '/specs/shooty' | relative_url }}"><span class="kicker">shooty</span><h3 data-i18n="s.guard.h">Guards</h3><p data-i18n="s.guard">Scripts at fixed points: judge a result before the agent stops, rewrite a turn before it starts, stop a dangerous tool call.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="auto">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="au.eyebrow">Runs by itself</p>
+        <h2 data-i18n="au.h2">Not only when you’re there to chat.</h2>
+        <p data-i18n="au.p">Three triggers fire the same things — a recipe, a script or a workflow — and each trigger is just a document.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/scheduler' | relative_url }}"><span class="kicker">scheduler</span><h3 data-i18n="a.sched.h">On a timer</h3><p data-i18n="a.sched">Cron-style schedules, now with their own document kind, form view and template.</p></a>
+        <a class="feat" href="{{ '/specs/ursahooks' | relative_url }}"><span class="kicker">hooks</span><h3 data-i18n="a.hooks.h">On an event inside</h3><p data-i18n="a.hooks">A document changed, a process ended, a session started — react to it.</p></a>
+        <a class="feat" href="{{ '/specs/events' | relative_url }}"><span class="kicker">events</span><h3 data-i18n="a.events.h">On a call from outside</h3><p data-i18n="a.events">Webhooks from CI, IoT or anything that can send HTTP.</p></a>
+        <a class="feat" href="{{ '/specs/workflows' | relative_url }}"><span class="kicker">workflows</span><h3 data-i18n="a.wf.h">Workflows</h3><p data-i18n="a.wf">Flows of agent tasks, scripts and gates as a document, with a start button and a flow renderer.</p></a>
+        <a class="feat" href="{{ '/specs/runs-view' | relative_url }}"><span class="kicker">runs</span><h3 data-i18n="a.runs.h">One run view</h3><p data-i18n="a.runs">Every running thing — workflows, plans, compose runs — in one place, with pause, resume and stop.</p></a>
+        <a class="feat" href="{{ '/specs/process-delegate' | relative_url }}"><span class="kicker">delegate</span><h3 data-i18n="a.del.h">Delegation</h3><p data-i18n="a.del">Agents spawn workers, wait for them, and get woken when they finish — or when they fail.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="memory">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="me.eyebrow">Memory</p>
+        <h2 data-i18n="me.h2">Work doesn’t vanish when a session ends.</h2>
+      </div>
+      <div class="feats">
+        <a class="feat" href="{{ '/specs/memory-compaction' | relative_url }}"><span class="kicker">compaction</span><h3 data-i18n="me.c.h">Summaries that stay retrievable</h3><p data-i18n="me.c">Long conversations compact into a sliding window of summaries; nothing is thrown away, important bits can be pinned.</p></a>
+        <a class="feat" href="{{ '/specs/rag' | relative_url }}"><span class="kicker">recall</span><h3 data-i18n="me.r.h">Scope-aware recall</h3><p data-i18n="me.r">Retrieval walks the cascade, so a process draws on what its project and tenant already know.</p></a>
+        <a class="feat" href="{{ '/specs/knowledge-graph' | relative_url }}"><span class="kicker">graph</span><h3 data-i18n="me.g.h">Knowledge graph</h3><p data-i18n="me.g">Relations and insights between documents, linked in the background.</p></a>
+        <a class="feat" href="{{ '/specs/prompt-caching' | relative_url }}"><span class="kicker">caching</span><h3 data-i18n="me.p.h">Prompt caching <span class="badge new">new</span></h3><p data-i18n="me.p">Measured across providers, with a history breakpoint that keeps long conversations cheap.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="models">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-i18n="mo.eyebrow">Your models</p>
+        <h2 data-i18n="mo.h2">Bring your own model. Any of them.</h2>
+        <p data-i18n="mo.p1">Vancetope ships no model and sells no tokens. Point it at a hosted API or a model on your own machine — any OpenAI-compatible endpoint works — and give each job the model it deserves.</p>
+        <ul>
+          <li data-i18n="mo.l1"><b>Aliases</b> like <code>default:chat</code> or a fast tier, resolved per tenant, project or recipe.</li>
+          <li data-i18n="mo.l2"><b>Model discovery</b> with endpoint pricing, and quotas from global down to user.</li>
+          <li data-i18n="mo.l3"><b>Small models welcome:</b> Benjy and Wowbagger are built so that a local model can carry real work.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/benchmarks/' | relative_url }}" data-i18n="mo.more">See the benchmark matrix →</a></p>
+      </div>
+<pre class="snippet"><span class="c"># example — one alias set, a model per job</span>
+default:chat      → <span class="a">glm-5.3</span>        <span class="c">hosted</span>
+default:fast      → <span class="a">gemini-3-flash</span> <span class="c">hosted</span>
+benjy:worker      → <span class="a">gemma-4</span>        <span class="c">local · ollama</span>
+command-safety    → <span class="a">jev</span>            <span class="c">decision model</span>
+wowbagger:worker  → <span class="a">qwen3.8</span>        <span class="c">cortecs</span></pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap next">
+      <a href="{{ '/apps/' | relative_url }}"><span class="k" data-i18n="next.back">← Back</span><span class="t" data-i18n="next.apps">Apps &amp; documents</span></a>
+      <a href="{{ '/connect/' | relative_url }}"><span class="k" data-i18n="next.next">Next →</span><span class="t" data-i18n="next.connect">Clients &amp; integrations</span></a>
+    </div>
+  </section>
+
+<script type="application/json" id="i18n-de">
+{
+  "hero.eyebrow": "Agenten &amp; Engines",
+  "hero.h1": "Agenten, die tagelang arbeiten — <em>nicht nur einen Turn.</em>",
+  "hero.lede": "Ein Chat antwortet. Vancetope arbeitet: Es zerlegt einen Auftrag, startet Worker, wartet, prüft, fragt wenn nötig und macht weiter, wenn du weg bist. Der Trick: Nicht das Modell steuert den Ablauf, sondern eine Engine — und die Engine ist Code.",
+  "toc.engines": "Engines",
+  "toc.bulk": "Bulk &amp; Entscheidungen",
+  "toc.trillian": "Persistente Agenten",
+  "toc.steer": "Steuern",
+  "toc.auto": "Läuft von selbst",
+  "toc.memory": "Gedächtnis",
+  "toc.models": "Deine Modelle",
+  "eng.eyebrow": "Engines",
+  "eng.h2": "Eine Handvoll Engines, viele Recipes.",
+  "eng.p": "Eine Engine ist ein Java-Algorithmus mit Lifecycle: Sie entscheidet, wann das Modell gefragt wird, welche Tools es bekommt und wann die Arbeit fertig ist. Ein Recipe wählt eine Engine und konfiguriert sie — Prompt, Tools, Modell, Skills. Gestartet wird per Recipe-Name; eine neue Art Auftrag ist ein neues Recipe, kein neuer Code.",
+  "g.talk": "Gespräch",
+  "g.work": "Worker",
+  "g.deep": "Tiefe Arbeit",
+  "g.scale": "Masse &amp; Entscheidungen",
+  "g.more": "Autonomie, Review, Authoring",
+  "g.sys": "Unter dem Boden",
+  "role.arthur": "reaktiver Chat",
+  "role.eddie": "dein persönlicher Hub",
+  "role.zaphod": "Multi-Head-Rat",
+  "role.ford": "schneller Worker",
+  "role.frankie": "Focused-Worker · Coding",
+  "role.benjy": "Orchestrierung für kleine Modelle",
+  "role.marvin": "Deep-Think-Aufgabenbaum",
+  "role.vogon": "Phasen, Gates, Checkpoints",
+  "role.magrathea": "Workflow-Runtime",
+  "role.wowbagger": "Massen-Datensätze",
+  "role.zem": "Entscheidungsmodelle",
+  "role.jeltz": "schema-validierte Antwort",
+  "role.trillian": "persistenter Agent",
+  "role.wonko": "Review-Schleife",
+  "role.slart": "Plan- &amp; Recipe-Architekt",
+  "role.hactar": "Skript-Executor",
+  "role.agrajag": "Tool-Gesundheitsdiagnose",
+  "role.nutrimat": "Loop-Labor",
+  "eng.foot": "+ Dienste &nbsp;·&nbsp; <span class=\"live\">zarniwoop</span> Recherche &nbsp;·&nbsp; <span class=\"live\">fenchurch</span> Bilder &nbsp;·&nbsp; <span class=\"live\">hotblack</span> Audio &nbsp;·&nbsp; <span class=\"live\">fook</span> Triage &nbsp;·&nbsp; <span class=\"live\">ursa</span> Trigger &nbsp;·&nbsp; <span class=\"live\">light-llm</span> Einzelaufrufe",
+  "eng.recipes": "Mitgelieferte Recipes ansehen →",
+  "bulk.eyebrow": "Bulk &amp; Entscheidungen · neu in 0.5",
+  "bulk.h2": "Tausende Datensätze, ein ruhiger Lauf.",
+  "bulk.p1": "<b>Wowbagger</b> ist für die Arbeit, die kein Chat fassen kann: jedes Ticket klassifizieren, aus jedem Vertrag Felder ziehen, jeden Lead bewerten. Ein Ford-Agent steuert, ein mechanischer Worker-Pool erledigt die Datensätze. Jeder veröffentlichte Chunk ist ein Commit — ein Lauf übersteht einen Pod-Wechsel und macht dort weiter, wo er stand.",
+  "bulk.l1": "<b>Vorab-Check</b> mit <code>wowbagger_check</code>, bevor ein einziges Token ausgegeben ist.",
+  "bulk.l2": "<b>Wakeups</b> für Fortschritt, Fehler-Cooldown und Heartbeat — der Agent schaut rein, nicht über jeden Datensatz.",
+  "bulk.l3": "<b>Austauschbare Worker</b>: ein Light-LLM-Call, ein Skript oder eine Zem-Entscheidung — jeder hinter einem Modell-Gate.",
+  "bulk.l4": "<b>Ein Kostenbericht</b> am Ende jedes Laufs.",
+  "bulk.p2": "<b>Zem</b> bringt Entscheidungsmodelle — System One für Agenten. Eine typisierte Frage rein (ja/nein, eins aus N, ein Score), eine kalibrierte Wahrscheinlichkeit raus: schnell, billig, ohne Prosa. Das mitgelieferte <code>command-safety</code>-Recipe fragt „ist dieser Shell-Befehl gefährlich?“, bevor er läuft.",
+  "tr.eyebrow": "Persistente Agenten",
+  "tr.h2": "Ein Agent mit Zuhause, Journal und Zeitplan.",
+  "tr.p": "Trillian ist keine Session, die du öffnest — es ist ein Agent, der in Vancetope wohnt. Mit eigener Identität und eigenem Hub, wacht nach eigenem Zeitplan auf, führt ein Journal und reflektiert darüber. Braucht er dich, legt er die Frage in deine Inbox und wartet, statt zu raten.",
+  "tr.a.h": "Ein eigener Account",
+  "tr.a.p": "Ein Headless-Service-Account, ein Home-Projekt, ein Modell-Gate — der Agent arbeitet mit genau den Rechten, die du ihm gibst.",
+  "tr.b.h": "Natures",
+  "tr.b.p": "Eine Nature entscheidet, was ein Wakeup wert ist. Mehrere Gesprächsköpfe lassen einen Agenten viele Gespräche gleichzeitig führen.",
+  "tr.c.h": "Eine Tür für andere Agenten",
+  "tr.c.p": "Claude Code, Cursor oder ein anderes Vancetope können über das Agents-MCP mit einem Trillian sprechen — mit Gate, Long-Poll und Schließen bei Leerlauf.",
+  "st.eyebrow": "Steuern",
+  "st.h2": "Du gibst die Richtung vor. Der Ablauf bleibt sichtbar.",
+  "st.p": "Alles, was einem Agenten gesagt wird, steht in Dokumenten, die du lesen und ändern kannst — und du kannst jederzeit in einen laufenden Prozess hineingreifen.",
+  "s.recipes": "Engine + Prompt + Tools + Modell in einem YAML. Aus einem durchsuchbaren, kategorisierten Picker gewählt — oder semantisch aus deiner Frage geroutet.",
+  "s.skills": "Fähigkeiten, die kommen und gehen: Aktivierungsstufen, ein Turn-Lifecycle, der sich selbst aufräumt, und Skills, die mit delegierten Workern mitreisen.",
+  "s.manuals.h": "Manuals",
+  "s.manuals": "Details, die sich das Modell bei Bedarf holt, statt sie in jedem Prompt mitzuschleppen — kurze Prompts, tiefes Wissen.",
+  "s.cmd.h": "Engine-Commands",
+  "s.cmd": "Eine Steuerebene neben dem Gespräch: Modell wechseln, Thinking umschalten, einen Guard setzen, das Scratchpad lesen — mitten im Lauf.",
+  "s.plan.h": "Plan-Mode",
+  "s.plan": "Erst erkunden und planen, dann ausdrücklich ins Tun wechseln — mit einer Todo-Liste, die du live mitverfolgst.",
+  "s.guard.h": "Guards",
+  "s.guard": "Skripte an festen Punkten: ein Ergebnis bewerten, bevor der Agent aufhört, einen Turn umschreiben, bevor er beginnt, einen gefährlichen Tool-Call stoppen.",
+  "au.eyebrow": "Läuft von selbst",
+  "au.h2": "Nicht nur, wenn du zum Chatten da bist.",
+  "au.p": "Drei Trigger feuern dieselben Dinge — ein Recipe, ein Skript oder einen Workflow — und jeder Trigger ist einfach ein Dokument.",
+  "a.sched.h": "Nach Zeitplan",
+  "a.sched": "Cron-artige Zeitpläne, jetzt mit eigener Dokument-Art, Formularansicht und Vorlage.",
+  "a.hooks.h": "Auf ein Ereignis drinnen",
+  "a.hooks": "Ein Dokument hat sich geändert, ein Prozess ist fertig, eine Session startet — darauf reagieren.",
+  "a.events.h": "Auf einen Aufruf von draußen",
+  "a.events": "Webhooks aus CI, IoT oder allem, was HTTP senden kann.",
+  "a.wf.h": "Workflows",
+  "a.wf": "Abläufe aus Agenten-Aufgaben, Skripten und Gates als Dokument, mit Start-Button und Ablauf-Darstellung.",
+  "a.runs.h": "Eine Run-Ansicht",
+  "a.runs": "Alles, was läuft — Workflows, Pläne, Compose-Läufe — an einem Ort, mit Pause, Fortsetzen und Stopp.",
+  "a.del.h": "Delegation",
+  "a.del": "Agenten starten Worker, warten auf sie und werden geweckt, wenn sie fertig sind — oder scheitern.",
+  "me.eyebrow": "Gedächtnis",
+  "me.h2": "Arbeit verschwindet nicht am Session-Ende.",
+  "me.c.h": "Zusammenfassungen, die abrufbar bleiben",
+  "me.c": "Lange Gespräche verdichten sich in ein gleitendes Fenster aus Zusammenfassungen; nichts geht verloren, Wichtiges lässt sich anpinnen.",
+  "me.r.h": "Scope-bewusster Abruf",
+  "me.r": "Der Abruf läuft die Kaskade entlang — ein Prozess nutzt, was Projekt und Tenant schon wissen.",
+  "me.g.h": "Knowledge Graph",
+  "me.g": "Beziehungen und Einsichten zwischen Dokumenten, im Hintergrund verknüpft.",
+  "me.p.h": "Prompt-Caching <span class=\"badge new\">neu</span>",
+  "me.p": "Provider-übergreifend gemessen, mit einem History-Breakpoint, der lange Gespräche billig hält.",
+  "mo.eyebrow": "Deine Modelle",
+  "mo.h2": "Bring dein eigenes Modell mit. Egal welches.",
+  "mo.p1": "Vancetope liefert kein Modell und verkauft keine Tokens. Zeig es auf eine gehostete API oder ein Modell auf deiner eigenen Maschine — jeder OpenAI-kompatible Endpoint geht — und gib jeder Aufgabe das Modell, das sie verdient.",
+  "mo.l1": "<b>Aliase</b> wie <code>default:chat</code> oder eine schnelle Stufe, aufgelöst pro Tenant, Projekt oder Recipe.",
+  "mo.l2": "<b>Modell-Discovery</b> mit Endpoint-Preisen, und Quoten von global bis zum User.",
+  "mo.l3": "<b>Kleine Modelle willkommen:</b> Benjy und Wowbagger sind so gebaut, dass ein lokales Modell echte Arbeit tragen kann.",
+  "mo.more": "Zur Benchmark-Matrix →",
+  "next.back": "← Zurück",
+  "next.apps": "Apps &amp; Dokumente",
+  "next.next": "Weiter →",
+  "next.connect": "Clients &amp; Integrationen"
+}
+</script>

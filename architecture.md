@@ -32,7 +32,13 @@ thing, but distinct aspects of the interaction:
 |---|---|---|
 | `vance-foot` | Picocli + JLine 3 + Lanterna | Terminal client with local tools |
 | `vance-face` | Vue 3 + Vite + Tailwind | Web-UI with live documents (Cortex) |
-| `vance-facelift` | Capacitor + WKWebView | Mobile wrapper around the deployed Web-UI |
+| `facelift-bridge` | Capacitor | iOS/Android wrapper around the deployed Web-UI, one isolated WebView per account |
+| `facelift-desktop` | Electron | macOS desktop app — agent tools on local files behind a sandbox, MCP tool packs |
+| `vance-capture` | WebExtension | Browser extension (Chrome, Firefox, Safari): save links, import the displayed page |
+
+Other agents reach the Brain over MCP — a tenant door, a project door and an
+agents door, all behind the built-in OAuth 2.1 server. Overview:
+[Clients & integrations](/connect/).
 
 ## Tech stack
 
@@ -40,7 +46,8 @@ thing, but distinct aspects of the interaction:
 - **MongoDB** — persistence (think-processes, documents, settings, memory)
 - **langchain4j / langgraph4j** — LLM integration and orchestration
 - **TypeScript + Vue 3 + Vite** — Web-UI
-- **Capacitor + WKWebView** — mobile (iOS via `vance-facelift`)
+- **Capacitor** — mobile (iOS/Android via `facelift-bridge`)
+- **Electron** — macOS desktop app (`facelift-desktop`)
 - **Picocli + JLine 3 + Lanterna** — CLI
 
 ## Triggers (Ursa)

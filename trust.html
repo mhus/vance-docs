@@ -1,0 +1,221 @@
+---
+title: Security & self-hosting
+layout: landing
+nav_order: 1.4
+description: "Your server, your keys: self-hosted with Docker, end-to-end encrypted documents, sandboxes and guards on every machine an agent touches, narrow credentials, quotas — and nothing phoning home."
+permalink: /trust/
+---
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="hero.eyebrow">Security &amp; self-hosting</p>
+      <h1 data-i18n="hero.h1">Your server. Your keys. <em>Your rules for the agents.</em></h1>
+      <p class="lede" data-i18n="hero.lede">Agents that work for days need room — and fences. Vancetope runs on your own machine or cluster, holds no account with anyone, and puts a gate wherever an agent could do real damage: on your files, your shell, your secrets and your budget.</p>
+      <nav class="toc" aria-label="On this page">
+        <a href="#selfhost" data-i18n="toc.selfhost">Self-hosted</a>
+        <a href="#encryption" data-i18n="toc.encryption">Encryption</a>
+        <a href="#fences" data-i18n="toc.fences">Sandboxes &amp; guards</a>
+        <a href="#access" data-i18n="toc.access">Access &amp; secrets</a>
+        <a href="#limits" data-i18n="toc.limits">Limits</a>
+      </nav>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="selfhost">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-i18n="sh.eyebrow">Self-hosted</p>
+        <h2 data-i18n="sh.h2">Runs where you put it. Talks to whom you tell it.</h2>
+        <p data-i18n="sh.p1">Two commands on a machine with Docker: one installs and starts the stack — MongoDB, Brain, web UI — the other sets up your tenant, user and model. The wizard generates strong secrets instead of shipping defaults, and pins the image version, so an update happens when you decide.</p>
+        <ul>
+          <li data-i18n="sh.l1"><b>No phoning home.</b> No telemetry, no licence server, no account with us. The apps answer “Data not collected” in the stores — because it’s true.</li>
+          <li data-i18n="sh.l2"><b>Your model, your contract.</b> Vancetope ships no model; prompts go only to the endpoint you configured — or never leave the machine with a local one.</li>
+          <li data-i18n="sh.l3"><b>Agent-installable.</b> Both setup wizards run headless from a YAML config, fail-closed, with a dry run.</li>
+          <li data-i18n="sh.l4"><b>Source available.</b> BSL 1.1, turning into AGPLv3 on 2029-06-23. Read what runs.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/getting-started' | relative_url }}" data-i18n="sh.more">Get started →</a> &nbsp; <a href="{{ '/howtos/upgrading/' | relative_url }}" data-i18n="sh.more2">Upgrading →</a></p>
+      </div>
+<pre class="snippet"><span class="c">$</span> curl -fsSL https://www.vancetope.com/install.sh | bash
+<span class="c">  wizard    port · local or external access</span>
+<span class="c">  secrets   </span><span class="g">generated</span><span class="c"> · encryption · internal · mongo</span>
+<span class="c">  compose   ~/.vancetope/docker-compose.yml</span>
+<span class="c">  image     </span><span class="a">IMAGE_TAG=0.5.0</span><span class="c">  (pinned)</span>
+<span class="c">$</span> curl -fsSL https://www.vancetope.com/setup.sh | bash
+<span class="c">  tenant    acme · user ada · provider </span><span class="a">your choice</span>
+  <span class="g">✓ open http://localhost:9999</span></pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="encryption">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-i18n="en.eyebrow">Encryption</p>
+        <h2 data-i18n="en.h2">Documents the server can’t read.</h2>
+        <p data-i18n="en.p1">Some things shouldn’t be readable even by the machine that stores them. Encrypt a document with <a href="https://age-encryption.org">age</a> and the server keeps only ciphertext — the key stays with you, as a passphrase or an identity file.</p>
+        <ul>
+          <li data-i18n="en.l1"><b>Decrypt locally</b> in Cortex, in the terminal view or the apps — never on the server.</li>
+          <li data-i18n="en.l2"><b>Agents respect it:</b> tools refuse to treat ciphertext as text, and <code>doc_encrypt</code> checks the write gate before it locks anything away.</li>
+          <li data-i18n="en.l3"><b>Several recipients</b> per document, standard age format — readable with the plain <code>age</code> CLI, too.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/specs/document-encryption' | relative_url }}" data-i18n="en.more">Encryption spec →</a></p>
+      </div>
+<pre class="snippet"><span class="c"># what the server stores</span>
+-----BEGIN AGE ENCRYPTED FILE-----
+YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgy
+NTUxOSBQcmV2bGF4c0x1Z1dQb2N0R2ZqVEZ0
+…
+-----END AGE ENCRYPTED FILE-----
+
+<span class="c"># what you see after unlocking</span>
+<span class="g">private/keys.md</span> · <span class="a">2 recipients</span> · 🔓 local only</pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="fences">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="fe.eyebrow">Sandboxes &amp; guards</p>
+        <h2 data-i18n="fe.h2">A fence wherever an agent can act.</h2>
+        <p data-i18n="fe.p">An agent that can run commands is only as safe as the gate in front of them. Vancetope has one on every surface — and a second opinion before the dangerous ones.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/foot-sandbox' | relative_url }}"><span class="kicker">client sandbox</span><h3 data-i18n="f.sb.h">Deny, allow, ask</h3><p data-i18n="f.sb.p">On your laptop — terminal or desktop app — every file and exec call goes through a policy with a default-deny floor. Unknown means ask.</p></a>
+        <a class="feat" href="{{ '/specs/desktop-agent-tools' | relative_url }}"><span class="kicker">desktop</span><h3 data-i18n="f.dk.h">Confined &amp; switchable</h3><p data-i18n="f.dk.p">Agent tools in the desktop app stay inside a workdir and sit behind a per-account master switch.</p></a>
+        <a class="feat" href="{{ '/specs/work-target' | relative_url }}"><span class="kicker">server workspace</span><h3 data-i18n="f.ws.h">Confined on the server, too</h3><p data-i18n="f.ws.p">Server-side file and exec tools are confined to the process workspace; subprocesses get a sealed environment and their own per-scope <code>HOME</code>.</p></a>
+        <a class="feat" href="{{ '/specs/shooty' | relative_url }}"><span class="kicker">shooty</span><h3 data-i18n="f.g.h">Guards</h3><p data-i18n="f.g.p">Scripts at fixed points of a run — including a tool point that can stop an <code>exec_run</code> before it happens.</p></a>
+        <a class="feat" href="{{ '/specs/zem-engine' | relative_url }}"><span class="kicker">command-safety</span><h3 data-i18n="f.z.h">A second opinion</h3><p data-i18n="f.z.p">A decision model asks “is this command dangerous?” in milliseconds — cheap enough to ask every time.</p></a>
+        <a class="feat" href="{{ '/specs/bistromath-system' | relative_url }}"><span class="kicker">app governance</span><h3 data-i18n="f.ap.h">Apps need approval</h3><p data-i18n="f.ap.p">Apps an agent builds run in a null-origin sandbox and are forbidden by default — each asks for approval through the inbox.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="access">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="ac.eyebrow">Access &amp; secrets</p>
+        <h2 data-i18n="ac.h2">Narrow by default.</h2>
+        <p data-i18n="ac.p">People, agents and foreign tools each get exactly what they need — and secrets stay out of the model’s reach.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/permission-system' | relative_url }}"><span class="kicker">permissions</span><h3 data-i18n="a.perm.h">One permission gate</h3><p data-i18n="a.perm.p">Every check goes through one resolver interface; the bundled provider is simple, and it can be swapped. Without a provider, nothing boots.</p></a>
+        <a class="feat" href="{{ '/specs/oauth-server' | relative_url }}"><span class="kicker">oauth 2.1</span><h3 data-i18n="a.oauth.h">OAuth for the doors</h3><p data-i18n="a.oauth.p">Consent, rotating refresh tokens and replay revocation for everything that comes in over MCP.</p></a>
+        <a class="feat" href="{{ '/specs/integration-tokens' | relative_url }}"><span class="kicker">tokens</span><h3 data-i18n="a.tok.h">Pinned tokens</h3><p data-i18n="a.tok.p">Integration tokens are narrowed to a profile and pinned to a project — intersection, never union.</p></a>
+        <a class="feat" href="{{ '/specs/settings-system' | relative_url }}"><span class="kicker">secrets</span><h3 data-i18n="a.sec.h">Invisible to agents</h3><p data-i18n="a.sec.p">Password settings are encrypted at rest and agent-invisible in both directions; hidden settings resolve for scripts but never show up in a prompt.</p></a>
+        <a class="feat" href="{{ '/specs/vault-access' | relative_url }}"><span class="kicker">vault</span><h3 data-i18n="a.vault.h">Vault references</h3><p data-i18n="a.vault.p">Reference a secret instead of copying it — from settings or an external vault like Infisical.</p></a>
+        <a class="feat" href="{{ '/specs/password-security' | relative_url }}"><span class="kicker">login</span><h3 data-i18n="a.pw.h">Sane passwords</h3><p data-i18n="a.pw.p">A NIST-style policy, BCrypt, and a brute-force lockout — no weak defaults to forget changing.</p></a>
+        <a class="feat" href="{{ '/specs/document-lock' | relative_url }}"><span class="kicker">locks</span><h3 data-i18n="a.lock.h">Hands off</h3><p data-i18n="a.lock.p">Lock a document against the AI, against people, or against kit updates — respected by every surface.</p></a>
+        <a class="feat" href="{{ '/specs/audit-system' | relative_url }}"><span class="kicker">audit</span><h3 data-i18n="a.audit.h">Traceable</h3><p data-i18n="a.audit.p">Security-relevant events run through an audit pipeline into the consumers you configure.</p></a>
+        <a class="feat" href="{{ '/specs/architektur-scopes-clients' | relative_url }}"><span class="kicker">tenants</span><h3 data-i18n="a.ten.h">Kept apart</h3><p data-i18n="a.ten.p">Tenants are separate worlds — work and personal on one server, without leaking into each other.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="limits">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="li.eyebrow">Limits</p>
+        <h2 data-i18n="li.h2">An agent that runs for days shouldn’t run up the bill.</h2>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/lease-system' | relative_url }}"><span class="kicker">leases</span><h3 data-i18n="l.lease.h">Resource leases <span class="badge new">new</span></h3><p data-i18n="l.lease.p">A quota funnel from global to tenant, project and user — defined as config documents, checked at the moment of use.</p></a>
+        <a class="feat" href="{{ '/specs/llm-resource-management' | relative_url }}"><span class="kicker">quotas</span><h3 data-i18n="l.quota.h">Token quotas &amp; usage</h3><p data-i18n="l.quota.p">Per-call accounting with prices and cache tokens, and usage reports per scope.</p></a>
+        <a class="feat" href="{{ '/specs/wowbagger-engine' | relative_url }}"><span class="kicker">model gates</span><h3 data-i18n="l.gate.h">Model gates</h3><p data-i18n="l.gate.p">Bulk and persistent agents may only use the models you allowed — fail-closed.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap next">
+      <a href="{{ '/connect/' | relative_url }}"><span class="k" data-i18n="next.back">← Back</span><span class="t" data-i18n="next.connect">Clients &amp; integrations</span></a>
+      <a href="{{ '/getting-started' | relative_url }}"><span class="k" data-i18n="next.next">Try it →</span><span class="t" data-i18n="next.start">Get started</span></a>
+    </div>
+  </section>
+
+<script type="application/json" id="i18n-de">
+{
+  "hero.eyebrow": "Sicherheit &amp; Self-Hosting",
+  "hero.h1": "Dein Server. Deine Schlüssel. <em>Deine Regeln für die Agenten.</em>",
+  "hero.lede": "Agenten, die tagelang arbeiten, brauchen Raum — und Zäune. Vancetope läuft auf deiner eigenen Maschine oder deinem Cluster, hat bei niemandem einen Account und setzt ein Gate überall dorthin, wo ein Agent echten Schaden anrichten könnte: an deine Dateien, deine Shell, deine Secrets und dein Budget.",
+  "toc.selfhost": "Self-hosted",
+  "toc.encryption": "Verschlüsselung",
+  "toc.fences": "Sandboxen &amp; Guards",
+  "toc.access": "Zugriff &amp; Secrets",
+  "toc.limits": "Grenzen",
+  "sh.eyebrow": "Self-hosted",
+  "sh.h2": "Läuft, wo du es hinstellst. Spricht mit wem du sagst.",
+  "sh.p1": "Zwei Befehle auf einer Maschine mit Docker: Einer installiert und startet den Stack — MongoDB, Brain, Web-UI —, der andere richtet Tenant, User und Modell ein. Der Wizard erzeugt starke Secrets statt Defaults mitzuliefern und pinnt die Image-Version, damit ein Update dann passiert, wenn du es entscheidest.",
+  "sh.l1": "<b>Kein Nach-Hause-Telefonieren.</b> Keine Telemetrie, kein Lizenzserver, kein Account bei uns. Die Apps sagen in den Stores „Keine Daten erfasst“ — weil es stimmt.",
+  "sh.l2": "<b>Dein Modell, dein Vertrag.</b> Vancetope liefert kein Modell; Prompts gehen nur an den Endpoint, den du eingestellt hast — oder verlassen mit einem lokalen Modell nie die Maschine.",
+  "sh.l3": "<b>Von Agenten installierbar.</b> Beide Setup-Wizards laufen headless aus einer YAML-Config, fail-closed, mit Probelauf.",
+  "sh.l4": "<b>Source available.</b> BSL 1.1, wird am 2029-06-23 zu AGPLv3. Lies, was läuft.",
+  "sh.more": "Loslegen →",
+  "sh.more2": "Aktualisieren →",
+  "en.eyebrow": "Verschlüsselung",
+  "en.h2": "Dokumente, die der Server nicht lesen kann.",
+  "en.p1": "Manches soll nicht einmal die Maschine lesen können, die es speichert. Verschlüssle ein Dokument mit <a href=\"https://age-encryption.org\">age</a>, und der Server behält nur Ciphertext — der Schlüssel bleibt bei dir, als Passphrase oder Identity-Datei.",
+  "en.l1": "<b>Lokal entschlüsseln</b> in Cortex, in der Terminal-Ansicht oder den Apps — nie auf dem Server.",
+  "en.l2": "<b>Agenten respektieren es:</b> Tools behandeln Ciphertext nicht als Text, und <code>doc_encrypt</code> prüft das Schreib-Gate, bevor es etwas wegschließt.",
+  "en.l3": "<b>Mehrere Empfänger</b> pro Dokument, Standard-age-Format — auch mit der normalen <code>age</code>-CLI lesbar.",
+  "en.more": "Verschlüsselungs-Spec →",
+  "fe.eyebrow": "Sandboxen &amp; Guards",
+  "fe.h2": "Ein Zaun überall, wo ein Agent handeln kann.",
+  "fe.p": "Ein Agent, der Befehle ausführen kann, ist nur so sicher wie das Gate davor. Vancetope hat eins auf jeder Oberfläche — und eine zweite Meinung vor den gefährlichen.",
+  "f.sb.h": "Verbieten, erlauben, fragen",
+  "f.sb.p": "Auf deinem Laptop — Terminal oder Desktop-App — läuft jeder Datei- und Exec-Aufruf durch eine Policy mit Default-Deny-Boden. Unbekannt heißt fragen.",
+  "f.dk.h": "Begrenzt &amp; abschaltbar",
+  "f.dk.p": "Agenten-Tools in der Desktop-App bleiben in einem Arbeitsverzeichnis und hängen an einem Hauptschalter pro Account.",
+  "f.ws.h": "Auch auf dem Server begrenzt",
+  "f.ws.p": "Serverseitige Datei- und Exec-Tools sind auf den Prozess-Workspace begrenzt; Subprozesse bekommen eine versiegelte Umgebung und ihr eigenes <code>HOME</code> pro Scope.",
+  "f.g.h": "Guards",
+  "f.g.p": "Skripte an festen Punkten eines Laufs — inklusive eines Tool-Punkts, der ein <code>exec_run</code> stoppen kann, bevor es passiert.",
+  "f.z.h": "Eine zweite Meinung",
+  "f.z.p": "Ein Entscheidungsmodell fragt in Millisekunden „ist dieser Befehl gefährlich?“ — billig genug, um jedes Mal zu fragen.",
+  "f.ap.h": "Apps brauchen Freigabe",
+  "f.ap.p": "Apps, die ein Agent baut, laufen in einer Null-Origin-Sandbox und sind per Default verboten — jede fragt über die Inbox um Freigabe.",
+  "ac.eyebrow": "Zugriff &amp; Secrets",
+  "ac.h2": "Standardmäßig eng.",
+  "ac.p": "Menschen, Agenten und fremde Werkzeuge bekommen genau das, was sie brauchen — und Secrets bleiben außer Reichweite des Modells.",
+  "a.perm.h": "Ein Rechte-Gate",
+  "a.perm.p": "Jede Prüfung läuft durch eine Resolver-Schnittstelle; der mitgelieferte Provider ist einfach und austauschbar. Ohne Provider bootet nichts.",
+  "a.oauth.h": "OAuth für die Türen",
+  "a.oauth.p": "Zustimmung, rotierende Refresh-Tokens und Replay-Widerruf für alles, was über MCP hereinkommt.",
+  "a.tok.h": "Gepinnte Tokens",
+  "a.tok.p": "Integration-Tokens sind auf ein Profil verengt und an ein Projekt gepinnt — Schnittmenge, nie Vereinigung.",
+  "a.sec.h": "Unsichtbar für Agenten",
+  "a.sec.p": "Passwort-Settings sind verschlüsselt gespeichert und für Agenten in beide Richtungen unsichtbar; Hidden-Settings lösen sich für Skripte auf, tauchen aber nie in einem Prompt auf.",
+  "a.vault.h": "Vault-Referenzen",
+  "a.vault.p": "Ein Secret referenzieren statt kopieren — aus den Settings oder einem externen Vault wie Infisical.",
+  "a.pw.h": "Vernünftige Passwörter",
+  "a.pw.p": "Eine NIST-artige Policy, BCrypt und eine Brute-Force-Sperre — keine schwachen Defaults, die man zu ändern vergisst.",
+  "a.lock.h": "Finger weg",
+  "a.lock.p": "Ein Dokument gegen die AI, gegen Menschen oder gegen Kit-Updates sperren — von jeder Oberfläche respektiert.",
+  "a.audit.h": "Nachvollziehbar",
+  "a.audit.p": "Sicherheitsrelevante Ereignisse laufen durch eine Audit-Pipeline in die Consumer, die du einstellst.",
+  "a.ten.h": "Sauber getrennt",
+  "a.ten.p": "Tenants sind getrennte Welten — Arbeit und Privates auf einem Server, ohne ineinander zu sickern.",
+  "li.eyebrow": "Grenzen",
+  "li.h2": "Ein Agent, der tagelang läuft, soll nicht die Rechnung hochtreiben.",
+  "l.lease.h": "Resource-Leases <span class=\"badge new\">neu</span>",
+  "l.lease.p": "Ein Quoten-Trichter von global über Tenant und Projekt bis zum User — als Config-Dokumente definiert, im Moment der Nutzung geprüft.",
+  "l.quota.h": "Token-Quoten &amp; Verbrauch",
+  "l.quota.p": "Abrechnung pro Aufruf mit Preisen und Cache-Tokens, und Verbrauchsberichte pro Scope.",
+  "l.gate.h": "Modell-Gates",
+  "l.gate.p": "Bulk- und persistente Agenten dürfen nur die Modelle nutzen, die du erlaubt hast — fail-closed.",
+  "next.back": "← Zurück",
+  "next.connect": "Clients &amp; Integrationen",
+  "next.next": "Ausprobieren →",
+  "next.start": "Loslegen"
+}
+</script>

@@ -1,0 +1,323 @@
+---
+title: Apps & documents
+layout: landing
+nav_order: 1.1
+description: "Every surface in Vancetope: Cortex, fifteen apps from workbook to scribblebook, thirty-odd document kinds, media, live collaboration — and apps the agent builds for you in a sandbox."
+permalink: /apps/
+---
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="hero.eyebrow">Apps &amp; documents</p>
+      <h1 data-i18n="hero.h1">Everything is a document. <em>Every document has a home.</em></h1>
+      <p class="lede" data-i18n="hero.lede">The agent doesn’t answer next to your work — it works in it. Pages, boards, sheets, canvas, handwriting, audio: each is a document of some kind, each kind has an editor, and the apps on top are just folders that know how to show them. Agents create, fill and reshape all of it with the same tools you use.</p>
+      <nav class="toc" aria-label="On this page">
+        <a href="#cortex">Cortex</a>
+        <a href="#apps" data-i18n="toc.apps">Apps</a>
+        <a href="#new" data-i18n="toc.new">New in 0.5</a>
+        <a href="#kinds" data-i18n="toc.kinds">Document kinds</a>
+        <a href="#build" data-i18n="toc.build">Apps the agent builds</a>
+        <a href="#media" data-i18n="toc.media">Images, audio, scripts</a>
+        <a href="#together" data-i18n="toc.together">Working together</a>
+      </nav>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="cortex">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Cortex</p>
+        <h2 data-i18n="cx.h2">Chat, document and execute on one surface.</h2>
+        <p data-i18n="cx.p1">Cortex is where most work happens: a file tree on the left, the open document in the middle, the agent on the right — and a run panel when a document can execute. Whatever kind you open, Cortex picks the right editor.</p>
+        <ul>
+          <li data-i18n="cx.l1"><b>Quick-open</b> with ⌘O / ⌘P across the whole project.</li>
+          <li data-i18n="cx.l2"><b>Discussions</b> tab: the inbox threads about the open document, right next to it.</li>
+          <li data-i18n="cx.l3"><b>PDF export</b> with report themes — one CSS layer per customer or purpose.</li>
+          <li data-i18n="cx.l4"><b>Translate a selection</b>, play audio and video in the preview, open encrypted documents locally.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/howtos/cortex/' | relative_url }}" data-i18n="cx.more">Cortex tour →</a></p>
+      </div>
+<pre class="snippet"><span class="c"># one surface, any kind</span>
+notes/kickoff.md          <span class="a">markdown</span>
+plan/q4-budget            <span class="a">sheet</span>      =SUM(B2:B9)
+ideas/map                 <span class="a">canvas</span>     12 nodes · 3 groups
+release/checklist         <span class="a">checklist</span>  7 / 9
+sketch/whiteboard         <span class="a">scribble</span>   A4 · 3 sheets
+analysis/run              <span class="a">compose</span>    python ▶ <span class="g">✓ 2.1s</span>
+private/keys.md           <span class="a">age</span>        🔒 decrypt locally</pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="apps">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="apps.eyebrow">Apps</p>
+        <h2 data-i18n="apps.h2">Fifteen apps, one data model.</h2>
+        <p data-i18n="apps.p">An app is a folder with a manifest. Its pages are ordinary documents — so the agent can read and write them, you can link to a place inside them, and they show up in search, WebDAV and exports like everything else.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/howtos/workbook/' | relative_url }}"><span class="kicker">workbook</span><h3>Workbook</h3><p data-i18n="a.workbook">Notion-style pages in a block editor — with form fields, quizzes graded by an LLM, and runnable compose blocks.</p></a>
+        <a class="feat" href="{{ '/specs/app-wiki' | relative_url }}"><span class="kicker">wiki</span><h3>Wiki</h3><p data-i18n="a.wiki">Linked knowledge pages for a team or a topic.</p></a>
+        <a class="feat" href="{{ '/howtos/kanban/' | relative_url }}"><span class="kicker">kanban · issues</span><h3>Kanban &amp; Issues</h3><p data-i18n="a.kanban">Boards and an issue tracker — cards and tickets are documents an agent can triage, move and close.</p></a>
+        <a class="feat" href="{{ '/specs/app-gtd' | relative_url }}"><span class="kicker">gtd</span><h3>GTD</h3><p data-i18n="a.gtd">Capture, buckets, drag-sort and a trash that empties itself — your own list, kept clean.</p></a>
+        <a class="feat" href="{{ '/specs/app-journal' | relative_url }}"><span class="kicker">journal</span><h3>Journal</h3><p data-i18n="a.journal">Dated entries that the agent can summarise, search and pick up again.</p></a>
+        <a class="feat" href="{{ '/specs/app-calendar' | relative_url }}"><span class="kicker">calendar</span><h3>Calendar</h3><p data-i18n="a.calendar">Events as documents — plan with the agent, not around it.</p></a>
+        <a class="feat" href="{{ '/specs/app-canvasbook' | relative_url }}"><span class="kicker">canvasbook</span><h3>Canvasbook</h3><p data-i18n="a.canvasbook">A folder of canvas pages: nodes, edges and explicit groups on an open plane.</p></a>
+        <a class="feat" href="{{ '/specs/app-scribblebook' | relative_url }}"><span class="kicker">scribblebook</span><h3>Scribblebook <span class="badge new">new</span></h3><p data-i18n="a.scribble">Handwriting sheets with pen or finger — OCR, PDF, and an agent that can look and draw.</p></a>
+        <a class="feat" href="{{ '/specs/app-designer' | relative_url }}"><span class="kicker">designer</span><h3>Designer <span class="badge new">new</span></h3><p data-i18n="a.designer">Design collections of web files with a sandboxed live preview and a catalogue of design skills.</p></a>
+        <a class="feat" href="{{ '/howtos/finance/' | relative_url }}"><span class="kicker">finance</span><h3>Finance</h3><p data-i18n="a.finance">Structure money decisions as trees of options, costs and outcomes.</p></a>
+        <a class="feat" href="{{ '/specs/doc-kind-slides' | relative_url }}"><span class="kicker">slideshow</span><h3>Slides</h3><p data-i18n="a.slides">Decks from research — one point per slide, an image per point if you like.</p></a>
+        <a class="feat" href="{{ '/specs/app-binder' | relative_url }}"><span class="kicker">binder</span><h3>Binder</h3><p data-i18n="a.binder">A reference binder over documents of any kind, anchored by a manifest.</p></a>
+        <a class="feat" href="{{ '/specs/app-links' | relative_url }}"><span class="kicker">links</span><h3>Links</h3><p data-i18n="a.links">A link manager for the outside web, with live previews and teasers.</p></a>
+        <a class="feat" href="{{ '/specs/app-search' | relative_url }}"><span class="kicker">search</span><h3>Search</h3><p data-i18n="a.search">One search surface over your documents and configured research sources.</p></a>
+        <a class="feat" href="{{ '/specs/inter-links' | relative_url }}"><span class="kicker">inter-links</span><h3 data-i18n="a.inter.h">Links into apps</h3><p data-i18n="a.inter">A link can point to a place inside an app — a card, an entry, a node — and is resolved late, so it survives reorganising.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="new">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="new.eyebrow">New in 0.5</p>
+        <h2 data-i18n="new.h2">Handwriting, questionnaires, design.</h2>
+        <p data-i18n="new.p">Three new ways to put things into Vancetope — and for the agent to put things back.</p>
+      </div>
+      <div class="cards">
+        <a class="card" href="{{ '/specs/doc-kind-scribble' | relative_url }}">
+          <span class="tag">kind: scribble</span>
+          <h3 data-i18n="n.scribble.h">Scribble</h3>
+          <p data-i18n="n.scribble.p">Vector strokes on A4 sheets, pen or finger. Print it, OCR it, export a PDF. A vision model gets a clean image of the sheet, and drawing tools let the agent annotate it.</p>
+        </a>
+        <a class="card" href="{{ '/specs/doc-kind-questions' | relative_url }}">
+          <span class="tag">kind: questions</span>
+          <h3 data-i18n="n.questions.h">Questionnaires</h3>
+          <p data-i18n="n.questions.p">Several questions in one document, answered through a wizard in the web chat or line by line in the terminal. When an agent needs your input, it asks with one of these.</p>
+        </a>
+        <a class="card" href="{{ '/specs/app-designer' | relative_url }}">
+          <span class="tag">app: designer</span>
+          <h3 data-i18n="n.designer.h">Designer</h3>
+          <p data-i18n="n.designer.p">A design is a folder of HTML, CSS and assets. The preview runs in an opaque-origin sandbox, so a design can look like anything without being able to touch anything.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="kinds">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="kinds.eyebrow">Document kinds</p>
+        <h2 data-i18n="kinds.h2">Thirty-odd kinds, one API.</h2>
+        <p data-i18n="kinds.p">A kind says what a document <em>is</em> — and so which editor opens it and what the agent can do with it. They all share the same read/write/version/lock surface, so a new kind is a new editor, not a new storage system.</p>
+      </div>
+      <div class="chips">
+        <a class="chip" href="{{ '/specs/doc-kind-workpage' | relative_url }}">workpage</a>
+        <span class="chip">markdown</span>
+        <a class="chip" href="{{ '/specs/doc-kind-sheet' | relative_url }}">sheet</a>
+        <a class="chip" href="{{ '/specs/doc-kind-canvas' | relative_url }}">canvas</a>
+        <a class="chip" href="{{ '/specs/doc-kind-mindmap' | relative_url }}">mindmap</a>
+        <a class="chip" href="{{ '/specs/doc-kind-diagram' | relative_url }}">diagram</a>
+        <a class="chip" href="{{ '/specs/doc-kind-chart' | relative_url }}">chart</a>
+        <a class="chip" href="{{ '/specs/doc-kind-slides' | relative_url }}">slides</a>
+        <a class="chip" href="{{ '/specs/doc-kind-timeline' | relative_url }}">timeline</a>
+        <a class="chip" href="{{ '/specs/doc-kind-map' | relative_url }}">map</a>
+        <a class="chip" href="{{ '/specs/doc-kind-graph' | relative_url }}">graph</a>
+        <a class="chip" href="{{ '/specs/doc-kind-tree' | relative_url }}">tree</a>
+        <a class="chip" href="{{ '/specs/doc-kind-items' | relative_url }}">list</a>
+        <a class="chip" href="{{ '/specs/doc-kind-records' | relative_url }}">records</a>
+        <a class="chip" href="{{ '/specs/doc-kind-checklist' | relative_url }}">checklist</a>
+        <a class="chip" href="{{ '/specs/doc-kind-calendar' | relative_url }}">calendar</a>
+        <a class="chip" href="{{ '/specs/doc-kind-finance-tree' | relative_url }}">finance-tree</a>
+        <a class="chip" href="{{ '/specs/doc-kind-scribble' | relative_url }}">scribble</a>
+        <a class="chip" href="{{ '/specs/doc-kind-questions' | relative_url }}">questions</a>
+        <a class="chip" href="{{ '/specs/doc-kind-qrcode' | relative_url }}">qrcode</a>
+        <a class="chip" href="{{ '/specs/doc-kind-data' | relative_url }}">data</a>
+        <span class="chip">formula</span>
+        <span class="chip">tex</span>
+        <span class="chip">compose</span>
+        <a class="chip" href="{{ '/specs/document-encryption' | relative_url }}">age</a>
+        <a class="chip" href="{{ '/specs/doc-kind-application' | relative_url }}">application</a>
+        <a class="chip" href="{{ '/specs/bistromath-system' | relative_url }}">app-view</a>
+        <span class="chip">vance-recipe</span>
+        <span class="chip">vance-workflow</span>
+        <span class="chip">vance-scheduler</span>
+        <span class="chip">vance-guard</span>
+        <span class="chip">vance-hook</span>
+        <span class="chip">vance-wizard</span>
+        <span class="chip">vance-model</span>
+        <span class="chip">vance-research-source</span>
+        <span class="chip">vance-chat-theme</span>
+      </div>
+      <p class="kit-note" data-i18n="kinds.note">The <code>vance-*</code> kinds are the system’s own configuration — recipes, workflows, schedules, guards, models. They get form views and templates like any other document, which is why an agent can set up an automation by writing one.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="build">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Bistromath</p>
+        <h2 data-i18n="b.h2">Apps the agent builds for you.</h2>
+        <p data-i18n="b.p1">Need a little tool nobody ships — a tracker, a calculator, a dashboard over your own documents? Ask for it. The <code>app-builder</code> recipe writes an <em>app view</em>: a document with a <code>main.js</code> that runs sandboxed in a null-origin iframe and talks to your data only through a narrow API.</p>
+        <ul>
+          <li data-i18n="b.l1"><b>Five bundled libraries</b> — core, api, db, fmt, ui — so apps stay small.</li>
+          <li data-i18n="b.l2"><b>Governance:</b> apps are <code>forbidden</code> by default; each one asks for approval through your inbox.</li>
+          <li data-i18n="b.l3"><b>Just a document:</b> versioned, shareable, changeable by the next prompt.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/specs/bistromath-system' | relative_url }}" data-i18n="b.more">Bistromath spec →</a></p>
+      </div>
+<pre class="snippet"><span class="c"># view.yaml — the widget names a state key</span>
+  - type: table
+    from: <span class="g">invoices</span>
+    columns: [nr, customer, amount]
+
+<span class="c">// main.js — runs in a null-origin sandbox</span>
+<span class="a">async function</span> onAppInit() {
+  <span class="a">const</span> files = <span class="a">await</span> vance.documents.list(<span class="g">'invoices/'</span>)
+  <span class="a">const</span> rows = []
+  <span class="a">for</span> (<span class="a">const</span> f <span class="a">of</span> files)
+    rows.push(<span class="a">await</span> vance.documents.read(f.path))
+  vance.state.set(<span class="g">'invoices'</span>, rows)
+}</pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="media">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="media.eyebrow">Images, audio, scripts</p>
+        <h2 data-i18n="media.h2">Beyond text.</h2>
+        <p data-i18n="media.p">The agent can make and change the things that go into a document, not only the words around them.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/howtos/images/' | relative_url }}"><span class="kicker">fenchurch</span><h3 data-i18n="m.img.h">Images</h3><p data-i18n="m.img.p">Generate pictures from a description with a style cascade per project — and now edit an existing image, image-to-image.</p></a>
+        <a class="feat" href="{{ '/specs/hotblack-service' | relative_url }}"><span class="kicker">hotblack</span><h3 data-i18n="m.audio.h">Audio <span class="badge new">new</span></h3><p data-i18n="m.audio.p">Text-to-speech, transcription, music, audio analysis — plus local trim, mix, concat and convert via ffmpeg.</p></a>
+        <a class="feat" href="{{ '/howtos/compose/' | relative_url }}"><span class="kicker">compose</span><h3 data-i18n="m.compose.h">Runnable pages</h3><p data-i18n="m.compose.p">Shell, Python, JavaScript, R, LaTeX or an LLM call — one block in a page, executed server-side, the result lands back in the page.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="together">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="tg.eyebrow">Working together</p>
+        <h2 data-i18n="tg.h2">People and agents in the same document.</h2>
+        <p data-i18n="tg.p">Collaboration isn’t a feature bolted on — it’s how every document works, whoever is typing.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/documents-channel' | relative_url }}"><span class="kicker">live</span><h3 data-i18n="t.live.h">Presence &amp; merge</h3><p data-i18n="t.live.p">See who is in a document, get changes pushed live, and let a three-way merge resolve concurrent edits.</p></a>
+        <a class="feat" href="{{ '/specs/document-versioning' | relative_url }}"><span class="kicker">history</span><h3 data-i18n="t.ver.h">Versions &amp; locks</h3><p data-i18n="t.ver.p">Every change is archived. A soft lock keeps the AI, people or kits out of a document you want left alone.</p></a>
+        <a class="feat" href="{{ '/specs/maximegalon-system' | relative_url }}"><span class="kicker">inbox</span><h3 data-i18n="t.inbox.h">Inbox &amp; threads</h3><p data-i18n="t.inbox.p">An inbox item is one concern with at most one decision. Agents ask there, you answer there, and the thread stays next to the document.</p></a>
+        <a class="feat" href="{{ '/specs/milliways-system' | relative_url }}"><span class="kicker">share</span><h3 data-i18n="t.share.h">Sharing</h3><p data-i18n="t.share.p">Share a document into someone’s inbox, by mail or into a place in an app — sharing passes content, never permissions.</p></a>
+        <a class="feat" href="{{ '/specs/multi-user-collaboration' | relative_url }}"><span class="kicker">sessions</span><h3 data-i18n="t.sess.h">Shared sessions</h3><p data-i18n="t.sess.p">Several people in one chat with the agent — mentions decide who is being addressed.</p></a>
+        <a class="feat" href="{{ '/specs/webdav' | relative_url }}"><span class="kicker">webdav</span><h3 data-i18n="t.dav.h">Finder &amp; Obsidian</h3><p data-i18n="t.dav.p">Mount a project over WebDAV and edit its documents with the tools you already have.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap next">
+      <a href="{{ '/' | relative_url }}"><span class="k" data-i18n="next.back">← Overview</span><span class="t">Vancetope</span></a>
+      <a href="{{ '/agents/' | relative_url }}"><span class="k" data-i18n="next.next">Next →</span><span class="t" data-i18n="next.agents">Agents &amp; engines</span></a>
+    </div>
+  </section>
+
+<script type="application/json" id="i18n-de">
+{
+  "hero.eyebrow": "Apps &amp; Dokumente",
+  "hero.h1": "Alles ist ein Dokument. <em>Jedes Dokument hat ein Zuhause.</em>",
+  "hero.lede": "Der Agent antwortet nicht neben deiner Arbeit — er arbeitet darin. Seiten, Boards, Sheets, Canvas, Handschrift, Audio: alles ist ein Dokument einer bestimmten Art, jede Art hat einen Editor, und die Apps darüber sind nur Ordner, die wissen, wie man sie zeigt. Agenten erzeugen, füllen und bauen all das mit denselben Werkzeugen um, die du benutzt.",
+  "toc.apps": "Apps",
+  "toc.new": "Neu in 0.5",
+  "toc.kinds": "Dokument-Arten",
+  "toc.build": "Apps vom Agenten",
+  "toc.media": "Bilder, Audio, Skripte",
+  "toc.together": "Zusammenarbeit",
+  "cx.h2": "Chat, Dokument und Ausführung auf einer Fläche.",
+  "cx.p1": "In Cortex passiert die meiste Arbeit: links der Dateibaum, in der Mitte das offene Dokument, rechts der Agent — und ein Run-Panel, wenn ein Dokument ausführbar ist. Egal welche Art du öffnest, Cortex wählt den passenden Editor.",
+  "cx.l1": "<b>Quick-Open</b> mit ⌘O / ⌘P über das ganze Projekt.",
+  "cx.l2": "<b>Diskussionen</b>-Tab: die Inbox-Threads zum offenen Dokument, direkt daneben.",
+  "cx.l3": "<b>PDF-Export</b> mit Report-Themes — eine CSS-Schicht pro Kunde oder Zweck.",
+  "cx.l4": "<b>Auswahl übersetzen</b>, Audio und Video in der Vorschau, verschlüsselte Dokumente lokal öffnen.",
+  "cx.more": "Cortex-Tour →",
+  "apps.eyebrow": "Apps",
+  "apps.h2": "Fünfzehn Apps, ein Datenmodell.",
+  "apps.p": "Eine App ist ein Ordner mit Manifest. Ihre Seiten sind normale Dokumente — der Agent kann sie lesen und schreiben, du kannst auf einen Ort darin verlinken, und sie tauchen in Suche, WebDAV und Exporten auf wie alles andere.",
+  "a.workbook": "Seiten im Notion-Stil im Block-Editor — mit Formularfeldern, von einem LLM bewerteten Quizzen und ausführbaren Compose-Blöcken.",
+  "a.wiki": "Verlinkte Wissensseiten für ein Team oder ein Thema.",
+  "a.kanban": "Boards und ein Issue-Tracker — Karten und Tickets sind Dokumente, die ein Agent sichten, verschieben und schließen kann.",
+  "a.gtd": "Erfassen, Buckets, Drag-Sortierung und ein Papierkorb, der sich selbst leert — deine eigene Liste, sauber gehalten.",
+  "a.journal": "Datierte Einträge, die der Agent zusammenfassen, durchsuchen und wieder aufgreifen kann.",
+  "a.calendar": "Termine als Dokumente — mit dem Agenten planen, nicht um ihn herum.",
+  "a.canvasbook": "Ein Ordner aus Canvas-Seiten: Knoten, Kanten und explizite Gruppen auf einer offenen Fläche.",
+  "a.scribble": "Handschrift-Blätter mit Stift oder Finger — OCR, PDF und ein Agent, der hinschauen und zeichnen kann.",
+  "a.designer": "Design-Sammlungen aus Web-Dateien mit sandboxed Live-Vorschau und einem Katalog von Design-Skills.",
+  "a.finance": "Geld-Entscheidungen als Bäume aus Optionen, Kosten und Ergebnissen strukturieren.",
+  "a.slides": "Präsentationen aus Recherche — ein Punkt pro Folie, auf Wunsch ein Bild pro Punkt.",
+  "a.binder": "Ein Referenz-Ordner über Dokumente beliebiger Art, verankert durch ein Manifest.",
+  "a.links": "Ein Link-Manager fürs Web draußen, mit Live-Vorschau und Teasern.",
+  "a.search": "Eine Suchoberfläche über deine Dokumente und konfigurierte Recherche-Quellen.",
+  "a.inter.h": "Links in Apps hinein",
+  "a.inter": "Ein Link kann auf einen Ort in einer App zeigen — eine Karte, einen Eintrag, einen Knoten — und wird spät aufgelöst, übersteht also Umräumen.",
+  "new.eyebrow": "Neu in 0.5",
+  "new.h2": "Handschrift, Fragebögen, Design.",
+  "new.p": "Drei neue Wege, Dinge in Vancetope hineinzubringen — und für den Agenten, Dinge zurückzugeben.",
+  "n.scribble.h": "Scribble",
+  "n.scribble.p": "Vektor-Striche auf A4-Blättern, Stift oder Finger. Drucken, OCR, PDF-Export. Ein Vision-Modell bekommt ein sauberes Bild des Blatts, und Zeichen-Tools lassen den Agenten es annotieren.",
+  "n.questions.h": "Fragebögen",
+  "n.questions.p": "Mehrere Fragen in einem Dokument, beantwortet über einen Wizard im Web-Chat oder Zeile für Zeile im Terminal. Braucht ein Agent deine Eingabe, fragt er mit so einem.",
+  "n.designer.h": "Designer",
+  "n.designer.p": "Ein Design ist ein Ordner aus HTML, CSS und Assets. Die Vorschau läuft in einer Opaque-Origin-Sandbox — ein Design kann aussehen wie es will, ohne irgendetwas anfassen zu können.",
+  "kinds.eyebrow": "Dokument-Arten",
+  "kinds.h2": "Gut dreißig Arten, eine API.",
+  "kinds.p": "Eine Art sagt, was ein Dokument <em>ist</em> — und damit, welcher Editor es öffnet und was der Agent damit tun kann. Alle teilen dieselbe Lese-/Schreib-/Versions-/Lock-Schnittstelle; eine neue Art ist ein neuer Editor, kein neues Speichersystem.",
+  "kinds.note": "Die <code>vance-*</code>-Arten sind die Konfiguration des Systems selbst — Recipes, Workflows, Zeitpläne, Guards, Modelle. Sie bekommen Formularansichten und Vorlagen wie jedes andere Dokument; deshalb kann ein Agent eine Automatisierung einrichten, indem er eins schreibt.",
+  "b.h2": "Apps, die der Agent für dich baut.",
+  "b.p1": "Du brauchst ein kleines Werkzeug, das keiner liefert — einen Tracker, einen Rechner, ein Dashboard über deine eigenen Dokumente? Frag danach. Das <code>app-builder</code>-Recipe schreibt eine <em>App-View</em>: ein Dokument mit einer <code>main.js</code>, die sandboxed in einem Null-Origin-iframe läuft und nur über eine schmale API an deine Daten kommt.",
+  "b.l1": "<b>Fünf mitgelieferte Bibliotheken</b> — core, api, db, fmt, ui — damit Apps klein bleiben.",
+  "b.l2": "<b>Governance:</b> Apps sind per Default <code>forbidden</code>; jede fragt über deine Inbox um Freigabe.",
+  "b.l3": "<b>Nur ein Dokument:</b> versioniert, teilbar, mit dem nächsten Prompt änderbar.",
+  "b.more": "Bistromath-Spec →",
+  "media.eyebrow": "Bilder, Audio, Skripte",
+  "media.h2": "Mehr als Text.",
+  "media.p": "Der Agent kann die Dinge herstellen und ändern, die in ein Dokument gehören — nicht nur die Worte drumherum.",
+  "m.img.h": "Bilder",
+  "m.img.p": "Bilder aus einer Beschreibung erzeugen, mit Stil-Kaskade pro Projekt — und jetzt auch ein vorhandenes Bild bearbeiten, Bild-zu-Bild.",
+  "m.audio.h": "Audio <span class=\"badge new\">neu</span>",
+  "m.audio.p": "Sprachausgabe, Transkription, Musik, Audio-Analyse — dazu lokales Schneiden, Mischen, Verketten und Konvertieren per ffmpeg.",
+  "m.compose.h": "Ausführbare Seiten",
+  "m.compose.p": "Shell, Python, JavaScript, R, LaTeX oder ein LLM-Call — ein Block in einer Seite, serverseitig ausgeführt, das Ergebnis landet zurück in der Seite.",
+  "tg.eyebrow": "Zusammenarbeit",
+  "tg.h2": "Menschen und Agenten im selben Dokument.",
+  "tg.p": "Zusammenarbeit ist kein angeschraubtes Feature — so funktioniert jedes Dokument, egal wer tippt.",
+  "t.live.h": "Presence &amp; Merge",
+  "t.live.p": "Sehen, wer im Dokument ist, Änderungen live bekommen, und gleichzeitige Edits per Drei-Wege-Merge auflösen.",
+  "t.ver.h": "Versionen &amp; Locks",
+  "t.ver.p": "Jede Änderung wird archiviert. Ein weicher Lock hält AI, Menschen oder Kits aus einem Dokument heraus, das in Ruhe gelassen werden soll.",
+  "t.inbox.h": "Inbox &amp; Threads",
+  "t.inbox.p": "Ein Inbox-Eintrag ist ein Anliegen mit höchstens einer Entscheidung. Agenten fragen dort, du antwortest dort, und der Thread bleibt beim Dokument.",
+  "t.share.h": "Teilen",
+  "t.share.p": "Ein Dokument in jemandes Inbox, per Mail oder an einen Ort in einer App teilen — Teilen gibt Inhalt weiter, nie Rechte.",
+  "t.sess.h": "Geteilte Sessions",
+  "t.sess.p": "Mehrere Menschen in einem Chat mit dem Agenten — Erwähnungen entscheiden, wer angesprochen ist.",
+  "t.dav.h": "Finder &amp; Obsidian",
+  "t.dav.p": "Ein Projekt per WebDAV einhängen und seine Dokumente mit den Werkzeugen bearbeiten, die du schon hast.",
+  "next.back": "← Überblick",
+  "next.next": "Weiter →",
+  "next.agents": "Agenten &amp; Engines"
+}
+</script>

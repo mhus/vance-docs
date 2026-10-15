@@ -1,0 +1,260 @@
+---
+title: Clients & integrations
+layout: landing
+nav_order: 1.3
+description: "One brain, many ways in: web, macOS desktop, terminal, iOS/Android and a browser extension — plus MCP in both directions behind an OAuth 2.1 server, so other agents can work with yours."
+permalink: /connect/
+---
+
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="hero.eyebrow">Clients &amp; integrations</p>
+      <h1 data-i18n="hero.h1">One brain. <em>Many doors.</em></h1>
+      <p class="lede" data-i18n="hero.lede">The Brain on your server holds every project, document and running agent. Everything else is a way in — for you on whichever device is at hand, for your files and tools, and for other agents that want to work with yours.</p>
+      <nav class="toc" aria-label="On this page">
+        <a href="#clients" data-i18n="toc.clients">Clients</a>
+        <a href="#desktop" data-i18n="toc.desktop">Desktop</a>
+        <a href="#terminal" data-i18n="toc.terminal">Terminal</a>
+        <a href="#doors" data-i18n="toc.doors">MCP doors</a>
+        <a href="#out" data-i18n="toc.out">Reaching out</a>
+      </nav>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="clients">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="cl.eyebrow">Clients</p>
+        <h2 data-i18n="cl.h2">Meet it where you work.</h2>
+        <p data-i18n="cl.p">Clients aren’t views on the same screen — each is an entry point with its own strengths, into the same projects.</p>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <span class="tag">web</span>
+          <h3 data-i18n="c.web.h">Browser</h3>
+          <p data-i18n="c.web.p">The full working environment: Cortex, chat, inbox, every app and document kind, settings — switching between them keeps the connection.</p>
+        </div>
+        <a class="card" href="#desktop">
+          <span class="tag">macOS</span>
+          <h3 data-i18n="c.desk.h">Desktop app</h3>
+          <p data-i18n="c.desk.p">The workspace in a native window — whose agents can work on files on your Mac, behind a sandbox. Live tabs per profile.</p>
+        </a>
+        <a class="card" href="#terminal">
+          <span class="tag">vancetope</span>
+          <h3 data-i18n="c.cli.h">Terminal</h3>
+          <p data-i18n="c.cli.p">A CLI agent with local shell, files and git — but always inside a project, with everything stored in it.</p>
+        </a>
+        <div class="card">
+          <span class="tag">iOS · Android</span>
+          <h3 data-i18n="c.mob.h">Mobile <span class="badge">in review</span></h3>
+          <p data-i18n="c.mob.p">The workspace on phone and tablet, several accounts side by side, optional PIN lock. iOS is in App Store review, Android in testing.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Chrome · Firefox · Safari</span>
+          <h3 data-i18n="c.cap.h">Capture <span class="badge">in review</span></h3>
+          <p data-i18n="c.cap.p">A browser extension: save a link to your links app, or import the page you’re looking at as a document — exactly what the browser shows.</p>
+        </div>
+        <a class="card" href="#doors">
+          <span class="tag">MCP</span>
+          <h3 data-i18n="c.mcp.h">Any agent</h3>
+          <p data-i18n="c.mcp.p">Claude Code, Cursor or anything else that speaks MCP can read and write your projects — through doors you open, with OAuth.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="desktop">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-i18n="dk.eyebrow">Desktop · new in 0.5</p>
+        <h2 data-i18n="dk.h2">A desktop app whose agents touch your files.</h2>
+        <p data-i18n="dk.p1">The server can’t see your laptop — the desktop app can. Agents get <code>client_file_*</code> and <code>client_exec_*</code> on your Mac, so they can read a folder, run a build or fix a script right where it lives.</p>
+        <ul>
+          <li data-i18n="dk.l1"><b>Sandbox policy</b> per account: deny, allow, ask — with a confirm button in the app.</li>
+          <li data-i18n="dk.l2"><b>Workdir confinement</b> and a master switch that says so loudly when it’s off.</li>
+          <li data-i18n="dk.l3"><b>MCP tool packs</b> straight from <code>~/.vancetope/mcp.json</code>, per project if you like, credentials kept in the app.</li>
+          <li data-i18n="dk.l4"><b>Live tabs</b> per profile, <code>⌘1</code>…<code>⌘0</code>, two-finger swipe back.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/specs/desktop-agent-tools' | relative_url }}" data-i18n="dk.more">Desktop agent tools spec →</a></p>
+      </div>
+<pre class="snippet"><span class="c"># ~/.vancetope/mcp.json — passed through to agents</span>
+{
+  <span class="g">"mcpServers"</span>: {
+    <span class="g">"github"</span>: {
+      <span class="g">"command"</span>: <span class="a">"github-mcp-server"</span>,
+      <span class="g">"args"</span>: [<span class="a">"stdio"</span>]
+    }
+  }
+}
+
+<span class="c">agent  client_exec_run  "mvn -q test"</span>
+<span class="c">gate   </span><span class="a">ask</span> → <span class="g">allowed once</span></pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="terminal">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow" data-i18n="tm.eyebrow">Terminal</p>
+        <h2 data-i18n="tm.h2">A CLI agent that stays in the project.</h2>
+        <p data-i18n="tm.p1">The <code>vancetope</code> client is a full terminal UI: chat with live reasoning, a job browser, a recipe picker, questionnaires answered line by line. Its local tools go through the same permission gate as the desktop app.</p>
+        <ul>
+          <li data-i18n="tm.l1"><b>Login in the browser</b> with <code>/login --browser</code> — no password typed into a terminal.</li>
+          <li data-i18n="tm.l2"><b>Tool packs</b> — MCP and REST/OpenAPI, global or per project, behind a trust prompt.</li>
+          <li data-i18n="tm.l3"><b>Remote control</b>: steer a running terminal session from the web or your phone.</li>
+          <li data-i18n="tm.l4"><b>Homebrew</b> or Java-free bundles for macOS, Linux and Windows.</li>
+        </ul>
+        <p style="margin-top:16px"><a href="{{ '/howtos/foot-cli' | relative_url }}" data-i18n="tm.more">CLI guide →</a></p>
+      </div>
+<pre class="snippet"><span class="c">$</span> brew install mhus/vancetope/vancetope
+<span class="c">$</span> vancetope
+<span class="a">›</span> /login --browser
+  <span class="g">✓ signed in</span> · tenant acme · project webshop
+<span class="a">›</span> /new coding
+<span class="a">›</span> run the tests and fix what breaks
+  <span class="c">exec</span>  mvn -q test        <span class="a">ask</span> → allow
+  <span class="c">edit</span>  CartService.java  <span class="g">✓</span>
+  <span class="c">exec</span>  mvn -q test        <span class="g">✓ 214 passed</span></pre>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="doors">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="dr.eyebrow">MCP doors · new in 0.5</p>
+        <h2 data-i18n="dr.h2">Let other agents in — through doors you open.</h2>
+        <p data-i18n="dr.p">Vancetope speaks MCP both ways. Outward it uses your MCP servers as tools; inward it <em>is</em> an MCP server — three doors, each as narrow as it needs to be, all behind a real OAuth 2.1 authorization server.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/mcp-server' | relative_url }}"><span class="kicker">/brain/{tenant}/mcp</span><h3 data-i18n="d.t.h">The tenant door</h3><p data-i18n="d.t.p">The full tool inventory for your own coding agent — documents, research, processes.</p></a>
+        <a class="feat" href="{{ '/specs/mcp-project-access' | relative_url }}"><span class="kicker">/brain/{tenant}/mcp/{project}</span><h3 data-i18n="d.p.h">The project door</h3><p data-i18n="d.p.p">Only <code>doc_*</code>, only one project, read-only or read-write, limited to path prefixes — set in a config document.</p></a>
+        <a class="feat" href="{{ '/specs/trillian-exposure' | relative_url }}"><span class="kicker">/brain/{tenant}/agents</span><h3 data-i18n="d.a.h">The agents door</h3><p data-i18n="d.a.p">Talk to a persistent agent, not to tools: the gate decides, the conversation runs, it closes when idle.</p></a>
+      </div>
+      <div class="feats" style="margin-top:18px">
+        <a class="feat" href="{{ '/specs/oauth-server' | relative_url }}"><span class="kicker">oauth 2.1</span><h3 data-i18n="d.o.h">A lock on every door</h3><p data-i18n="d.o.p">An issuer per tenant, consent for foreign clients, rotating refresh tokens with replay revocation, dynamic client registration and client-ID metadata documents. MCP hosts connect with a browser login — no token pasting.</p></a>
+        <a class="feat" href="{{ '/specs/integration-tokens' | relative_url }}"><span class="kicker">tokens</span><h3 data-i18n="d.i.h">Integration tokens</h3><p data-i18n="d.i.p">For tools that can’t do OAuth: long-lived credentials narrowed to a profile and pinned to one project. Narrowing only ever cuts — a token never adds rights.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="out">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="out.eyebrow">Reaching out</p>
+        <h2 data-i18n="out.h2">The rest of your world, pulled in.</h2>
+        <p data-i18n="out.p">What lives elsewhere stays there — Vancetope reads it, mounts it, searches it, and sends finished work back out.</p>
+      </div>
+      <div class="feats c3">
+        <a class="feat" href="{{ '/specs/foot-tool-packs' | relative_url }}"><span class="kicker">tool packs</span><h3 data-i18n="o.packs.h">MCP &amp; REST packs</h3><p data-i18n="o.packs.p">Any MCP server or OpenAPI description becomes a set of agent tools — on the server, in the terminal or on the desktop.</p></a>
+        <a class="feat" href="{{ '/specs/zarniwoop-service' | relative_url }}"><span class="kicker">zarniwoop</span><h3 data-i18n="o.research.h">Research sources</h3><p data-i18n="o.research.p">Web search and crawling via exa, firecrawl or SearXNG — each source a document you configure and route.</p></a>
+        <a class="feat" href="{{ '/specs/centauri-service' | relative_url }}"><span class="kicker">centauri</span><h3 data-i18n="o.feeds.h">Feeds</h3><p data-i18n="o.feeds.p">Streams from several sources merged by cursor — Mastodon timelines and hashtags included.</p></a>
+        <a class="feat" href="{{ '/specs/jaglan-system' | relative_url }}"><span class="kicker">jaglan</span><h3 data-i18n="o.mount.h">Mounted folders</h3><p data-i18n="o.mount.p">Foreign files appear under <code>_ext/</code> and read like documents — a host directory or another application.</p></a>
+        <a class="feat" href="{{ '/specs/web-grab' | relative_url }}"><span class="kicker">grab</span><h3 data-i18n="o.grab.h">Web grab</h3><p data-i18n="o.grab.p">The page your browser shows, turned into a document — no second request, so logins and paywalls you passed stay passed.</p></a>
+        <a class="feat" href="{{ '/specs/webdav' | relative_url }}"><span class="kicker">webdav</span><h3 data-i18n="o.dav.h">Finder &amp; Obsidian</h3><p data-i18n="o.dav.p">Mount a project as a drive and work on its documents with your own tools.</p></a>
+        <a class="feat" href="{{ '/specs/integrationen-externe-systeme' | relative_url }}"><span class="kicker">connectors</span><h3 data-i18n="o.conn.h">Jira, GitHub &amp; co.</h3><p data-i18n="o.conn.p">Finished work goes where it belongs — issues, repos, docs — instead of Vancetope pretending to be them.</p></a>
+        <a class="feat" href="{{ '/specs/milliways-system' | relative_url }}"><span class="kicker">milliways</span><h3 data-i18n="o.share.h">Share by mail</h3><p data-i18n="o.share.p">Send a document via SMTP or Gmail, or into someone’s inbox on the same server.</p></a>
+        <a class="feat" href="{{ '/specs/script-document-api' | relative_url }}"><span class="kicker">scripts</span><h3 data-i18n="o.api.h">Script API</h3><p data-i18n="o.api.p"><code>vance.documents.*</code> for JavaScript and Python — the same document surface the agents use.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="wrap next">
+      <a href="{{ '/agents/' | relative_url }}"><span class="k" data-i18n="next.back">← Back</span><span class="t" data-i18n="next.agents">Agents &amp; engines</span></a>
+      <a href="{{ '/trust/' | relative_url }}"><span class="k" data-i18n="next.next">Next →</span><span class="t" data-i18n="next.trust">Security &amp; self-hosting</span></a>
+    </div>
+  </section>
+
+<script type="application/json" id="i18n-de">
+{
+  "hero.eyebrow": "Clients &amp; Integrationen",
+  "hero.h1": "Ein Brain. <em>Viele Türen.</em>",
+  "hero.lede": "Das Brain auf deinem Server hält jedes Projekt, jedes Dokument und jeden laufenden Agenten. Alles andere ist ein Zugang — für dich auf dem Gerät, das gerade da ist, für deine Dateien und Werkzeuge, und für andere Agenten, die mit deinen arbeiten wollen.",
+  "toc.clients": "Clients",
+  "toc.desktop": "Desktop",
+  "toc.terminal": "Terminal",
+  "toc.doors": "MCP-Türen",
+  "toc.out": "Nach draußen",
+  "cl.eyebrow": "Clients",
+  "cl.h2": "Dort abgeholt, wo du arbeitest.",
+  "cl.p": "Clients sind keine Ansichten desselben Bildschirms — jeder ist ein Zugang mit eigenen Stärken, in dieselben Projekte.",
+  "c.web.h": "Browser",
+  "c.web.p": "Die volle Arbeitsumgebung: Cortex, Chat, Inbox, jede App und Dokument-Art, Einstellungen — der Wechsel dazwischen hält die Verbindung.",
+  "c.desk.h": "Desktop-App",
+  "c.desk.p": "Der Arbeitsplatz im nativen Fenster — dessen Agenten auf Dateien auf deinem Mac arbeiten können, hinter einer Sandbox. Live-Tabs pro Profil.",
+  "c.cli.h": "Terminal",
+  "c.cli.p": "Ein CLI-Agent mit lokaler Shell, Dateien und Git — aber immer in einem Projekt, mit allem, was darin liegt.",
+  "c.mob.h": "Mobile <span class=\"badge\">im Review</span>",
+  "c.mob.p": "Der Arbeitsplatz auf Telefon und Tablet, mehrere Accounts nebeneinander, optionale PIN-Sperre. iOS ist im App-Store-Review, Android im Test.",
+  "c.cap.h": "Capture <span class=\"badge\">im Review</span>",
+  "c.cap.p": "Eine Browser-Erweiterung: einen Link in deine Links-App legen oder die Seite, die du gerade ansiehst, als Dokument importieren — genau das, was der Browser zeigt.",
+  "c.mcp.h": "Jeder Agent",
+  "c.mcp.p": "Claude Code, Cursor oder alles andere, was MCP spricht, kann deine Projekte lesen und schreiben — durch Türen, die du öffnest, mit OAuth.",
+  "dk.eyebrow": "Desktop · neu in 0.5",
+  "dk.h2": "Eine Desktop-App, deren Agenten deine Dateien anfassen.",
+  "dk.p1": "Der Server sieht deinen Laptop nicht — die Desktop-App schon. Agenten bekommen <code>client_file_*</code> und <code>client_exec_*</code> auf deinem Mac und können einen Ordner lesen, einen Build starten oder ein Skript dort reparieren, wo es liegt.",
+  "dk.l1": "<b>Sandbox-Policy</b> pro Account: verbieten, erlauben, fragen — mit Freigabe-Button in der App.",
+  "dk.l2": "<b>Workdir-Begrenzung</b> und ein Hauptschalter, der laut sagt, wenn er aus ist.",
+  "dk.l3": "<b>MCP-Tool-Packs</b> direkt aus <code>~/.vancetope/mcp.json</code>, auf Wunsch pro Projekt, Zugangsdaten in der App verwahrt.",
+  "dk.l4": "<b>Live-Tabs</b> pro Profil, <code>⌘1</code>…<code>⌘0</code>, Zwei-Finger-Wisch zurück.",
+  "dk.more": "Spec zu den Desktop-Agent-Tools →",
+  "tm.eyebrow": "Terminal",
+  "tm.h2": "Ein CLI-Agent, der im Projekt bleibt.",
+  "tm.p1": "Der <code>vancetope</code>-Client ist eine volle Terminal-UI: Chat mit Live-Reasoning, ein Job-Browser, ein Recipe-Picker, Fragebögen Zeile für Zeile. Seine lokalen Tools laufen durch dasselbe Permission-Gate wie die Desktop-App.",
+  "tm.l1": "<b>Login im Browser</b> mit <code>/login --browser</code> — kein Passwort im Terminal tippen.",
+  "tm.l2": "<b>Tool-Packs</b> — MCP und REST/OpenAPI, global oder pro Projekt, hinter einer Vertrauensabfrage.",
+  "tm.l3": "<b>Fernsteuerung</b>: eine laufende Terminal-Session aus dem Web oder vom Telefon steuern.",
+  "tm.l4": "<b>Homebrew</b> oder Java-freie Bundles für macOS, Linux und Windows.",
+  "tm.more": "CLI-Anleitung →",
+  "dr.eyebrow": "MCP-Türen · neu in 0.5",
+  "dr.h2": "Andere Agenten hereinlassen — durch Türen, die du öffnest.",
+  "dr.p": "Vancetope spricht MCP in beide Richtungen. Nach außen nutzt es deine MCP-Server als Tools; nach innen <em>ist</em> es ein MCP-Server — drei Türen, jede so schmal wie nötig, alle hinter einem echten OAuth-2.1-Autorisierungsserver.",
+  "d.t.h": "Die Tenant-Tür",
+  "d.t.p": "Das volle Tool-Inventar für deinen eigenen Coding-Agenten — Dokumente, Recherche, Prozesse.",
+  "d.p.h": "Die Projekt-Tür",
+  "d.p.p": "Nur <code>doc_*</code>, nur ein Projekt, nur lesend oder lesend-schreibend, begrenzt auf Pfad-Präfixe — eingestellt in einem Config-Dokument.",
+  "d.a.h": "Die Agenten-Tür",
+  "d.a.p": "Mit einem persistenten Agenten sprechen, nicht mit Tools: das Gate entscheidet, das Gespräch läuft, es schließt sich bei Leerlauf.",
+  "d.o.h": "Ein Schloss an jeder Tür",
+  "d.o.p": "Ein Issuer pro Tenant, Zustimmung für fremde Clients, rotierende Refresh-Tokens mit Replay-Widerruf, dynamische Client-Registrierung und Client-ID-Metadaten-Dokumente. MCP-Hosts verbinden sich per Browser-Login — kein Token-Kopieren.",
+  "d.i.h": "Integration-Tokens",
+  "d.i.p": "Für Werkzeuge ohne OAuth: langlebige Zugangsdaten, verengt auf ein Profil und an ein Projekt gepinnt. Verengen schneidet nur — ein Token fügt nie Rechte hinzu.",
+  "out.eyebrow": "Nach draußen",
+  "out.h2": "Der Rest deiner Welt, hereingeholt.",
+  "out.p": "Was woanders lebt, bleibt dort — Vancetope liest es, hängt es ein, durchsucht es und schickt fertige Arbeit wieder hinaus.",
+  "o.packs.h": "MCP- &amp; REST-Packs",
+  "o.packs.p": "Jeder MCP-Server und jede OpenAPI-Beschreibung wird zu Agenten-Tools — auf dem Server, im Terminal oder auf dem Desktop.",
+  "o.research.h": "Recherche-Quellen",
+  "o.research.p": "Websuche und Crawling über exa, firecrawl oder SearXNG — jede Quelle ein Dokument, das du konfigurierst und routest.",
+  "o.feeds.h": "Feeds",
+  "o.feeds.p": "Ströme aus mehreren Quellen per Cursor zusammengeführt — Mastodon-Timelines und Hashtags inklusive.",
+  "o.mount.h": "Eingehängte Ordner",
+  "o.mount.p": "Fremde Dateien erscheinen unter <code>_ext/</code> und lesen sich wie Dokumente — ein Host-Verzeichnis oder eine andere Anwendung.",
+  "o.grab.h": "Web-Grab",
+  "o.grab.p": "Die Seite, die dein Browser zeigt, als Dokument — ohne zweiten Request, also bleiben Logins und Paywalls, die du passiert hast, passiert.",
+  "o.dav.h": "Finder &amp; Obsidian",
+  "o.dav.p": "Ein Projekt als Laufwerk einhängen und seine Dokumente mit deinen eigenen Werkzeugen bearbeiten.",
+  "o.conn.h": "Jira, GitHub &amp; Co.",
+  "o.conn.p": "Fertige Arbeit geht dorthin, wo sie hingehört — Issues, Repos, Doku — statt dass Vancetope so tut, als wäre es all das.",
+  "o.share.h": "Per Mail teilen",
+  "o.share.p": "Ein Dokument per SMTP oder Gmail verschicken, oder in jemandes Inbox auf demselben Server.",
+  "o.api.h": "Skript-API",
+  "o.api.p": "<code>vance.documents.*</code> für JavaScript und Python — dieselbe Dokument-Schnittstelle, die die Agenten nutzen.",
+  "next.back": "← Zurück",
+  "next.agents": "Agenten &amp; Engines",
+  "next.next": "Weiter →",
+  "next.trust": "Sicherheit &amp; Self-Hosting"
+}
+</script>
