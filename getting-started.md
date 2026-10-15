@@ -298,16 +298,18 @@ interactive REPL). Already imported once? Use `project-kits update` instead of
 
 ## What you get
 
-The core stack is always MongoDB + Brain + Web UI. The wizard's **expert
-options** can add Redis (for live-collaboration features) and debug UIs.
+The core stack is always MongoDB + Brain + Web UI — nothing else is installed
+by default. Redis (for live-collaboration features) and the debug UIs are
+**optional**: they only exist if you switch them on in the wizard's expert
+mode.
 
 | Service | Default port | When |
 |---|---|---|
 | Web UI | 9999 (default; `VANCE_PORT`) | always |
 | Brain (REST/WS) | 9990 | always (host-exposed only if you opt in) |
 | MongoDB | 27017 | always (host-exposed only if you opt in) |
-| Redis (live-WS) | 6379 | expert option |
-| mongo-express / redis-commander (debug UIs) | 9081 / — | expert · `--profile tools` |
+| Redis (live-WS) | 6379 | optional — expert mode |
+| mongo-express / redis-commander (debug UIs) | 9081 / 8082 | optional — expert mode, then started only on demand with `--profile tools`; redis-commander only together with Redis |
 
 Ports and which services are exposed depend on your wizard answers. All data
 lives in named Docker volumes: `docker compose down` keeps it,
@@ -316,8 +318,9 @@ lives in named Docker volumes: `docker compose down` keeps it,
 ## Expert options
 
 Re-run the installer (or the direct `docker run … --setup-docker-compose`) and
-turn on **Expert mode** for extra toggles: Redis for live features, debug UIs
-(mongo-express, redis-commander) behind `docker compose --profile tools up -d`,
+turn on **Expert mode** for extra toggles — all off by default: Redis for live
+features, debug UIs (mongo-express, redis-commander; even when enabled they
+don't start with the stack, only via `docker compose --profile tools up -d`),
 an Anus admin service, exposing the Brain/Mongo/Redis host ports, and the image
 tag. Your previous answers are pre-filled from the existing `.env`.
 
