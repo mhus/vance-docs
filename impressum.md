@@ -22,7 +22,7 @@ Deutschland
 
 ## Kontakt
 
-E-Mail: hummel@sipgate.de
+E-Mail: info@vancetope.com
 
 ## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
 

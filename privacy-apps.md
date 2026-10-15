@@ -64,7 +64,7 @@ Berliner Str. 10
 95119 Naila
 Germany
 
-Email: hummel@sipgate.de
+Email: info@vancetope.com
 
 Further details in the [Impressum](/impressum).
 
