@@ -1,0 +1,23 @@
+{
+  "nav.apps": "Aplikacje",
+  "nav.agents": "Agenci",
+  "nav.connect": "Połącz",
+  "nav.trust": "Zaufanie",
+  "nav.docs": "Dokumentacja",
+  "nav.cta": "Zacznij",
+  "foot.product": "Produkt",
+  "foot.apps": "Aplikacje &amp; dokumenty",
+  "foot.agents": "Agenci &amp; silniki",
+  "foot.connect": "Klienci &amp; integracje",
+  "foot.trust": "Bezpieczeństwo &amp; self-hosting",
+  "foot.vision": "Czym jest Vancetope",
+  "foot.learn": "Ucz się",
+  "foot.start": "Zacznij",
+  "foot.tours": "Prezentacje funkcji",
+  "foot.stories": "Historie użycia",
+  "foot.concepts": "Koncepcje",
+  "foot.architecture": "Architektura",
+  "foot.resources": "Zasoby",
+  "foot.community": "Społeczność",
+  "footer.copy": "© 2025–2026 Mike Hummel · dokumentacja na licencji CC BY 4.0"
+}

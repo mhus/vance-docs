@@ -1,0 +1,23 @@
+{
+  "nav.apps": "Приложения",
+  "nav.agents": "Агенты",
+  "nav.connect": "Подключение",
+  "nav.trust": "Доверие",
+  "nav.docs": "Документация",
+  "nav.cta": "Начать",
+  "foot.product": "Продукт",
+  "foot.apps": "Приложения &amp; документы",
+  "foot.agents": "Агенты &amp; движки",
+  "foot.connect": "Клиенты &amp; интеграции",
+  "foot.trust": "Безопасность &amp; self-hosting",
+  "foot.vision": "Что такое Vancetope",
+  "foot.learn": "Узнать больше",
+  "foot.start": "Начать",
+  "foot.tours": "Обзор функций",
+  "foot.stories": "Примеры использования",
+  "foot.concepts": "Концепции",
+  "foot.architecture": "Архитектура",
+  "foot.resources": "Ресурсы",
+  "foot.community": "Сообщество",
+  "footer.copy": "© 2025–2026 Mike Hummel · документация под CC BY 4.0"
+}
