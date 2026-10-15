@@ -13,7 +13,7 @@
   "sh.l1": "<b>Sin llamadas a casa.</b> Sin telemetría, sin servidor de licencias, sin cuenta con nosotros. Las aplicaciones responden “Datos no recopilados” en las tiendas, porque es verdad.",
   "sh.l2": "<b>Tu modelo, tu contrato.</b> Vancetope no envía ningún modelo; las indicaciones van solo al endpoint que configuraste, o nunca salen de la máquina con uno local.",
   "sh.l3": "<b>Instalable por agentes.</b> Ambos asistentes de configuración se ejecutan sin interfaz gráfica desde una configuración YAML, con cierre por fallo y una ejecución de prueba.",
-  "sh.l4": "<b>Código fuente disponible.</b> BSL 1.1, que se convertirá en AGPLv3 el 23-06-2029. Lee lo que se ejecuta.",
+  "sh.l4": "<b>Código abierto.</b> GNU AGPLv3. Lee lo que se ejecuta — y cámbialo.",
   "sh.more": "Empezar →",
   "sh.more2": "Actualizando →",
   "en.eyebrow": "Cifrado",

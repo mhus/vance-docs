@@ -13,7 +13,7 @@
   "sh.l1": "<b>Kein Nach-Hause-Telefonieren.</b> Keine Telemetrie, kein Lizenzserver, kein Account bei uns. Die Apps sagen in den Stores „Keine Daten erfasst“ — weil es stimmt.",
   "sh.l2": "<b>Dein Modell, dein Vertrag.</b> Vancetope liefert kein Modell; Prompts gehen nur an den Endpoint, den du eingestellt hast — oder verlassen mit einem lokalen Modell nie die Maschine.",
   "sh.l3": "<b>Von Agenten installierbar.</b> Beide Setup-Wizards laufen headless aus einer YAML-Config, fail-closed, mit Probelauf.",
-  "sh.l4": "<b>Source available.</b> BSL 1.1, wird am 2029-06-23 zu AGPLv3. Lies, was läuft.",
+  "sh.l4": "<b>Open Source.</b> GNU AGPLv3. Lies, was läuft — und ändere es.",
   "sh.more": "Loslegen →",
   "sh.more2": "Aktualisieren →",
   "en.eyebrow": "Verschlüsselung",

@@ -761,9 +761,9 @@
       "translated_at": "2026-08-28T08:37:20Z"
     },
     "vision.md": {
-      "model": "gemini-2.5-flash",
-      "source_sha256": "ccce5f30a279155b3dca4aa005b8d5e2189d3eca85132555a8755d6584ec3c58",
-      "translated_at": "2026-08-28T08:37:28Z"
+      "model": "manual",
+      "source_sha256": "475575dd3e8ce1e8298aa0d617b6c91b3021d81cdd8e9ffc7ff656f0aad5515a",
+      "translated_at": "2026-10-15T14:11:17Z"
     },
     "vogon-engine.md": {
       "model": "gemini-2.5-flash",

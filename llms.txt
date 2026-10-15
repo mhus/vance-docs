@@ -1,6 +1,6 @@
 # Vance
 
-> A personal project: a server (the "Brain") on which LLM agents work assignments over hours and days — shaped almost entirely from its own documents. Not a product; source-available, not classic open source.
+> A personal project: a server (the "Brain") on which LLM agents work assignments over hours and days — shaped almost entirely from its own documents. Not a product; open source under the GNU AGPLv3.
 
 Almost everything in Vance is a document in MongoDB — recipes, prompts, schedulers, hooks, settings, manuals — so the system can be reshaped from its own data, by humans and by agents. Engines are Java algorithms with a lifecycle; code drives the flow, not the LLM. Recipes (YAML configs) bind engines to default params, prompt prefixes and tool adjustments — many recipes per engine, no Java change required.
 
@@ -12,7 +12,7 @@ The authoritative specs are written in German under `specification/public/*.md` 
 - [Concepts](https://www.vancetope.com/concepts): engines, recipes, scopes, think-processes, kits.
 - [Architecture](https://www.vancetope.com/architecture): brain + clients, data model, triggers.
 - [How-tos](https://www.vancetope.com/howtos/): task-oriented guides for common workflows.
-- [Source repository](https://github.com/mhus/vance): Java/TypeScript implementation, BSL 1.1.
+- [Source repository](https://github.com/mhus/vance): Java/TypeScript implementation, AGPLv3.
 - [Install script](https://www.vancetope.com/install.sh): one-command local install (curl … | bash), no git needed.
 - [Agent setup guide](https://www.vancetope.com/llm/agent-setup.md): install + bootstrap driven headless — YAML config via stdin, fail-closed validation, dry-run, exit codes. Plain markdown, written for LLM agents and CI.
 

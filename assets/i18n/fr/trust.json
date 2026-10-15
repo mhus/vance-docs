@@ -13,7 +13,7 @@
   "sh.l1": "<b>Pas de « phoning home ».</b> Pas de télémétrie, pas de serveur de licence, pas de compte chez nous. Les applications répondent « Données non collectées » dans les stores — parce que c'est vrai.",
   "sh.l2": "<b>Votre modèle, votre contrat.</b> Vancetope n'embarque aucun modèle ; les prompts ne vont qu'au point de terminaison que vous avez configuré — ou ne quittent jamais la machine avec un modèle local.",
   "sh.l3": "<b>Installable par agent.</b> Les deux assistants de configuration s'exécutent sans interface graphique à partir d'une configuration YAML, en mode fail-closed, avec une exécution à blanc.",
-  "sh.l4": "<b>Code source disponible.</b> BSL 1.1, devenant AGPLv3 le 23-06-2029. Lisez ce qui s'exécute.",
+  "sh.l4": "<b>Open source.</b> GNU AGPLv3. Lisez ce qui tourne — et modifiez-le.",
   "sh.more": "Démarrer →",
   "sh.more2": "Mise à niveau →",
   "en.eyebrow": "Chiffrement",

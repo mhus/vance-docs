@@ -12,8 +12,8 @@ found exciting — and what I believe others can benefit from — has found its 
 into it.
 
 It is a **project, not a product** — no support contract, no roadmap promises.
-The source code is public: read, try out, run. It is source-available, not
-classic Open Source, and I deliberately keep its future direction open.
+The source code is public: read, try out, run. It is Open Source under the
+GNU AGPLv3.
 
 ---
 
