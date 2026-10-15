@@ -61,9 +61,25 @@ permalink: /
 
   <section class="statement">
     <div class="wrap">
-      <p class="eyebrow" data-i18n="origin.eyebrow">Why it exists</p>
-      <h2 data-i18n="origin.h2">AI had no application.</h2>
-      <p data-i18n="origin.p">Someone once told me AI chats have no application — you open ChatGPT and there’s just a text box; what are you supposed to do with it? It stuck with me. Vancetope is my answer: give AI a place — somewhere it lives, right next to your data — and with a place it finally has an application, something real to do.</p>
+      <p class="eyebrow" data-i18n="origin.eyebrow">What Vancetope is</p>
+      <h2 data-i18n="origin.h2">Where AI lives — and new AI grows.</h2>
+      <div class="pillars">
+        <div class="pillar">
+          <span class="idx">01</span>
+          <h3 data-i18n="origin.1.h">A place for AI</h3>
+          <p data-i18n="origin.1.p">Not a text box, but somewhere to live: right next to your data, with documents, apps, memory and tools. With a place, AI finally has something real to do.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">02</span>
+          <h3 data-i18n="origin.2.h">Where new AI is made</h3>
+          <p data-i18n="origin.2.p">A workshop for new kinds of loops: 18 engines, each a different way to think — deep task trees, bulk workers, fast decision models — and Nutrimat, a lab for experimental loops. New ideas run here first, beside real work.</p>
+        </div>
+        <div class="pillar">
+          <span class="idx">03</span>
+          <h3 data-i18n="origin.3.h">One whole system</h3>
+          <p data-i18n="origin.3.p">Not a chat with plugins bolted on. Apps, agents, memory, triggers, clients and security are one system built on one idea — everything is a document — so every part knows every other.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -305,110 +321,3 @@ permalink: /
     </div>
   </section>
 
-<script type="application/json" id="i18n-de">
-{
-  "hero.h1": "Gib der AI einen Ort.",
-  "hero.lede": "Vancetope gibt der AI einen Ort — und damit eine Application: einen Arbeitsplatz mit Dokumenten, Sheets, Canvas und Boards, in dem Agenten bei deinen Daten sitzen und nicht nebenher chatten, sondern die Arbeit machen. Für eine Antwort in fünf Minuten oder einen Auftrag, der Tage läuft. Beruflich und privat, sauber getrennt. Auf deinem eigenen Server.",
-  "cta.start": "Loslegen",
-  "cta.github": "Auf GitHub sternen",
-  "hero.note": "Mit Docker in ein paar Minuten selbst gehostet — das Modell bringst du mit. <a href=\"/getting-started\">Installieren&nbsp;→</a>",
-  "latest.pill": "Agenten mit Tür · Bulk-Läufe · Desktop-Agenten →",
-  "signal.lead": "Läuft auf deinem Server. Arbeitet mit deinem Modell.",
-  "signal.1": "Self-hosted",
-  "signal.2": "Eigenes Modell",
-  "signal.3": "MCP in beide Richtungen",
-  "signal.4": "Web · Desktop · CLI · Mobile",
-  "signal.5": "Keine Telemetrie",
-  "tick.engines": "Engines, bei denen Code den Ablauf steuert",
-  "tick.apps": "Apps auf einem Datenmodell",
-  "tick.kinds": "Dokument-Arten, eine API",
-  "tick.doors": "MCP-Türen hinter OAuth 2.1",
-  "tick.clients": "Clients ins selbe Brain",
-  "tick.telemetry": "Bytes Telemetrie",
-  "faq.eyebrow": "Fragen",
-  "faq.h2": "Oft genug gefragt, um sie hier zu beantworten.",
-  "faq.q1": "Ist Vancetope ein Produkt, das ich kaufen kann?",
-  "faq.a1": "Nein. Es ist ein persönliches Projekt mit öffentlichem Quellcode — kein Verkauf, kein Support-Vertrag, kein gehosteter Dienst. Du betreibst es selbst, auf einem Laptop, einem Server oder einem Cluster.",
-  "faq.q2": "Welches KI-Modell nutzt es?",
-  "faq.a2": "Deins. Vancetope liefert kein Modell: Verbinde eine gehostete API oder ein lokales Modell — jeder OpenAI-kompatible Endpoint geht. <a href=\"/getting-started#choosing-a-model\">Welche Modelle</a> unter agentischer Last durchhalten, messen die <a href=\"/benchmarks/\">Benchmarks</a>.",
-  "faq.q3": "Was brauche ich, um es zu betreiben?",
-  "faq.a3": "Eine Maschine mit Docker. Zwei Befehle installieren den Stack und richten den ersten Tenant und User ein — ein paar Minuten. <a href=\"/getting-started\">Loslegen</a>.",
-  "faq.q4": "Schickt es meine Daten irgendwohin?",
-  "faq.a4": "Nur an den Modell-Endpoint, den du eingestellt hast, und nur das, was der Agent ihm schickt. Keine Telemetrie, keine Lizenzprüfung, kein Account bei uns. Dokumente lassen sich so verschlüsseln, dass nicht einmal dein eigener Server sie lesen kann. <a href=\"/trust/\">Sicherheit &amp; Self-Hosting</a>.",
-  "faq.q5": "Ist es Open Source?",
-  "faq.a5": "Source-available: Business Source License 1.1, die am 2029-06-23 zu AGPLv3 wird. Du kannst es lesen, betreiben und ändern; der Lizenztext auf <a href=\"https://github.com/mhus/vance\">GitHub</a> hat die Details.",
-  "faq.q6": "Kann mein eigener Coding-Agent damit arbeiten?",
-  "faq.a6": "Ja. Vancetope ist ein MCP-Server mit drei Türen — Tenant, Projekt und Agenten — hinter OAuth 2.1; Claude Code, Cursor und andere verbinden sich per Browser-Login. <a href=\"/connect/#doors\">MCP-Türen</a>.",
-  "origin.eyebrow": "Warum es das gibt",
-  "origin.h2": "AI hatte keine Application.",
-  "origin.p": "Jemand sagte mir mal: AI-Chats haben keine Application — du machst ChatGPT auf, und da steht nur ein Textfeld; was fängst du damit an? Das ist hängengeblieben. Vancetope ist meine Antwort: Gib der AI einen Ort — wo sie ist, direkt neben deinen Daten — und mit einem Ort hat sie endlich eine Application, etwas Echtes zu tun.",
-  "apps.eyebrow": "Echte Oberflächen",
-  "apps.h2": "Echte Apps — von AI erzeugt und verbunden.",
-  "apps.p": "Kein Chatfenster, sondern die Werkzeuge, mit denen man wirklich arbeitet — alle AI-nativ: erzeugen, füllen, umbauen, verknüpfen lassen. Weil alles ein Dokument ist, hängt es zusammen — und live geteilt, mit Menschen und Agenten zugleich.",
-  "apps.cortex": "Chat, Dokument und Ausführung auf einer Fläche — jede Art Dokument, der Agent direkt daneben.",
-  "apps.workbook": "Seiten im Block-Editor — mit Formularen, Quizzen und ausführbaren Skript-Blöcken.",
-  "apps.sheet": "Tabellen mit Funktionen — Ergebnisse weiter in eine Pipeline.",
-  "apps.canvas": "Räumlich denken: Knoten, Verbindungen und Gruppen auf einer offenen Fläche.",
-  "apps.boards": "Arbeit planen, durchverfolgen, die eigene Liste sauber halten.",
-  "apps.new": "Handschrift, die der Agent lesen und bemalen kann; Design-Sammlungen mit Live-Vorschau.",
-  "apps.more": "…dazu Wiki, Journal, Kalender, Finanzen, Slides, Mindmaps, Karten, Audio, Bilder — und Apps, die der Agent für dich baut. Alle Apps ansehen →",
-  "cases.eyebrow": "In Aktion",
-  "cases.h2": "Was Leute damit erledigen.",
-  "cases.p": "Echte Durchläufe — aus einer Anfrage werden Recherche, Charts, Dokumente und Präsentationen. Jeder ist eine Slideshow zum Mitverfolgen.",
-  "cases.iron": "Tiefenrecherche mit Marvin, zur Mindmap umbauen, bebildern, ein Dokument zusammenstellen — und als PDF exportieren. Alles in einem Gespräch.",
-  "cases.stock": "Kurse einer Aktie aus dem Web ziehen, als Candlesticks charten und eine Einschätzung bekommen, die die Zahlen nennt, auf denen sie steht.",
-  "cases.talent": "Einen wiederverwendbaren Rat aus AI-Personas aufstellen, einen Pitch reinwerfen und ein zusammengeführtes Urteil bekommen — der Dissens bleibt erhalten.",
-  "cases.more": "…und mehr — Datenanalyse, Recherche zu Slides. Alle How-tos und Geschichten →",
-  "pillars.eyebrow": "Was es ausmacht",
-  "pillars.h2": "Ein paar Ideen tragen den Großteil.",
-  "pillars.p": "Alles Weitere folgt daraus.",
-  "p1.h": "Alles ist ein Dokument",
-  "p1.p": "Recipes, Prompts, Skills, Scheduler, Hooks, Guards, Settings, sogar Apps — alles Dokumente. Ein neuer Automatismus ist ein neues Dokument. Das System baut sich aus seinen eigenen Daten um — und Agenten können das auch.",
-  "p2.h": "Agenten steuern (fast) alles",
-  "p2.p": "Nahezu jede Fähigkeit ist ein Tool: Dokumente schreiben, Worker starten, Trigger setzen, recherchieren, delegieren. Du gibst die Richtung vor und greifst ein, wann du willst — der Ablauf bleibt sichtbar.",
-  "p3.h": "Code steuert den Ablauf",
-  "p3.p": "Engines sind Java-Algorithmen mit Lifecycle — der Code entscheidet, wann das Modell gefragt wird und wann die Arbeit fertig ist. Wenige Engines, viele Recipes. Deshalb kann ein Auftrag tagelang laufen, ohne abzudriften.",
-  "p4.h": "Zum Arbeiten gebaut — gemeinsam",
-  "p4.p": "<code>Cortex</code> vereint Chat, Dokumente und Ausführung auf einer Fläche — live editiert mit anderen Menschen und mit Agenten in derselben Session. Presence, Merge, Versionierung und Diskussionen inklusive.",
-  "p5.h": "Projekte grenzen ab",
-  "p5.p": "Ein Projekt ist ein abgegrenzter Bereich mit eigenen Dokumenten, Konfiguration und Agenten. Settings, Memory und Rechte vererben sich die Scope-Kaskade hinunter — Tenant, Projekt, User, Session.",
-  "p6.h": "Es läuft von selbst",
-  "p6.p": "Scheduler, Lifecycle-Hooks und Webhooks feuern Recipes, Skripte oder Workflows. Persistente Agenten führen ein Journal, wachen nach eigenem Zeitplan auf — und halten an, um zu fragen, statt zu raten.",
-  "ex.eyebrow": "Tiefer einsteigen",
-  "ex.h2": "Unter der Oberfläche steckt viel.",
-  "ex.p": "Vancetope ist längst mehr als ein Chat mit Dokumenten. Vier Touren, je eine Seite:",
-  "ex.apps.tag": "Apps &amp; Dokumente",
-  "ex.apps.h": "Alles, worin du arbeitest",
-  "ex.apps.p": "Fünfzehn Apps und gut dreißig Dokument-Arten — von Workbook und Kanban bis Handschrift, Audio und Apps, die der Agent selbst baut, in der Sandbox.",
-  "ex.agents.tag": "Agenten &amp; Engines",
-  "ex.agents.h": "Arbeit, die nicht in einen Turn passt",
-  "ex.agents.p": "Tiefe Recherche-Bäume, Bulk-Läufe über tausende Datensätze, schnelle Entscheidungsmodelle, Räte — und persistente Agenten mit Zuhause, Journal und Zeitplan.",
-  "ex.connect.tag": "Clients &amp; Integrationen",
-  "ex.connect.h": "Ein Brain, viele Türen",
-  "ex.connect.p": "Web, Desktop, Terminal, Mobile, eine Browser-Erweiterung — und MCP in beide Richtungen, bewacht von einem echten OAuth-Server, damit andere Agenten mit deinen arbeiten können.",
-  "ex.trust.tag": "Sicherheit &amp; Self-Hosting",
-  "ex.trust.h": "Dein Server, deine Schlüssel",
-  "ex.trust.p": "Ende-zu-Ende-verschlüsselte Dokumente, Sandboxen auf jeder Maschine, die ein Agent anfasst, Guards vor gefährlichen Befehlen, Quoten — und nichts telefoniert nach Hause.",
-  "work.eyebrow": "Arbeit und Privat",
-  "work.h2": "Ein Ort für alles, woran du arbeitest.",
-  "work.p": "Beruflich oder privat — Vancetope hält beides, sauber getrennt in eigenen Tenants. Eine Fünf-Minuten-Frage oder ein Projekt über Wochen; etwas aus dem Web, ein Dokument zum Umbauen, Dateien direkt auf deiner Maschine. Bewusst offen: Was du sonst über ein Dutzend Apps verstreust, passt hier meist einfach rein.",
-  "kits.eyebrow": "Project Kits",
-  "kits.h2": "Ein Projekt startklar aufsetzen.",
-  "kits.p": "Ein Kit ist ein Git-Bundle aus Skills, Recipes, Tools und Settings. Installier eins, und ein Projekt kommt vorkonfiguriert — Denkmuster, Worker-Recipes, Tool-Packs, Defaults. Und Kits erben, also komponieren sie:",
-  "kits.plus": "+ bau dein eigenes",
-  "kits.note": "Das Spannende sind nicht die mitgelieferten — sondern dass ein Kit <em>einfach ein Git-Repo</em> ist. Zeig ein Projekt auf deins, und es ist ab der ersten Nachricht produktiv.",
-  "ai.eyebrow": "Der Beweis ist das Produkt",
-  "ai.h2": "Von Agenten geschrieben. <em>Mit Absicht.</em>",
-  "ai.p": "Jede Zeile von Vancetope ist AI-geschrieben — dirigiert, reviewt und geformt von einem Menschen. Das ist kein Geständnis, sondern der ganze Punkt: Vancetope ist das, was dabei herauskommt, wenn man über Monate <em>mit</em> Agenten arbeitet — ein großes, kohärentes System, das man laufen lassen, lesen und ändern kann. Tool und Beweis sind dasselbe.",
-  "closer.eyebrow": "Ehrlich gesagt",
-  "closer.h2": "Es ist ein persönliches Projekt.",
-  "closer.p1": "Ich habe Vancetope gebaut, um LLM-Agenten zu entwickeln und sie so zu formen, dass ich damit wirklich produktiv arbeiten kann. Über die Zeit ist alles reingewandert, was ich spannend fand — plus ein paar Dinge, von denen ich glaube, dass andere was davon haben.",
-  "closer.p2": "Kein Support-Vertrag, keine Roadmap-Versprechen — ein Projekt, kein Produkt. Der Quellcode ist öffentlich: lesen, ausprobieren, laufen lassen. Er ist source-available, kein klassisches Open Source, und wohin die Reise geht, halte ich mir offen.",
-  "fact.stack": "Stack",
-  "fact.clients": "Clients",
-  "fact.clients.v": "Web · macOS-Desktop · CLI · iOS &amp; Android · Browser-Erweiterung",
-  "fact.license": "Lizenz",
-  "fact.status": "Status",
-  "fact.status.v": "Beta · v0.5 · self-hosted"
-}
-</script>

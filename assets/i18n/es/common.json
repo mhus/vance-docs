@@ -1,0 +1,23 @@
+{
+  "nav.apps": "Aplicaciones",
+  "nav.agents": "Agentes",
+  "nav.connect": "Conectar",
+  "nav.trust": "Confianza",
+  "nav.docs": "Documentación",
+  "nav.cta": "Empezar",
+  "foot.product": "Producto",
+  "foot.apps": "Aplicaciones &amp; documentos",
+  "foot.agents": "Agentes &amp; motores",
+  "foot.connect": "Clientes &amp; integraciones",
+  "foot.trust": "Seguridad &amp; autoalojamiento",
+  "foot.vision": "Qué es Vancetope",
+  "foot.learn": "Aprender",
+  "foot.start": "Empezar",
+  "foot.tours": "Recorridos por las funciones",
+  "foot.stories": "Casos de uso",
+  "foot.concepts": "Conceptos",
+  "foot.architecture": "Arquitectura",
+  "foot.resources": "Recursos",
+  "foot.community": "Comunidad",
+  "footer.copy": "© 2025–2026 Mike Hummel · docs bajo CC BY 4.0"
+}

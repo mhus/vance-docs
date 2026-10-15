@@ -133,10 +133,34 @@
   .theme-toggle { width: 38px; }
   .theme-toggle svg { width: 16px; height: 16px; }
   .lang-toggle { padding: 0 11px; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; }
+  .lang-toggle { gap: 6px; }
+  .lang { position: relative; }
+  .lang-menu {
+    position: absolute; right: 0; top: calc(100% + 8px); z-index: 60; min-width: 172px;
+    background: var(--raised-2); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.12); padding: 6px; display: flex; flex-direction: column;
+  }
+  .lang-menu[hidden] { display: none; }
+  .lang-menu button {
+    display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer;
+    background: none; border: 0; border-radius: 4px; padding: 9px 10px;
+    font-family: var(--sans); font-size: 14.5px; color: var(--fg-strong);
+  }
+  .lang-menu button:hover { background: var(--raised); }
+  .lang-menu button[aria-checked="true"] { box-shadow: inset 3px 0 0 var(--accent); }
+  .lang-menu .code { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--muted); width: 20px; }
+  .i18n-loading main, .i18n-loading .nav-links { visibility: hidden; }
+
+  /* Japanese: Inter has no CJK glyphs — use the platform's Japanese face, and
+     drop the tight Latin tracking, which crushes kana. */
+  :root[lang="ja"] { --display: "Inter Tight", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Meiryo", sans-serif;
+                     --sans: "Inter", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Meiryo", sans-serif; }
+  :root[lang="ja"] h1, :root[lang="ja"] h2, :root[lang="ja"] h3 { letter-spacing: 0; word-break: auto-phrase; line-height: 1.2; }
+  :root[lang="ja"] p, :root[lang="ja"] li { line-break: strict; }
   @media (max-width: 1060px) { .nav-links { gap: 18px; } .nav-links a { font-size: 14.5px; } .nav-cta .gh-label { display: none; } }
   @media (max-width: 860px) { .nav-links { display: none; } }
   .nav-cta { white-space: nowrap; }
-  @media (max-width: 480px) { .nav-cta.gh { display: none; } .nav-in { gap: 10px; } .nav-actions { gap: 6px; } .nav-cta.solid { padding: 8px 12px; font-size: 14px; } .brand { font-size: 20px; } .lang-toggle { padding: 0 8px; } .theme-toggle { width: 34px; } .icon-btn { height: 34px; } }
+  @media (max-width: 480px) { .nav-cta.gh { display: none; } .nav-in { gap: 10px; } .nav-actions { gap: 6px; } .nav-cta.solid { padding: 8px 12px; font-size: 14px; } .brand { font-size: 20px; } .lang-toggle { padding: 0 8px; } .lang-toggle svg { display: none; } .theme-toggle { width: 34px; } .icon-btn { height: 34px; } }
 
   /* ---- Hero ---- */
   .hero { padding-top: clamp(48px, 7vw, 92px); padding-bottom: clamp(56px, 8vw, 104px); overflow: hidden; }
@@ -239,6 +263,7 @@
   /* ---- statement ---- */
   .statement h2 { font-size: clamp(36px, 5.6vw, 72px); line-height: 1; letter-spacing: -.035em; margin: 0 0 26px; max-width: 15em; }
   .statement p { color: var(--muted); font-size: clamp(18px, 1.8vw, 21px); max-width: 40em; margin: 0; line-height: 1.55; }
+  .statement .pillars { margin-top: 56px; }
   .statement p em { color: var(--fg-strong); font-style: normal; font-weight: 500; }
 
   /* ---- dark slab ---- */

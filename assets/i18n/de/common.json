@@ -1,0 +1,23 @@
+{
+  "nav.apps": "Apps",
+  "nav.agents": "Agenten",
+  "nav.connect": "Anbinden",
+  "nav.trust": "Vertrauen",
+  "nav.docs": "Doku",
+  "nav.cta": "Loslegen",
+  "foot.product": "Produkt",
+  "foot.apps": "Apps &amp; Dokumente",
+  "foot.agents": "Agenten &amp; Engines",
+  "foot.connect": "Clients &amp; Integrationen",
+  "foot.trust": "Sicherheit &amp; Self-Hosting",
+  "foot.vision": "Was Vancetope ist",
+  "foot.learn": "Lernen",
+  "foot.start": "Loslegen",
+  "foot.tours": "Feature-Touren",
+  "foot.stories": "Use-Case-Geschichten",
+  "foot.concepts": "Konzepte",
+  "foot.architecture": "Architektur",
+  "foot.resources": "Ressourcen",
+  "foot.community": "Community",
+  "footer.copy": "© 2025–2026 Mike Hummel · Doku unter CC BY 4.0"
+}

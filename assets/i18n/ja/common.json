@@ -1,0 +1,23 @@
+{
+  "nav.apps": "アプリ",
+  "nav.agents": "エージェント",
+  "nav.connect": "連携",
+  "nav.trust": "信頼性",
+  "nav.docs": "ドキュメント",
+  "nav.cta": "始める",
+  "foot.product": "製品",
+  "foot.apps": "アプリ &amp; ドキュメント",
+  "foot.agents": "エージェント &amp; エンジン",
+  "foot.connect": "クライアント &amp; 連携",
+  "foot.trust": "セキュリティ &amp; セルフホスティング",
+  "foot.vision": "Vancetopeとは",
+  "foot.learn": "学ぶ",
+  "foot.start": "始める",
+  "foot.tours": "機能ツアー",
+  "foot.stories": "ユースケース事例",
+  "foot.concepts": "コンセプト",
+  "foot.architecture": "アーキテクチャ",
+  "foot.resources": "リソース",
+  "foot.community": "コミュニティ",
+  "footer.copy": "© 2025–2026 Mike Hummel · ドキュメントはCC BY 4.0ライセンス"
+}
