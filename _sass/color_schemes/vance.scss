@@ -1,28 +1,28 @@
 // Vance docs color scheme — aligned with the landing page.
-// Light "paper field guide": warm paper ground, ink text, amber accent.
+// White field, ink text, signal-orange accent.
 // Only the variables we change are set; everything else falls back to the
 // just-the-docs light defaults.
 
 // Grounds
-$body-background-color:       #F4F2EA;
-$sidebar-color:               #FBFAF4;
-$search-background-color:     #FBFAF4;
-$table-background-color:      #FBFAF4;
-$code-background-color:       #FBFAF4;
+$body-background-color:       #FFFFFF;
+$sidebar-color:               #F4F3EF;
+$search-background-color:     #F4F3EF;
+$table-background-color:      #FFFFFF;
+$code-background-color:       #F4F3EF;
 
 // Text
-$body-text-color:             #34393F;
-$body-heading-color:          #14181F;
-$search-result-preview-color: #5D626D;
-$nav-child-link-color:        #5D626D;
+$body-text-color:             #2B2B30;
+$body-heading-color:          #111113;
+$search-result-preview-color: #5E5E66;
+$nav-child-link-color:        #5E5E66;
 
-// Accent (amber) — matches the landing's --amber
-$link-color:                  #A85D00;
-$btn-primary-color:           #A85D00;
+// Accent — matches the landing's --accent-text
+$link-color:                  #D93A0E;
+$btn-primary-color:           #111113;
 
 // Lines
-$border-color:                #E2DED1;
+$border-color:                #E2E0DA;
 
-// Fonts — same stacks as the landing
-$body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-$mono-font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+// Fonts — same self-hosted faces as the landing (@font-face in custom.scss)
+$body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$mono-font-family: "JetBrains Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", "Roboto Mono", Consolas, monospace;

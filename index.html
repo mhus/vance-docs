@@ -10,6 +10,7 @@ permalink: /
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
+        <a class="release-pill" href="{{ '/blog/vancetope-0-5-0/' | relative_url }}"><span class="v">v0.5.0</span><span data-i18n="latest.pill">Agents with a door · bulk runs · desktop agents →</span></a>
         <h1 data-i18n="hero.h1">Give AI a place.</h1>
         <p class="lede" data-i18n="hero.lede">Vancetope gives AI a place — and with it, an application: a workspace of documents, sheets, canvas and boards where agents sit with your data and don’t chat on the side, they do the work. For an answer in five minutes or an assignment that runs for days. For work and for life, kept apart. On your own server.</p>
         <div class="cta-row">
@@ -24,6 +25,7 @@ permalink: /
         <p class="hero-note" data-i18n="hero.note">Self-hosted with Docker in a few minutes — bring your own model. <a href="{{ '/getting-started' | relative_url }}">Install&nbsp;→</a></p>
       </div>
 
+      <div class="hero-visual">
       <a class="device" id="device" href="{{ '/howtos/uc-iron/' | relative_url }}" aria-label="A live Vancetope think-process — click to open the matching page.">
         <div class="device-bar">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -38,18 +40,22 @@ permalink: /
           <div class="device-foot" id="device-foot">↳ see how it works</div>
         </div>
       </a>
+      </div>
     </div>
   </section>
 
-  <section class="band">
-    <div class="wrap">
-      <a class="latest" href="{{ '/blog/vancetope-0-5-0/' | relative_url }}">
-        <span class="ver">v0.5.0</span>
-        <span class="txt" data-i18n="latest.txt">Agents with a door, bulk work over thousands of records, decision models, and a desktop app whose agents work on your local files.</span>
-        <span class="go" data-i18n="latest.go">Release notes →</span>
-      </a>
+  <div class="signal">
+    <div class="wrap signal-in">
+      <span class="lead" data-i18n="signal.lead">Runs on your server. Works with your model.</span>
+      <ul>
+        <li data-i18n="signal.1">Self-hosted</li>
+        <li data-i18n="signal.2">Bring your own model</li>
+        <li data-i18n="signal.3">MCP both ways</li>
+        <li data-i18n="signal.4">Web · Desktop · CLI · Mobile</li>
+        <li data-i18n="signal.5">No telemetry</li>
+      </ul>
     </div>
-  </section>
+  </div>
 
   <hr class="rule">
 
@@ -81,6 +87,20 @@ permalink: /
       <p class="apps-more"><a href="{{ '/apps/' | relative_url }}" style="color:inherit" data-i18n="apps.more">…plus wiki, journal, calendar, finance, slides, mindmaps, maps, audio, images — and apps the agent builds for you. See all apps →</a></p>
     </div>
   </section>
+
+  <div class="ticker" aria-label="Vancetope in numbers: 18 engines, 15 apps, 30+ document kinds, 3 MCP doors, 0 telemetry">
+    <div class="ticker-track" aria-hidden="true">
+      {% for i in (1..2) %}<div class="ticker-set">
+        <div class="tick"><span class="n">18</span><span class="l" data-i18n="tick.engines">engines where code drives the flow</span></div><span class="tick-sep">✳</span>
+        <div class="tick"><span class="n">15</span><span class="l" data-i18n="tick.apps">apps on one data model</span></div><span class="tick-sep">✳</span>
+        <div class="tick"><span class="n">30+</span><span class="l" data-i18n="tick.kinds">document kinds, one API</span></div><span class="tick-sep">✳</span>
+        <div class="tick"><span class="n">3</span><span class="l" data-i18n="tick.doors">MCP doors behind OAuth 2.1</span></div><span class="tick-sep">✳</span>
+        <div class="tick"><span class="n">5</span><span class="l" data-i18n="tick.clients">clients into the same brain</span></div><span class="tick-sep">✳</span>
+        <div class="tick"><span class="n">0</span><span class="l" data-i18n="tick.telemetry">bytes of telemetry</span></div><span class="tick-sep">✳</span>
+      </div>{% endfor %}
+    </div>
+  </div>
+
 
   <hr class="rule">
 
@@ -155,21 +175,25 @@ permalink: /
       </div>
       <div class="cards c2 explore">
         <a class="card" href="{{ '/apps/' | relative_url }}">
+          <span class="swatch"></span>
           <span class="tag" data-i18n="ex.apps.tag">apps &amp; documents</span>
           <h3 data-i18n="ex.apps.h">Everything you work in</h3>
           <p data-i18n="ex.apps.p">Fifteen apps and thirty-odd document kinds — from workbook and kanban to handwriting, audio and apps the agent builds itself, sandboxed.</p>
         </a>
         <a class="card" href="{{ '/agents/' | relative_url }}">
+          <span class="swatch"></span>
           <span class="tag" data-i18n="ex.agents.tag">agents &amp; engines</span>
           <h3 data-i18n="ex.agents.h">Work that doesn’t fit into a turn</h3>
           <p data-i18n="ex.agents.p">Deep research trees, bulk runs over thousands of records, fast decision models, councils, and persistent agents with a home, a journal and a schedule.</p>
         </a>
         <a class="card" href="{{ '/connect/' | relative_url }}">
+          <span class="swatch"></span>
           <span class="tag" data-i18n="ex.connect.tag">clients &amp; integrations</span>
           <h3 data-i18n="ex.connect.h">One brain, many doors</h3>
           <p data-i18n="ex.connect.p">Web, desktop, terminal, mobile, a browser extension — and MCP in both directions, guarded by a real OAuth server, so other agents can work with yours.</p>
         </a>
         <a class="card" href="{{ '/trust/' | relative_url }}">
+          <span class="swatch"></span>
           <span class="tag" data-i18n="ex.trust.tag">security &amp; self-hosting</span>
           <h3 data-i18n="ex.trust.h">Your server, your keys</h3>
           <p data-i18n="ex.trust.p">End-to-end encrypted documents, sandboxes on every machine an agent touches, guards before dangerous commands, quotas — and nothing phoning home.</p>
@@ -190,7 +214,7 @@ permalink: /
 
   <hr class="rule">
 
-  <section>
+  <section class="slab">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow" data-i18n="kits.eyebrow">Project kits</p>
@@ -220,11 +244,46 @@ permalink: /
 
   <hr class="rule">
 
-  <section class="statement">
+  <section class="statement slab" style="padding-top:0">
     <div class="wrap">
       <p class="eyebrow" data-i18n="ai.eyebrow">The proof is the product</p>
       <h2 data-i18n="ai.h2">Written by agents. <em>On purpose.</em></h2>
       <p data-i18n="ai.p">Every line of Vancetope is AI-written — directed, reviewed and shaped by one human. That’s not a confession, it’s the whole point: Vancetope is what working <em>with</em> agents over months actually builds — a large, coherent system you can run, read and change. The tool and the demo are the same thing.</p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap faq-grid">
+      <div>
+        <p class="eyebrow" data-i18n="faq.eyebrow">Questions</p>
+        <h2 data-i18n="faq.h2">Asked often enough to answer here.</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary data-i18n="faq.q1">Is Vancetope a product I can buy?</summary>
+          <p data-i18n="faq.a1">No. It’s a personal project with public source — no sales, no support contract, no hosted service. You run it yourself, on a laptop, a server or a cluster.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q2">Which AI model does it use?</summary>
+          <p data-i18n="faq.a2">Yours. Vancetope ships no model: connect a hosted API or a local one — any OpenAI-compatible endpoint works. <a href="/getting-started#choosing-a-model">Which models hold up</a> under agentic load is measured in the <a href="/benchmarks/">benchmarks</a>.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q3">What do I need to run it?</summary>
+          <p data-i18n="faq.a3">A machine with Docker. Two commands install the stack and set up your first tenant and user — a few minutes. <a href="/getting-started">Get started</a>.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q4">Does it send my data anywhere?</summary>
+          <p data-i18n="faq.a4">Only to the model endpoint you configured, and only what the agent sends it. No telemetry, no licence check, no account with us. Documents can be encrypted so that even your own server can’t read them. <a href="/trust/">Security &amp; self-hosting</a>.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q5">Is it open source?</summary>
+          <p data-i18n="faq.a5">Source-available: Business Source License 1.1, which turns into AGPLv3 on 2029-06-23. You can read, run and change it; the licence text on <a href="https://github.com/mhus/vance">GitHub</a> has the details.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q6">Can my own coding agent work with it?</summary>
+          <p data-i18n="faq.a6">Yes. Vancetope is an MCP server with three doors — tenant, project and agents — behind OAuth 2.1, so Claude Code, Cursor and others connect with a browser login. <a href="/connect/#doors">MCP doors</a>.</p>
+        </details>
+      </div>
     </div>
   </section>
 
@@ -253,8 +312,33 @@ permalink: /
   "cta.start": "Loslegen",
   "cta.github": "Auf GitHub sternen",
   "hero.note": "Mit Docker in ein paar Minuten selbst gehostet — das Modell bringst du mit. <a href=\"/getting-started\">Installieren&nbsp;→</a>",
-  "latest.txt": "Agenten mit eigener Tür, Bulk-Arbeit über tausende Datensätze, Entscheidungsmodelle und eine Desktop-App, deren Agenten auf deinen lokalen Dateien arbeiten.",
-  "latest.go": "Release-Notes →",
+  "latest.pill": "Agenten mit Tür · Bulk-Läufe · Desktop-Agenten →",
+  "signal.lead": "Läuft auf deinem Server. Arbeitet mit deinem Modell.",
+  "signal.1": "Self-hosted",
+  "signal.2": "Eigenes Modell",
+  "signal.3": "MCP in beide Richtungen",
+  "signal.4": "Web · Desktop · CLI · Mobile",
+  "signal.5": "Keine Telemetrie",
+  "tick.engines": "Engines, bei denen Code den Ablauf steuert",
+  "tick.apps": "Apps auf einem Datenmodell",
+  "tick.kinds": "Dokument-Arten, eine API",
+  "tick.doors": "MCP-Türen hinter OAuth 2.1",
+  "tick.clients": "Clients ins selbe Brain",
+  "tick.telemetry": "Bytes Telemetrie",
+  "faq.eyebrow": "Fragen",
+  "faq.h2": "Oft genug gefragt, um sie hier zu beantworten.",
+  "faq.q1": "Ist Vancetope ein Produkt, das ich kaufen kann?",
+  "faq.a1": "Nein. Es ist ein persönliches Projekt mit öffentlichem Quellcode — kein Verkauf, kein Support-Vertrag, kein gehosteter Dienst. Du betreibst es selbst, auf einem Laptop, einem Server oder einem Cluster.",
+  "faq.q2": "Welches KI-Modell nutzt es?",
+  "faq.a2": "Deins. Vancetope liefert kein Modell: Verbinde eine gehostete API oder ein lokales Modell — jeder OpenAI-kompatible Endpoint geht. <a href=\"/getting-started#choosing-a-model\">Welche Modelle</a> unter agentischer Last durchhalten, messen die <a href=\"/benchmarks/\">Benchmarks</a>.",
+  "faq.q3": "Was brauche ich, um es zu betreiben?",
+  "faq.a3": "Eine Maschine mit Docker. Zwei Befehle installieren den Stack und richten den ersten Tenant und User ein — ein paar Minuten. <a href=\"/getting-started\">Loslegen</a>.",
+  "faq.q4": "Schickt es meine Daten irgendwohin?",
+  "faq.a4": "Nur an den Modell-Endpoint, den du eingestellt hast, und nur das, was der Agent ihm schickt. Keine Telemetrie, keine Lizenzprüfung, kein Account bei uns. Dokumente lassen sich so verschlüsseln, dass nicht einmal dein eigener Server sie lesen kann. <a href=\"/trust/\">Sicherheit &amp; Self-Hosting</a>.",
+  "faq.q5": "Ist es Open Source?",
+  "faq.a5": "Source-available: Business Source License 1.1, die am 2029-06-23 zu AGPLv3 wird. Du kannst es lesen, betreiben und ändern; der Lizenztext auf <a href=\"https://github.com/mhus/vance\">GitHub</a> hat die Details.",
+  "faq.q6": "Kann mein eigener Coding-Agent damit arbeiten?",
+  "faq.a6": "Ja. Vancetope ist ein MCP-Server mit drei Türen — Tenant, Projekt und Agenten — hinter OAuth 2.1; Claude Code, Cursor und andere verbinden sich per Browser-Login. <a href=\"/connect/#doors\">MCP-Türen</a>.",
   "origin.eyebrow": "Warum es das gibt",
   "origin.h2": "AI hatte keine Application.",
   "origin.p": "Jemand sagte mir mal: AI-Chats haben keine Application — du machst ChatGPT auf, und da steht nur ein Textfeld; was fängst du damit an? Das ist hängengeblieben. Vancetope ist meine Antwort: Gib der AI einen Ort — wo sie ist, direkt neben deinen Daten — und mit einem Ort hat sie endlich eine Application, etwas Echtes zu tun.",

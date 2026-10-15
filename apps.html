@@ -39,14 +39,14 @@ permalink: /apps/
         </ul>
         <p style="margin-top:16px"><a href="{{ '/howtos/cortex/' | relative_url }}" data-i18n="cx.more">Cortex tour →</a></p>
       </div>
-<pre class="snippet"><span class="c"># one surface, any kind</span>
+<div class="snippet-wrap"><pre class="snippet"><span class="c"># one surface, any kind</span>
 notes/kickoff.md          <span class="a">markdown</span>
 plan/q4-budget            <span class="a">sheet</span>      =SUM(B2:B9)
 ideas/map                 <span class="a">canvas</span>     12 nodes · 3 groups
 release/checklist         <span class="a">checklist</span>  7 / 9
 sketch/whiteboard         <span class="a">scribble</span>   A4 · 3 sheets
 analysis/run              <span class="a">compose</span>    python ▶ <span class="g">✓ 2.1s</span>
-private/keys.md           <span class="a">age</span>        🔒 decrypt locally</pre>
+private/keys.md           <span class="a">age</span>        🔒 decrypt locally</pre></div>
     </div>
   </section>
 
@@ -174,7 +174,7 @@ private/keys.md           <span class="a">age</span>        🔒 decrypt locally
         </ul>
         <p style="margin-top:16px"><a href="{{ '/specs/bistromath-system' | relative_url }}" data-i18n="b.more">Bistromath spec →</a></p>
       </div>
-<pre class="snippet"><span class="c"># view.yaml — the widget names a state key</span>
+<div class="snippet-wrap lime"><pre class="snippet"><span class="c"># view.yaml — the widget names a state key</span>
   - type: table
     from: <span class="g">invoices</span>
     columns: [nr, customer, amount]
@@ -186,7 +186,7 @@ private/keys.md           <span class="a">age</span>        🔒 decrypt locally
   <span class="a">for</span> (<span class="a">const</span> f <span class="a">of</span> files)
     rows.push(<span class="a">await</span> vance.documents.read(f.path))
   vance.state.set(<span class="g">'invoices'</span>, rows)
-}</pre>
+}</pre></div>
     </div>
   </section>
 

@@ -1,20 +1,27 @@
 // Custom overrides layered on top of just-the-docs, to match the Vance
 // landing page. Loaded after the theme, so these win.
 
-$vance-serif: "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+$vance-display: "Inter Tight", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-// Serif headings (the landing uses a serif display face; the mark 𝑣 is a
-// math-italic serif glyph, so headings echo it).
+// Self-hosted faces (SIL OFL, assets/fonts/) — no third-party font CDN.
+@font-face { font-family: "Inter Tight"; font-weight: 500; font-display: swap; src: url("/assets/fonts/inter-tight-500.woff2") format("woff2"); }
+@font-face { font-family: "Inter Tight"; font-weight: 600; font-display: swap; src: url("/assets/fonts/inter-tight-600.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-display: swap; src: url("/assets/fonts/inter-400.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-display: swap; src: url("/assets/fonts/inter-500.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-display: swap; src: url("/assets/fonts/inter-600.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap; src: url("/assets/fonts/jetbrains-mono-400.woff2") format("woff2"); }
+
+// Grotesk display headings, tight — same as the landing.
 h1, h2, h3, h4, h5, h6,
 .site-title,
 .text-alpha, .text-beta, .text-gamma, .text-delta, .text-epsilon {
-  font-family: $vance-serif !important;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: $vance-display !important;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
-// Amber selection, like the landing.
-::selection { background: rgba(168, 93, 0, 0.22); }
+// Lime selection, like the landing.
+::selection { background: #D9F74A; color: #111113; }
 
 // Quiet, bordered code blocks — consistent with the landing's cards.
 .highlight, figure.highlight, div.highlight {
@@ -28,7 +35,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 // Amber hover on links, matching the landing's interaction color.
-a:hover { text-decoration-color: #A85D00; }
+a:hover { text-decoration-color: #FF4F1F; }
 
 // ── Terminal transcripts ────────────────────────────────────────────────────
 // ```console blocks render as the landing's dark "device" (light mono on ink,
@@ -124,7 +131,7 @@ a:hover { text-decoration-color: #A85D00; }
   box-shadow: 0 18px 44px -30px rgba(10, 14, 25, 0.45);
 }
 .vslide figcaption { margin-top: 0.7em; color: $body-text-color; font-size: 0.95em; line-height: 1.55; }
-.vslide figcaption .step { color: #A85D00; font-weight: 600; margin-right: 0.4em; }
+.vslide figcaption .step { color: #FF4F1F; font-weight: 600; margin-right: 0.4em; }
 .vslides-nav {
   display: flex; align-items: center; justify-content: center; gap: 1.1em;
   padding: 0.2em 0.6em 0.7em;
@@ -133,7 +140,7 @@ a:hover { text-decoration-color: #A85D00; }
   border: 1px solid $border-color; background: transparent; color: inherit;
   border-radius: 8px; padding: 0.05em 0.7em; font-size: 1.2em; line-height: 1.4; cursor: pointer;
 }
-.vslides-nav button:hover { border-color: #A85D00; color: #A85D00; }
+.vslides-nav button:hover { border-color: #FF4F1F; color: #FF4F1F; }
 .vslides-count { font-variant-numeric: tabular-nums; color: #6b6252; font-size: 0.9em; min-width: 3.2em; text-align: center; }
 
 // Slide images and standalone shots are clickable → open the lightbox (magnifier cursor).
@@ -210,3 +217,9 @@ video.doc-shot {
   box-shadow: 0 22px 55px -34px rgba(10, 14, 25, 0.5);
   margin-block: 0.85em 0.35em;
 }
+
+// Sidebar in ink, the signal colour only on hover/active — like the landing nav.
+.nav-list .nav-list-item .nav-list-link { color: #2B2B30; }
+.nav-list .nav-list-item .nav-list-link:hover,
+.nav-list .nav-list-item .nav-list-link.active { color: #111113; box-shadow: inset 2px 0 0 #FF4F1F; }
+.aux-nav .aux-nav-list-item .site-button { color: #111113; }

@@ -37,14 +37,14 @@ permalink: /trust/
         </ul>
         <p style="margin-top:16px"><a href="{{ '/getting-started' | relative_url }}" data-i18n="sh.more">Get started →</a> &nbsp; <a href="{{ '/howtos/upgrading/' | relative_url }}" data-i18n="sh.more2">Upgrading →</a></p>
       </div>
-<pre class="snippet"><span class="c">$</span> curl -fsSL https://www.vancetope.com/install.sh | bash
+<div class="snippet-wrap"><pre class="snippet"><span class="c">$</span> curl -fsSL https://www.vancetope.com/install.sh | bash
 <span class="c">  wizard    port · local or external access</span>
 <span class="c">  secrets   </span><span class="g">generated</span><span class="c"> · encryption · internal · mongo</span>
 <span class="c">  compose   ~/.vancetope/docker-compose.yml</span>
 <span class="c">  image     </span><span class="a">IMAGE_TAG=0.5.0</span><span class="c">  (pinned)</span>
 <span class="c">$</span> curl -fsSL https://www.vancetope.com/setup.sh | bash
 <span class="c">  tenant    acme · user ada · provider </span><span class="a">your choice</span>
-  <span class="g">✓ open http://localhost:9999</span></pre>
+  <span class="g">✓ open http://localhost:9999</span></pre></div>
     </div>
   </section>
 
@@ -63,7 +63,7 @@ permalink: /trust/
         </ul>
         <p style="margin-top:16px"><a href="{{ '/specs/document-encryption' | relative_url }}" data-i18n="en.more">Encryption spec →</a></p>
       </div>
-<pre class="snippet"><span class="c"># what the server stores</span>
+<div class="snippet-wrap lime"><pre class="snippet"><span class="c"># what the server stores</span>
 -----BEGIN AGE ENCRYPTED FILE-----
 YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgy
 NTUxOSBQcmV2bGF4c0x1Z1dQb2N0R2ZqVEZ0
@@ -71,7 +71,7 @@ NTUxOSBQcmV2bGF4c0x1Z1dQb2N0R2ZqVEZ0
 -----END AGE ENCRYPTED FILE-----
 
 <span class="c"># what you see after unlocking</span>
-<span class="g">private/keys.md</span> · <span class="a">2 recipients</span> · 🔓 local only</pre>
+<span class="g">private/keys.md</span> · <span class="a">2 recipients</span> · 🔓 local only</pre></div>
     </div>
   </section>
 

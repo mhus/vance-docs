@@ -86,7 +86,7 @@ permalink: /agents/
         </ul>
         <p data-i18n="bulk.p2" style="margin-top:14px"><b>Zem</b> brings decision models — System One for agents. A typed question goes in (yes/no, one of N, a score), a calibrated probability comes out: fast, cheap, no prose. The bundled <code>command-safety</code> recipe asks “is this shell command dangerous?” before it runs.</p>
       </div>
-<pre class="snippet"><span class="c">wowbagger · support-triage · run #w19c</span>
+<div class="snippet-wrap"><pre class="snippet"><span class="c">wowbagger · support-triage · run #w19c</span>
 check     4,812 records · schema ok   <span class="g">✓</span>
 pool      8 workers  <span class="a">zem</span> · <span class="a">light-llm</span>
 chunk     ██████████████░░░░░  31 / 49
@@ -94,7 +94,7 @@ wake      progress · 3 retried · 0 lost
 publish   chunk 31 → <span class="a">triage/out/</span>
 …
 done      <span class="g">4,812 tagged</span>
-cost      412k in · 38k out · 1 report</pre>
+cost      412k in · 38k out · 1 report</pre></div>
     </div>
   </section>
 
@@ -187,12 +187,12 @@ cost      412k in · 38k out · 1 report</pre>
         </ul>
         <p style="margin-top:16px"><a href="{{ '/benchmarks/' | relative_url }}" data-i18n="mo.more">See the benchmark matrix →</a></p>
       </div>
-<pre class="snippet"><span class="c"># example — one alias set, a model per job</span>
+<div class="snippet-wrap lime"><pre class="snippet"><span class="c"># example — one alias set, a model per job</span>
 default:chat      → <span class="a">glm-5.3</span>        <span class="c">hosted</span>
 default:fast      → <span class="a">gemini-3-flash</span> <span class="c">hosted</span>
 benjy:worker      → <span class="a">gemma-4</span>        <span class="c">local · ollama</span>
 command-safety    → <span class="a">jev</span>            <span class="c">decision model</span>
-wowbagger:worker  → <span class="a">qwen3.8</span>        <span class="c">cortecs</span></pre>
+wowbagger:worker  → <span class="a">qwen3.8</span>        <span class="c">cortecs</span></pre></div>
     </div>
   </section>
 

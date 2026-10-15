@@ -81,7 +81,7 @@ permalink: /connect/
         </ul>
         <p style="margin-top:16px"><a href="{{ '/specs/desktop-agent-tools' | relative_url }}" data-i18n="dk.more">Desktop agent tools spec →</a></p>
       </div>
-<pre class="snippet"><span class="c"># ~/.vancetope/mcp.json — passed through to agents</span>
+<div class="snippet-wrap"><pre class="snippet"><span class="c"># ~/.vancetope/mcp.json — passed through to agents</span>
 {
   <span class="g">"mcpServers"</span>: {
     <span class="g">"github"</span>: {
@@ -92,7 +92,7 @@ permalink: /connect/
 }
 
 <span class="c">agent  client_exec_run  "mvn -q test"</span>
-<span class="c">gate   </span><span class="a">ask</span> → <span class="g">allowed once</span></pre>
+<span class="c">gate   </span><span class="a">ask</span> → <span class="g">allowed once</span></pre></div>
     </div>
   </section>
 
@@ -112,7 +112,7 @@ permalink: /connect/
         </ul>
         <p style="margin-top:16px"><a href="{{ '/howtos/foot-cli' | relative_url }}" data-i18n="tm.more">CLI guide →</a></p>
       </div>
-<pre class="snippet"><span class="c">$</span> brew install mhus/vancetope/vancetope
+<div class="snippet-wrap lime"><pre class="snippet"><span class="c">$</span> brew install mhus/vancetope/vancetope
 <span class="c">$</span> vancetope
 <span class="a">›</span> /login --browser
   <span class="g">✓ signed in</span> · tenant acme · project webshop
@@ -120,7 +120,7 @@ permalink: /connect/
 <span class="a">›</span> run the tests and fix what breaks
   <span class="c">exec</span>  mvn -q test        <span class="a">ask</span> → allow
   <span class="c">edit</span>  CartService.java  <span class="g">✓</span>
-  <span class="c">exec</span>  mvn -q test        <span class="g">✓ 214 passed</span></pre>
+  <span class="c">exec</span>  mvn -q test        <span class="g">✓ 214 passed</span></pre></div>
     </div>
   </section>
 

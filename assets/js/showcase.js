@@ -29,6 +29,7 @@
     "nav.connect": "Anbinden",
     "nav.trust": "Vertrauen",
     "nav.docs": "Doku",
+    "nav.cta": "Loslegen",
     "foot.product": "Produkt",
     "foot.apps": "Apps &amp; Dokumente",
     "foot.agents": "Agenten &amp; Engines",
