@@ -29,6 +29,7 @@
   "dk.l2": "<b>Workdirの制限</b>と、オフになっているときに大音量で知らせるマスター切り替えスイッチ。",
   "dk.l3": "<b>MCPツールパック</b>は<code>~/.vancetope/mcp.json</code>から直接、必要に応じてプロジェクトごとに、資格情報はアプリ内に保持されます。",
   "dk.l4": "プロファイルごとの<b>ライブタブ</b>、<code>⌘1</code>…<code>⌘0</code>、2本指スワイプで戻る。",
+  "dk.install": "macOS向けに署名および公証済み — Apple SiliconおよびIntel。Homebrewでインストールするか、<a href=\"https://github.com/mhus/vance/releases/latest\">.dmgをダウンロード</a>してください。",
   "dk.more": "デスクトップエージェントツール仕様 →",
   "tm.eyebrow": "ターミナル",
   "tm.h2": "プロジェクト内に留まるCLIエージェント。",

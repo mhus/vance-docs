@@ -29,6 +29,7 @@
   "dk.l2": "<b>Workdir-Begrenzung</b> und ein Hauptschalter, der laut sagt, wenn er aus ist.",
   "dk.l3": "<b>MCP-Tool-Packs</b> direkt aus <code>~/.vancetope/mcp.json</code>, auf Wunsch pro Projekt, Zugangsdaten in der App verwahrt.",
   "dk.l4": "<b>Live-Tabs</b> pro Profil, <code>⌘1</code>…<code>⌘0</code>, Zwei-Finger-Wisch zurück.",
+  "dk.install": "Signiert und notariell beglaubigt für macOS — Apple Silicon und Intel. Installation mit Homebrew oder <a href=\"https://github.com/mhus/vance/releases/latest\">.dmg herunterladen</a>.",
   "dk.more": "Spec zu den Desktop-Agent-Tools →",
   "tm.eyebrow": "Terminal",
   "tm.h2": "Ein CLI-Agent, der im Projekt bleibt.",

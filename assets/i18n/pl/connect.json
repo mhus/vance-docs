@@ -29,6 +29,7 @@
   "dk.l2": "<b>Ograniczenie katalogu roboczego</b> i główny przełącznik, który głośno o tym informuje, gdy jest wyłączony.",
   "dk.l3": "<b>Pakiety narzędzi MCP</b> prosto z <code>~/.vancetope/mcp.json</code>, na projekt, jeśli chcesz, dane uwierzytelniające przechowywane w aplikacji.",
   "dk.l4": "<b>Aktywne karty</b> na profil, <code>⌘1</code>…<code>⌘0</code>, przesunięcie dwoma palcami wstecz.",
+  "dk.install": "Podpisane i notarialnie poświadczone dla macOS — Apple Silicon i Intel. Zainstaluj za pomocą Homebrew lub <a href=\"https://github.com/mhus/vance/releases/latest\">pobierz plik .dmg</a>.",
   "dk.more": "Specyfikacja narzędzi agenta desktopowego →",
   "tm.eyebrow": "Terminal",
   "tm.h2": "Agent CLI, który pozostaje w projekcie.",

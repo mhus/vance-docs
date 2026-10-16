@@ -29,6 +29,7 @@
   "dk.l2": "<b>Confinamento de Workdir</b> e um interruptor mestre que avisa em voz alta quando está desligado.",
   "dk.l3": "<b>Pacotes de ferramentas MCP</b> diretamente de <code>~/.vancetope/mcp.json</code>, por projeto se desejar, credenciais mantidas no aplicativo.",
   "dk.l4": "<b>Abas ativas</b> por perfil, <code>⌘1</code>…<code>⌘0</code>, deslize com dois dedos para voltar.",
+  "dk.install": "Assinado e autenticado para macOS — Apple Silicon e Intel. Instale com Homebrew ou <a href=\"https://github.com/mhus/vance/releases/latest\">baixe o .dmg</a>.",
   "dk.more": "Especificação das ferramentas do agente de desktop →",
   "tm.eyebrow": "Terminal",
   "tm.h2": "Um agente CLI que permanece no projeto.",

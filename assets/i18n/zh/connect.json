@@ -29,6 +29,7 @@
   "dk.l2": "<b>工作目录限制</b>和一个在关闭时会大声提示的总开关。",
   "dk.l3": "<b>MCP 工具包</b>直接来自 <code>~/.vancetope/mcp.json</code>，如果需要，可以按项目配置，凭据保存在应用中。",
   "dk.l4": "每个配置文件的<b>实时标签页</b>，<code>⌘1</code>…<code>⌘0</code>，双指滑动返回。",
+  "dk.install": "已签名并公证，适用于 macOS — Apple 芯片和 Intel。使用 Homebrew 安装或<a href=\"https://github.com/mhus/vance/releases/latest\">下载 .dmg</a>。",
   "dk.more": "桌面代理工具规范 →",
   "tm.eyebrow": "终端",
   "tm.h2": "一个停留在项目中的 CLI 代理。",

@@ -258,13 +258,17 @@ asks for the Brain URL and your login on first launch); neither bundles one.
 brew install --cask mhus/vancetope/vancetope-desktop
 ```
 
-{: .warning }
-> **Not signed yet.** The 0.1.x app isn't code-signed or notarized, so macOS
-> Gatekeeper blocks it on first launch (*"Vancetope can't be opened…"* or *"is
-> damaged"*). Signing is on the roadmap. Until then, either install without the
-> quarantine flag — `brew install --cask --no-quarantine mhus/vancetope/vancetope-desktop` —
-> or, if it's already installed, run `xattr -dr com.apple.quarantine /Applications/Vancetope.app`
-> and then open it (or right-click the app → **Open**).
+Or download the disk image from the
+[latest release](https://github.com/mhus/vance/releases/latest) —
+`Vancetope-<version>-arm64.dmg` for Apple Silicon, `-x64.dmg` for Intel — and
+drag Vancetope into Applications.
+
+{: .note }
+> **Signed and notarized since 0.6.0.** The app is signed with a Developer ID
+> and notarized by Apple, so it opens without a Gatekeeper warning. If you
+> installed 0.5.x or earlier (unsigned), update with
+> `brew upgrade --cask vancetope-desktop` — the old `--no-quarantine` and
+> `xattr` workarounds are no longer needed.
 
 **CLI** — the `vancetope` terminal client (bundles its own OpenJDK 25, no system
 Java needed):
