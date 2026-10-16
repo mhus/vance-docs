@@ -432,8 +432,8 @@
     },
     "kits.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "ac112ebfac4841514e2d5218eb8e5ba4d1959e202e2ae437368ffd17b4af0cdc",
-      "translated_at": "2026-10-15T09:57:03Z"
+      "source_sha256": "73ab9ac0f1a6ca1715e646fbdfc13531b8254e164d7527d999d75ab7983cd830",
+      "translated_at": "2026-10-16T09:57:49Z"
     },
     "knowledge-graph.md": {
       "model": "gemini-2.5-flash",
@@ -442,8 +442,8 @@
     },
     "lease-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "f7915c4066e5af7ca7033d0a4213662117f62a8e16b681a014c7c9a445066b9c",
-      "translated_at": "2026-10-15T09:57:20Z"
+      "source_sha256": "79fc0d92fe04490175dfb1492dc7895da62bbfa01f174542a8100e44e7ef6c14",
+      "translated_at": "2026-10-16T09:58:09Z"
     },
     "light-llm-service.md": {
       "model": "gemini-2.5-flash",
@@ -457,8 +457,8 @@
     },
     "llm-resource-management.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "0468a40ae03cba7351ea91fa1ddefc8adae131d2e7fb4669e07136b4c5cab5e2",
-      "translated_at": "2026-10-15T09:59:18Z"
+      "source_sha256": "b6c2994447177792334dfad08a70300c61f5a0780606dc2be53812824a806823",
+      "translated_at": "2026-10-16T09:59:29Z"
     },
     "marvin-engine.md": {
       "model": "gemini-2.5-flash",
@@ -469,6 +469,11 @@
       "model": "gemini-2.5-flash",
       "source_sha256": "a80eec452eb45bedfce3b4dd253bff660056c159b9c7f29bb168d5aefa8d2e7c",
       "translated_at": "2026-10-15T10:00:29Z"
+    },
+    "mcp-client-oauth.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "6c5bbb6426bc6160b1b0645b92dafa8f4f7deb12ebc996522c645cecf3e3a6c7",
+      "translated_at": "2026-10-16T09:59:48Z"
     },
     "mcp-project-access.md": {
       "model": "gemini-2.5-flash",
@@ -627,8 +632,8 @@
     },
     "server-tools.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "afb41bf347879ae947bea2fca223db5fcb0361bbf937c907222c96903a6540a2",
-      "translated_at": "2026-10-15T10:08:28Z"
+      "source_sha256": "dc6732411699d66c8dca1276a98850c2a6e1b244b000b3ff2834a50a48511688",
+      "translated_at": "2026-10-16T10:00:35Z"
     },
     "session-compact.md": {
       "model": "gemini-2.5-flash",
@@ -652,18 +657,18 @@
     },
     "setting-forms.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9f2ce1e81b0420e2c6377f826549971806c6c17ffcd3848a19e7e1d004cdbf24",
-      "translated_at": "2026-10-15T10:10:00Z"
+      "source_sha256": "129ae06a8a7290fe8d1147c3f98a718b44e06b31228eea11e85f9d1ead353e46",
+      "translated_at": "2026-10-16T10:01:18Z"
     },
     "settings-panel.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "cf6c90b0e447f8faf6637f1f04c90ffd05f61ba63ff044eb6ec2406b24a5e66f",
-      "translated_at": "2026-10-15T10:10:28Z"
+      "source_sha256": "f6166d68a11bdc0047da1082b24d6359cdcb4bbfabe5192aece46107dfb47bd5",
+      "translated_at": "2026-10-16T10:01:53Z"
     },
     "settings-system.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "181baa488ffc8016465783969841227f6f064228fc05d0fbc9a9faa64f90d4cf",
-      "translated_at": "2026-09-03T11:09:17Z"
+      "source_sha256": "a39b217c28450b0ad61f8fcdba343f01ce3b2835a1508978f96bb022752e8b59",
+      "translated_at": "2026-10-16T10:02:20Z"
     },
     "setup-agent-mode.md": {
       "model": "gemini-2.5-flash",
@@ -692,8 +697,8 @@
     },
     "sso-login.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "9a6647eeffef4156283eef543e9b2205b8c7e0beade25b97e871edcb4375b0fb",
-      "translated_at": "2026-10-15T21:04:26Z"
+      "source_sha256": "fa65062438efd3feecd9e8e8b7870eccdf4ed710e18a2ebf5382e3a96de93e7f",
+      "translated_at": "2026-10-16T10:02:45Z"
     },
     "structure-tool.md": {
       "model": "gemini-2.5-flash",
@@ -792,8 +797,8 @@
     },
     "web-ui.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "68cc54a63d2553e41049bbeb9f68f7416920b4fc338f81dacc24d1991b982cd5",
-      "translated_at": "2026-10-15T21:09:26Z"
+      "source_sha256": "8a8d04f4811b6733dd889f667e26adc76c0757e91eda3a1fa10965e2fe845bcb",
+      "translated_at": "2026-10-16T10:04:03Z"
     },
     "webdav.md": {
       "model": "gemini-2.5-flash",
@@ -807,13 +812,13 @@
     },
     "wizards.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "920bc67b810fc971a9b9e5d4027a582d7688bbfcff3115016e81826c808e4c52",
-      "translated_at": "2026-10-15T10:18:53Z"
+      "source_sha256": "195898f03a7183f902a36b2aca04609c09be3c01775fb7288ee5dc5b022f19a7",
+      "translated_at": "2026-10-16T10:04:25Z"
     },
     "wonko-engine.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "4dd031a9b03b6f9588b49e76ae843fb786872be5b4c30b95a3aa7c53ac681d96",
-      "translated_at": "2026-10-15T21:03:29Z"
+      "source_sha256": "dcbf94deb822e5a1609d4761525d0cab2573447abe8fd972379c2ea4e9aecf98",
+      "translated_at": "2026-10-16T10:04:47Z"
     },
     "work-target.md": {
       "model": "gemini-2.5-flash",

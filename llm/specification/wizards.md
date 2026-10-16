@@ -1,6 +1,6 @@
 # Vancetope — Prompt Wizards
 
-> A **Wizard** is a named form that guides the user step-by-step through the input parameters of a complex prompt and, at the end, injects a complete prompt text into the chat input field. This solves the "empty input field" problem: special workflows like "Create council" or "Plan Vogon strategy" are discoverable via visible cards/tabs, without the user needing to know Engine names (`slart`, `vogon`, `marvin`, …) or Recipe conventions.
+> A **Wizard** is a named form that guides the user step-by-step through the input parameters of a complex prompt and, at the end, injects a complete prompt text into the chat input field. This solves the "empty input field" problem: special workflows like "Create a council" or "Plan Vogon Strategy" are discoverable via visible cards/tabs, without the user needing to know Engine names (`slart`, `vogon`, `marvin`, …) or Recipe conventions.
 >
 > **Persistence:** Wizards are stored as YAML documents under `wizards/<name>.yaml` in the Document Layer. The cascade lookup `project → _user_<user> → _tenant → classpath:vance-defaults/wizards/` runs via [`DocumentService.lookupCascade`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) — the same mechanism as Recipes, Documents, and Prompts.
 >
@@ -29,29 +29,29 @@ A Wizard file has the following top-level fields. The `name` comes from the file
 | `title` | `LocalizableText` | yes | Display name in tab / card |
 | `description` | `LocalizableText` | yes | Short description (1-2 lines), appears below the title |
 | `icon` | `String` | no | Heroicon name (see [web-ui](web-ui.md) §7) |
-| `category` | `String` | no | Grouping for Wizard tab sorting (e.g., `strategie`, `analyse`, `setup`) |
+| `category` | `String` | no | Grouping for Wizard tab sorting (e.g., `strategy`, `analysis`, `setup`) |
 | `fields` | `List<FormField>` | yes | Input fields, see §3 |
 | `promptTemplate` | `String` (Pebble) | yes | Rendered upon submit; result lands in the chat input field |
 | `validatorPrompt` | `String` (Pebble) | no (v2) | LLM prompt for the optional "Check" button |
 | `suggestedFollowUps` | `List<FollowUp>` | no | Follow-up Wizards that the LLM should suggest to the user after success. See §5a |
 | `availableIn` | `List<String>` | no | Glob pattern list on `projectId` for listing visibility. Default `["*"]`. See §2a |
 
-**LocalizableText** is a map from language code to string, e.g., `{ de: "Gremium anlegen", en: "Create a council" }`. When rendering, the Tenant's default language is used, with a fallback to the first available entry.
+**LocalizableText** is a map from language code to string, e.g., `{ de: "Gremium anlegen", en: "Create a council" }`. When rendering, the Tenant default language is used, with fallback to the first available entry.
 
 ---
 
 ## 2a. `availableIn` — Listing Filter per Project Context
 
-Wizards from the lower Cascade Layers (`RESOURCE`, `VANCE`) would otherwise appear in *every* Project context. However, some Wizards only fit certain contexts — e.g., "Create Project" only makes sense in the User namespace (Eddie, `_user_<user>`), not within a specific Project (Arthur). `availableIn` filters during **listing** (`GET /wizards`) based on the requested `projectId`.
+Wizards from the lower Cascade Layers (`RESOURCE`, `VANCE`) would otherwise appear in *every* Project context. However, some Wizards only fit certain contexts — e.g., "Create Project" only makes sense in the User namespace (Eddie, `_user_<user>`), not within a specific project (Arthur). `availableIn` filters during **listing** (`GET /wizards`) based on the requested `projectId`.
 
 **Pattern Syntax:**
 
 - Glob with `*` as a wildcard for character sequences without `/`.
-- `!` prefix inverts the pattern (Exclude).
+- `!`-prefix inverts the pattern (Exclude).
 - A Wizard is visible if at least one positive pattern matches **and** no exclude pattern matches. If only excludes are specified, `*` is implicitly considered an include.
 - Default (`availableIn` missing or empty): same as `["*"]` — visible everywhere.
 
-**Comparison is made against the `projectId` query parameter of the listing call.** If it's missing, `_tenant` is used as the comparison value (listing without Project context).
+**Comparison is against the `projectId` query parameter of the listing call.** If it is missing, `_tenant` is used as the comparison value (listing without project context).
 
 **Examples:**
 
@@ -78,13 +78,13 @@ availableIn: [ "research-2026" ]
 **Scope:**
 
 - `availableIn` applies **only to listing** (`GET /brain/{tenant}/wizards`). The `GET /{name}` and `POST /{name}/render` endpoints remain pattern-blind — a known Wizard name can still be called directly (e.g., via `suggestedFollowUps` from another context or deep-link).
-- Project-installed Wizards (Source `PROJECT`) typically don't need this field — they are only visible in their respective Project due to the Cascade anyway. It is primarily relevant for `RESOURCE` and `VANCE` Wizards, which would otherwise be rendered everywhere.
+- Project-installed Wizards (Source `PROJECT`) typically do not need this field — they are only visible in their respective project due to the Cascade. It is primarily relevant for `RESOURCE`- and `VANCE`-Wizards, which would otherwise be rendered everywhere.
 
 ---
 
-## 3. Form Field Types
+## 3. Form-Field Types
 
-Form Fields are **shared infrastructure** with [Kit Tool Templates](kits.md). A `FormFieldDto` base is in `vance-api`, both applications add their own fields (Tool Templates: `target`, Wizards: nothing additional).
+Form-Fields are **shared infrastructure** with [Kit Tool Templates](kits.md). A `FormFieldDto` base is located in `vance-api`, both applications add their own fields (Tool Templates: `target`, Wizards: nothing additional).
 
 | Type | Description | Specific Fields |
 |---|---|---|
@@ -92,6 +92,7 @@ Form Fields are **shared infrastructure** with [Kit Tool Templates](kits.md). A 
 | `textarea` | Multi-line text | `rows: <int>` (Default 3) |
 | `password` | Masked input | — |
 | `integer` | Whole number | `integerMin`, `integerMax` (optional) |
+| `number` | Decimal number (amount, factor), read exactly; `NaN`/`Infinity` rejected | — |
 | `boolean` | Checkbox | — |
 | `select` | Single-choice dropdown; with `allowCustom: true` filterable combobox with free text | `choices: List<FormChoice>`, optional `allowCustom` |
 | `multi_select` | Multi-choice (checkbox list) | `choices: List<FormChoice>` |
@@ -111,7 +112,7 @@ Form Fields are **shared infrastructure** with [Kit Tool Templates](kits.md). A 
 | `rows` | `int` | only for `textarea` | UI hint |
 | `min` / `max` | `int` | only for `repeat` | Number bounds |
 | `integerMin` / `integerMax` | `int` | only for `integer` | Value bounds |
-| `allowCustom` | `boolean` | only for `select` | Default `false`. `true` = value may be outside of `choices`; the Web UI renderer then shows a filterable combobox (free text + filter instead of closed dropdown), and submit validation skips the choice whitelist for this field. For inventory lists (`choicesFrom` in Setting Forms) whose entries can disappear — not for closed enums. |
+| `allowCustom` | `boolean` | only for `select` | Default `false`. `true` = value may be outside `choices`; the Web UI renderer then shows a filterable combobox (free text + filter instead of closed dropdown), and submit validation skips the choice whitelist for this field. For inventory lists (`choicesFrom` in Setting Forms) whose entries can disappear — not for closed enums. |
 | `item` | `List<FormField>` | only for `repeat` | Nested field schema |
 
 ### FormChoice
@@ -132,9 +133,9 @@ choices:
 
 ---
 
-## 4. Cascade — how a Wizard name is resolved
+## 4. Cascade — How a Wizard Name is Resolved
 
-During the list lookup (`GET /brain/{tenant}/wizards`) and the render call (`POST /brain/{tenant}/wizards/{name}/render`), the same Cascade as for Recipes runs, **but with an additional `_user_` layer** for personal Wizards:
+For list lookup (`GET /brain/{tenant}/wizards`) and render call (`POST /brain/{tenant}/wizards/{name}/render`), the same Cascade as for Recipes is used, **but with an additional `_user_` layer** for personal Wizards:
 
 ```
 load(tenantId, projectId, userId, name) → Optional<ResolvedWizard> :=
@@ -147,9 +148,9 @@ load(tenantId, projectId, userId, name) → Optional<ResolvedWizard> :=
     5. → empty
 ```
 
-During **listing** (`GET /wizards`), all four layers are aggregated and deduplicated by `name` (first layer wins). The listing result contains `name, title, description, icon, category` — no fields, no templates.
+For **listing** (`GET /wizards`), all four layers are aggregated and deduplicated by `name` (first layer wins). The listing result contains `name, title, description, icon, category` — no fields, no templates.
 
-During **render** (`POST /wizards/{name}/render`), exactly one Wizard is resolved via Cascade and rendered with the form values posted by the frontend.
+For **rendering** (`POST /wizards/{name}/render`), exactly one Wizard is resolved via Cascade and rendered with the form values posted by the frontend.
 
 ---
 
@@ -161,10 +162,10 @@ The `promptTemplate` (and `validatorPrompt` in v2) is a Pebble template with the
 
 | Variable | Source | Notes |
 |---|---|---|
-| `<fieldname>` | directly from user input per field | Scalars for `string`/`textarea`/`password`/`integer`/`boolean`/`select`; lists for `multi_select`/`repeat` |
-| `lang` | Tenant default language | for Wizards that want to output their prompt in multiple languages |
-| `user` | Current user (username) | for personal Wizards |
-| `project` | Current project name | optional, for contextual prompts |
+| `<field name>` | directly from user input per field | Scalars for `string`/`textarea`/`password`/`integer`/`boolean`/`select`; lists for `multi_select`/`repeat` |
+| `lang` | Tenant default language | for Wizards that want to lay out their prompt in multiple languages |
+| `user` | Current User (Username) | for personal Wizards |
+| `project` | Current Project name | optional, for contextual prompts |
 
 ### Example — `wizards/gremium.yaml`
 
@@ -208,17 +209,17 @@ fields:
     label: { de: "Direkt erstellen", en: "Create now" }
 
 promptTemplate: |
-  Erstelle mit slart ein Gremium aus folgenden {{ members | length }} Personen,
-  das ich später zu strategischen Fragen befragen kann.
-  Zweck: {{ purpose }}.
+  Create a council with slart from the following {{ members | length }} people,
+  which I can later consult on strategic questions.
+  Purpose: {{ purpose }}.
 
-  Mitglieder:
+  Members:
   {% for m in members %}
   - {{ m.name }}: {{ m.description }}
   {% endfor %}
 
-  Speicher es unter '{{ outputName }}'.
-  {% if createNow %}Führe es direkt aus.{% else %}Führe jetzt keinen Test aus.{% endif %}
+  Save it as '{{ outputName }}'.
+  {% if createNow %}Execute it directly.{% else %}Do not run a test now.{% endif %}
 ```
 
 ---
@@ -241,9 +242,9 @@ If this is successfully completed, offer the user the following follow-up action
 - [Write an essay with 'create-essay-recipe'](vance:/wizards/essay-mit-recipe?kind=wizard&recipe=create-essay-recipe)
 ```
 
-The LLM decides contextually whether/how to embed the link in its response. This works because the instruction is part of the user prompt — same Engine, same Spawn Path, no special handling in routing.
+The LLM decides contextually whether/how to embed the link in its response. This works because the instruction is part of the User Prompt — same Engine, same Spawn Path, no special handling in routing.
 
-**Frontend:** `MarkdownView` recognizes `vance:/wizards/<name>?kind=wizard&...` URIs by the `kind=wizard` query parameter and dispatches a `vance-open-wizard` window event with `{ name, prefill }`. `ChatView` listens for this, switches the right aside tab to "Wizards" and calls `WizardPanel.openWizard(name, prefill)`. The prefill merge ignores unknown keys (so renames in the target Wizard don't break in-flight links) and skips `repeat` fields (URL encoding would be too fragile).
+**Frontend:** `MarkdownView` recognizes `vance:/wizards/<name>?kind=wizard&...` URIs by the `kind=wizard` query parameter and dispatches a `vance-open-wizard` window event with `{ name, prefill }`. `ChatView` listens for this, switches the right aside tab to "Wizards", and calls `WizardPanel.openWizard(name, prefill)`. The Prefill merge ignores unknown keys (renames in the target Wizard therefore do not break in-flight links) and skips `repeat` fields (URL encoding would be too fragile).
 
 **Example (`essay-recipe.yaml`):**
 
@@ -267,18 +268,18 @@ suggestedFollowUps:
 
 ## 6. Validation
 
-### Form Validation (server-side, synchronous on render)
+### Form-Validation (server-side, synchronous on Render)
 
 Before Pebble rendering, `FormValidator` runs on the posted values:
 
-- **Required:** all fields marked `required: true` must have a non-empty value.
-- **Repeat Bounds:** Array length between `min` and `max`. The nested schema is recursively validated for each item.
-- **Integer Bounds:** `integerMin` ≤ value ≤ `integerMax`.
-- **Select Whitelist:** value must be included in `choices[].value`.
+- **Required:** all fields marked as `required: true` must have a non-empty value.
+- **Repeat-Bounds:** Array length between `min` and `max`. The nested schema is recursively validated for each item.
+- **Integer-Bounds:** `integerMin` ≤ value ≤ `integerMax`.
+- **Select-Whitelist:** Value must be included in `choices[].value`.
 
-For validation errors: HTTP 400 with a structured error list (`{ field: "members[2].name", error: "required" }`). The frontend renders the errors inline next to the respective field.
+In case of validation errors: HTTP 400 with a structured error list (`{ field: "members[2].name", error: "required" }`). The frontend renders the errors inline next to the respective field.
 
-### LLM Validator (v2, optional, on-demand)
+### LLM-Validator (v2, optional, on-demand)
 
 If a Wizard defines `validatorPrompt`, the frontend shows a "Check" button. On click:
 
@@ -288,7 +289,7 @@ If a Wizard defines `validatorPrompt`, the frontend shows a "Check" button. On c
 4. Response is returned as structured suggestions (`[{ field: "members", suggestion: "..." }]`) — frontend renders them as non-blocking hints
 5. Validator is **never** a blocker — the user can always click Submit
 
-Token costs go through the normal [LLM Resource Management](llm-resource-management.md) pipeline.
+Token costs go through the normal [LLM-Resource-Management](llm-resource-management.md) pipeline.
 
 ---
 
@@ -303,8 +304,8 @@ Lists resolved Wizards for the current context (Project + User + Tenant + Bundle
   "wizards": [
     {
       "name": "gremium",
-      "title": "Gremium anlegen",
-      "description": "Wiederbefragbare Personen-Gruppe definieren",
+      "title": "Create a council",
+      "description": "Define a reusable advisory group",
       "icon": "users",
       "category": "strategie",
       "source": "VANCE"
@@ -314,7 +315,7 @@ Lists resolved Wizards for the current context (Project + User + Tenant + Bundle
 }
 ```
 
-Title/Description are already resolved in the Tenant's default language.
+Title/Description are already resolved in the Tenant default language.
 
 ### `GET /brain/{tenant}/wizards/{name}`
 
@@ -325,7 +326,7 @@ Returns the full Wizard definition including fields (for rendering in the fronte
 Body: `{ values: Record<string, FormValue> }`. Validates the values, renders `promptTemplate`, returns the finished prompt:
 
 ```json
-{ "prompt": "Erstelle mit slart ein Gremium ..." }
+{ "prompt": "Create a council with slart ..." }
 ```
 
 ### `POST /brain/{tenant}/wizards/{name}/validate` (v2)
@@ -336,22 +337,22 @@ Like `/render`, but renders `validatorPrompt` and calls an LLM. Response: `{ sug
 
 ## 8. UI Integration (Web)
 
-### Wizard Tab in the Chat Editor
+### Wizard-Tab in the Chat Editor
 
-The chat editor (`packages/vance-face/src/chat/ChatApp.vue`) gets a "Wizards" tab in the right side panel next to the existing Live Progress tab. Tab content:
+The Chat Editor (`packages/vance-face/src/chat/ChatApp.vue`) gets a "Wizards" tab in the right side panel next to the existing Live Progress tab. Tab content:
 
 1. On mount: `GET /wizards` for the current Session.
 2. Wizards grouped by `category`, alphabetically by `title` within the group.
-3. Clicking a Wizard opens the form modal (or inline expand) with `FormFields` renderer.
-4. Submit button: `POST /render`, response prompt is written into the chat input field (replace). User can edit the text and manually send it.
+3. Clicking a Wizard opens the Form Modal (or inline-Expand) with `FormFields`-renderer.
+4. Submit button: `POST /render`, response prompt is written into the chat input field (replace). User can edit the text and sends it manually.
 
 ### Discoverability — Quick-Start-Cards (v1.x, not v1)
 
-An empty/fresh Session (no messages) shows the top Wizards (arranged by `category`) as cards in the center of the chat. As soon as the first message arrives, the cards disappear; the tab remains.
+An empty/fresh Session (no messages) shows the top Wizards (arranged by `category`) as cards in the chat center. As soon as the first message arrives, the cards disappear; the tab remains.
 
-### Shared Form Engine
+### Shared Form-Engine
 
-The Vue component `FormFields.vue` (`packages/vance-face/src/components/`) is the **only** renderer for Form Field arrays. It is used by both Wizards and Kit Tool Templates. Tool Templates additionally render their Target Choice (Setting vs. Document-Inline) around it, but not within `FormFields`.
+The Vue component `FormFields.vue` (`packages/vance-face/src/components/`) is the **only** renderer for Form-Field arrays. It is used by both Wizards and Kit Tool Templates. Tool Templates additionally render their Target Choice (Setting vs. Document-Inline) around it, but not within `FormFields`.
 
 ModelValue-Type is `Record<string, FormValue>` with
 
@@ -364,7 +365,7 @@ type NestedValue = Record<string, FormValue>;
 
 ## 9. CLI Integration (Foot)
 
-`vance-foot` shows available Wizards as slash-command auto-complete: `/wizard <name>` opens an interactive Picocli-/JLine-prompt that sequentially queries the fields (textarea via `$EDITOR` spawn, repeat via "another entry? (y/n)" loop). Submit calls the same `/render` endpoint; the rendered prompt lands in the REPL's input buffer and can be edited before sending.
+`vance-foot` shows available Wizards as slash-command auto-complete: `/wizard <name>` opens an interactive Picocli-/JLine-prompt that sequentially queries the fields (textarea via `$EDITOR`-spawn, repeat via "another entry? (y/n)"-loop). Submit calls the same `/render` endpoint; the rendered prompt lands in the REPL's input buffer and can be edited before sending.
 
 `multi_select` and `select` are offered via JLine menus, `boolean` as a y/n prompt.
 
@@ -375,9 +376,9 @@ CLI Wizards in v1.x — not mandatory for v1.
 ## 10. Security & Contracts
 
 - **Pebble Sandbox:** As with Recipes, only the declarative syntax subset. No Java reflection, no `{% include %}`, no external file access.
-- **Cascade Sources:** User layer (`_user_<userId>`) is only visible to the respective user. Project and Tenant layers as usual via the [workspace-access](workspace-access.md) rules.
+- **Cascade Sources:** User layer (`_user_<userId>`) is only visible to the respective User. Project and Tenant layers as usual via the [workspace-access](workspace-access.md) rules.
 - **Fail-Fast on Load:** Wizards with invalid YAML, missing required fields, or Pebble syntax errors are **not** included in the listing during boot/refresh. Brain logs them as WARN, the frontend simply doesn't see them.
-- **Edit-Time Findings:** The "Wizards" settings area (Settings panel, `vance-wizard`) inventories all cascade levels — including the user layer, because the panel's user scope is exactly the `_user_<login>` level. The `WizardDocKindHandler` runs via the `validateBody` seam on the canonical `WizardLoader.parse`: what the loader skips with WARN is a finding in the editor, instead of silently disappearing from the listing. (Roadmap phase v3 "User Editor" thus gets a raw text precursor; the meta-form editor remains v3.)
+- **Edit-Time Findings:** The "Wizards" settings area (Settings Panel, `vance-wizard`) inventories all Cascade levels — including the User layer, because the panel's User Scope is exactly the `_user_<login>` level. The `WizardDocKindHandler` runs via the `validateBody` seam on the canonical `WizardLoader.parse`: what the Loader skips with WARN becomes a finding in the editor, instead of silently disappearing from the listing. (The roadmap phase v3 "User Editor" thus gets a raw text precursor; the meta-form editor remains v3.)
 
 ---
 
@@ -385,7 +386,7 @@ CLI Wizards in v1.x — not mandatory for v1.
 
 | Phase | Content |
 |---|---|
-| **v1** | Schema + Backend Service + Cascade + `GET /wizards`, `GET /{name}`, `POST /render` + Shared `FormFields.vue` (incl. `repeat` extension) + Wizard Tab in Chat Editor + `suggestedFollowUps` with `vance:`-URI deep-link + `availableIn` listing filter (§2a) + 5 Bundled Wizards (`gremium`, `vogon-strategie`, `essay-recipe`, `essay-mit-recipe`, `create-project`) |
+| **v1** | Schema + Backend Service + Cascade + `GET /wizards`, `GET /{name}`, `POST /render` + Shared `FormFields.vue` (incl. `repeat` extension) + Wizard Tab in Chat Editor + `suggestedFollowUps` with `vance:`-URI deep-link + `availableIn`-listing filter (§2a) + 5 Bundled Wizards (`gremium`, `vogon-strategie`, `essay-recipe`, `essay-mit-recipe`, `create-project`) |
 | **v1.x** | Quick-Start-Cards for empty Sessions + CLI Integration (`/wizard <name>`) + Mobile Renderer (`vance-fingers`) |
-| **v2** | LLM Validator (`validatorPrompt` + Button + `/validate` endpoint) + Conditional Fields (`showIf`) + Multi-Step Wizards (Pages) |
+| **v2** | LLM-Validator (`validatorPrompt` + Button + `/validate` endpoint) + Conditional Fields (`showIf`) + Multi-Step-Wizards (Pages) |
 | **v3** | User Editor for custom Wizards in the Web UI (define form definition as a form — meta) |

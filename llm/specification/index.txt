@@ -92,6 +92,7 @@ https://www.vancetope.com/llm/specification/live-ws.md
 https://www.vancetope.com/llm/specification/llm-resource-management.md
 https://www.vancetope.com/llm/specification/marvin-engine.md
 https://www.vancetope.com/llm/specification/maximegalon-system.md
+https://www.vancetope.com/llm/specification/mcp-client-oauth.md
 https://www.vancetope.com/llm/specification/mcp-project-access.md
 https://www.vancetope.com/llm/specification/mcp-server.md
 https://www.vancetope.com/llm/specification/mcp-tool-routing.md

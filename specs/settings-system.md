@@ -27,7 +27,7 @@ Like GitHub Repository Settings or K8s ConfigMaps + Secrets — but in one syste
 | Type | Storage | Return via API | Example |
 |---|---|---|---|
 | `string` | Plaintext | Plaintext | `project.name = "Literature Review"` |
-| `int` | Plaintext | Plaintext | `quota.daily_tokens = 500000` |
+| `int` | Plaintext | Plaintext | `ai.fenchurch.daily_images = 50` |
 | `double` | Plaintext | Plaintext | `linker.confidence_threshold = 0.7` |
 | `boolean` | Plaintext | Plaintext | `features.brain_linker_enabled = true` |
 | `hidden` | **Encrypted** | **`"[set]"`** (masked) | `deploy-token` (a script resolves it) |
@@ -41,7 +41,7 @@ The enum carries two things. `string`/`int`/`double`/`boolean` indicate **how th
 string  →  hidden  →  password        increasing protection
 ```
 
-Properly modeled, they would be a flag on each type. As an enum level, they fit into the existing concept; the price is that there is **no protected `int`/`boolean`** (practically irrelevant, but the boundary). Two predicates on `SettingType` are exactly the thresholds on this path, both monotonic:
+Properly modeled, they would be a flag on each type. As an enum level, they fit into the existing concept; the price is that there is **no protected `int`/`boolean`** (practically irrelevant, but the limit). Two predicates on `SettingType` are exactly the thresholds on this range, both monotonic:
 
 | Level | `encrypted()` — encrypted at rest | `referenceReadable()` — resolvable for dynamic elements |
 |---|---|---|
@@ -59,34 +59,34 @@ A future level is classified by stating between which thresholds it lies — app
 - **Never** appear in logs, chat output, Think Process results, or exports
 - Can be overwritten and deleted, but not read
 - Empty input means "do not change", not "explicitly empty" (§4)
-- Both share the **ciphertext format**: a type change `password` ↔ `hidden` is a pure type update, the value does not need to be re-entered
+- Both share the **ciphertext format**: a type change `password` ↔ `hidden` is a pure type update; the value does not need to be re-entered
 
 ### 2.3 `password` vs. `hidden` — Who Reads the Value
 
 The only difference, and it determines the **reader**, not the encryption:
 
-- **`password`** — a true secret. Read by compiled server code (LLM provider keys, `vault.clientSecret`) **and by connectors**: an SMTP/IMAP Tool document, a REST or MCP Tool Pack. For **dynamic elements** — Agents and scripts — it is neither readable nor writable.
+- **`password`** — a true secret. Read by compiled server code (LLM provider keys, `vault.clientSecret`) **and by connectors**: an SMTP/IMAP Tool Document, a REST or MCP Tool Pack. For **dynamic elements** — agents and scripts — it is neither readable nor writable.
 - **`hidden`** — encrypted, but additionally resolvable by dynamic elements: `vance.secret(…)` in a script, a `secrets:` block in Compose, a secret provisioned via `vault_secret_generate`.
 
-**A connector is not a dynamic element**, even if its config contains a `&#123;{secret:…}}` reference — it is operator configuration. Therefore, an SMTP password or a Jira token remains `password`: **usable, but invisible to Agents and scripts.** This is precisely the purpose of the two types. If every reference were equally "dynamic", every configured Tool credential would become `hidden`, and `password` would remain only for compiled code — the distinction would be worthless.
+**A connector is not a dynamic element**, even if its config contains a `&#123;{secret:…}}` reference — it is operator configuration. Therefore, an SMTP password or a Jira token remains `password`: **usable, but invisible to agents and scripts.** This is precisely the purpose of the two types. If every reference were equally "dynamic", every configured Tool Credential would become `hidden`, and `password` would remain only for compiled code — the distinction would be worthless.
 
 A dynamic element encountering a `password` setting will fail with a **named error** instead of an empty substitution. The question when choosing is therefore not "how secret is it", but **"does a script or a Compose task need to resolve the value itself"**.
 
-The distinction is deliberately **not a permission**: an Agent acts with the `SecurityContext` of the human, so no role check can separate "the human typed the value" from "the model called a Tool". Details, write rules, and derivation: [`vault-access.md`](/specs/vault-access) §4 and `planning/setting-type-hidden.md`.
+The distinction is deliberately **not a permission**: an agent acts with the human's `SecurityContext`, so no role check can separate "the human typed the value" from "the model called a tool". Details, write rules, and derivation: [`vault-access.md`](/specs/vault-access) §4 and `planning/setting-type-hidden.md`.
 
 #### Reserved Keys — The Second Barrier
 
-Because connectors read `password`, the **type** is no longer what keeps a reference away from `ai.provider.<instance>.apiKey`. A Tool document declares its target URL directly next to its headers; a reference to the provider key in the header would therefore send it wherever the document points. Connector documents are in the reserved `_vance/` namespace and require ADMIN to write — this is an authorization, not a containment, boundary.
+Because connectors read `password`, the **type** is no longer what keeps a reference away from `ai.provider.<instance>.apiKey`. A Tool Document declares its target URL directly next to its headers; a reference to the provider key in the header would therefore send it to where the document points. Connector documents are in the reserved `_vance/` namespace and require ADMIN to write — this is an authorization, not a containment, boundary.
 
-Therefore, `SecretReferenceKeyPolicy` checks **before every lookup** and on **both** paths (`resolve` as well as `resolveForConnector`) the key name against `vance.settings.secret-reference-deny-keys` (default `ai.provider.*,vault.*`). A match throws — as with a type violation — a named error, not an empty substitution. The list is separate from `vance.settings.agent-write-deny-keys` (same grammar, same default): "an Agent may not write this" and "no reference may resolve this" are different questions, and a shared list would mean that hardening one side silently changes the other. Both are operator properties from `application.yml`, **not** Settings — otherwise an Agent with Settings write permission could expand its own scope.
+Therefore, `SecretReferenceKeyPolicy` checks **before every lookup** and on **both** paths (`resolve` as well as `resolveForConnector`) the key name against `vance.settings.secret-reference-deny-keys` (default `ai.provider.*,vault.*`). A match throws — as with a type violation — a named error, not an empty substitution. The list is separate from `vance.settings.agent-write-deny-keys` (same grammar, same default): "an agent may not write this" and "no reference may resolve this" are different questions, and a shared list would mean that hardening one side silently changes the other. Both are operator properties from `application.yml`, **not** settings — otherwise, an agent with settings write permission could expand its own scope.
 
-The `vault:` Scope is excluded: its key names an entry in the Vault's namespace, not a Setting.
+The `vault:` scope is excluded: its key names an entry in the Vault's namespace, not a setting.
 
 ---
 
 ## 3. Scope Levels
 
-Settings are **project attributes**: each Setting is attached to a Project (or a Think Process). Tenant and User Scopes are syntactic sugar — they collapse to the `_tenant` system Project or the per-user `_user_<login>` Projects.
+Settings are **project attributes**: each setting is attached to a Project (or a Think Process). Tenant and User Scopes are syntactic sugar — they collapse to the `_tenant` system Project or the per-user `_user_<login>` Projects.
 
 ### Storage Layer (what is actually in Mongo)
 
@@ -95,7 +95,7 @@ Only two `referenceType` values are persisted:
 | `referenceType` | `referenceId` | Meaning |
 |---|---|---|
 | `project` | `_tenant` | Tenant-wide defaults |
-| `project` | `_user_<login>` | Per-user Settings |
+| `project` | `_user_<login>` | Per-user settings |
 | `project` | `<projectId>` | Project-specific |
 | `think-process` | `<processId>` | Innermost — only for the lifetime of the Process |
 
@@ -110,28 +110,28 @@ The `AdminSettingsController` maps Wire ↔ Storage transparently. The UI still 
 | `project` | `<projectId>` | passthrough |
 | `think-process` | `<processId>` | passthrough |
 
-Reads translate the Storage Reference back into the Wire form. This is also why `tenant` Settings still exist in the UI — only persistence has been consolidated.
+Reads translate the Storage Reference back into the Wire form. This is also why `tenant` settings still exist in the UI — only persistence has been consolidated.
 
 ### Resolution — Two Separate Cascades
 
-`SettingService` exposes **two** lookup APIs, with different Scopes. They are intentionally separate so that per-User preferences do not accidentally overwrite Tenant/Project defaults for security-relevant keys (LLM provider, API keys).
+`SettingService` exposes **two** lookup APIs, with different scopes. They are intentionally separated so that per-user preferences do not accidentally overwrite Tenant/Project defaults for security-relevant keys (LLM providers, API keys).
 
 #### a) Project Cascade — `getStringValueCascade(tenantId, projectId, processId, key)`
 
-Inner-to-outer, first-hit-wins. **No User layer**:
+Inner-to-outer, first-hit-wins. **No User Layer**:
 
 ```
-1. Think-Process tp:                  storage think-process/tp
+1. Think Process tp:                  storage think-process/tp
 2. <projectId>-Project (e.g., "p"):    storage project/p
 3. _tenant-Project:                    storage project/_tenant
 4. → null
 ```
 
-For everything related to the worker context: `ai.*` (provider, model, aliases, API keys), `web.*` (search keys), `memory.*` hints. A cascade variant for Passwords exists as `getDecryptedPasswordCascade(...)` — same order.
+For everything related to the worker context: `ai.*` (provider, model, aliases, API keys), `web.*` (search keys), `memory.*` hints. A cascade variant for passwords exists as `getDecryptedPasswordCascade(...)` — same order.
 
 #### Empty vs. Unset — `""` Breaks the Cascade, `null` Does Not
 
-The cascade does **not** ask "is there a non-empty value here?", but "is the key set here?". This allows three states per layer to be distinguished, and the middle one is the important one:
+The cascade does **not** ask "is there a non-empty value here?", but "is the key set here?". This allows three states per layer to be distinguished, and the middle one is important:
 
 | Layer State | Cascade |
 |---|---|
@@ -139,7 +139,7 @@ The cascade does **not** ask "is there a non-empty value here?", but "is the key
 | Key exists, value `null` | continues outwards |
 | Key exists, value `""` | **stops here** and returns `""` |
 
-`""` is therefore the canonical representation for **"explicitly nothing at this level"**. Consumers consistently treat blank as "not configured" and fall back to their own default (`ChatBehaviorBuilder.resolveBaseUrl` → `null` → Provider default; `getIntValue`/`getBooleanValue*` → `defaultValue`). The effect: an inner layer can **disable** an outer value without replacing it — e.g., Tenant routes OpenAI traffic through a corporate proxy (`ai.provider.openai.baseUrl`), a Project runs with `""` against the actual Provider default.
+`""` is therefore the canonical representation for **"explicitly nothing at this level"**. Consumers consistently treat blank as "not configured" and fall back to their own default (`ChatBehaviorBuilder.resolveBaseUrl` → `null` → Provider default; `getIntValue`/`getBooleanValue*` → `defaultValue`). The effect: an inner layer can **disable** an outer value without replacing it — e.g., Tenant routes OpenAI traffic through a corporate proxy (`ai.provider.openai.baseUrl`), a project runs with `""` against the actual provider default.
 
 There is **no placeholder sentinel** for this (no `-`, no `__none__` at this level). A magic value would have to be known by each of the dozens of cascade consumers and would propagate as a literal everywhere else. To explicitly write empty, write `""`:
 
@@ -150,7 +150,7 @@ There is **no placeholder sentinel** for this (no `-`, no `__none__` at this lev
 
 #### b) User API — `getUserStringValue(tenantId, userId, key)` and `getUserStringValueWithDefault(...)`
 
-Direct read in the `_user_<login>` Project. **No Project layer**, optional fallback to `_tenant`:
+Direct read in the `_user_<login>` Project. **No Project Layer**, optional fallback to `_tenant`:
 
 ```
 getUserStringValue(tenantId, userId, key) :=
@@ -163,7 +163,7 @@ getUserStringValueWithDefault(tenantId, userId, key) :=
   3. → null
 ```
 
-For purely per-user preferences that should **not** be mixed with the Project context: `webui.language`, `display.timezone`, `telegram.conversation_id`, `notification.channel`, Terminal theme, ... The `<projectId>` layer is intentionally skipped — otherwise, switching to another Project would unexpectedly change the UI language or the displayed time.
+For purely per-user preferences that should **not** be mixed with the project context: `webui.language`, `display.timezone`, `telegram.conversation_id`, `notification.channel`, Terminal theme, ... The `<projectId>` layer is intentionally skipped — otherwise, switching to another project would unexpectedly change the UI language or the displayed time.
 
 #### Language: Three Settings, Three Cascades
 
@@ -171,25 +171,25 @@ Language breaks down into three concepts with different cascades. Resolved via [
 
 | Setting | Meaning | Cascade |
 |---|---|---|
-| `webui.language` | UI Chrome (buttons, labels). | User-only (no cascade). |
-| `chat.language` | Language in which the assistant responds/listens. | `think-process → _user_<userId> → <projectId> → _tenant` — User default can be overridden by a Project (e.g., an English code review Project for a German-speaking User). |
-| `content.language` | Language in which Documents/Insights/Memory entries are written. | `think-process → <projectId> → _tenant` — deliberately **without** User layer, because content belongs to the Project (otherwise Project with Documents in three languages depending on author). |
+| `webui.language` | UI chrome (buttons, labels). | User-only (no cascade). |
+| `chat.language` | Language in which the assistant responds/listens. | `think-process → _user_<userId> → <projectId> → _tenant` — User default can be overridden by a project (e.g., an English code review project for a German-speaking user). |
+| `content.language` | Language in which Documents/Insights/Memory entries are written. | `think-process → <projectId> → _tenant` — deliberately **without** User layer, because content belongs to the project (otherwise project with documents in three languages depending on author). |
 
-Default fallback: configurable via the property `vance.language.default` (`application.yml`), code default `en`. `LanguageResolver` falls back to this value if no Scope Setting applies — local installations thus set an installation-wide default language (e.g., `de`) without maintaining per-User Settings. The fallback applies to the **defaulting** methods `chatLanguage()` / `contentLanguage()` (Wizard/Template/Setting Form rendering). The **nullable** `findChatLanguage()` / `findContentLanguage()` remain unaffected (`null` in case of true absence). The MemoryContextLoader renders both languages in a `## Languages` block in the System Prompt — Engines thus get the correct language context without further action. **Note:** `formatLanguageBlock` uses `find*` resolution and remains empty ("no opinion") if the Setting is missing — the `vance.language.default` fallback thus controls the rendering defaults, but (not yet) the Engine language block; allowing it to apply there is a deliberate change in behavior that is part of the transition of prompts to English (see `planning/prompt-language-english-migration.md`). The historical `context.language` key no longer exists; migration is "manual" (replace Settings rows, the resolver does not read the old key).
+Default fallback: configurable via the property `vance.language.default` (`application.yml`), code default `en`. `LanguageResolver` falls back to this value if no scope setting applies — local installations thus set an installation-wide default language (e.g., `de`) without maintaining per-user settings. The fallback applies to the **defaulting** methods `chatLanguage()` / `contentLanguage()` (Wizard/Template/Setting Form rendering). The **nullable** `findChatLanguage()` / `findContentLanguage()` remain unaffected (`null` in case of true absence). The MemoryContextLoader renders both languages in a `## Languages` block in the system prompt — Engines thus get the correct language context without further action. **Note:** `formatLanguageBlock` uses `find*` resolution and remains empty ("no opinion") if no setting is found — the `vance.language.default` fallback thus controls the rendering defaults, but (not yet) the Engine language block; letting it apply there is a deliberate change in behavior that is part of the prompt language migration to English (see `planning/prompt-language-english-migration.md`). The historical `context.language` key no longer exists; migration is "manual" (replace settings rows, the resolver does not read the old key).
 
 #### Timezone: `display.timezone`
 
-The user's displayed timezone is a single per-user Setting `display.timezone` (IANA ID, e.g., `Europe/Berlin`), resolved via [`TimezoneResolver`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/settings/TimezoneResolver.java) via `getUserStringValueWithDefault` — cascade `_user_<userId> → _tenant`, code fallback `UTC`. Consumers:
+The user's display timezone is a single per-user setting `display.timezone` (IANA ID, e.g., `Europe/Berlin`), resolved via [`TimezoneResolver`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/settings/TimezoneResolver.java) via `getUserStringValueWithDefault` — cascade `_user_<userId> → _tenant`, code fallback `UTC`. Consumers:
 
-- the **Current-Date-Block** in the Prompt (renders in the User zone instead of server zone — see [prompt-caching](/specs/prompt-caching) §5b),
-- the **`current_time`** Tool (default zone without explicit `zone` parameter),
-- the **Scheduler** (`scheduler_set` writes the User zone into the YAML when creating — [scheduler](/specs/scheduler) §10c).
+- the **Current Date Block** in the prompt (renders in the user's zone instead of the server's zone — see [prompt-caching](/specs/prompt-caching) §5b),
+- the **`current_time`** tool (default zone without explicit `zone` parameter),
+- the **Scheduler** (`scheduler_set` writes the user's zone into the YAML upon creation — [scheduler](/specs/scheduler) §10c).
 
 The `PromptDateContextResolver` (vance-brain) lifts `Process → Session → userId` for this and is headless-proof. `display.timezone` is set in the Web UI profile (timezone selector with browser default seed on first load) or in the Foot-CLI via `/timezone`; both write via the self-service `PUT /brain/{tenant}/profile/settings/display.timezone` path (key is in the Profile allowlist).
 
-For Passwords, analogously: `getDecryptedUserPassword(tenantId, userId, key)` — direct, no fallback (per-user Secrets are explicit).
+For passwords, analogously: `getDecryptedUserPassword(tenantId, userId, key)` — direct, no fallback (per-user secrets are explicit).
 
-Team and Account Scopes are not modeled in v1. If they are added, they will sit between Project and `_tenant` in the Project cascade.
+Team and Account Scopes are not modeled in v1. If they are added, they will sit between Project and `_tenant` in the Project Cascade.
 
 ---
 
@@ -217,10 +217,10 @@ Team and Account Scopes are not modeled in v1. If they are added, they will sit 
 
 ### Bootstrap Order
 
-For Settings to be written to the `_tenant` Project, the Project must already exist during Settings operations. Two paths:
+For settings to be written to the `_tenant` Project, the Project must already exist during settings operations. Two paths:
 
-- **Demo Tenant `acme`:** `InitBrainService` calls `homeBootstrapService.ensureVance(ACME)` directly before `InitSettingsLoader.loadIfPresent()` — the Loader places its YAML entries in `(project, _tenant)` without the caller needing to know.
-- **Other Tenants:** `_tenant` is lazily created by `AccessController` on the first User login (idempotent), before Settings can be set via the Admin-REST.
+- **Demo Tenant `acme`:** `InitBrainService` calls `homeBootstrapService.ensureVance(ACME)` directly before `InitSettingsLoader.loadIfPresent()` — the loader places its YAML entries in `(project, _tenant)` without the caller needing to know.
+- **Other Tenants:** `_tenant` is created lazily (idempotently) by `AccessController` on the first user login, before settings can be set via Admin-REST.
 
 ---
 
@@ -236,7 +236,7 @@ webui.language                       string     "de"
 chat.language                        string     "de"
 ```
 
-Per-user Keys (Storage in the `_user_<login>` Project, cascade User → `_tenant`). `display.timezone` + `webui.language` are writable via the self-service Profile endpoint; see §3b.
+Per-user keys (Storage in `_user_<login>` Project, Cascade User → `_tenant`). `display.timezone` + `webui.language` are writable via the self-service Profile endpoint; see §3b.
 
 ### LLM
 
@@ -257,12 +257,15 @@ llm.failover.fallback_to_local       boolean    true
 
 ### Quotas
 
+Cost budgets per Tenant and Project — semantics in [llm-resource-management](/specs/llm-resource-management) §5a (values per Scope, no cascade override: all levels must exist):
+
 ```
-quota.daily_tokens                   int        500000
-quota.monthly_tokens                 int        10000000
-quota.max_tokens_per_call            int        8192
-quota.warn_at_percent                int        80
-quota.downgrade_at_percent           int        95
+ai.llm.budget.daily                  double     5
+ai.llm.budget.monthly                double     100
+ai.llm.budget.total                  double     500
+ai.llm.budget.total-since            string     2026-11-01
+ai.llm.budget.currency               string     USD
+ai.llm.budget.warn-percent           int        80
 ```
 
 ### Credentials (external services)
@@ -308,23 +311,23 @@ connectors.max_per_project           int        10
 routing.fallback.recipe              string     hactar
 ```
 
-Recipe name that is spawned by selector-routed `process_spawn` if the trigger-gated selector returns NONE (user text does not trigger a special Recipe). Empty string = no fallback (caller receives NONE and decides itself). See [recipe-routing.md](/specs/recipe-routing) §6.
+Recipe name that is spawned by `selector-routed process_spawn` if the trigger-gated selector returns NONE (user text does not trigger a special Recipe). Empty string = no fallback (caller gets NONE back and decides itself). See [recipe-routing.md](/specs/recipe-routing) §6.
 
 ---
 
 ## 6. API
 
-### Read Settings
+### Reading Settings
 
 ```
 GET /api/settings?scope=account/acc_mike
-  → All Settings for this Account (passwords masked)
+  → All settings for this account (passwords masked)
 
 GET /api/settings?scope=project/proj_5&key=llm.*
-  → All LLM Settings for this Project
+  → All LLM settings for this project
 
 GET /api/settings/resolved?scope=think-process/tp_12&account=acc_mike&project=proj_5
-  → Resolved Settings (cascade applied), shows effective values
+  → Resolved settings (cascade applied), shows effective values
   → Includes "source" field: where the value comes from (tenant/team/project/account/engine)
 ```
 
@@ -354,7 +357,7 @@ Response:
 }
 ```
 
-### Write Settings
+### Writing Settings
 
 ```
 PUT /api/settings
@@ -367,11 +370,11 @@ PUT /api/settings
   → Stored (encrypted for password)
 ```
 
-### Delete Settings
+### Deleting Settings
 
 ```
 DELETE /api/settings?scope=account/acc_mike&key=llm.default_model
-  → Override removed, falls back to next Scope level
+  → Override removed, falls back to next scope level
 ```
 
 ### Bulk Operations
@@ -395,8 +398,8 @@ PUT /api/settings/bulk
 vance settings list
   llm.default_model          = claude-sonnet-4     (account)
   llm.light_model            = gemini-2.5-flash    (tenant)
-  quota.daily_tokens         = 500000              (account)
-  quota.monthly_tokens       = 5000000             (project)
+  ai.llm.budget.daily        = 5                   (tenant)
+  ai.llm.budget.monthly      = 50                  (project)
   credentials.jira.api_key   = ***                 (account)
 
 vance settings get llm.default_model
@@ -414,24 +417,24 @@ vance settings delete llm.default_model
   Effective value now: claude-sonnet-4 (from: tenant/tenant_acme)
 
 vance settings resolved --engine tp_12
-  → Shows all effective Settings with origin
+  → Shows all effective settings with origin
 ```
 
 ---
 
-## 8. In the Brain (internal)
+## 8. In the Brain (Internal)
 
 ```java
 @Service
 public class SettingsService {
 
-    // Resolves a Setting value through the Scope cascade
+    // Resolves a setting value through the scope cascade
     public <T> T get(String key, Class<T> type, SettingsContext ctx) {
         // ctx contains: thinkProcessId, accountId, projectId, teamId, tenantId
         // Checks: engine → account → project → team → tenant → default
     }
 
-    // Resolves a Secret (decrypted) — the path for compiled
+    // Resolves a secret (decrypted) — the path for compiled
     // server code with a fixed key. Reads both encrypted types.
     // ONLY use internally, never return to API/client
     public String getSecret(String key, SettingsContext ctx) {
@@ -440,14 +443,14 @@ public class SettingsService {
         return decrypt(s.getValue());
     }
 
-    // Resolves a Secret for an authored &#123;{secret:…}} reference.
+    // Resolves a secret for an authored &#123;{secret:…}} reference.
     // Only returns HIDDEN, PASSWORD throws SecretAccessDeniedException.
     public String getReferenceSecret(String key, SettingsContext ctx) { ... }
 
-    // All Settings for a Scope
+    // All settings for a scope
     public List<Setting> list(Scope scope) { ... }
 
-    // All effective Settings (cascade resolved)
+    // All effective settings (cascade resolved)
     public List<ResolvedSetting> resolved(SettingsContext ctx) { ... }
 }
 ```
@@ -509,11 +512,11 @@ Settings
 ## 10. Summary
 
 ```
-Everything is a Setting.
+Everything is a setting.
 Settings have types: string, int, double, boolean — plus the protection classes hidden and password.
 Both encrypted types are stored encrypted and never returned in plaintext.
 Only hidden is resolvable via a &#123;{secret:…}} reference; password is only read by server code.
-Settings exist at Scope levels: Tenant → Team → Project → Account → Think-Process.
+Settings exist at scope levels: Tenant → Team → Project → Account → Think Process.
 A lower level overrides a higher one.
 One system, one code path, one API.
 ```

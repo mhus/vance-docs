@@ -1,6 +1,6 @@
 # Vancetope — Setting Forms
 
-> A **Setting Form** is a named form that configures Settings in a structured way — analogous to [Wizards](wizards.md), but instead of generating a prompt text, it writes directly to the `settings` collection. Use cases: "Switch LLM for this Project", "Select Quota Preset", "Connect External System" — anywhere the bare key/value editor is too cumbersome and a user-friendly form makes sense.
+> A **Setting Form** is a named form that configures Settings in a structured way — analogous to [Wizards](wizards.md), but instead of generating a prompt text, it writes directly to the `settings` collection. Use cases: "Change LLM for this project", "Select Quota Preset", "Connect External System" — anywhere the bare key/value editor is too cumbersome and a user-friendly form makes sense.
 >
 > **Persistence:** Setting Forms are stored as YAML documents under `setting_forms/<name>.yaml` in the Document Layer. The cascade lookup `project → _user_<user> → _tenant → classpath:vance-defaults/setting_forms/` runs via [`DocumentService.lookupCascade`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/document/DocumentService.java) — the same mechanism as Recipes, Wizards, and Documents.
 >
@@ -13,13 +13,13 @@
 | Term | What it is |
 |---|---|
 | **Setting Form** | YAML definition of form fields + Settings output mapping. On submit, produces a set of Setting writes (and deletes) on a defined Scope. |
-| **Direct-Mapped Field** | Form Field with `bindsTo`: 1:1 correspondence between Field Value and a Setting Key. UI shows current value + cascade source live. |
+| **Direct-Mapped Field** | Form Field with `bindsTo`: 1:1 correspondence between Field-Value and a Setting-Key. UI shows current value + cascade source live. |
 | **UI-Only Field** | Form Field **without** `bindsTo`: pure preset (e.g., "Budget: small/medium/large"), only affects derived `settings:` entries. |
-| **Computed Setting** | Entry in the `settings:` section: Setting Key + Scope + Pebble Template that calculates a value from Field Values. |
+| **Computed Setting** | Entry in the `settings:` section: Setting-Key + Scope + Pebble Template that calculates a value from Field-Values. |
 
-**Setting Forms are not a Spawn Path.** They do not run through an Engine, do not write a Document, do not generate a Prompt. They are pure **Settings Editors with Branding** — all writes run through the normal [`SettingService`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/settings/SettingService.java) path (Auth, Audit, Encryption for `PASSWORD` type).
+**Setting Forms are not a spawn path.** They do not run through an Engine, do not write a Document, do not generate a Prompt. They are pure **Settings Editors with Branding** — all writes run through the normal [`SettingService`](../repos/vance/server/vance-shared/src/main/java/de/mhus/vance/shared/settings/SettingService.java) path (Auth, Audit, Encryption for `PASSWORD` type).
 
-**Relationship to Wizards:** Setting Forms share the Form Engine (`FormField` schema, `FormFields.vue` renderer, `FormValidator`) — all form infrastructure that Wizards have is reused here. The Setting Form adds two concepts on top: `bindsTo` at the field level (direct mapping) and a separate `settings:` section (computed values with Pebble).
+**Relationship to Wizards:** Setting Forms share the Form Engine (`FormField` schema, `FormFields.vue` renderer, `FormValidator`) — all form infrastructure from Wizards is reused here. The Setting Form adds two concepts on top: `bindsTo` at the field level (direct mapping) and a separate `settings:` section (computed values with Pebble).
 
 ---
 
@@ -39,13 +39,13 @@ A Setting Form file has the following top-level fields. The `name` comes from th
 | `clearable` | `boolean` | no | Default `true`. If `false`, no "Reset" button in the UI. See §6.3 |
 | `availableIn` | `List<String>` | no | Glob pattern list on `projectId` for listing visibility. Default `["*"]`. See §2a (identical to Wizards) |
 
-**LocalizableText** is a map from language code to string, e.g., `{ de: "LLM-Einstellungen", en: "LLM Settings" }`. When rendering, the Tenant default language is used, with fallback to the first available entry.
+**LocalizableText** is a map from language code to string, e.g., `{ de: "LLM-Einstellungen", en: "LLM Settings" }`. When rendering, the Tenant default language is used, with a fallback to the first available entry.
 
 ---
 
 ## 2a. `availableIn` — Listing Filter per Project Context
 
-Setting Forms from the lower cascade layers (`RESOURCE`, `VANCE`) would otherwise appear in *every* Project context where the Setting Form listing is called. However, some forms only fit into specific contexts — e.g., a "User Notifications" form only makes sense in the User namespace (`_user_<user>`), a "Tenant Branding" form only in `_tenant`, an "LLM Setup" everywhere *except* in `_*` system projects. `availableIn` filters the **listing** (`GET /setting-forms`) based on the requested `projectId`.
+Setting Forms from lower cascade layers (`RESOURCE`, `VANCE`) would otherwise appear in *every* project context where the Setting Form listing is called. However, some forms only fit certain contexts — e.g., a "User Notifications" form only makes sense in the User namespace (`_user_<user>`), a "Tenant Branding" form only in `_tenant`, an "LLM Setup" everywhere *except* in `_*` system projects. `availableIn` filters the **listing** (`GET /setting-forms`) based on the requested `projectId`.
 
 **Pattern Syntax** — identical to [Wizards §2a](wizards.md#2a-availablein--listing-filter-pro-projekt-kontext):
 
@@ -60,29 +60,29 @@ Setting Forms from the lower cascade layers (`RESOURCE`, `VANCE`) would otherwis
 
 `availableIn` and `defaultScope` are orthogonal but natural partners. Rule of thumb per form category:
 
-| Form Category | typical `defaultScope` | typical `availableIn` |
+| Form Category | Typical `defaultScope` | Typical `availableIn` |
 |---|---|---|
-| Project Configuration (LLM, Quotas, Integrations) | `project` | `[ "!_*" ]` — only in business projects, not in `_tenant`/`_user_*` |
-| User Preferences (Notifications, UI, Per-User Defaults) | `user` | `[ "_user_*" ]` — only in the User namespace, not in business projects |
-| Tenant Defaults (Default Models, Global Quotas) | `tenant` | `[ "_tenant" ]` — explicitly only in the Tenant Project context |
+| Project Configuration (LLM, Quotas, Integrations) | `project` | `[ "!_*" ]` — only in functional projects, not in `_tenant`/`_user_*` |
+| User Preferences (Notifications, UI, Per-User Defaults) | `user` | `[ "_user_*" ]` — only in the User namespace, not in functional projects |
+| Tenant Defaults (Default Models, Global Quotas) | `tenant` | `[ "_tenant" ]` — explicitly only in the Tenant project context |
 | Universal (Connecting external services that apply everywhere) | `project` with User override fallback | `[ "*" ]` (Default) |
 
-The filter is a **courtesy to the User** — it doesn't enforce anything. Calling a `defaultScope: user` form *technically* in a business project is allowed; it will still write to `_user_<user>`, and the User will wonder why the change doesn't apply project-specifically. The `availableIn` filter hides such confusions by not showing the form in the listing at all.
+The filter is a **courtesy to the user** — it does not enforce anything. Calling a `defaultScope: user` form *technically* in a functional project is allowed; it will still write to `_user_<user>`, and the user will wonder why the change is not project-specific. The `availableIn` filter hides such confusions by not showing the form in the listing at all.
 
 ### Examples
 
 ```yaml
-# LLM Setup: available in every business project, not in system projects
+# LLM-Setup: available in every functional project, not in system projects
 availableIn: [ "!_*" ]
 ```
 
 ```yaml
-# User Notifications: only in the User namespace
+# User-Notifications: only in the User namespace
 availableIn: [ "_user_*" ]
 ```
 
 ```yaml
-# Tenant Branding: explicitly only in the Tenant project
+# Tenant-Branding: explicitly only in the Tenant project
 availableIn: [ "_tenant" ]
 ```
 
@@ -106,25 +106,26 @@ availableIn: [ "*" ]
 
 ## 3. Form Field Types
 
-Setting Forms use the same `FormField` schema as [Wizards §3](wizards.md#3-form-field-typen). All types there (`string`, `textarea`, `password`, `integer`, `boolean`, `select`, `multi_select`, `repeat`) and common fields (`name`, `label`, `help`, `required`, `defaultValue`, `choices`, `rows`, `min`/`max`, …) apply 1:1.
+Setting Forms use the same `FormField` schema as [Wizards §3](wizards.md#3-form-field-typen). All types there (`string`, `textarea`, `password`, `integer`, `number`, `boolean`, `select`, `multi_select`, `repeat`) and common fields (`name`, `label`, `help`, `required`, `defaultValue`, `choices`, `rows`, `min`/`max`, …) apply 1:1.
 
 Setting Forms add four fields per `FormField`:
 
 | Field | Type | Meaning |
 |---|---|---|
-| `bindsTo` | `{ key: String, scope?: String }` | Direct mapping. Field Value is written as a Setting under `key` in the specified `scope` on submit. Without `scope`, `defaultScope` from the top-level is used. See §4 |
-| `showIf` | `String` (Pebble Expression) | Field only visible if expression is truthy. Field value is still carried along if sub-templates need it — UI logic, not data filter. See §5 |
-| `writeIf` | `String` (Pebble Expression) | On apply: only write if truthy. If falsy → Setting Key is **deleted** (cascade reset). Applies to `bindsTo` and implicitly to Computed Settings (see §5.2) |
-| `choicesFrom` | `String` (Source Name) | `select`/`multi_select` get their Choices at runtime from an inventory instead of a fixed `choices` list. Sources see below |
-| `allowCustom` | `boolean` | `select` only, Default `false`. `true` = the field accepts values outside the (dynamic) Choices: the renderer becomes a filterable combobox (free text + filter), and submit validation skips the choice whitelist. Intended for inventory lists (`choicesFrom`) whose entries may disappear — not for closed enums like `provider`. |
+| `bindsTo` | `{ key: String, scope?: String }` | Direct mapping. Field-Value is written as a Setting under `key` in the specified `scope` on submit. Without `scope`, `defaultScope` from the top-level is used. See §4 |
+| `showIf` | `String` (Pebble-Expression) | Field only visible if expression is truthy. Field value is still carried along if sub-templates need it — UI logic, not data filter. See §5 |
+| `writeIf` | `String` (Pebble-Expression) | On apply: only write if truthy. If falsy → Setting-Key is **deleted** (cascade reset). Applies to both `bindsTo` and implicitly to Computed Settings (see §5.2) |
+| `choicesFrom` | `String` (Source-Name) | `select`/`multi_select` retrieve their choices at runtime from an inventory instead of a fixed `choices` list. Sources see below |
+| `allowCustom` | `boolean` | `select` only, Default `false`. `true` = the field accepts values outside the (dynamic) choices: the renderer becomes a filterable combobox (free text + filter), and submit validation skips the choice whitelist. Intended for inventory lists (`choicesFrom`) whose entries may disappear — not for closed enums like `provider`. |
 
-**Type Coercion between Field and Setting:** When writing to the `settings` collection, the Field Value is translated to the corresponding `SettingType` based on the field `type`:
+**Type Coercion between Field and Setting:** When writing to the `settings` collection, the field value is translated to the corresponding `SettingType` based on the field `type`:
 
-| Field Type | SettingType | Note |
+| Field-Type | SettingType | Note |
 |---|---|---|
 | `string`, `textarea`, `select` | `STRING` | Empty input = remove own override or disable inherited value (see §6.4) |
 | `password` | `PASSWORD` | Encryption by `SettingService`. Empty input = "do not change" (see §6.4) |
-| `integer` | `INT` or `LONG` | Depending on value range. For `bindsTo`, `bindsTo.settingType: "LONG"` can optionally be enforced. |
+| `integer` | `INT` or `LONG` | Depending on the value range. For `bindsTo`, `bindsTo.settingType: "LONG"` can optionally be enforced. |
+| `number` | `DOUBLE` | Written as a simple decimal number without trailing zeros (`10` remains `10`, not `10.0`) — an integer reader of the same key will continue to parse whole values. A type outside this table is not rendered and not saved; `BundledSettingFormsTest` checks this for all included forms. |
 | `boolean` | `BOOLEAN` | |
 | `multi_select`, `repeat` | not allowed for `bindsTo` | Only in `settings:` section via Pebble (e.g., `{{ tags | join(",") }}`) |
 
@@ -132,7 +133,7 @@ Setting Forms add four fields per `FormField`:
 
 ### Dynamic Choices: `choicesFrom`
 
-Instead of a fixed `choices` list, a `select` field can get its options **at runtime from an inventory** — for values whose set changes with the configuration (models, search sources):
+Instead of a fixed `choices` list, a `select` field can retrieve its options **at runtime from an inventory** — for values whose set changes with the configuration (models, search sources):
 
 ```yaml
   - name: defaultWeb
@@ -149,11 +150,11 @@ Instead of a fixed `choices` list, a `select` field can get its options **at run
 | `ai-fim-models` | same, filtered for models with `fimTemplate` (Follow-up Completion) | `"<provider>:<modelName>"` |
 | `research-sources` | the configured Search Source instances (`_vance/config/research/` documents, see [zarniwoop-service §8](zarniwoop-service.md#8-quellen-verwalten)) | Instance ID (file stem), exactly the value of `research.default.<modality>` |
 
-`choicesFrom` and `choices` are mutually exclusive — both together is a form load error. The loader validates the source name against the table above; a form with an unknown source does not appear in the listing. The choices are resolved on `GET` **and** on `validate`/`apply` (not just on rendering).
+`choicesFrom` and `choices` are mutually exclusive — both together is a form load error. The loader validates the source name against the table above; a form with an unknown source does not appear in the listing. Choices are resolved on `GET` **and** on `validate`/`apply` (not just on rendering).
 
 Stale values do not block the form: an inherited or saved value that is no longer in the inventory is passed through unchanged; only a real change is validated against the choices (`invalid_choice` — except for fields with `allowCustom: true`, where the change itself passes through). So, if a source is deleted that a routing still points to, the form can still be opened and the dead entry deleted (= cascade reset, §6.4).
 
-The stale value is still visible: `allowCustom` fields render as a combobox that displays the current value even if it is no longer in the choice list — with a hint "custom or outdated value" instead of an empty-looking selection. The delivered `choicesFrom` fields (`llm-setup`, `research-routing`) have `allowCustom: true` for this purpose.
+The stale value is still visible: `allowCustom` fields render as a combobox that displays the current value even if it is not (or no longer) in the choice list — with a hint "custom or outdated value" instead of an empty-looking selection. The delivered `choicesFrom` fields (`llm-setup`, `research-routing`) have `allowCustom: true` for this purpose.
 
 ### What v1 CANNOT do
 
@@ -163,7 +164,7 @@ The same limits as [Wizards §3](wizards.md#3-form-field-typen): no `date`/`file
 
 ## 4. Direct Mapping with `bindsTo`
 
-Direct mapping is the simple, declarative case: a Form Field corresponds 1:1 to a Setting Key.
+Direct mapping is the simple, declarative case: a form field corresponds 1:1 with a Setting-Key.
 
 ```yaml
 fields:
@@ -185,10 +186,10 @@ fields:
 
 ### 4.1 Live Source Indicator
 
-Direct-Mapped Fields show their current cascade source live in the UI — the renderer calls `GET /setting-forms/{name}` (see §8) on mount and receives a `currentValue` and `currentSource` for each field:
+Direct-Mapped Fields show their current cascade source live in the UI — the renderer calls `GET /setting-forms/{name}` on mount (see §8) and receives a `currentValue` and `currentSource` for each field:
 
 ```
-Default Model:     [claude-sonnet-4-6 ▼]    (effective from _tenant)
+Default Model:      [claude-sonnet-4-6 ▼]    (effective from _tenant)
 Anthropic API Key:  [••••••••••••]            (set in project)
 ```
 
@@ -213,13 +214,13 @@ fields:
 
 | Scope | Resolved To | Auth Requirement |
 |---|---|---|
-| `project` | current Project from call context; **without `projectId` in request: `_tenant`** | User must have write permissions in the Project (for `_tenant`, thus Tenant Admin) |
+| `project` | current project from call context; **without `projectId` in request: `_tenant`** | User must have write permissions in the project (for `_tenant`, thus Tenant Admin) |
 | `user` | `_user_<currentUser>` | User may only write to their own namespace |
 | `tenant` | `_tenant` | Tenant Admin only (see [identity-credentials](identity-credentials.md)) |
 
-**Missing `projectId` = Tenant context, not an error.** The entire subsystem interprets "no project in request" as `_tenant`: the loader skips the project layer and filters `availableIn` against `_tenant` (§2a), and the live cascade values come from `_tenant`. The write path follows the same rule — otherwise, a `defaultScope: project` form, which is deliberately offered in the Tenant context (`llm-setup`, `vault`, `fenchurch-style`), would display its values correctly and fail on save. If a form is intended exclusively for business projects, the Tenant context is excluded via `availableIn: [ "!_*" ]` (see `quota-preset`, `integrations-jira`).
+**Missing `projectId` = Tenant context, not an error.** The entire subsystem interprets "no project in request" as `_tenant`: the loader skips the project layer and filters `availableIn` against `_tenant` (§2a), and the live cascade values come from `_tenant`. The write path follows the same rule — otherwise, a `defaultScope: project` form, which is deliberately offered in the Tenant context (`llm-setup`, `vault`, `fenchurch-style`), would display its values correctly and fail on save. If a form is intended exclusively for functional projects, exclude the Tenant context via `availableIn: [ "!_*" ]` (see `integrations-jira`).
 
-`think-process` is **not allowed** as a Scope — Setting Forms are UI constructs for persistent configuration, not for transient Process overrides.
+`think-process` is **not allowed** as a scope — Setting Forms are UI constructs for persistent configuration, not for transient Process overrides.
 
 ---
 
@@ -229,7 +230,7 @@ Setting Forms use Pebble in **three** clearly delimited places — not in a free
 
 ### 5.1 `showIf` and `writeIf` (Field Level)
 
-Both are **Pebble Expressions**, not a complete template — they return `boolean`:
+Both are **Pebble expressions**, not a complete template — they return `boolean`:
 
 ```yaml
 fields:
@@ -247,7 +248,7 @@ fields:
 
 `showIf=false` → Field is hidden in the UI, but its default value is still carried along during rendering (e.g., if a `settings:` section reads it).
 
-`writeIf=false` → the Setting Key is **deleted** on apply (instead of written). This is the conditional reset path: switching provider from Anthropic to OpenAI automatically removes `ai.providers.anthropic.api_key`.
+`writeIf=false` → the Setting-Key is **deleted** on apply (instead of written). This is the conditional reset path: switching provider from Anthropic to OpenAI automatically removes `ai.providers.anthropic.api_key`.
 
 ### 5.2 `settings:` Section (Output Level)
 
@@ -255,11 +256,11 @@ This is where the Pebble templating logic for **computed Settings** resides. Eac
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `key` | `String` | yes | Setting Key (dot notation, see [settings-system §5](settings-system.md#5-namenskonventionen-keys)) |
+| `key` | `String` | yes | Setting-Key (dot notation, see [settings-system §5](settings-system.md#5-namenskonventionen-keys)) |
 | `scope` | `String` | no | `project` / `user` / `tenant`. Default: `defaultScope` |
 | `settingType` | `String` | no | `STRING` (Default) / `INT` / `LONG` / `DOUBLE` / `BOOLEAN` / `PASSWORD`. Coercion see below |
-| `value` | `String` (Pebble Template) | yes | Is rendered; result is parsed according to `settingType` |
-| `writeIf` | `String` (Pebble Expression) | no | Falsy → Key is deleted instead of written (same semantics as at field level) |
+| `value` | `String` (Pebble-Template) | yes | Will be rendered; result parsed according to `settingType` |
+| `writeIf` | `String` (Pebble-Expression) | no | Falsy → Key is deleted instead of written (same semantics as at field level) |
 | `description` | `LocalizableText` | no | optional, ends up as `description` on the Setting Document |
 
 **Example:**
@@ -269,33 +270,33 @@ fields:
   - name: budget
     type: select
     choices:
-      - { value: "small",  label: { de: "Klein  (~100k/Tag)" } }
-      - { value: "medium", label: { de: "Mittel (~500k/Tag)" } }
-      - { value: "large",  label: { de: "Groß  (~2M/Tag)" } }
+      - { value: "small",  label: { de: "Klein  (5/Tag)" } }
+      - { value: "medium", label: { de: "Mittel (20/Tag)" } }
+      - { value: "large",  label: { de: "Groß  (100/Tag)" } }
 
   - name: budgetEnabled
     type: boolean
     defaultValue: true
-    label: { de: "Quota aktiv" }
+    label: { de: "Budget aktiv" }
 
 settings:
-  - key: "quota.daily_tokens"
+  - key: "ai.llm.budget.daily"
     scope: "project"
-    settingType: INT
+    settingType: DOUBLE
     writeIf: "budgetEnabled"
     value: |
-      {% if budget == 'small' %}100000
-      {% elseif budget == 'medium' %}500000
-      {% else %}2000000{% endif %}
+      {% if budget == 'small' %}5
+      {% elseif budget == 'medium' %}20
+      {% else %}100{% endif %}
 
-  - key: "quota.monthly_tokens"
+  - key: "ai.llm.budget.monthly"
     scope: "project"
-    settingType: INT
+    settingType: DOUBLE
     writeIf: "budgetEnabled"
     value: |
-      {% if budget == 'small' %}3000000
-      {% elseif budget == 'medium' %}15000000
-      {% else %}60000000{% endif %}
+      {% if budget == 'small' %}100
+      {% elseif budget == 'medium' %}400
+      {% else %}2000{% endif %}
 ```
 
 ### 5.3 Render Context
@@ -304,10 +305,10 @@ All three Pebble locations see the same set of variables:
 
 | Variable | Source | Notes |
 |---|---|---|
-| `<field_name>` | current user input per field | Also for `showIf`/`writeIf` of fields currently being checked |
+| `<fieldname>` | current user input per field | Also for `showIf`/`writeIf` of fields currently being checked |
 | `lang` | Tenant default language | for multilingual texts in `description` |
-| `user` | Username | for User Scope forms |
-| `project` | Project Name | for project scope forms |
+| `user` | Username | for User-Scope forms |
+| `project` | Project name | for project-scope forms |
 | `current` | Map<String, ?>: current Setting values from the cascade | For `value` templates that need to "keep old value if nothing changed": `{{ current['ai.default.model'] | default('claude-sonnet-4-6') }}` |
 
 **Pebble Subset:** as with [Recipes](recipes.md) and [Wizards](wizards.md) — `{{ var }}`, `{% if/elseif/else/endif %}`, `{% for x in xs %}`, `{% raw %}`. No Java reflection, no `{% include %}`, no external file access. Compile validation on form load (fail-fast: invalid forms do not appear in the listing).
@@ -321,10 +322,10 @@ All three Pebble locations see the same set of variables:
 `POST /setting-forms/{name}/apply` receives `{ values: Record<string, FormValue> }`. Pipeline:
 
 1. **Form Validation** (server-side, synchronous): `required` checks, bounds, select whitelist — like [Wizards §6](wizards.md#6-validierung).
-2. **Evaluate `showIf`** for each Field — fields with `showIf=false` are treated as "hidden" for steps 3+4 (their `bindsTo` do not apply directly; their value is still readable in Pebble).
-3. **Build Plan:** translate all `bindsTo` mappings + all `settings:` entries into a flat list of `{ key, scope, value | DELETE, settingType }`. `writeIf=false` → `DELETE`. Empty inputs → see §6.4 (`DELETE` / `WRITE ""` / `SKIP`, depending on the cascade layer of the live value). Conflicts (two entries for the same key+scope) are a form definition error → HTTP 400.
-4. **Auth Check** per Scope: User is allowed to write to this Scope (see §4.3).
-5. **Apply Atomically:** all writes/deletes in a single `SettingService.applyBatch(...)` operation. If a single write fails (e.g., encryption error for PASSWORD), the entire batch is rolled back and HTTP 500 with a detailed list is returned.
+2. **Evaluate `showIf`** for each field — fields with `showIf=false` are treated as "hidden" for steps 3+4 (their `bindsTo` do not apply directly; their value is still readable in Pebble).
+3. **Build plan:** translate all `bindsTo` mappings + all `settings:` entries into a flat list of `{ key, scope, value | DELETE, settingType }`. `writeIf=false` → `DELETE`. Empty inputs → see §6.4 (`DELETE` / `WRITE ""` / `SKIP`, depending on the cascade layer of the live value). Conflicts (two entries for the same key+scope) are a form definition error → HTTP 400.
+4. **Auth Check** per Scope: User must have write permissions to this Scope (see §4.3).
+5. **Apply atomically:** all writes/deletes in a single `SettingService.applyBatch(...)` operation. If a single write fails (e.g., encryption error for PASSWORD), the entire batch is rolled back and HTTP 500 with a detailed list is returned.
 6. **Audit:** `SettingService` logs each write/delete individually via the normal audit path. Setting Forms do nothing special — they are just a dispatcher.
 
 Response:
@@ -345,9 +346,9 @@ Response:
 
 ### 6.3 Reset
 
-`POST /setting-forms/{name}/reset` (only if `clearable: true`) deletes **all** keys that the form potentially writes — collected from `fields[].bindsTo.key` ∪ `settings[].key` — each on its associated Scope. **Not** on the entire cascade: only the layer to which the form would write. This way, values cleanly fall back to the next outer cascade layer.
+`POST /setting-forms/{name}/reset` (only if `clearable: true`) deletes **all** keys that the form potentially writes — collected from `fields[].bindsTo.key` ∪ `settings[].key` —, each on its associated Scope. **Not** on the entire cascade: only the layer to which the form would write. This way, values cleanly fall back to the next outer cascade layer.
 
-Reset requires the same auth checks as Apply (User must be allowed to write to all affected Scopes).
+Reset requires the same auth checks as Apply (user must have write permissions to all affected scopes).
 
 ### 6.4 Empty-Value Semantics
 
@@ -356,22 +357,22 @@ An empty input is inherently **ambiguous**: "field not touched" and "nothing sho
 | Live value is in … | Action | Meaning |
 |---|---|---|
 | the **edited Scope itself** | `DELETE` | "my override gone" — the key disappears, the outer layer is inherited again |
-| an **outer layer** (inherited) | `WRITE ""` | "no value here, despite outer layer" — breaks the cascade on this Scope |
+| an **outer layer** (inherited) | `WRITE ""` | "no value here, despite outer layer" — breaks the cascade at this Scope |
 | **nowhere** | `SKIP` | there is neither an override to remove nor an inherited value to hide |
 
 The middle case is why the form must be able to write `""`: `SettingService.getStringValueCascade` stops at any layer that has **set** the key — only a `null` value cascades further (see [settings-system.md §Empty vs. Unset](settings-system.md)). Consumers consistently read blank as "not configured" and fall back to their own default. Without this rule, emptying an inherited field would **silently do nothing** — the outer value would simply remain in effect.
 
-Canonical example: The Tenant routes all OpenAI traffic through a corporate proxy (`ai.provider.openai.baseUrl = https://egress.acme.internal/openai/v1`), a Project should go directly. Empty field in the Project → `WRITE ""` → cascade stops in the Project → `ChatBehaviorBuilder.resolveBaseUrl` returns `null` → the provider uses its Spring default (`api.openai.com`). No duplication of the upstream URL, no placeholder sentinel.
+Canonical example: The Tenant routes all OpenAI traffic through a corporate proxy (`ai.provider.openai.baseUrl = https://egress.acme.internal/openai/v1`), a project should go directly. Empty field in the project → `WRITE ""` → cascade stops in the project → `ChatBehaviorBuilder.resolveBaseUrl` returns `null` → the provider uses its Spring default (`api.openai.com`). No duplication of the upstream URL, no placeholder sentinel.
 
-Note what the example is **not**: a gateway like Cortecs does not belong on `ai.provider.openai.baseUrl`, but in its own provider instance (`ai.provider.cortecs.*`, see [llm-resource-management](llm-resource-management.md) §3). The proxy here remains the same provider under the same identifier — only the path to it is different. This is precisely the dividing line: `baseUrl` changes the path to an instance, it does not create a second one.
+Note what the example is **not**: a gateway like Cortecs does not belong on `ai.provider.openai.baseUrl`, but in its own provider instance (`ai.provider.cortecs.*`, see [llm-resource-management](llm-resource-management.md) §3); the proxy here remains the same provider under the same identifier — only the path to it is different. This is precisely the dividing line: `baseUrl` changes the path to an instance, it does not create a second one.
 
-**Three deliberate exceptions** remain at `SKIP`:
+**Three deliberate exceptions** remain `SKIP`:
 
-- **Unsubmitted fields:** A key that is **missing** from the `values` object (or is JSON `null`) is considered "not touched", not "emptied". While the Web UI always sends all fields (pre-filled from the cascade), a partial submit is legitimate via the API and must not delete or empty anything the caller never mentioned. Explicitly empty is exclusively `"key": ""`.
-- **`password` Field Type:** an empty input still means "do not change" — the existing Setting entry remains untouched. This is necessary because the UI does not receive the value in plaintext, and therefore the user cannot "type the old value". To delete a Password Setting, use the Reset button (§6.3) or an explicit Boolean checkbox "Reset API Key" with `writeIf: "!resetApiKey"`. Credentials are never cleared by an empty input.
-- **Non-`STRING` types (`integer`, `boolean`, …) with inherited value:** `""` is not a parseable value of these types. The typed getters treat blank as "not set", but a consumer parsing the cascade string directly would fail. The `DELETE` case (removing one's own override) applies to them unchanged.
+- **Unsubmitted fields:** A key that is **missing** from the `values` object (or is JSON `null`) is considered "not touched," not "emptied." While the web UI always sends all fields (pre-filled from the cascade), a partial submit is legitimate via the API and must not delete or empty anything the caller never mentioned. Explicitly empty is exclusively `"key": ""`.
+- **`password` Field-Type:** an empty input still means "do not change" — the existing Setting entry remains untouched. This is necessary because the UI does not receive the value in plaintext, and therefore the user cannot "type the old value." To delete a Password Setting, use the Reset button (§6.3) or an explicit Boolean checkbox "Reset API Key" with `writeIf: "!resetApiKey"`. Credentials are never cleared by an empty input.
+- **Non-`STRING` types (`integer`, `boolean`, …) with inherited value:** `""` is not a parseable value for these types. The typed getters treat blank as "not set," but a consumer parsing the cascade string directly would fail. The `DELETE` case (remove own override) applies to them unchanged.
 
-The Unchanged check from §6.1 applies **beforehand**: a field whose submitted value matches the effective cascade value is not written at all. Submitting an already explicitly empty field as empty again is therefore a `SKIP`, not a second write.
+The Unchanged-Check from §6.1 applies **beforehand**: a field whose submitted value matches the effective cascade value is not written at all. Submitting an already explicitly empty field as empty again is thus a `SKIP`, not a second write.
 
 ---
 
@@ -398,11 +399,11 @@ Listing aggregates all four layers and deduplicates by `name` (first layer wins)
 
 ### `GET /brain/{tenant}/setting-forms`
 
-Lists resolved Setting Forms for the current context. Response as with Wizards — `name, title, description, icon, category, source` plus additionally `clearable: boolean`. No fields, no `settings:` section, no values.
+Lists resolved Setting Forms for the current context. Response as with Wizards — `name, title, description, icon, category, source` plus `clearable: boolean`. No fields, no `settings:` section, no values.
 
 ### `GET /brain/{tenant}/setting-forms/{name}?project={projectId}`
 
-Returns the full form definition (Fields including field metadata) **plus** for each direct-mapped Field the current cascade values for the specified project context:
+Returns the full form definition (fields including field metadata) **plus** for each direct-mapped field the current cascade values for the specified project context:
 
 ```json
 {
@@ -443,7 +444,7 @@ Like `/apply`, but dry-run. See §6.2.
 
 ### `POST /brain/{tenant}/setting-forms/{name}/reset?project={projectId}`
 
-Deletes all keys referenced by the form on their respective Scopes. See §6.3.
+Deletes all keys referenced by the form on their respective scopes. See §6.3.
 
 ---
 
@@ -451,20 +452,20 @@ Deletes all keys referenced by the form on their respective Scopes. See §6.3.
 
 ### Call Contexts
 
-Setting Forms appear where the User administers Settings:
-- **Settings Page** (`settings.html`) — the guided settings area for all Scopes
+Setting Forms appear where the user administers Settings:
+- **Settings Page** (`settings.html`) — the guided settings area for all scopes
   (successor to the Scopes Page; the Forms listing runs there in the "Settings" tab)
-  (Tenant, `_user_<login>`, Project): lists Forms and Setting Document Kinds per
+  (Tenant, `_user_<login>`, Project): lists Forms and Settings Document Kinds per
   category group, opens the Form inline via `SettingFormView.vue`. The
   User Scope is passed as `_user_<login>`-`projectId`, so that
   `availableIn: ["_user_*"]` forms appear there. See
   [settings-panel.md](settings-panel.md).
 - **Profile Editor** (`profile.html`) — retains the self-service core (language,
   timezone, theme, speech via the allowlist path
-  `PUT /brain/{tenant}/profile/settings/<key>`); User Scope forms instead show
+  `PUT /brain/{tenant}/profile/settings/<key>`); User-Scope forms instead show
   in the Settings Page, the Profile Page no longer links to its own Forms listing.
 
-Setting Forms do **not** appear in the Chat Editor (unlike Wizards) — they are configuration, not conversation. If the User wants a Setting change from within a chat, that is a normal Workspace navigation step.
+Setting Forms do **not** appear in the Chat Editor (unlike Wizards) — they are configuration, not conversation. If the user wants a Setting change from within a chat, that is a normal workspace navigation step.
 
 ### Renderer
 
@@ -503,12 +504,12 @@ CLI Setting Forms are v1.x — not strictly for v1, as the Web UI is the primary
 ## 11. Security & Contracts
 
 - **Pebble Sandbox:** As with Recipes and Wizards — only the declarative syntax subset. No reflection, no `{% include %}`.
-- **Cascade Sources:** `_user_<userId>` layer is only visible to the respective User. Project and Tenant layers follow the normal [workspace-access](workspace-access.md) rules.
+- **Cascade Sources:** `_user_<userId>` layer is only visible to the respective user. Project and Tenant layers follow normal [workspace-access](workspace-access.md) rules.
 - **PASSWORD Values:** Are returned in `currentValue` exclusively as `"***"` (set) or `null` (not set) — never in plaintext, neither via `GET /{name}` nor via `/validate`. `/apply` writes them encrypted via `SettingService.setPassword(...)`.
-- **Scope Auth:** Checked separately per Scope value (see §4.3). A form with mixed Scopes (e.g., `bindsTo.scope: project` and `settings[*].scope: tenant`) requires **all** corresponding permissions — a User without Tenant Admin will not even see the form in the listing.
+- **Scope Auth:** Checked separately per Scope value (see §4.3). A form with mixed scopes (e.g., `bindsTo.scope: project` and `settings[*].scope: tenant`) requires **all** corresponding permissions — a user without Tenant Admin will not even see the form in the listing.
 - **Conflict Detection:** If two entries (Fields + Computed) reference the same `(key, scope)` tuple, the form loader rejects the definition on boot (WARN log, missing from listing). This prevents "last writer wins" behavior at runtime.
 - **Fail-Fast on Load:** Forms with invalid YAML, missing required fields, Pebble syntax errors in `value`/`showIf`/`writeIf`, or unknown `settingType` are **not** included in the listing on boot/refresh.
-- **Audit Trail:** Every Setting write by a form goes through `SettingService` and lands in the normal audit log with `source: setting-form/<name>`. This allows later traceability of *which* form set a Setting value.
+- **Audit Trail:** Every Setting write through a form goes via `SettingService` and ends up in the normal audit log with `source: setting-form/<name>`. This allows later traceability of *which* form set a Setting value.
 
 ---
 
@@ -516,9 +517,9 @@ CLI Setting Forms are v1.x — not strictly for v1, as the Web UI is the primary
 
 | Phase | Content |
 |---|---|
-| **v1** | Schema + Backend Service + Cascade + `GET /setting-forms`, `GET /{name}`, `POST /apply`, `POST /validate`, `POST /reset` + `SettingFormView.vue` (based on `FormFields.vue`) + Workspace Editor Tab + Profile Editor Tab + 3 Bundled Forms (`llm-setup`, `quota-preset`, `integrations-jira`) |
+| **v1** | Schema + Backend Service + Cascade + `GET /setting-forms`, `GET /{name}`, `POST /apply`, `POST /validate`, `POST /reset` + `SettingFormView.vue` (based on `FormFields.vue`) + Workspace Editor Tab + Profile Editor Tab + 3 Bundled Forms (`llm-setup`, `quota-preset`, `integrations-jira`) — `quota-preset` removed on 2026-10-16: it wrote `quota.*_tokens`, which no one ever enforced; the real budget is `llm-budget` ([llm-resource-management](llm-resource-management.md) §5a) |
 | **v1.x** | CLI Integration (`vance settings-form ...`) + Tenant Admin Area + Mobile Renderer (`vance-fingers`) |
-| **v2** | Conditional Fields (`showIf`) have the same Pebble syntax as here, but will be backported to Wizards in v2 — common renderer logic comes from this module. Multi-Step Forms (Pages). Cross-Field Validation (e.g., "min value ≤ max value"). |
+| **v2** | Conditional Fields (`showIf`) have the same Pebble syntax as here, but will be added to Wizards in v2 — common renderer logic comes from this module. Multi-Step Forms (Pages). Cross-Field Validation (e.g., "min-value ≤ max-value"). |
 | **v3** | User Editor for custom Setting Forms in the Web UI (defining form definition as a form — meta, analogous to Wizard-v3). |
 
 ---
@@ -527,7 +528,7 @@ CLI Setting Forms are v1.x — not strictly for v1, as the Web UI is the primary
 
 The following form does **not** exist on disk; it is here to demonstrate four mechanisms in one piece. The delivered forms are located under `vance-brain/src/main/resources/vance-defaults/_vance/setting_forms/`.
 
-**And it also shows what not to build.** A `bindsTo.key` is a fixed string, so a form can address exactly one instance. A form with a key field per provider — as shown here — therefore cannot accommodate a second endpoint of the same protocol: the real `llm-setup.yaml` had exactly this form, and a gateway next to OpenAI was simply not configurable via the interface. Provider credentials are now stored in **one form per provider instance** (`llm-provider-<instance>.yaml`, see [llm-resource-management](llm-resource-management.md) §3); `llm-setup.yaml` only retains what is truly global. When designing a form for a family of similar targets, design one form **per target**.
+**And it also shows what not to build.** A `bindsTo.key` is a fixed string, so a form can address exactly one instance. A form with one key field per provider — as here — therefore cannot accommodate a second endpoint of the same protocol: the real `llm-setup.yaml` had exactly this form, and a gateway next to OpenAI was simply not configurable via the interface. Provider credentials are therefore now in **one form per provider instance** (`llm-provider-<instance>.yaml`, see [llm-resource-management](llm-resource-management.md) §3); `llm-setup.yaml` only retains what is truly global. When designing a form for a family of similar targets, design one form **per target**.
 
 ```yaml
 title:       { de: "LLM-Einstellungen (Beispiel)",     en: "LLM Settings (example)" }
@@ -601,4 +602,4 @@ The form cleanly covers four scenarios:
 - **Provider Switch:** changes `ai.default.provider`, hides the other key fields, and deletes the old keys via `writeIf` (Conditional Reset).
 - **Model Selection:** independent of the provider, direct mapped.
 - **Tracing Toggle:** a Boolean field controls two Setting writes (`enabled` always, `sample_rate` only when active).
-- **Reset Button:** deletes all six keys (`ai.default.provider`, `ai.default.model`, three provider API keys, `tracing.llm.enabled`, `tracing.llm.sample_rate`) at the Project level — cascade cleanly falls back to `_tenant`.
+- **Reset Button:** deletes all six keys (`ai.default.provider`, `ai.default.model`, three provider API keys, `tracing.llm.enabled`, `tracing.llm.sample_rate`) at the project level — cascade falls back cleanly to `_tenant`.
