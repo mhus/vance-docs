@@ -25,6 +25,7 @@ https://www.vancetope.com/llm/specification/centauri-service.md
 https://www.vancetope.com/llm/specification/chat-location-tool.md
 https://www.vancetope.com/llm/specification/chat-themes.md
 https://www.vancetope.com/llm/specification/client-protokoll-erweiterbarkeit.md
+https://www.vancetope.com/llm/specification/contacts.md
 https://www.vancetope.com/llm/specification/corporate-design.md
 https://www.vancetope.com/llm/specification/cortex.md
 https://www.vancetope.com/llm/specification/damogran-system.md

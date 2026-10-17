@@ -135,6 +135,11 @@
       "source_sha256": "68d10e01466af0e7d2b3d8dc3d8d82b883a494cc32f5adfc2a0c0b9f0caf8e94",
       "translated_at": "2026-10-15T09:47:51Z"
     },
+    "contacts.md": {
+      "model": "gemini-2.5-flash",
+      "source_sha256": "c25b8d4961238f1453e51be3446ccd0b798cbe1eeb0429291ecbe98dd91601da",
+      "translated_at": "2026-10-17T15:09:23Z"
+    },
     "corporate-design.md": {
       "model": "gemini-2.5-flash",
       "source_sha256": "4f9b86e509f351a8464947e2553380ea6c4a5edb4787e54812fd790f04b18a03",
@@ -457,8 +462,8 @@
     },
     "llm-resource-management.md": {
       "model": "gemini-2.5-flash",
-      "source_sha256": "848e2cd38ca063b3de50015f8602ae5efcd51d59f1c2208e9fdd0ed2c3a77db2",
-      "translated_at": "2026-10-17T09:54:40Z"
+      "source_sha256": "23a6415ff8edf7d207a854fa1432a8fbe9d725aeb2bacb1ee4886e93b86781bd",
+      "translated_at": "2026-10-17T15:10:55Z"
     },
     "marvin-engine.md": {
       "model": "gemini-2.5-flash",

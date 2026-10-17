@@ -45,6 +45,7 @@ The authoritative specs are written in German under `specification/public/*.md` 
 - [chat-location-tool](https://www.vancetope.com/llm/specification/chat-location-tool.md)
 - [chat-themes](https://www.vancetope.com/llm/specification/chat-themes.md): A Chat Theme is a named CSS file that controls the appearance of a Session's web chat transcript. A Recipe selects it with a…
 - [client-protokoll-erweiterbarkeit](https://www.vancetope.com/llm/specification/client-protokoll-erweiterbarkeit.md): Defines the WebSocket protocol, how external systems connect as clients, and how Vancetope thereby becomes an open platform.
+- [contacts](https://www.vancetope.com/llm/specification/contacts.md): Addon `vance-addon-brain-contacts`. Contacts (persons, organizations,
 - [corporate-design](https://www.vancetope.com/llm/specification/corporate-design.md): Status: v1, binding. To view: the sample pages in
 - [cortex](https://www.vancetope.com/llm/specification/cortex.md): Status: v1. Binding product spec for the unified Chat + Document + Execute work environment of the Web UI. Implementation lives in `client_web/packages/vance-face/src/cortex/` plus…
 - [damogran-system](https://www.vancetope.com/llm/specification/damogran-system.md): A lightweight, linear batch runner over a named Workspace:
