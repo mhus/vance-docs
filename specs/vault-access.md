@@ -11,7 +11,7 @@ permalink: /specs/vault-access
 > A Secret channel with **one** reference form, integrated into the existing
 > `&#123;{secret:…}}` layer. Behind it is either an external manager
 > (Infisical) or — without any configuration, as default — Vancetope's own
-> `hidden` settings. Secrets are **never** stored in Vancetope in plain text,
+> `hidden` settings. Secrets are **never** held in plain text in Vancetope,
 > but are resolved **server-side** at runtime and usable wherever
 > Vancetope already recognizes secrets — Tool Templates, SMTP, REST Tools, **and** the
 > `secrets:` block in Compose. Additionally, secrets can be **provisioned**
@@ -33,14 +33,14 @@ permalink: /specs/vault-access
 
 ## 1. Model
 
-A secret has a **reference** (`vault:<key>`), never a value in the document.
+A Secret has a **reference** (`vault:<key>`), never a value in the document.
 Resolution happens server-side at the time of access; the value leaves the
 server only in the outgoing call (HTTP header, exec environment). An agent
 writes references, never values.
 
 ## 2. Binding — One Vault per Scope, Cascaded
 
-The Vault connection is a group of cascading settings under `vault.*`:
+The Vault connection is a group of cascading Settings under `vault.*`:
 
 | Key | Meaning |
 |-----|-----------|
@@ -58,8 +58,8 @@ keys from exactly this layer — atomically, so that a partially configured user
 does not assemble a mixed clientId/clientSecret binding. A binding set at the
 user level thus wins as a whole over the project binding, and this over the
 tenant-wide `_tenant` binding. Headless/service runs (no user) cleanly fall back
-to project/tenant. Configuration is done via the *Vault* setting form
-(Profile for user scope, Workspace for project scope). A **tenant-wide**
+to project/tenant. Configuration is done via the *Vault* Setting form
+(Profile for User Scope, Workspace for Project Scope). A **tenant-wide**
 default Vault can alternatively be seeded at boot — the `vault.*` keys in the
 Init Settings Template (`qa/init-settings.yaml.dist`) land via
 `InitSettingsLoader` precisely in the `_tenant` layer, which the cascade reads as a fallback.
@@ -73,16 +73,16 @@ thus works without any configuration, and a document written against
 moves, the **reference** does not. This is precisely why the provider-agnostic
 prefix exists.
 
-Practical consequence: `vault:` is the one agent-capable reference form from day 1.
+Practical consequence: `vault:` is the one agent-compatible reference form from day 1.
 Those who do not want to operate anything externally still use it — and later grow
 into an external manager without document changes.
 
 `VaultService.isConfigured(scope)` still says "**external** manager bound"
-and is **not** a precondition for a read — it is only intended for status displays,
+and is **not** a precondition for a Read — it is only intended for status displays,
 never to skip the Vault path. Which Vault served a call is on a **separate**
 series — `vance.vault.bindings{outcome=settings|external}`
 — to make visible how many installations run without an external manager.
-Deliberately not folded into the result metric: its `outcome` values are
+It is deliberately not folded into the result metric: its `outcome` values are
 *terminal* outcomes, and `success / sum(outcomes)` should be a success rate.
 An additional binding value in the same series would count every call of the
 default installation twice and push the rate down to 50%.
@@ -92,7 +92,7 @@ default installation twice and push the rate down to 50%.
 `VaultProvider` (SPI, `vance-shared`): `type()` + `readSecret(binding, scope, key)` +
 `writeSecret(binding, scope, key, value)` (Default `UnsupportedOperationException`)
 + `requiresEndpoint()` (Default `true`).
-`VaultService` selects the provider by `vault.type`. Providers are stateless —
+`VaultService` selects the Provider by `vault.type`. Providers are stateless —
 they receive the resolved `VaultBinding` per call.
 
 `InfisicalVaultProvider` (`vance-brain`) delegates to `InfisicalClient`: Universal
@@ -113,9 +113,9 @@ solely by `vault.type` — a provider change does not invalidate references):
 
 is located in `SettingsSecretResolver` alongside the existing scopes
 (`project:`/`tenant:`/`user:`/Cascade-Default). An error (provider unreachable,
-Auth rejected) **fail-closed** to empty + WARN — the dependent call then fails
-with 401 instead of propagating. A **missing binding** is no longer an error:
-it selects the Settings Vault (§2.1).
+Auth rejected) falls **fail-closed** to empty + WARN — the dependent
+call then fails with 401, instead of propagating. A **missing binding** is
+no longer an error: it selects the Settings Vault (§2.1).
 
 ### 4.0a The Counterpart: `{noop}` for a Declared Literal
 
@@ -128,12 +128,11 @@ resolution. The syntax is that of Spring Security's
 `DelegatingPasswordEncoder`. Valid wherever `&#123;{secret:…}}` is valid.
 
 **Whether a credential is a reference or in plain text is decided by the
-configurator** — this layer does not make the choice. What it provides is a
+setter** — this layer does not make the choice. What it provides is a
 notation in which the choice is *visible*: a naked literal value passes through
 unchanged anyway, so `{noop}` is first an **explanation** and only then a
-mechanism. It becomes strictly necessary for a literal value that itself contains
-`&#123;{`. A literal that should start with `{noop}` is written
-`{noop}{noop}…`.
+mechanism. It becomes strictly necessary for a literal value that itself contains `&#123;{`.
+A literal that should start with `{noop}` is written `{noop}{noop}…`.
 
 It is implemented in `SecretResolver` itself, not in the implementations: an
 implementation only provides `substitute`/`substituteForConnector`, the
@@ -144,8 +143,8 @@ prefix into an `Authorization` header. (For the same reason, the constant is
 `SecretResolver.PASSTHROUGH` and no longer `NOOP`: it means the opposite of `{noop}`.)
 
 The first major consumers are the source configuration documents of Zarniwoop,
-Centauri, and Jaglan — there the credential is in a file, and whether it is a
-reference or a declared plain text must be visible from the file.
+Centauri, and Jaglan — there, the credential is in a file, and whether it is a
+reference or a declared plain text must be discernible from the file.
 
 ### 4.1 Who May Resolve: Connector vs. Dynamic Element
 
@@ -166,18 +165,17 @@ and `PASSWORD` would only remain for what compiled code reads with a fixed key �
 the distinction would be practically worthless.
 
 Technically: `SecretResolver` has two paths. `resolve(…)` is the **restrictive**
-default (only HIDDEN), `resolveForConnector(…)` reads both types. The default is
-intentionally the narrower one — an implementation that does not know the
-separation will therefore only become **narrower**, never broader. The three
-dynamic surfaces call `resolve` unchanged; the eight connector locations
-(REST Invoker, MCP Transport + Connection, SMTP, IMAP Factory) call
-`resolveForConnector`.
+default (HIDDEN only), `resolveForConnector(…)` reads both types. The default is
+intentionally narrower — an implementation that does not know the separation will
+therefore only become **narrower**, never broader. The three dynamic surfaces call
+`resolve` unchanged; the eight connector locations (REST Invoker, MCP Transport +
+Connection, SMTP, IMAP Factory) call `resolveForConnector`.
 
-If a dynamic element encounters a `PASSWORD` setting, it **does not** substitute
+If a dynamic element encounters a `PASSWORD` setting, it does **not** substitute
 empty, but throws a `SecretAccessDeniedException` with key and solution. Reason:
-an denied secret would otherwise be indistinguishable from a missing one and
-would arrive as an opaque 401 — the same logic as with `OAuthExpiredException`.
-Per channel, this arrives as a JS `Error`, HTTP 403 (Python endpoint), or visible
+an denied secret would otherwise be indistinguishable from a missing one and would
+arrive as an opaque 401 — the same logic as with `OAuthExpiredException`. Per
+channel, this arrives as a JS `Error`, HTTP 403 (Python endpoint), or visible
 Compose task failure.
 
 **`vault:` follows the provider.** With an external manager, no setting type is
@@ -189,13 +187,13 @@ type alone no longer separates the provider key from a reference. A
 tool document names target URL and header side-by-side; a
 `&#123;{secret:project:ai.provider.openai.apiKey}}` in the header would therefore go
 where the same document points. `SecretReferenceKeyPolicy` therefore rejects keys
-from `vance.settings.secret-reference-deny-keys` **before any lookup** — on both
-paths (`resolve` and `resolveForConnector`) and regardless of whether the setting
-even exists (otherwise it would be a trial channel). Deliberately a separate list
-next to `agentWriteDenyKeys`: same grammar, but writing and resolving are
-different questions — and therefore also different length lists (e.g.,
-`kit.token.*` is only on the write list because a provisioning document legitimately
-*references* the key).
+from `vance.settings.secret-reference-deny-keys` **before any lookup** — on
+both paths (`resolve` and `resolveForConnector`) and regardless of whether the
+setting even exists (otherwise it would be a trial channel). Deliberately a
+separate list next to `agentWriteDenyKeys`: same grammar, but writing and
+resolving are different questions — and therefore also different length lists
+(e.g., `kit.token.*` is only on the write list because a
+provisioning document legitimately *references* the key).
 
 **The `vault:` exception is an exception at the resolver level, not a loophole.**
 `SettingsSecretResolver` excludes the `vault:` scope from the check because a
@@ -213,29 +211,30 @@ Vaults.
 ### 4.2 Write Side: `PASSWORD` is Untouchable for Agents
 
 Symmetric to reading. There are exactly two agent-accessible
-setting write paths — `tool_template_apply` and the Kit install — and for both
-applies (`SettingWriteOrigin.AGENT`):
+setting write paths — `tool_template_apply` and Kit install — and for both,
+(`SettingWriteOrigin.AGENT`) applies:
 
 | Rule | Effect |
 |---|---|
 | **W1** | an existing `PASSWORD` setting is never overwritten |
-| **W3** | an agent may not write keys from `vance.settings.agent-write-deny-keys` (Default `ai.provider.*,vault.*`) at all — regardless of type and whether the setting exists. The read counterpart is `secretReferenceDenyKeys` (§4.1) |
+| **W3** | an agent may not write keys from `vance.settings.agent-write-deny-keys` (Default `ai.provider.*,vault.*,store.*,kit.*,ai.llm.budget.*`) at all — regardless of type and whether the setting exists. The read counterpart is `secretReferenceDenyKeys` (§4.1) |
 
-**The type follows usage, not origin.** A Kit template that installs an SMTP or
-REST credential writes `PASSWORD` — even if an agent triggered the apply and the
-value once passed through the model context. A one-time exposure during writing
-does not justify a permanent weakening of the credential, which is then only used
-by a connector. `HIDDEN` is only written by those who know that a script or a
-Compose task must resolve the value itself — for example, `vault_secret_generate`.
+**The type follows usage, not origin.** A Kit template that installs an
+SMTP or REST credential writes `PASSWORD` — even if an agent triggered the apply
+and the value once passed through the model context. A one-time exposure during
+writing does not justify a permanent weakening of the credential, which is
+subsequently only used by a connector. `HIDDEN` is only written by those who
+know that a script or a Compose task must resolve the value itself — for example,
+`vault_secret_generate`.
 
-W3 is a property and **not** a setting — as a setting, an agent with setting
-write rights could extend its own rights.
+W3 is a property and **not** a setting — as a setting, an agent with
+setting write permissions could extend its own rights.
 
 ## 5. Compose Injection (`secrets:`)
 
-An `exec` task declares a `secrets:` map (env name → reference). The values are
-resolved at runtime and injected as a **sealed environment** into precisely this
-command (**WORK target only**):
+An `exec` task declares a `secrets:` map (env name → reference). The values
+are resolved at runtime and injected as a **sealed environment** into exactly this
+command (**WORK-Target only**):
 
 ```yaml
 tasks:
@@ -268,14 +267,14 @@ script variable, never in env or state.
   `ScriptSecretAccumulator` records the pulled values; `ExecJobRenderer` masks
   stdout/stderr of the run with it.
 
-Boundary: the capability depends on the standard script API — available where
-`vance.documents` is also available (Cortex spawn). The LLM `execute_python`/
-`execute_javascript` path does not mint a SCRIPT_RUN token and does not yet have
-the contract.
+Limitation: the capability depends on the standard script API — available where
+`vance.documents` is also available (Cortex-Spawn). The LLM-`execute_python`/
+`execute_javascript` path does not mint a SCRIPT_RUN token and does not (yet)
+have the contract.
 
 ## 7. Write Tools
 
-Both `deferred` + non-primary (opt-in, sensitive), gated on project scope
+Both `deferred` + non-primary (opt-in, sensitive), gated on Project Scope
 `Action.WRITE`:
 
 - **`vault_secret_generate(key, [format], [length])`** — generates the value
@@ -285,7 +284,7 @@ Both `deferred` + non-primary (opt-in, sensitive), gated on project scope
 - **`vault_secret_set(key, value)`** — writes a given value (which by
   definition has already passed through the model context); does not echo it back.
 
-Provider-side, write is a create-or-update (PATCH→POST); the hard backstop
+Provider-side, Write is a Create-or-Update (PATCH→POST); the hard backstop
 remains the scope of the Machine Identity — a read-only token will cause the write
 to fail, regardless of what the Vancetope gate says.
 
@@ -293,19 +292,19 @@ to fail, regardless of what the Vancetope gate says.
 
 - **Settings are only referencable as `HIDDEN`** (§4.1/§4.2). Until the
   introduction of the type, the `&#123;{secret:…}}` layer exposed **every** encrypted
-  setting to models and scripts — including `vault.clientSecret`, i.e., the
-  Vault credential itself, allowing a script to completely read the Vault.
+  setting to models and scripts — including `vault.clientSecret`, i.e.,
+  the Vault credential itself, allowing a script to completely read the Vault.
   This is closed; `PASSWORD` is neither readable nor writable for agents.
 - **Leak reversal on write:** Reading never exposes the value to the model; a
-  value written via `vault_secret_set`, however, has already passed through the
-  context. For true secrecy, use `vault_secret_generate`.
+  value written via `vault_secret_set`, however, has already passed through the context.
+  For true secrecy, use `vault_secret_generate`.
 - **Masking is best-effort:** only exact raw values in the result log; transformed
   forms (base64, url-encoded, copied to another variable) slip through.
   Live exec tail and server-local exec log files are **not** masked in v1.
-  With `vance.secret` (script pull), a JS string return or Python stdout is
-  masked — an object graph return or console/log outputs are not.
-- **WORK-only:** `secrets:` injection on CLIENT/DAEMON targets is ignored with a
-  warning (no sealed-env channel there).
+  For `vance.secret` (script pull), a JS string return or Python stdout
+  is masked — an object graph return or console/log outputs are not.
+- **WORK-only:** `secrets:` injection on CLIENT/DAEMON targets is ignored with a warning
+  (no sealed-env channel there).
 - **No Value Cache** in v1 (token cache in client yes); one remote GET per
   resolve, consistent with the existing `&#123;{secret:project:}}` resolution.
 
