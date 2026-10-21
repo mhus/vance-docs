@@ -11,7 +11,7 @@
   "toc.models": "Seus modelos",
   "eng.eyebrow": "Engines",
   "eng.h2": "Um punhado de engines, muitas Recipes.",
-  "eng.p": "Um engine é um algoritmo Java com um ciclo de vida: ele decide quando o modelo é chamado, quais ferramentas ele recebe e quando o trabalho está pronto. Uma Recipe escolhe um engine e o configura — prompt, ferramentas, modelo, Skills. Você gera trabalho pelo nome da Recipe; um novo tipo de tarefa é uma nova Recipe, não um novo código.",
+  "eng.p": "Vancetope é um fat harness: onde os thin harnesses envolvem o modelo num loop enxuto e o deixam no comando, aqui quem decide é um Engine — um algoritmo Java com ciclo de vida — quando o modelo é chamado, que ferramentas recebe e quando o trabalho está feito. Uma Recipe escolhe um Engine e o configura: prompt, ferramentas, modelo, Skills. O trabalho é iniciado pelo nome da Recipe; um novo tipo de tarefa é uma nova Recipe, não código novo.",
   "g.talk": "Conversa",
   "role.arthur": "chat reativo",
   "role.eddie": "seu hub pessoal",

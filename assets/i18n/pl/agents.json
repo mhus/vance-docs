@@ -11,7 +11,7 @@
   "toc.models": "Twoje modele",
   "eng.eyebrow": "Silniki",
   "eng.h2": "Garść silników, wiele Recipe.",
-  "eng.p": "Silnik to algorytm Java z cyklem życia: decyduje, kiedy model jest wywoływany, jakie narzędzia otrzymuje i kiedy praca jest zakończona. Recipe wybiera silnik i konfiguruje go — prompt, narzędzia, model, Skills. Pracę uruchamiasz po nazwie Recipe; nowy rodzaj zadania to nowe Recipe, a nie nowy kod.",
+  "eng.p": "Vancetope to fat harness: gdzie thin harnesses owijają model w smukłą loop i pozwalają mu sterować, tutaj Engine — algorytm Java z lifecycle — decyduje, kiedy model jest wywoływany, jakie tools otrzymuje i kiedy praca jest wykonana. Recipe wybiera Engine i go konfiguruje — prompt, tools, model, skills. Uruchamiasz pracę po nazwie Recipe; nowy rodzaj assignment to nowe Recipe, a nie nowy code.",
   "g.talk": "Rozmowa",
   "role.arthur": "reaktywny czat",
   "role.eddie": "twój osobisty hub",

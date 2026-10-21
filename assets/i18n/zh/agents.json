@@ -11,7 +11,7 @@
   "toc.models": "您的模型",
   "eng.eyebrow": "引擎",
   "eng.h2": "少量引擎，多种Recipe。",
-  "eng.p": "引擎是具有生命周期的Java算法：它决定何时调用模型，提供哪些工具以及何时完成工作。Recipe选择一个引擎并配置它——提示、工具、模型、Skill。您通过Recipe名称生成工作；一种新的任务类型就是一个新的Recipe，而不是新的代码。",
+  "eng.p": "Vancetope 是一个 fat harness：thin harness 将模型封装在精简的循环中并让它引导，而在这里，一个 Engine——一个具有生命周期的 Java 算法——决定何时调用模型、获得哪些工具以及何时完成工作。一个 Recipe 选择一个 Engine 并对其进行配置——prompt、tools、model、Skills。您通过 Recipe 名称启动工作；一种新类型的任务就是一个新的 Recipe，而不是新的代码。",
   "g.talk": "对话",
   "role.arthur": "响应式聊天",
   "role.eddie": "您的个人中心",
