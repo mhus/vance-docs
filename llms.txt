@@ -2,7 +2,7 @@
 
 > A personal project: a server (the "Brain") on which LLM agents work assignments over hours and days — shaped almost entirely from its own documents. Not a product; open source under the GNU AGPLv3.
 
-Almost everything in Vance is a document in MongoDB — recipes, prompts, schedulers, hooks, settings, manuals — so the system can be reshaped from its own data, by humans and by agents. Engines are Java algorithms with a lifecycle; code drives the flow, not the LLM. Recipes (YAML configs) bind engines to default params, prompt prefixes and tool adjustments — many recipes per engine, no Java change required.
+Almost everything in Vance is a document in MongoDB — recipes, prompts, schedulers, hooks, settings, manuals — so the system can be reshaped from its own data, by humans and by agents. Vance is a fat harness rather than a thin one: engines are Java algorithms with a lifecycle; code drives the flow, not the LLM — and each engine is a different agent-loop design, with Nutrimat as the lab for experimental loops. Recipes (YAML configs) bind engines to default params, prompt prefixes and tool adjustments — many recipes per engine, no Java change required.
 
 The authoritative specs are written in German under `specification/public/*.md` in the source repository. The English Markdown linked below is auto-translated via Gemini and may lag behind the German originals. Inter-spec links in the raw markdown use relative `.md` paths and resolve within `/llm/specification/`.
 

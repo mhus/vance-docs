@@ -29,6 +29,12 @@ A Java algorithm with a lifecycle — the LLM does **not** drive the flow, the
 code does. The engine decides when an LLM call happens, which tool is called,
 and when an assignment is finished.
 
+That makes Vancetope a **fat harness**. Most agent tools are thin
+harnesses — a slim loop around the model, with the model steering. Here each
+engine *is* a loop, written in code — which is why different loop designs
+(task trees, phase gates, bulk workers, review loops, decision models) can be
+built and tested side by side. Nutrimat is the lab for the experimental ones.
+
 ## Recipe
 
 YAML configuration: engine + default params + prompt prefix + tool adjustments.
