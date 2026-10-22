@@ -4,10 +4,10 @@
 > anus: ein eigenständig lauffähiges Teil des Körpers. Die Leber filtert und
 > legt Vorräte an; genau das tut das Werkzeug.
 >
-> **Status:** Phase 0 und Phase 1 umgesetzt (Server-Seite komplett, Browser-UI
-> nicht). Phase 2 (das JVM-Tool `vance-liver` selbst) ist noch offen — diese
-> Spec beschreibt den Endzustand inkl. Phase 2, mit klarer Markierung der
-> bereits implementierten Teile.
+> **Status:** Phase 0, Phase 1 und das JVM-Tool (Phase 2) sind umgesetzt.
+> Phase 3 (Face-UI für Token-Minten und „Apps mit Zugriff") und Phase 4
+> (Native-Image, Schedule, Systembenachrichtigungen) sind offen. Diese Spec
+> beschreibt den gebauten Stand; §11 listet die Nachfolgeschritte.
 >
 > Planungsdokument: `planning/user-backup.md`. Abweichungen vom Plan sind am
 > Kopf jeder Sektion vermerkt.
@@ -113,7 +113,7 @@ es als mtime der lokalen Datei-Kopie.
 
 ## 4. Werkzeug
 
-### 4.1 Modul & Binary — **Phase 2 (offen)**
+### 4.1 Modul & Binary
 
 - Modul `vance-liver` im Reactor `repos/vance/server/` (AGPL). Der Codename
   bleibt intern (Modul, Packages `de.mhus.vance.liver`); nach außen heißt es
@@ -121,39 +121,50 @@ es als mtime der lokalen Datei-Kopie.
 - **Eigenes Binary `vancetope-backup`**, unabhängig von foot: keine
   gemeinsame Installation, keine Weiterleitung über den `vancetope`-CLI. Liver
   läuft dort, wo kein foot installiert ist (launchd/cron, NAS).
-- Abhängigkeiten: `vance-api` + Jackson + JDK `HttpClient` + Picocli (ohne
-  Spring-Integration). **Kein Spring, kein `vance-toolpack`, kein
-  `vance-shared`.**
+- Abhängigkeiten: `vance-api` + Jackson 3 (`tools.jackson.*`) + JDK
+  `HttpClient` + Picocli (ohne Spring-Integration). **Kein Spring, kein
+  `vance-toolpack`, kein `vance-shared`.**
 - **GraalVM `native-image` zurückgestellt** — Verteilung als JVM-Fat-JAR für
   v1; Native-Build ist v2.
+- Distribution als Brew Cask ist eine spätere Aufräumarbeit (Q4 2026).
 
-### 4.2 Kommandos — **Phase 2 (offen)**
+### 4.2 Kommandos
 
-| Kommando | Zweck |
-|---|---|
-| `vancetope-backup init` | Config anlegen; Verbindungs-String abfragen (stdin) |
-| `vancetope-backup run` | Snapshot erstellen (+ automatisches Ausdünnen nach `retention`) |
-| `vancetope-backup list` | Snapshots mit Zeitpunkt, Anzahl, Größe, Filter-Hash |
-| `vancetope-backup status` | letzter erfolgreicher Snapshot, Token-Ablauf, Policy-Status am Server |
-| `vancetope-backup verify [snapshot]` | Dateien gegen SHA-256 im Manifest prüfen |
-| `vancetope-backup prune` | Ausdünnen ohne neuen Lauf |
-| `vancetope-backup find <muster>` | Dokumente über alle Snapshots suchen (Pfad **und** Titel); `--deleted` nur solche, die im jüngsten Snapshot fehlen (§4.9) |
-| `vancetope-backup history <projekt>/<pfad>` | Versionen eines Dokuments über die Zeit — nur echte Inhaltsänderungen, folgt Umbenennungen (§4.9) |
-| `vancetope-backup extract <projekt>/<pfad> [--at <zeit>] [--to <dir>]` | eine Version herauskopieren, nie überschreibend (§4.9) |
-| `vancetope-backup logout` | Token am Server widerrufen, dann lokal löschen |
+| Kommando | Zweck | Exit |
+|---|---|---|
+| `vancetope-backup init` | Erstkonfiguration interaktiv (URL, Tenant, Credentials, idleDays); mintet Backup-Token und schreibt Config | 0/2/4 |
+| `vancetope-backup info` | Server-Status (Token, Policy, idleDays-Ceiling) | 0/2/4 |
+| `vancetope-backup run` | Snapshot erstellen; Hardlinks vom Vorgänger; `POST /backup/runs` verlängert Token | 0/1/2/3/4 |
+| `vancetope-backup list` | Snapshots unter `target/`, neueste zuerst | 0 |
+| `vancetope-backup status` | Server-Sicht + lokale Sicht (letzter Snapshot, Counts, Drift) | 0/2/4 |
+| `vancetope-backup verify [snapshot]` | Dateien gegen SHA-256 im Manifest prüfen | 0/1/4 |
+| `vancetope-backup prune [--dry-run]` | Time-Machine-Retention (hourly/daily/weekly) | 0/2/4 |
+| `vancetope-backup find <regex> [--title]` | Manifest-only Suche über alle Snapshots | 0/4 |
+| `vancetope-backup history <projekt>/<pfad>` | Versionen über alle Snapshots, lineage-basiert | 0/4 |
+| `vancetope-backup extract <projekt>/<pfad> [--at <id>] [--to <dir>]` | Datei aus Snapshot extrahieren | 0/2/4 |
+| `vancetope-backup logout` | Token am Server widerrufen (Self-Revoke) | 0/2/4 |
 
-Exit-Codes: `0` ok, `1` Teilfehler, `2` Anmeldung/Token (abgelaufen,
-widerrufen, Policy geschlossen), `3` Ziel nicht beschreibbar, `4` Config-Fehler.
+Exit-Codes (planning §4.2):
+
+- `0` ok
+- `1` Teilfehler (verifiziert oder Backup mit Failures)
+- `2` Anmeldung/Token abgelaufen oder widerrufen oder Policy geschlossen
+- `3` Ziel nicht beschreibbar oder Lock aktiv
+- `4` Config-Fehler
 
 ### 4.3 Config
 
 ```yaml
-# ~/.vancetope/backup.yaml  (oder --config <datei>)
-connection: vancetope1.…          # Verbindungs-String; Datei mit 0600
+# ~/.vancetope/liver/backup.yaml  (oder --config <datei>)
+server:
+  url: "https://brain.example"   # komplette URL zum Brain, inkl. Schema
+  tenant: acme                   # Mandant
+token: "eyJhbGciOi…"             # das rohe JWT (POST /integration-tokens, profile 'backup')
+# tokenFile: /secure/path/to/token   # Alternative für teilbare Configs
 target: ~/VancetopeBackup
 projects:
   include: ["*"]                 # Default: alles, was ich lesen darf
-  exclude: ["scratch-*"]
+  exclude: ["scratch-*"]         # optional
   includeDisabled: false         # deaktivierte Projekte nur auf Anforderung (§5)
 deny:                            # Globs, gelten in allen Projekten
   - "_vance/**"                  # Default-Eintrag, entfernbar
@@ -166,8 +177,15 @@ retention:
 notify: true                     # Systembenachrichtigung bei Fehlschlag/Token-Ablauf
 ```
 
-Der Token kann alternativ in einer eigenen Datei liegen (`connectionFile:`),
-damit die Config ohne Geheimnis teilbar ist.
+**Wichtig (Abweichung vom ursprünglichen Plan):** Die frühere Skizze
+`connection: vancetope1.<host>/<tenant>/<profile>/<token>` ist **nicht
+das Wire-Format** des Werkzeugs. Das Tool erwartet drei explizite Felder
+(`server.url`, `server.tenant`, `token`), weil der Plan-Placeholder das
+Schema auf `https` festgenagelt und Host/Tenant vermischt hätte. Dev-Brain
+auf `http://localhost:9991` ist damit ohne Heuristik möglich.
+
+`tokenFile` ist die Alternative zu `token`: liest das JWT aus einer Datei,
+damit eine team-shared Config ohne Secret verteilt werden kann.
 
 ### 4.4 Ablage auf der Platte
 
@@ -479,9 +497,15 @@ unbeaufsichtigt". Daraus die Leitplanken §7.2, §7.4, §7.5.
 |---|---|---|---|
 | 0 | `updatedAt`-Feld + Migration + Schreibpfade | ✅ umgesetzt | `e95623506`, `7448b4036`, `2d995425b` |
 | 1 | Server-Basis (PathGlob, idleDays, lastUsedIp, sliding lifetime, BackupController, Mandanten-Policy, Self-Revoke) | ✅ umgesetzt | `f5fd72835` … `4631e55ca` |
-| 2 | Tool `vance-liver` (JVM-Modul, CLI, Hardlink-Logik, Manifest, Ausdünnen, `find`/`history`/`extract`) | ⏳ offen | — |
+| 2 | Tool `vance-liver` (JVM-Modul, CLI, Hardlink-Logik, Manifest, Ausdünnen, `find`/`history`/`extract`) | ✅ umgesetzt | `551aa602e` … `9cb46abd5` |
 | 3 | Face-UI für Token-Minten, „Apps mit Zugriff"-Erweiterung | ⏳ offen | — |
 | 4 | Native-Build, Schedule-Integration, Systembenachrichtigungen | ⏳ v2 (Native zurückgestellt) | — |
+
+Live-Verifikation am 22.10.2026:
+  1. `info` über `http://localhost:9991` mit Backup-Token: 5 Surfaces, idleDays-Ceiling 90 (Policy-clamped).
+  2. `run` 1: 1689 Dokumente, 36 MB heruntergeladen, 16 s.
+  3. `run` 2 (Hardlinks): 1689 Dokumente, 0 Bytes, gleiche Inodes verifiziert (`stat -f '%i'`).
+  4. Token automatisch von 2026-10-29 → 2026-11-21 verlängert (sliding lifetime funktioniert).
 
 ## 9. Sicherheit — Pflicht-Tests
 
@@ -546,22 +570,36 @@ ist; siehe §12):
 
 ## 11. Später
 
-- `vancetope-backup browse`: interaktive Zeitleiste (TUI im Terminal oder
+- **Phase 3 — Face-UI**: Token-Minten aus dem User-Settings-Dialog
+  (kein Copy-Paste aus init), „Apps mit Zugriff"-Erweiterung mit
+  IP-Sichtbarkeit pro Token (das `lastUsedIp`-Feld gibt es schon, die
+  Anzeige fehlt).
+- **`vancetope-backup browse`**: interaktive Zeitleiste (TUI im Terminal oder
   lokale Web-Seite auf Loopback) — Dokument wählen, Versionen durchblättern,
-  Vorschau, `extract` per Tastendruck. Baut auf dem Index aus §4.9 auf.
+  Vorschau, `extract` per Tastendruck. Baut auf den Manifest-Index auf.
 - OAuth-Tür `backup` auf demselben Profil (Desktop-Login ohne Copy-Paste).
 - Benachrichtigung bei Nutzung von neuer IP.
 - **GraalVM native-image** für `vancetope-backup` (v2). Native-Build ist eine
   reine Verteilungs-Optimierung, ändert das Tool-Interface nicht.
 - Delta-Listing für sehr große Tenants: geänderte Einträge seit einem
-  Server-Wasserzeichen + reine ID-Liste für Löschungen (§3.1).
+  Server-Wasserzeichen + reine ID-Liste für Löschungen.
+- Streaming write+hash (v1 puffert die ganze Datei im Speicher).
+- ETag gegen den vorherigen Snapshot-Inhalt — verhindert den Download
+  identischer Dateien bei *jedem* Lauf.
 - `updatedBy` analog zu `createdBy` („zuletzt geändert von" in der UI).
 - Optionales lokales Entschlüsseln (`vance-age`) in eine getrennte Ablage.
 - Archiv-Versionen mitsichern (nur falls Bedarf entsteht — die Snapshots
   decken die Historie ab Beginn des Backups ab).
 - **Testcontainers-Integrationstest** für die BackupController-Routen +
-  Policy-Gate (siehe §9) — opt-in gemäß
-  `agent/build-test.md` „MongoDB-Integrationstests sind opt-in".
+  Policy-Gate — opt-in gemäß `agent/build-test.md` „MongoDB-Integrationstests
+  sind opt-in".
+- **Distribution als Brew Cask**: liver + foot im gleichen Cask, mit
+  Wrapper-Script `vancetope-backup` (analog zu `wb`).
+- **Server-Bug-Fix** (Nachfolge-Commit auf der Server-Seite):
+  `DocumentService.listBackupPage` muss einen leeren Cursor als
+  „erste Seite" behandeln, nicht `new ObjectId("")` aufrufen. Aktuell
+  umgeht liver das durch das Weglassen des `cursor`-Feldes; der Server
+  sollte robust gegen beide Varianten sein.
 
 ## 12. Offene Fragen / Abweichungen vom Plan
 
@@ -582,11 +620,26 @@ ist; siehe §12):
 - **`@GenerateTypeScript("backup")`** an den Backup-DTOs (Plan sagte
   „nicht nötig"). Annotation ist günstig und öffnet die Tür für eine
   künftige Face-Anbindung, ohne den Vertrag zu ändern.
+- **Connection-String-Format**: Der ursprüngliche Plan-Skizze
+  `connection: vancetope1.<host>/<tenant>/<profile>/<token>` wurde
+  ersetzt durch drei explizite Felder (`server.url`, `server.tenant`,
+  `token`). Begründung: das Platzhalter-Format hätte das Schema auf
+  `https` festgenagelt und Host/Tenant vermischt; explizite Felder
+  lassen Dev-Brain auf `http://localhost:9991` ohne Heuristik zu.
+- **`idleDays`-Default**: Plan §7.6 schlug 90 Tage vor; die Policy
+  kann diesen Wert über `backup-access.yaml.idleDays` enger setzen.
+  Tatsächlich-Wert für `road.runner@acme`: 90 Tage (= Policy-Wert,
+  nicht das absolute Maximum 365).
 
-**Offene Punkte (für Phase 2):**
+**Offene Punkte:**
 - Testcontainers-basierter Integration-Test für `BackupController` —
   opt-in, weil der Plan explizit als Test-Driven ausgelegt ist, aber die
   CI-Lane dafür erst freigeschaltet werden muss.
 - Face-UI für „Backup-Zugang erstellen" (Phase 3) — kein Server-Code
   nötig, reines Form-Routing gegen die existierende `POST
   /integration-tokens`.
+- Server-Bug in `DocumentService.listBackupPage`: ein leerer
+  Cursor-String führt zu `new ObjectId("")` und IllegalArgumentException.
+  Liver umgeht das aktuell durch das Weglassen des `cursor`-Feldes bei
+  der ersten Seite; der Server sollte den ersten Seite-Pfad ohne
+  Cursor-Param sauber handhaben.
