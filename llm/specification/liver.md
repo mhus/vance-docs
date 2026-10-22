@@ -498,7 +498,7 @@ unbeaufsichtigt". Daraus die Leitplanken §7.2, §7.4, §7.5.
 | 0 | `updatedAt`-Feld + Migration + Schreibpfade | ✅ umgesetzt | `e95623506`, `7448b4036`, `2d995425b` |
 | 1 | Server-Basis (PathGlob, idleDays, lastUsedIp, sliding lifetime, BackupController, Mandanten-Policy, Self-Revoke) | ✅ umgesetzt | `f5fd72835` … `4631e55ca` |
 | 2 | Tool `vance-liver` (JVM-Modul, CLI, Hardlink-Logik, Manifest, Ausdünnen, `find`/`history`/`extract`) | ✅ umgesetzt | `551aa602e` … `9cb46abd5` |
-| 3 | Face-UI für Token-Minten, „Apps mit Zugriff"-Erweiterung | ⏳ offen | — |
+| 3 | Face-UI für Token-Minten, „Apps mit Zugriff"-Erweiterung | ✅ umgesetzt | `31a6ba323`, `47c3339e6`, `2ce220250`, `8aad2dced` |
 | 4 | Native-Build, Schedule-Integration, Systembenachrichtigungen | ⏳ v2 (Native zurückgestellt) | — |
 
 Live-Verifikation am 22.10.2026:
@@ -506,6 +506,12 @@ Live-Verifikation am 22.10.2026:
   2. `run` 1: 1689 Dokumente, 36 MB heruntergeladen, 16 s.
   3. `run` 2 (Hardlinks): 1689 Dokumente, 0 Bytes, gleiche Inodes verifiziert (`stat -f '%i'`).
   4. Token automatisch von 2026-10-29 → 2026-11-21 verlängert (sliding lifetime funktioniert).
+  5. **Phase 3 — End-to-End durch UI**: Header → „Apps with access" → BackupTokenSection
+     → Mint mit `label=phase-3-final`, `idleDays=30`. Token im Browser kopiert,
+     in `~/.vancetope/liver/backup.yaml` gepastet. `vancetope-backup run` läuft
+     durch (1689 Dokumente), danach listet die verbundene-App-Ansicht denselben
+     Token mit `lastUsedAt` + `lastUsedIp` + Sliding-Badge. Vollständiger
+     User-Loop ohne Copy-Paste aus dem Terminal.
 
 ## 9. Sicherheit — Pflicht-Tests
 
@@ -600,6 +606,17 @@ ist; siehe §12):
   „erste Seite" behandeln, nicht `new ObjectId("")` aufrufen. Aktuell
   umgeht liver das durch das Weglassen des `cursor`-Feldes; der Server
   sollte robust gegen beide Varianten sein.
+
+- **Sliding-Lifetime-Rechnung kürzer als erwartet** (Beobachtung 22.10.2026):
+  Ein Token mit `idleDays=30` und 7-Tage-`expiresInDays` wurde nach dem ersten
+  `run` mit einem neuen Expiry von +23 Tagen verlängert — nicht +30.
+  `IntegrationTokenService.extend()` rechnet `now + idleDays` für die neue
+  Expiry, aber der Effekt deutet auf `now + idleDays - existingExpiresInDays`
+  (oder einen ähnlichen Bug). Phase-1-Verhalten, nicht Phase-3 — gehört in
+  einen Phase-1-Nachfolge-Commit. Aktuell harmlos, weil `+23d` immer noch
+  weiter in der Zukunft liegt als `+7d`; aber die UI-Anzeige
+  „renews on use ({days}d idle)" sollte korrekt sein, sonst versteht der
+  Operator seine Token-Lebenszeit nicht.
 
 ## 12. Offene Fragen / Abweichungen vom Plan
 
