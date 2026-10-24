@@ -308,7 +308,7 @@ Implementation: `AbstractNutrimat.appendInterimRoundText` (Server),
 ## 10. History
 
 - `planning/nutrimat-engine.md` — design plan, decisions, open points (naming
-  world of drinks/teas from `instructions/nutrimat-engine.md`).
+  world of drinks/teas from `../../../instructions/archive/nutrimat-engine.md`).
 - Built 2026-10: Framework + `janx` (Commit "feat(nutrimat): loop-lab
   framework"), `redbull`/`mate`/`salitos` (Commit "feat(nutrimat):
   redbull/mate/salitos loop natures"), E2E lanes, this document.
