@@ -16,7 +16,7 @@ permalink: /specs/contacts
 > See also: [permission-system](/specs/permission-system) (R4, R7,
 > `WriteActor.system`), document-change-events,
 > [app-links](/specs/app-links) (patch semantics, no image URL as tool parameter).
-> Planning and derivation: [`planning/contacts.md`](/specs/contacts).
+> Planning and derivation: [`../../../planning/archive/contacts.md`](/specs/contacts).
 
 ---
 

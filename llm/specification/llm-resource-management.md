@@ -809,7 +809,7 @@ usage_record:
 
 ## 5a. Cost Budgets
 
-**Built (2026-10-16).** An Admin sets a cost budget for chat calls for the **Tenant** and/or a **Project**: per day, per month, and/or absolutely from a start date. Without a setting, everything is **unlimited**. Plan and decision path: `planning/llm-quota.md`.
+**Built (2026-10-16).** An Admin sets a cost budget for chat calls for the **Tenant** and/or a **Project**: per day, per month, and/or absolutely from a start date. Without a setting, everything is **unlimited**. Plan and decision path: `../../../../planning/archive/llm-quota.md`.
 
 ### Unit: Money
 

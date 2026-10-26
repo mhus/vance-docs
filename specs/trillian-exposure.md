@@ -9,7 +9,7 @@ permalink: /specs/trillian-exposure
 # Trillian Exposure — The Agent Door
 
 > Status: 2026-10-13, Phase 2 (first door). Planning including discarded paths:
-> [`planning/trillian-exposure.md`](/specs/trillian-exposure) ·
+> [`../../../planning/archive/trillian-exposure.md`](/specs/trillian-exposure) ·
 > Heads: [`trillian-engine.md`](/specs/trillian-engine) §6f ·
 > Threads: [`maximegalon-system.md`](/specs/maximegalon-system) ·
 > Credentials: [`integration-tokens.md`](/specs/integration-tokens)

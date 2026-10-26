@@ -2,7 +2,7 @@
 
 > Authoritative product reference for the limited, fair sharing of scarce
 > resources across all Tenants. Planning + design history:
-> [`planning/lease-system.md`](../../planning/lease-system.md).
+> [`../../../../planning/archive/lease-system.md`](../../planning/lease-system.md).
 > Implementation documentation (AI perspective): `readme/lease-system.md`.
 > See also: [settings-system](settings-system.md) (Scope Cascade),
 > [server-tools](server-tools.md) (`mcp_server` tools, `lease` parameter),

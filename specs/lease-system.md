@@ -10,7 +10,7 @@ permalink: /specs/lease-system
 
 > Authoritative product reference for the limited, fair sharing of scarce
 > resources across all Tenants. Planning + design history:
-> [`planning/lease-system.md`](/specs/lease-system).
+> [`../../../planning/archive/lease-system.md`](/specs/lease-system).
 > Implementation documentation (AI perspective): `readme/lease-system.md`.
 > See also: [settings-system](/specs/settings-system) (Scope Cascade),
 > [server-tools](/specs/server-tools) (`mcp_server` tools, `lease` parameter),

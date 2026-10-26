@@ -13,7 +13,7 @@
 > insane and questions its meaning.
 >
 > Design plan, decisions, and discarded paths:
-> `planning/wonko-engine.md`. Implementation: `readme/wonko-engine.md`.
+> `../../../../planning/archive/wonko-engine.md`. Implementation: `readme/wonko-engine.md`.
 >
 > See also: [think-engines](think-engines.md) | [doc-kind-questions](doc-kind-questions.md) | [light-llm-service](light-llm-service.md) | [benjy-engine](benjy-engine.md) | [frankie-engine](frankie-engine.md) | [skills](skills.md) | [recipes](recipes.md)
 

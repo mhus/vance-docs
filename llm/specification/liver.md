@@ -9,7 +9,7 @@
 > (Native-Image, Schedule, Systembenachrichtigungen) sind offen. Diese Spec
 > beschreibt den gebauten Stand; §11 listet die Nachfolgeschritte.
 >
-> Planungsdokument: `planning/user-backup.md`. Abweichungen vom Plan sind am
+> Planungsdokument: `../../../../planning/archive/user-backup.md`. Abweichungen vom Plan sind am
 > Kopf jeder Sektion vermerkt.
 
 ## 1. Motivation & Ziel
@@ -206,7 +206,7 @@ damit eine team-shared Config ohne Secret verteilt werden kann.
 - `LATEST` ist eine Datei, kein Symlink (Windows-kompatibel).
 - `.lock` (Datei-Lock): ein Lauf pro Ziel.
 - **Hardlinks** pro Datei mit Fallback auf Kopie (per-Datei-Entscheidung,
-  siehe §4.4-Logik in `planning/user-backup.md` §4.4). Speziell:
+  siehe §4.4-Logik in `../../../../planning/archive/user-backup.md` §4.4). Speziell:
   Netzlaufwerke mit Link-Limit (NTFS 1023, ext4 65000) und exFAT/FAT sind
   unterstützt.
 

@@ -1,7 +1,7 @@
 # Trillian Exposure — The Agent Door
 
 > Status: 2026-10-13, Phase 2 (first door). Planning including discarded paths:
-> [`planning/trillian-exposure.md`](../../planning/trillian-exposure.md) ·
+> [`../../../../planning/archive/trillian-exposure.md`](../../planning/trillian-exposure.md) ·
 > Heads: [`trillian-engine.md`](trillian-engine.md) §6f ·
 > Threads: [`maximegalon-system.md`](maximegalon-system.md) ·
 > Credentials: [`integration-tokens.md`](integration-tokens.md)

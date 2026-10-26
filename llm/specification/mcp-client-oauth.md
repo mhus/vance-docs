@@ -5,7 +5,7 @@
 > clicks "Log in",
 > and the server's tools run in the Brain with their token — similar to
 > Claude Code or Cursor. Status: **v1 built** (2026-10-16). Planning:
-> `planning/mcp-client-oauth.md`.
+> `../../../../planning/archive/mcp-client-oauth.md`.
 >
 > See also: [server-tools.md](server-tools.md) (Server Tools as
 > documents, `type: mcp_server`), [oauth-server.md](oauth-server.md) (the

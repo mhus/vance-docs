@@ -8,7 +8,7 @@ permalink: /specs/oauth-server
 
 # OAuth Server
 
-> Vance as an OAuth 2.1 Authorization Server for its own MCP doors and — for its own clients — as a login. Status: **v1 built** (2026-10-14), in parallel with the existing login. Planning and decision history: `planning/oauth-server.md`.
+> Vance as an OAuth 2.1 Authorization Server for its own MCP doors and — for its own clients — as a login. Status: **v1 built** (2026-10-14), in parallel with the existing login. Planning and decision history: `../../../planning/archive/oauth-server.md`.
 >
 > See also: [integration-tokens.md](/specs/integration-tokens) (Profiles, Pin, Cut-Rule, Revocation — the OAuth token passes through the same narrowing), [mcp-server.md](/specs/mcp-server), [mcp-project-access.md](/specs/mcp-project-access), [trillian-exposure.md](/specs/trillian-exposure), [permission-system.md](/specs/permission-system).
 

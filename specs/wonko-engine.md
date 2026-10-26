@@ -21,7 +21,7 @@ permalink: /specs/wonko-engine
 > insane and questions its meaning.
 >
 > Design plan, decisions, and discarded paths:
-> `planning/wonko-engine.md`. Implementation: `readme/wonko-engine.md`.
+> `../../../planning/archive/wonko-engine.md`. Implementation: `readme/wonko-engine.md`.
 >
 > See also: [think-engines](/specs/think-engines) | [doc-kind-questions](/specs/doc-kind-questions) | [light-llm-service](/specs/light-llm-service) | [benjy-engine](/specs/benjy-engine) | [frankie-engine](/specs/frankie-engine) | [skills](/specs/skills) | [recipes](/specs/recipes)
 

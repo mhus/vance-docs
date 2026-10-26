@@ -138,7 +138,7 @@ indexes on boot. Recipes pin via `params.nature: '<id>'`.
   conversation side: discussion threads are answered by a dedicated
   head (§6f), the loop remains work-side; call name "Colin", otherwise all
   hooks at defaults. Plan:
-  `planning/trillian-exposure.md`.
+  `../../../planning/archive/trillian-exposure.md`.
 - Further Natures … — Personality, Traits, Mode Switch, Token
   Budget.
 
@@ -632,7 +632,7 @@ who has rights and context there.
 A MultiHead Nature answers every **discussion thread** addressed to
 its account with a dedicated conversation head process —
 the Loop remains free of external conversation texts. Plan and decision history:
-`planning/trillian-exposure.md` (Phase 1 and 2 implemented; the door to the outside:
+`../../../planning/archive/trillian-exposure.md` (Phase 1 and 2 implemented; the door to the outside:
 [trillian-exposure](/specs/trillian-exposure)).
 
 **What a conversation is** (`TrillianHeadService.isConversation`): an open

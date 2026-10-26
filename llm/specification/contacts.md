@@ -8,7 +8,7 @@
 > See also: [permission-system](permission-system.md) (R4, R7,
 > `WriteActor.system`), [document-change-events](../document-change-events.md),
 > [app-links](app-links.md) (patch semantics, no image URL as tool parameter).
-> Planning and derivation: [`planning/contacts.md`](../../planning/contacts.md).
+> Planning and derivation: [`../../../../planning/archive/contacts.md`](../../planning/contacts.md).
 
 ---
 
