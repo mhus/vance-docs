@@ -1,6 +1,6 @@
-# Liver — User-Backup: Dokumente lokal sichern, Time-Machine-artig
+# User-Backup: Dokumente lokal sichern, Time-Machine-artig
 
-> Codename **Liver** (Modul `vance-liver`) — in der Reihe brain / foot / face /
+> Backup (Modul `vance-backup`) — in der Reihe brain / foot / face /
 > anus: ein eigenständig lauffähiges Teil des Körpers. Die Leber filtert und
 > legt Vorräte an; genau das tut das Werkzeug.
 >
@@ -53,7 +53,7 @@ lesen darf, in einen lokalen Ordner sichert, mit Historie wie Time Machine.
 | Anmeldung | **Integration-Token** mit Profil `backup` (nur lesend, ohne Projekt-Pin, sliding-lifetime). OAuth später als Zusatz möglich (eigene Tür auf demselben Profil) |
 | Token-Laufzeit | **gleitend**: jeder erfolgreiche Backup-Lauf verlängert auf „jetzt + idleDays"; idleDays ohne Backup → Token tot, neu minten (§7.6) |
 | Deaktivierte Projekte | nur auf ausdrückliche Anforderung: namentlich in `include` oder Flag `includeDisabled` (§5) |
-| Name | intern **Liver** (Modul `vance-liver`, wie brain/foot/face/anus); nach außen **„Vancetope Backup"**, eigenes Binary `vancetope-backup`, unabhängig von foot (§4.1) |
+| Name | backup (Modul `vance-backup`, wie brain/foot/face/anus); nach außen **„Vancetope Backup"**, eigenes Binary `vancetope-backup`, unabhängig von foot (§4.1) |
 | Abmelden | Token widerruft **sich selbst** über `DELETE …/integration-tokens/current` |
 | Mandanten-Policy | `_tenant/_vance/config/backup-access.yaml`, **Default erlaubt** (Datei fehlt = `enabled: true`); Datei kaputt → verweigert mit WARN |
 | Einzel-Token-Freigabe | **nicht** als Dokument — Lebendigkeit bleibt allein in der Registry `integration_tokens` (§7.3) |
@@ -115,11 +115,11 @@ es als mtime der lokalen Datei-Kopie.
 
 ### 4.1 Modul & Binary
 
-- Modul `vance-liver` im Reactor `repos/vance/server/` (AGPL). Der Codename
-  bleibt intern (Modul, Packages `de.mhus.vance.liver`); nach außen heißt es
+- Modul `vance-backup` im Reactor `repos/vance/server/` (AGPL). Der Codename
+  bleibt intern (Modul, Packages `de.mhus.vance.backup`); nach außen heißt es
   **„Vancetope Backup"** — wie foot nach außen `vancetope` heißt.
 - **Eigenes Binary `vancetope-backup`**, unabhängig von foot: keine
-  gemeinsame Installation, keine Weiterleitung über den `vancetope`-CLI. Liver
+  gemeinsame Installation, keine Weiterleitung über den `vancetope`-CLI. Backup
   läuft dort, wo kein foot installiert ist (launchd/cron, NAS).
 - Abhängigkeiten: `vance-api` + Jackson 3 (`tools.jackson.*`) + JDK
   `HttpClient` + Picocli (ohne Spring-Integration). **Kein Spring, kein
@@ -155,7 +155,7 @@ Exit-Codes (planning §4.2):
 ### 4.3 Config
 
 ```yaml
-# ~/.vancetope/liver/backup.yaml  (oder --config <datei>)
+# ~/.vancetope/backup/backup.yaml  (oder --config <datei>)
 server:
   url: "https://brain.example"   # komplette URL zum Brain, inkl. Schema
   tenant: acme                   # Mandant
@@ -497,7 +497,7 @@ unbeaufsichtigt". Daraus die Leitplanken §7.2, §7.4, §7.5.
 |---|---|---|---|
 | 0 | `updatedAt`-Feld + Migration + Schreibpfade | ✅ umgesetzt | `e95623506`, `7448b4036`, `2d995425b` |
 | 1 | Server-Basis (PathGlob, idleDays, lastUsedIp, sliding lifetime, BackupController, Mandanten-Policy, Self-Revoke) | ✅ umgesetzt | `f5fd72835` … `4631e55ca` |
-| 2 | Tool `vance-liver` (JVM-Modul, CLI, Hardlink-Logik, Manifest, Ausdünnen, `find`/`history`/`extract`) | ✅ umgesetzt | `551aa602e` … `9cb46abd5` |
+| 2 | Tool `vance-backup` (JVM-Modul, CLI, Hardlink-Logik, Manifest, Ausdünnen, `find`/`history`/`extract`) | ✅ umgesetzt | `551aa602e` … `9cb46abd5` |
 | 3 | Face-UI für Token-Minten, „Apps mit Zugriff"-Erweiterung | ✅ umgesetzt | `31a6ba323`, `47c3339e6`, `2ce220250`, `8aad2dced` |
 | 4 | Native-Build, Schedule-Integration, Systembenachrichtigungen | ⏳ v2 (Native zurückgestellt) | — |
 
@@ -508,7 +508,7 @@ Live-Verifikation am 22.10.2026:
   4. Token automatisch von 2026-10-29 → 2026-11-21 verlängert (sliding lifetime funktioniert).
   5. **Phase 3 — End-to-End durch UI**: Header → „Apps with access" → BackupTokenSection
      → Mint mit `label=phase-3-final`, `idleDays=30`. Token im Browser kopiert,
-     in `~/.vancetope/liver/backup.yaml` gepastet. `vancetope-backup run` läuft
+     in `~/.vancetope/backup/backup.yaml` gepastet. `vancetope-backup run` läuft
      durch (1689 Dokumente), danach listet die verbundene-App-Ansicht denselben
      Token mit `lastUsedAt` + `lastUsedIp` + Sliding-Badge. Vollständiger
      User-Loop ohne Copy-Paste aus dem Terminal.
@@ -599,12 +599,12 @@ ist; siehe §12):
 - **Testcontainers-Integrationstest** für die BackupController-Routen +
   Policy-Gate — opt-in gemäß `agent/build-test.md` „MongoDB-Integrationstests
   sind opt-in".
-- **Distribution als Brew Cask**: liver + foot im gleichen Cask, mit
+- **Distribution als Brew Cask**: backup + foot im gleichen Cask, mit
   Wrapper-Script `vancetope-backup` (analog zu `wb`).
 - **Server-Bug-Fix** (Nachfolge-Commit auf der Server-Seite):
   `DocumentService.listBackupPage` muss einen leeren Cursor als
   „erste Seite" behandeln, nicht `new ObjectId("")` aufrufen. Aktuell
-  umgeht liver das durch das Weglassen des `cursor`-Feldes; der Server
+  umgeht backup das durch das Weglassen des `cursor`-Feldes; der Server
   sollte robust gegen beide Varianten sein.
 
 - **Sliding-Lifetime-Rechnung kürzer als erwartet** (Beobachtung 22.10.2026):
@@ -657,6 +657,6 @@ ist; siehe §12):
   /integration-tokens`.
 - Server-Bug in `DocumentService.listBackupPage`: ein leerer
   Cursor-String führt zu `new ObjectId("")` und IllegalArgumentException.
-  Liver umgeht das aktuell durch das Weglassen des `cursor`-Feldes bei
+  Backup umgeht das aktuell durch das Weglassen des `cursor`-Feldes bei
   der ersten Seite; der Server sollte den ersten Seite-Pfad ohne
   Cursor-Param sauber handhaben.
