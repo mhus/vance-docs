@@ -64,3 +64,5 @@ translate run.
 
 - Prose, images, diagrams: **CC BY 4.0** — see [`LICENSE`](LICENSE)
 - Code snippets: **MIT** — see [`LICENSE-code.txt`](LICENSE-code.txt)
+
+Contributions are accepted under the [Developer Certificate of Origin](CONTRIBUTING.md): sign off your commits with `git commit -s`.
