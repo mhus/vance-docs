@@ -1,7 +1,8 @@
 title: Vancetope
 description: >-
-  A personal project: a server on which LLM agents work assignments over hours
-  and days, shaped almost entirely from its own documents. Not a product.
+  Vancetope Community Edition: the free, open-source (AGPLv3) server on which
+  LLM agents work assignments over hours and days, shaped almost entirely from
+  its own documents. Self-hosted; the hosted edition is Vancetope Cloud.
 url: "https://www.vancetope.com"
 baseurl: ""
 lang: en
@@ -13,6 +14,8 @@ search_enabled: true
 heading_anchors: true
 
 aux_links:
+  "Vancetope Cloud":
+    - "https://vancetope.eu"
   "GitHub":
     - "https://github.com/mhus/vance"
   "Impressum":
