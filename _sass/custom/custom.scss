@@ -223,3 +223,41 @@ video.doc-shot {
 .nav-list .nav-list-item .nav-list-link:hover,
 .nav-list .nav-list-item .nav-list-link.active { color: #111113; box-shadow: inset 2px 0 0 #FF4F1F; }
 .aux-nav .aux-nav-list-item .site-button { color: #111113; }
+
+// ---- Vancetope Cloud: the bar at the top (inserted by assets/js/cloud.js) and the notice on
+// getting-started. Same look as on the landing pages (_includes/sc-style.html).
+#cloud-bar {
+  position: relative;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 48px 9px 16px;
+  background: #141416;
+  color: #E9E9EC;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+  p { margin: 0; }
+  b { color: #FFFFFF; font-weight: 600; }
+  a { color: #FF8A3D; text-underline-offset: 3px; white-space: nowrap; }
+  a:hover { color: #FFFFFF; }
+}
+.cloud-bar-close {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; border: 0; background: none; color: #A2A2AB;
+  font-size: 20px; line-height: 1; cursor: pointer; border-radius: 6px;
+  &:hover { color: #FFFFFF; background: #1C1C1F; }
+}
+.cloud-bar-off #cloud-bar { display: none; }
+
+.cloud-callout {
+  margin: 1.5rem 0 2rem;
+  padding: 16px 20px;
+  border: 1px solid #E2E0DA;
+  border-left: 4px solid #FF4F1F;
+  border-radius: 6px;
+  background: #F4F3EF;
+  p { margin: 0; }
+  a { white-space: nowrap; }
+}

@@ -494,3 +494,43 @@
   .hero-grid > *, .split > *, .faq-grid > *, .closer-grid > *, .cards > *, .feats > * { min-width: 0; }
   .release-pill { max-width: 100%; }
 </style>
+<style>
+  /* ---- Vancetope Cloud: the bar, the fork in the hero, the comparison (cloud.js rewrites the links) ---- */
+  #cloud-bar { position: relative; display: flex; align-items: center; justify-content: center; padding: 9px 48px 9px 16px; background: var(--slab); color: var(--slab-fg); border-bottom: 1px solid var(--slab-line); font-size: 14px; line-height: 1.4; text-align: center; }
+  #cloud-bar p { margin: 0; }
+  #cloud-bar b { color: #FFFFFF; font-weight: 600; }
+  #cloud-bar a { color: var(--accent-2); text-underline-offset: 3px; white-space: nowrap; }
+  #cloud-bar a:hover { color: #FFFFFF; }
+  .cloud-bar-close { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: 0; background: none; color: var(--slab-muted); font-size: 20px; line-height: 1; cursor: pointer; border-radius: var(--r); }
+  .cloud-bar-close:hover { color: #FFFFFF; background: var(--slab-2); }
+  .cloud-bar-off #cloud-bar { display: none; }
+
+  .paths { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+  @media (max-width: 1100px) and (min-width: 941px) { .paths { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .paths { grid-template-columns: 1fr; } }
+  .path { display: flex; flex-direction: column; padding: 20px 20px 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--raised-2); }
+  .path-tag { margin: 0 0 8px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .path h3 { margin: 0 0 8px; font-size: 22px; line-height: 1.15; }
+  .path > p:not(.path-tag) { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; flex: 1; }
+  .path-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .path-cta .btn { padding: 11px 18px; font-size: 15.5px; white-space: nowrap; }
+  .path-link { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-strong); font-size: 14.5px; text-underline-offset: 3px; }
+  .path-link:hover { color: var(--accent-text); }
+  .path-link svg { width: 15px; height: 15px; }
+
+  .ways { border-top: 1px solid var(--line); }
+  .ways-row { display: grid; grid-template-columns: minmax(130px, .5fr) 1fr 1fr; gap: 0 28px; padding: 15px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .ways-row > span { font-size: 16px; line-height: 1.5; color: var(--fg); }
+  .ways-row .k { font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .ways-row .cloud { color: var(--fg-strong); font-weight: 500; }
+  .ways-row .cloud a:not(.btn) { color: inherit; text-underline-offset: 3px; }
+  .ways-head > span { display: flex; flex-direction: column; gap: 2px; }
+  .ways-head b { font-family: var(--display); font-size: 21px; font-weight: 500; letter-spacing: -.01em; color: var(--fg-strong); }
+  .ways-head small { font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+  .ways-foot { border-bottom: 0; padding-top: 24px; }
+  @media (max-width: 720px) {
+    .ways-row { grid-template-columns: 1fr 1fr; gap: 6px 18px; }
+    .ways-row .k { grid-column: 1 / -1; }
+    .ways-head > span:first-child, .ways-foot > span:first-child { display: none; }
+  }
+</style>

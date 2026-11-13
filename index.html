@@ -12,17 +12,31 @@ permalink: /
       <div>
         <a class="release-pill" href="{{ '/blog/vancetope-0-6-0/' | relative_url }}"><span class="v">v0.6.0</span><span data-i18n="latest.pill">Open source · Google sign-in · signed desktop app →</span></a>
         <h1 data-i18n="hero.h1">Give AI a place.</h1>
-        <p class="lede" data-i18n="hero.lede">Vancetope gives AI a place — and with it, an application: a workspace of documents, sheets, canvas and boards where agents sit with your data and don’t chat on the side, they do the work. For an answer in five minutes or an assignment that runs for days. For work and for life, kept apart. On your own server.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="{{ '/getting-started' | relative_url }}"><span data-i18n="cta.start">Get started</span>
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a class="btn btn-ghost" href="https://github.com/mhus/vance">
-            {% include sc-icon-github.html %}
-            <span data-i18n="cta.github">Star on GitHub</span>
-          </a>
+        <p class="lede" data-i18n="hero.lede">Vancetope gives AI a place — and with it, an application: a workspace of documents, sheets, canvas and boards where agents sit with your data and don’t chat on the side, they do the work. For an answer in five minutes or an assignment that runs for days. For work and for life, kept apart. On your own server — or hosted for you in the EU.</p>
+        <div class="paths">
+          <div class="path">
+            <p class="path-tag" data-i18n="path.self.tag">Community · free</p>
+            <h3 data-i18n="path.self.h">Run it yourself</h3>
+            <p data-i18n="path.self.p">Open source under the AGPLv3. Docker on your own machine or server, a few minutes, your own model.</p>
+            <div class="path-cta">
+              <a class="btn btn-primary" href="{{ '/getting-started' | relative_url }}"><span data-i18n="cta.start">Get started</span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a class="path-link" href="https://github.com/mhus/vance">{% include sc-icon-github.html %}<span data-i18n="cta.github">Star on GitHub</span></a>
+            </div>
+          </div>
+          <div class="path" data-cloud-at="hero">
+            <p class="path-tag" data-i18n="path.cloud.tag">Cloud · early access</p>
+            <h3 data-i18n="path.cloud.h">Just use it</h3>
+            <p data-i18n="path.cloud.p">Hosted for you in the EU. Every model included, nothing to install, no keys to manage.</p>
+            <div class="path-cta">
+              <a class="btn btn-primary" href="https://www.vancetope.eu/"><span data-i18n="path.cloud.cta2">See the Cloud</span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a class="path-link" href="https://www.vancetope.eu/#pricing" data-i18n="path.cloud.pricing">Pricing</a>
+            </div>
+          </div>
         </div>
-        <p class="hero-note" data-i18n="hero.note">Community Edition — free and open source, self-hosted with Docker in a few minutes, bring your own model. <a href="{{ '/getting-started' | relative_url }}">Install&nbsp;→</a> Rather not run it yourself? <a href="https://vancetope.eu">Vancetope Cloud&nbsp;→</a></p>
       </div>
 
       <div class="hero-visual">
@@ -101,6 +115,37 @@ permalink: /
         <a class="card" href="{{ '/apps/#new' | relative_url }}"><h3>Scribble &amp; Designer</h3><p data-i18n="apps.new">Handwriting the agent can read and draw on; design collections with a live preview.</p></a>
       </div>
       <p class="apps-more"><a href="{{ '/apps/' | relative_url }}" style="color:inherit" data-i18n="apps.more">…plus wiki, journal, calendar, finance, slides, mindmaps, maps, audio, images — and apps the agent builds for you. See all apps →</a></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="ways" class="tint" data-cloud-at="compare">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="ways.eyebrow">Two ways in</p>
+        <h2 data-i18n="ways.h2">Run it yourself — or just use it.</h2>
+        <p data-i18n="ways.p">The same Vancetope, two ways to have it. Choose by how much of the running you want to do.</p>
+      </div>
+      <div class="ways" role="table" aria-label="Community Edition and Vancetope Cloud compared">
+        <div class="ways-row ways-head" role="row">
+          <span role="columnheader"></span>
+          <span role="columnheader"><b data-i18n="ways.self">Community Edition</b><small data-i18n="ways.self.sub">free · open source · self-hosted</small></span>
+          <span class="cloud" role="columnheader"><b data-i18n="ways.cloud">Vancetope Cloud</b><small data-i18n="ways.cloud.sub">hosted in the EU · early access</small></span>
+        </div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.setup.k">Getting going</span><span role="cell" data-i18n="ways.setup.a">Docker on your machine or server — a few minutes</span><span class="cloud" role="cell" data-i18n="ways.setup.b">Nothing to install — sign in and start</span></div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.models.k">Models</span><span role="cell" data-i18n="ways.models.a">Bring your own — an API key or a local model</span><span class="cloud" role="cell" data-i18n="ways.models.b">Every model included, with a monthly model budget</span></div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.ops.k">Running it</span><span role="cell" data-i18n="ways.ops.a">Updates, backups and uptime are yours</span><span class="cloud" role="cell" data-i18n="ways.ops.b">We run it, update it and back it up</span></div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.data.k">Your data</span><span role="cell" data-i18n="ways.data.a">On your own hardware</span><span class="cloud" role="cell" data-i18n="ways.data.b">In a tenant of your own, in the EU</span></div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.cost.k">Cost</span><span role="cell" data-i18n="ways.cost.a">Free — you pay for your server and your model</span><span class="cloud" role="cell" data-i18n="ways.cost.b">A monthly plan with the model budget included — <a href="https://www.vancetope.eu/#pricing">see pricing</a></span></div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.help.k">Help</span><span role="cell" data-i18n="ways.help.a">GitHub issues, no support contract</span><span class="cloud" role="cell" data-i18n="ways.help.b">Write to us directly</span></div>
+        <div class="ways-row" role="row"><span class="k" role="rowheader" data-i18n="ways.for.k">Made for</span><span role="cell" data-i18n="ways.for.a">Tinkerers, self-hosters, developers</span><span class="cloud" role="cell" data-i18n="ways.for.b">Everyone who wants to work with it, not operate it</span></div>
+        <div class="ways-row ways-foot" role="row">
+          <span role="cell"></span>
+          <span role="cell"><a class="btn btn-ghost" href="{{ '/getting-started' | relative_url }}" data-i18n="cta.start">Get started</a></span>
+          <span class="cloud" role="cell"><a class="btn btn-primary" href="https://www.vancetope.eu/" data-i18n="path.cloud.cta">See Vancetope Cloud</a></span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -275,7 +320,7 @@ permalink: /
         <h2 data-i18n="faq.h2">Asked often enough to answer here.</h2>
       </div>
       <div class="faq">
-        <details>
+        <details data-cloud-at="faq">
           <summary data-i18n="faq.q1">Is Vancetope a product I can buy?</summary>
           <p data-i18n="faq.a1">Not here. This site is the Community Edition: free, open source, no sales and no support contract — you run it yourself, on a laptop, a server or a cluster. The hosted edition is <a href="https://vancetope.eu">Vancetope Cloud</a>, run in the EU and currently in its pilot phase.</p>
         </details>
@@ -309,7 +354,7 @@ permalink: /
         <p class="eyebrow" data-i18n="closer.eyebrow">Honest bit</p>
         <h2 data-i18n="closer.h2">The Community Edition.</h2>
         <p data-i18n="closer.p1">I built Vancetope to develop LLM agents and shape them until I could actually work productively with them. Over time everything I found interesting went in — plus a few things I think others might get something out of.</p>
-        <p data-i18n="closer.p2">This is the free edition: no support contract and no roadmap promises. The source is open under the GNU AGPLv3 — read it, run it, change it, take it for a spin. If you would rather have it run for you, that is <a href="https://vancetope.eu">Vancetope Cloud</a>.</p>
+        <p data-i18n="closer.p2" data-cloud-at="closer">This is the free edition: no support contract and no roadmap promises. The source is open under the GNU AGPLv3 — read it, run it, change it, take it for a spin. If you would rather have it run for you, that is <a href="https://vancetope.eu">Vancetope Cloud</a>.</p>
         <p class="signature">— Mike Hummel</p>
       </div>
       <div class="facts">

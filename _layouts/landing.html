@@ -9,10 +9,12 @@
   {% seo %}
   <!-- Umami analytics (cookieless) -->
   <script defer src="https://umami.mhus.de/script.js" data-website-id="f20983cd-101f-4c67-841d-a20a7006fff1"></script>
+  <script>try{if(localStorage.getItem("vancetope-cloud-bar")==="closed")document.documentElement.classList.add("cloud-bar-off")}catch(e){}</script>
   {% include sc-style.html %}
 </head>
 <body data-i18n-page="{{ page.name | remove: '.html' }}">
 
+{% include sc-cloudbar.html %}
 {% include sc-header.html %}
 
 <a id="top"></a>
@@ -22,6 +24,7 @@
 </main>
 
 <script src="{{ '/assets/js/showcase.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/cloud.js' | relative_url }}"></script>
 {% if page.hero_device %}<script src="{{ '/assets/js/hero-device.js' | relative_url }}"></script>{% endif %}
 </body>
 </html>

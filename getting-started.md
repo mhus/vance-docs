@@ -13,6 +13,10 @@ Desktop. From a clean machine to an open Web UI: a few minutes once Docker
 is installed.
 {: .fs-5 .fw-300 }
 
+<div class="cloud-callout" data-cloud-at="install">
+<p><b>Rather not install anything?</b> No Docker, no server, no API keys: <a href="https://www.vancetope.eu/">Vancetope Cloud</a> runs Vancetope for you in the EU, every model included. Early access is open — <a href="https://www.vancetope.eu/">have a look&nbsp;→</a></p>
+</div>
+
 ## Table of contents
 {: .no_toc .text-delta }
 
