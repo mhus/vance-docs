@@ -1,9 +1,12 @@
 {
+  "cloudbar.text": "<b>Vancetope 云服务</b> — 抢先体验已开放：您的 AI 工作区，托管于欧盟，包含所有模型。 <a href=\"https://www.vancetope.eu/\">了解更多&nbsp;→</a>",
+  "brand.edition": "社区版",
   "nav.apps": "应用",
   "nav.agents": "智能体",
   "nav.connect": "连接",
   "nav.trust": "信任",
   "nav.docs": "文档",
+  "nav.cloud": "云服务&nbsp;↗",
   "nav.cta": "开始使用",
   "foot.product": "产品",
   "foot.apps": "应用&amp;文档",
@@ -11,6 +14,7 @@
   "foot.connect": "客户端&amp;集成",
   "foot.trust": "安全&amp;自托管",
   "foot.vision": "Vancetope 是什么",
+  "foot.cloud": "Vancetope 云服务 <span class=\"foot-hint\">托管版</span>",
   "foot.learn": "学习",
   "foot.start": "开始使用",
   "foot.tours": "功能导览",
@@ -19,5 +23,5 @@
   "foot.architecture": "架构",
   "foot.resources": "资源",
   "foot.community": "社区",
-  "footer.copy": "© 2025–2026 Mike Hummel · 文档遵循 CC BY 4.0 协议"
+  "footer.copy": "© 2025–2026 Mike Hummel · 社区版, GNU AGPLv3 · 文档遵循 CC BY 4.0"
 }

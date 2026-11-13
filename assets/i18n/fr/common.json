@@ -1,9 +1,12 @@
 {
+  "cloudbar.text": "<b>Vancetope Cloud</b> — l'accès anticipé est ouvert : votre espace de travail IA, hébergé dans l'UE, tous les modèles inclus. <a href=\"https://www.vancetope.eu/\">Jetez un œil&nbsp;→</a>",
+  "brand.edition": "communauté",
   "nav.apps": "Applications",
   "nav.agents": "Agents",
   "nav.connect": "Connecter",
   "nav.trust": "Confiance",
   "nav.docs": "Docs",
+  "nav.cloud": "Cloud&nbsp;↗",
   "nav.cta": "Démarrer",
   "foot.product": "Produit",
   "foot.apps": "Applications &amp; documents",
@@ -11,6 +14,7 @@
   "foot.connect": "Clients &amp; intégrations",
   "foot.trust": "Sécurité &amp; auto-hébergement",
   "foot.vision": "Qu'est-ce que Vancetope",
+  "foot.cloud": "Vancetope Cloud <span class=\"foot-hint\">hébergé</span>",
   "foot.learn": "Apprendre",
   "foot.start": "Démarrer",
   "foot.tours": "Visites guidées des fonctionnalités",
@@ -19,5 +23,5 @@
   "foot.architecture": "Architecture",
   "foot.resources": "Ressources",
   "foot.community": "Communauté",
-  "footer.copy": "© 2025–2026 Mike Hummel · docs sous CC BY 4.0"
+  "footer.copy": "© 2025–2026 Mike Hummel · Community Edition, GNU AGPLv3 · docs sous CC BY 4.0"
 }

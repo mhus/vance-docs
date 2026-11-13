@@ -1,9 +1,12 @@
 {
+  "cloudbar.text": "<b>Vancetope Cloud</b> — открыт ранний доступ: ваше ИИ-рабочее пространство, размещенное в ЕС, все модели включены. <a href=\"https://www.vancetope.eu/\">Посмотреть&nbsp;→</a>",
+  "brand.edition": "community",
   "nav.apps": "Приложения",
   "nav.agents": "Агенты",
   "nav.connect": "Подключение",
   "nav.trust": "Доверие",
   "nav.docs": "Документация",
+  "nav.cloud": "Cloud&nbsp;↗",
   "nav.cta": "Начать",
   "foot.product": "Продукт",
   "foot.apps": "Приложения &amp; документы",
@@ -11,6 +14,7 @@
   "foot.connect": "Клиенты &amp; интеграции",
   "foot.trust": "Безопасность &amp; self-hosting",
   "foot.vision": "Что такое Vancetope",
+  "foot.cloud": "Vancetope Cloud <span class=\"foot-hint\">размещенный</span>",
   "foot.learn": "Узнать больше",
   "foot.start": "Начать",
   "foot.tours": "Обзор функций",
@@ -19,5 +23,5 @@
   "foot.architecture": "Архитектура",
   "foot.resources": "Ресурсы",
   "foot.community": "Сообщество",
-  "footer.copy": "© 2025–2026 Mike Hummel · документация под CC BY 4.0"
+  "footer.copy": "© 2025–2026 Mike Hummel · Community Edition, GNU AGPLv3 · документация под CC BY 4.0"
 }
